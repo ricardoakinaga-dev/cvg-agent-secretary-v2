@@ -1,0 +1,7 @@
+interface:
+  display_name: 'Discovery Engine'
+  short_description: 'Estrutura problema, dor, fluxo, valor e riscos antes do PRD.'
+  brand_color: '#2563EB'
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "sourceMap": true,
+    "composite": true,
+    "ignoreDeprecations": "6.0",
+    "allowImportingTsExtensions": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@cvg/shared": ["packages/shared/src/index.ts"],
+      "@cvg/persistence": ["packages/persistence/src/index.ts"],
+      "@cvg/agent-core": ["packages/agent-core/src/index.ts"],
+      "@cvg/policy": ["packages/policy/src/index.ts"],
+      "@cvg/tools": ["packages/tools/src/index.ts"],
+      "@cvg/workflows": ["packages/workflows/src/index.ts"],
+      "@cvg/adapters": ["packages/adapters/src/index.ts"],
+      "@cvg/memory": ["packages/memory/src/index.ts"],
+      "@cvg/rag": ["packages/rag/src/index.ts"],
+      "@cvg/platform": ["packages/platform/src/index.ts"]
+    }
+  }
+}

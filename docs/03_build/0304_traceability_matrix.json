@@ -1,0 +1,263 @@
+{
+  "version": "1.0.0",
+  "status": "active",
+  "rules": {
+    "executor_may_implement_only_mapped_items": true,
+    "unmapped_requirement_status": "BLOCKED",
+    "sensitive_requirement_requires_human_decision": true
+  },
+  "mappings": [
+    {
+      "source_ids": ["UC-01", "RF-001", "RF-002", "RF-003", "RF-004", "RF-005"],
+      "source_docs": [
+        "docs/01_prd/0010_casos_de_uso.md",
+        "docs/01_prd/0013_requisitos_funcionais.md"
+      ],
+      "description": "Receive inbound message, create or resume conversation/session, persist history.",
+      "phase": "P3",
+      "sprint": "P3-S1",
+      "task": "P3-S1-T01",
+      "files": [
+        "packages/agent-core/src/commands/receive-inbound-message.ts",
+        "packages/agent-core/src/session/session-manager.ts",
+        "packages/persistence/src/repositories/conversation-repository.ts"
+      ],
+      "required_tests": [
+        "packages/agent-core/src/__tests__/receive-inbound-message.test.ts",
+        "packages/agent-core/src/__tests__/conversation-session.integration.test.ts"
+      ],
+      "acceptance": [
+        "duplicate channel + externalMessageId returns accepted=false without duplicate rows",
+        "new message creates conversation, session and message with correlationId",
+        "existing active conversation resumes open session"
+      ]
+    },
+    {
+      "source_ids": ["UC-02", "RF-010", "RF-011", "RF-012", "RF-013", "RF-014"],
+      "description": "Classify intent, run workflow, keep workflow state and record agent run.",
+      "phase": "P5",
+      "sprint": "P5-S1",
+      "task": "P5-S1-T01",
+      "files": [
+        "packages/workflows/src/intent/intent-workflow.ts",
+        "packages/agent-core/src/commands/run-agent-turn.ts"
+      ],
+      "required_tests": [
+        "packages/workflows/src/__tests__/intent-workflow.flow.test.ts"
+      ],
+      "acceptance": [
+        "ambiguous message routes to handoff",
+        "classified intent records agentRun and nextState",
+        "policy-required handoff interrupts workflow"
+      ]
+    },
+    {
+      "source_ids": ["UC-03", "RF-020", "RF-021", "RF-022", "RF-023", "RF-024"],
+      "description": "Identify owner/patient or create drafts.",
+      "phase": "P4",
+      "sprint": "P4-S3",
+      "task": "P4-S3-T02",
+      "files": [
+        "packages/tools/src/local/search-owner-by-phone.ts",
+        "packages/tools/src/local/create-owner-draft.ts",
+        "packages/tools/src/local/search-patient.ts",
+        "packages/tools/src/local/create-patient-draft.ts"
+      ],
+      "required_tests": [
+        "packages/tools/src/__tests__/owner-patient-tools.integration.test.ts"
+      ],
+      "acceptance": [
+        "multiple owners returns conflict result",
+        "missing owner creates draft only",
+        "patient link requires sufficient confidence"
+      ]
+    },
+    {
+      "source_ids": ["UC-04", "RF-030", "RF-031", "RF-032", "RF-033"],
+      "description": "Safe operational triage without diagnosis or prescription.",
+      "phase": "P5",
+      "sprint": "P5-S2",
+      "task": "P5-S2-T01",
+      "files": [
+        "packages/workflows/src/triage/triage-workflow.ts",
+        "packages/policy/src/safety/clinical-boundaries.ts"
+      ],
+      "required_tests": [
+        "packages/workflows/src/__tests__/triage-safety.flow.test.ts"
+      ],
+      "acceptance": [
+        "diagnosis request is blocked and safety event is recorded",
+        "prescription request is blocked and handoff is proposed",
+        "high risk case suggests emergency escalation without diagnosis"
+      ]
+    },
+    {
+      "source_ids": ["UC-05", "RF-040", "RF-041", "RF-042", "RF-043"],
+      "description": "Scheduling draft only; real confirmation blocked until human rule approval.",
+      "phase": "P5",
+      "sprint": "P5-S3",
+      "task": "P5-S3-T01",
+      "files": [
+        "packages/workflows/src/scheduling/scheduling-draft-workflow.ts",
+        "packages/tools/src/local/find-available-slots.ts",
+        "packages/tools/src/local/create-appointment-draft.ts"
+      ],
+      "required_tests": [
+        "packages/workflows/src/__tests__/scheduling-draft.flow.test.ts"
+      ],
+      "acceptance": [
+        "available slots can be suggested",
+        "appointment confirmation returns approval_required",
+        "critical cancellation is blocked"
+      ],
+      "blocked_scope": ["automatic appointment confirmation"]
+    },
+    {
+      "source_ids": ["UC-06", "RF-051", "RF-052", "RF-053"],
+      "description": "Human approval request, decision and escalation.",
+      "phase": "P4",
+      "sprint": "P4-S2",
+      "task": "P4-S2-T01",
+      "files": [
+        "packages/policy/src/approvals/approval-service.ts",
+        "packages/agent-core/src/commands/request-human-approval.ts",
+        "packages/agent-core/src/commands/resolve-approval.ts"
+      ],
+      "required_tests": [
+        "packages/policy/src/__tests__/approval-state.integration.test.ts"
+      ],
+      "acceptance": [
+        "pending approval can transition to approved once",
+        "second decision returns approval_not_pending",
+        "operator role is validated before decision"
+      ]
+    },
+    {
+      "source_ids": ["UC-07", "RF-050"],
+      "description": "Create structured handoff summary.",
+      "phase": "P5",
+      "sprint": "P5-S2",
+      "task": "P5-S2-T02",
+      "files": [
+        "packages/agent-core/src/commands/create-handoff-summary.ts",
+        "packages/workflows/src/handoff/handoff-summary.ts"
+      ],
+      "required_tests": [
+        "packages/workflows/src/__tests__/handoff-summary.unit.test.ts"
+      ],
+      "acceptance": [
+        "summary includes tutor, pet, intent, collected data, risk, tools, pending items and recommended next step",
+        "insufficient context returns insufficient_context"
+      ]
+    },
+    {
+      "source_ids": ["UC-08", "RF-060", "RF-061", "RF-062"],
+      "description": "Create internal task linked to conversation, session and contact.",
+      "phase": "P3",
+      "sprint": "P3-S2",
+      "task": "P3-S2-T01",
+      "files": [
+        "packages/agent-core/src/commands/create-internal-task.ts",
+        "packages/persistence/src/repositories/task-repository.ts"
+      ],
+      "required_tests": [
+        "packages/agent-core/src/__tests__/internal-task.integration.test.ts"
+      ],
+      "acceptance": [
+        "task requires title, source and valid priority",
+        "task is idempotent by sessionId + source + idempotencyKey",
+        "status transitions only follow open -> in_progress -> done or canceled"
+      ]
+    },
+    {
+      "source_ids": ["UC-09"],
+      "description": "Institutional question answer with approved source or safe handoff.",
+      "phase": "P8",
+      "sprint": "P8-S2",
+      "task": "P8-S2-T01",
+      "files": [
+        "packages/rag/src/institutional-rag.ts",
+        "packages/workflows/src/institutional/institutional-question-workflow.ts"
+      ],
+      "required_tests": [
+        "packages/workflows/src/__tests__/institutional-rag-safe.flow.test.ts"
+      ],
+      "acceptance": [
+        "no approved source returns handoff",
+        "medical question returns handoff",
+        "approved source response includes source reference"
+      ],
+      "blocked_scope": ["real RAG source ingestion until approval"]
+    },
+    {
+      "source_ids": ["RF-070", "RF-071", "RF-072", "RF-073"],
+      "description": "Audit tool calls, safety events, integration events and support investigation by conversation/session/tool/approval.",
+      "phase": "P2/P6/P7/P9",
+      "sprint": "P2-S3,P6-S2,P7-S3,P9-S1",
+      "task": "P2-S3-T01,P6-S2-T03,P7-S3-T02,P9-S1-T01",
+      "files": [
+        "packages/persistence/src/repositories/audit-repository.ts",
+        "apps/api/src/routes/audit.ts",
+        "apps/web/src/features/audit/index.tsx",
+        "packages/shared/src/observability.ts"
+      ],
+      "required_tests": [
+        "packages/persistence/src/__tests__/audit-repository.test.ts",
+        "apps/api/src/__tests__/audit-route.integration.test.ts",
+        "apps/web/src/features/audit/audit-view.test.tsx",
+        "apps/api/src/__tests__/correlation.test.ts"
+      ],
+      "acceptance": [
+        "tool calls are append-only audited with status and error",
+        "safety events are append-only audited with policyVersion",
+        "integration events are recorded with provider and correlationId",
+        "audit endpoint returns consolidated trail by sessionId"
+      ]
+    },
+    {
+      "source_ids": ["RF-080", "RF-081", "RF-082", "RF-083", "RF-084"],
+      "description": "Minimum operational panel for conversations, approvals, tasks and handoff summary.",
+      "phase": "P7",
+      "sprint": "P7-S2,P7-S3",
+      "task": "P7-S2-T01,P7-S2-T02,P7-S3-T01,P7-S3-T02",
+      "files": [
+        "apps/web/src/features/conversations/index.tsx",
+        "apps/web/src/features/conversations/Timeline.tsx",
+        "apps/web/src/features/approvals/index.tsx",
+        "apps/web/src/features/tasks/index.tsx",
+        "apps/web/src/features/audit/index.tsx"
+      ],
+      "required_tests": [
+        "apps/web/src/features/conversations/conversations.test.tsx",
+        "apps/web/src/features/conversations/timeline.test.tsx",
+        "apps/web/src/features/approvals/approvals.test.tsx",
+        "apps/web/src/features/tasks/tasks.test.tsx",
+        "apps/web/src/features/audit/audit-view.test.tsx"
+      ],
+      "acceptance": [
+        "operator can list conversations",
+        "operator can view approval queue",
+        "operator can view internal tasks",
+        "authorized approver can submit approval decision",
+        "timeline displays handoff summary"
+      ]
+    }
+  ],
+  "blocked_requirements": [
+    {
+      "source_id": "RF-043",
+      "reason": "appointment confirmation requires final human business rule",
+      "release_condition": "approved agenda confirmation policy"
+    },
+    {
+      "source_id": "UC-09_REAL_RAG",
+      "reason": "institutional source not approved",
+      "release_condition": "approved source owner, version and update cycle"
+    },
+    {
+      "source_id": "REAL_DATA_ROLLOUT",
+      "reason": "retention policy and role mapping pending",
+      "release_condition": "approved retention table and real hospital role matrix"
+    }
+  ]
+}

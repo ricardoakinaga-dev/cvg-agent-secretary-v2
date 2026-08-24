@@ -1,0 +1,125 @@
+{
+  "version": "1.0.0",
+  "project": "cvg-agent-secretary-v2",
+  "status": "COMPLETED",
+  "created_at": "2026-04-29",
+  "commands": [
+    {
+      "id": "VAL-01",
+      "command": "npm run format:check",
+      "required_for": ["DBG-COR-05", "DBG-COR-06"],
+      "current_audit_status": "PASS",
+      "expected_final_status": "PASS",
+      "evidence_required": "Prettier reports all files formatted."
+    },
+    {
+      "id": "VAL-02",
+      "command": "npm run typecheck",
+      "required_for": ["DBG-COR-03", "DBG-COR-04", "DBG-COR-06"],
+      "current_audit_status": "PASS",
+      "expected_final_status": "PASS",
+      "evidence_required": "TypeScript exits with code 0."
+    },
+    {
+      "id": "VAL-03",
+      "command": "npm run lint",
+      "required_for": ["DBG-COR-03", "DBG-COR-04", "DBG-COR-06"],
+      "current_audit_status": "PASS",
+      "expected_final_status": "PASS",
+      "evidence_required": "ESLint exits with code 0."
+    },
+    {
+      "id": "VAL-04",
+      "command": "npm test",
+      "required_for": [
+        "DBG-COR-02",
+        "DBG-COR-03",
+        "DBG-COR-04",
+        "DBG-COR-06",
+        "DBG-COR-12",
+        "DBG-COR-13",
+        "DBG-COR-14",
+        "DBG-COR-15",
+        "DBG-COR-16"
+      ],
+      "current_audit_status": "PASS",
+      "expected_final_status": "PASS",
+      "evidence_required": "All non-skipped unit, integration and docs tests pass."
+    },
+    {
+      "id": "VAL-05",
+      "command": "npm run test:e2e",
+      "required_for": ["DBG-COR-03", "DBG-COR-06"],
+      "current_audit_status": "PASS",
+      "expected_final_status": "PASS",
+      "evidence_required": "Critical flow E2E test passes."
+    },
+    {
+      "id": "VAL-06",
+      "command": "npm run test:coverage",
+      "required_for": ["DBG-COR-01", "DBG-COR-06", "DBG-COR-11"],
+      "current_audit_status": "PASS",
+      "expected_final_status": "PASS",
+      "evidence_required": "Coverage remains at or above 80 percent for statements, branches, functions and lines."
+    },
+    {
+      "id": "VAL-07",
+      "command": "npm run audit:security",
+      "required_for": ["DBG-COR-06"],
+      "current_audit_status": "PASS",
+      "expected_final_status": "PASS",
+      "evidence_required": "npm audit reports 0 high-or-higher vulnerabilities."
+    },
+    {
+      "id": "VAL-08",
+      "command": "npm run readiness",
+      "required_for": ["DBG-COR-01", "DBG-COR-06"],
+      "current_audit_status": "PASS",
+      "expected_final_status": "PASS",
+      "evidence_required": "Readiness score matches open/closed correction state."
+    },
+    {
+      "id": "VAL-09",
+      "command": "npm run verify",
+      "required_for": [
+        "DBG-COR-01",
+        "DBG-COR-02",
+        "DBG-COR-03",
+        "DBG-COR-04",
+        "DBG-COR-05",
+        "DBG-COR-06",
+        "DBG-COR-11",
+        "DBG-COR-12",
+        "DBG-COR-13",
+        "DBG-COR-14",
+        "DBG-COR-15",
+        "DBG-COR-16"
+      ],
+      "current_audit_status": "PASS",
+      "expected_final_status": "PASS",
+      "evidence_required": "Verify includes format, typecheck, lint, tests, coverage and security audit."
+    },
+    {
+      "id": "VAL-10",
+      "command": "TEST_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:<PORT>/cvg_test npm run test:postgres",
+      "required_for": ["DBG-COR-04", "DBG-COR-06"],
+      "current_audit_status": "PASS_WITH_REAL_EPHEMERAL_POSTGRES",
+      "expected_final_status": "PASS_WITH_REAL_EPHEMERAL_POSTGRES",
+      "evidence_required": "No skipped PostgreSQL runtime tests."
+    },
+    {
+      "id": "VAL-11",
+      "command": "PORT=<PORT> npx tsx apps/api/src/main.ts plus curl /health and webhook",
+      "required_for": ["DBG-COR-03", "DBG-COR-06"],
+      "current_audit_status": "PASS",
+      "expected_final_status": "PASS",
+      "evidence_required": "HTTP smoke returns success=true for health and inbound webhook."
+    }
+  ],
+  "final_gate": {
+    "required": true,
+    "all_expected_final_status_must_pass": true,
+    "documentation_must_match_command_output": true,
+    "postgres_skip_does_not_count": true
+  }
+}

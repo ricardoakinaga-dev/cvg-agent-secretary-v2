@@ -1,0 +1,7 @@
+interface:
+  display_name: 'Build Engine'
+  short_description: 'Executa construcao faseada com roadmap, backlog, sprints e auditoria.'
+  brand_color: '#2563EB'
+
+policy:
+  allow_implicit_invocation: true

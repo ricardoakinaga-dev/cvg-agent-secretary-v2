@@ -1,0 +1,86 @@
+{
+  "version": "1.0.0",
+  "status": "APPROVED_CONSERVATIVE_DEFAULTS",
+  "approved_at": "2026-04-29T03:00:00-03:00",
+  "approved_by": "project_owner_request",
+  "decisions": [
+    {
+      "id": "DEC-AGENDA-001",
+      "topic": "agenda_confirmation",
+      "decision": "draft_only",
+      "rule": "The system may suggest available slots and create appointment drafts. It must not confirm, cancel or reschedule real appointments automatically.",
+      "allowed_actions": [
+        "find_available_slots",
+        "create_appointment_draft",
+        "request_human_approval"
+      ],
+      "blocked_actions": [
+        "confirm_appointment",
+        "cancel_appointment",
+        "reschedule_confirmed_appointment"
+      ],
+      "release_condition_for_automation": "new PRD/SPEC decision with explicit clinic policy and role approval"
+    },
+    {
+      "id": "DEC-RAG-001",
+      "topic": "institutional_rag",
+      "decision": "source_gated_noop_until_approved",
+      "rule": "RAG package must return safe handoff when no approved institutional source is configured.",
+      "allowed_actions": [
+        "answer_from_approved_source",
+        "handoff_when_source_missing"
+      ],
+      "blocked_actions": [
+        "answer_from_unversioned_content",
+        "medical_advice_from_rag"
+      ],
+      "release_condition_for_real_source": "approved source owner, document version and update cadence"
+    },
+    {
+      "id": "DEC-RETENTION-001",
+      "topic": "data_retention",
+      "decision": "no_real_data_before_pilot_signoff",
+      "rule": "Development and automated tests must use fictitious or anonymized data. Pilot data requires retention signoff.",
+      "defaults": {
+        "dev_messages": "ephemeral_or_fixture_only",
+        "audit_events": "append_only_in_environment",
+        "memory_facts": "approved_only",
+        "real_data": "blocked_until_pilot_signoff"
+      }
+    },
+    {
+      "id": "DEC-RBAC-001",
+      "topic": "role_matrix",
+      "decision": "minimum_role_mapping",
+      "rule": "Use generic roles until real hospital job titles are mapped. Real rollout requires mapping names/titles to these roles.",
+      "roles": {
+        "Operator": [
+          "view_assigned_conversation",
+          "assume_conversation",
+          "update_task"
+        ],
+        "Approver": ["view_approval_queue", "approve_or_reject_approval"],
+        "Supervisor": [
+          "view_full_audit",
+          "review_safety_events",
+          "approve_or_reject_approval"
+        ],
+        "Admin": ["configure_policy", "configure_channels", "view_full_audit"],
+        "System": ["execute_policy_allowed_tool", "create_audit_event"]
+      }
+    },
+    {
+      "id": "DEC-AUTONOMY-001",
+      "topic": "autonomy_level",
+      "decision": "mvp_level_1_to_2",
+      "rule": "The MVP can collect data, classify operational risk, suggest actions and create drafts. Sensitive execution requires approval or handoff.",
+      "blocked_actions": [
+        "diagnosis",
+        "prescription",
+        "medical_record_final_write",
+        "sensitive_billing",
+        "critical_schedule_change"
+      ]
+    }
+  ]
+}

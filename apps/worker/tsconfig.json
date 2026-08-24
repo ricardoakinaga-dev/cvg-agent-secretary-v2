@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": { "rootDir": "src", "outDir": "dist" },
+  "include": ["src/**/*.ts"],
+  "references": [
+    { "path": "../../packages/shared" },
+    { "path": "../../packages/persistence" },
+    { "path": "../../packages/policy" },
+    { "path": "../../packages/tools" },
+    { "path": "../../packages/workflows" },
+    { "path": "../../packages/memory" },
+    { "path": "../../packages/agent-core" }
+  ]
+}

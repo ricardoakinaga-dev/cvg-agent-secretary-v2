@@ -1,0 +1,396 @@
+{
+  "version": "1.0.0",
+  "project": "cvg-agent-secretary-v2",
+  "status": "READY_FOR_AGENT_EXECUTION",
+  "created_at": "2026-04-29",
+  "mode": "controlled_construction_only",
+  "readiness_policy": {
+    "max_confidence_while_p0_or_p1_open": 90,
+    "confidence_100_allowed_only_when_all_findings_closed": true
+  },
+  "items": [
+    {
+      "id": "DBG-COR-01",
+      "priority": "P0",
+      "finding_ids": ["DBG-F01", "DBG-F02"],
+      "title": "Synchronize runtime evidence and readiness score",
+      "status": "completed",
+      "task_file": "docs/09_debug_corrections/tasks/task_01_evidence_and_readiness_sync.md",
+      "owned_files": [
+        "docs/03_build/0310_construction_readiness_95.json",
+        "docs/03_build/0310_construction_readiness_95.md",
+        "docs/03_build/0311_controlled_construction_sprint_01.md",
+        "docs/04_audit/0491_runtime_evidence.md"
+      ],
+      "required_tests": ["npm run readiness", "npm run verify"],
+      "acceptance": [
+        "documented gate counts match actual command output",
+        "readiness is not 100 while debug correction backlog has open P0/P1 items",
+        "runtime evidence distinguishes isolated test:postgres skip from real PostgreSQL execution"
+      ]
+    },
+    {
+      "id": "DBG-COR-02",
+      "priority": "P0",
+      "finding_ids": ["DBG-F03"],
+      "title": "Make traceability matrix executable",
+      "status": "completed",
+      "task_file": "docs/09_debug_corrections/tasks/task_02_traceability_test_alignment.md",
+      "owned_files": [
+        "docs/03_build/0304_traceability_matrix.json",
+        "tests/docs-readiness.test.js",
+        "apps/web/src/features/conversations/conversations.test.tsx",
+        "apps/web/src/features/conversations/timeline.test.tsx",
+        "apps/web/src/features/approvals/approvals.test.tsx",
+        "apps/web/src/features/tasks/tasks.test.tsx",
+        "apps/web/src/features/audit/audit-view.test.tsx"
+      ],
+      "required_tests": ["npm test", "npm run verify"],
+      "acceptance": [
+        "every required_tests entry in traceability matrix points to an existing file or declared external command",
+        "web feature tests listed in traceability matrix exist and pass",
+        "docs-readiness fails if a mapped test file is missing"
+      ]
+    },
+    {
+      "id": "DBG-COR-03",
+      "priority": "P0",
+      "finding_ids": ["DBG-F04"],
+      "title": "Replace hardcoded web console conversation IDs with API listing",
+      "status": "completed",
+      "task_file": "docs/09_debug_corrections/tasks/task_03_web_conversation_listing.md",
+      "owned_files": [
+        "apps/api/src/server.ts",
+        "apps/api/src/__tests__/conversation-list.test.ts",
+        "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+        "packages/persistence/src/schema.ts",
+        "packages/persistence/src/repositories/conversation-repository.ts",
+        "packages/persistence/src/postgres.ts",
+        "apps/web/src/api/client.ts",
+        "apps/web/src/App.tsx",
+        "apps/web/src/features/conversations/index.tsx",
+        "apps/web/src/__tests__/app.test.tsx"
+      ],
+      "required_tests": ["npm test", "npm run test:e2e", "npm run verify"],
+      "acceptance": [
+        "API exposes paginated conversation listing",
+        "web console loads conversations through API",
+        "web console renders empty state when no conversation exists",
+        "no hardcoded conv_demo_controlled or sess_demo_controlled remains in runtime code"
+      ]
+    },
+    {
+      "id": "DBG-COR-04",
+      "priority": "P0",
+      "finding_ids": ["DBG-F05"],
+      "title": "Harden PostgreSQL idempotency for channel plus external message",
+      "status": "completed",
+      "task_file": "docs/09_debug_corrections/tasks/task_04_postgres_idempotency_hardening.md",
+      "owned_files": [
+        "packages/persistence/migrations/0000_initial.sql",
+        "packages/persistence/src/postgres.ts",
+        "packages/persistence/src/__tests__/postgres-migration-smoke.test.ts",
+        "apps/api/src/__tests__/postgres-persistence-mode.test.ts"
+      ],
+      "required_tests": [
+        "TEST_DATABASE_URL=... npm run test:postgres",
+        "npm run verify"
+      ],
+      "acceptance": [
+        "database enforces idempotency for channel plus externalMessageId",
+        "duplicate inbound message in same channel returns accepted false",
+        "same externalMessageId in different channel is allowed only if product contract permits it",
+        "race-prone check-then-insert path is protected by database constraint or transactional idempotency table"
+      ]
+    },
+    {
+      "id": "DBG-COR-05",
+      "priority": "P1",
+      "finding_ids": ["DBG-F06"],
+      "title": "Add format gate to verify and fix formatting",
+      "status": "completed",
+      "task_file": "docs/09_debug_corrections/tasks/task_05_format_gate_and_ci_verify.md",
+      "owned_files": [
+        "package.json",
+        ".github/workflows/verify.yml",
+        "all formatted files"
+      ],
+      "required_tests": ["npm run format:check", "npm run verify"],
+      "acceptance": [
+        "npm run format:check passes",
+        "npm run verify includes format:check",
+        "CI verify path runs the same formatting gate"
+      ]
+    },
+    {
+      "id": "DBG-COR-06",
+      "priority": "P1",
+      "finding_ids": ["DBG-F07"],
+      "title": "Collect final runtime evidence with real PostgreSQL and HTTP smoke",
+      "status": "completed",
+      "task_file": "docs/09_debug_corrections/tasks/task_06_final_validation_and_evidence.md",
+      "owned_files": [
+        "docs/09_debug_corrections/0904_validation_matrix.json",
+        "docs/04_audit/0491_runtime_evidence.md",
+        "docs/20_master_execution_log.md",
+        "docs/99_runtime_state.md"
+      ],
+      "required_tests": [
+        "npm run verify",
+        "npm run test:e2e",
+        "TEST_DATABASE_URL=... npm run test:postgres",
+        "HTTP smoke"
+      ],
+      "acceptance": [
+        "final evidence includes real PostgreSQL command without skipped tests",
+        "final evidence includes HTTP /health and webhook smoke",
+        "runtime state points to next controlled sprint only after all P0/P1 corrections are complete"
+      ]
+    },
+    {
+      "id": "DBG-COR-07",
+      "priority": "P0",
+      "finding_ids": ["DBG-F08"],
+      "title": "Fail-close operational panel reads with controlled operator identity",
+      "status": "completed",
+      "task_file": "docs/09_debug_corrections/0906_cc_s6_rbac_panel_read_audit.md",
+      "owned_files": [
+        "packages/shared/src/auth.ts",
+        "packages/shared/src/errors.ts",
+        "apps/api/src/server.ts",
+        "apps/api/src/__tests__/operator-identity-rbac.test.ts",
+        "apps/api/src/__tests__/conversation-list.test.ts",
+        "apps/api/src/__tests__/health.test.ts",
+        "apps/api/src/__tests__/observability.test.ts",
+        "apps/api/src/__tests__/approval-actions.test.ts",
+        "apps/api/src/__tests__/task-lifecycle.test.ts",
+        "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+        "apps/web/src/api/client.ts",
+        "apps/web/src/App.tsx",
+        "apps/web/src/__tests__/app.test.tsx",
+        "tests/e2e/critical-flows.test.ts"
+      ],
+      "required_tests": [
+        "npm run verify",
+        "npm run test:e2e",
+        "npm run readiness",
+        "npm run test:postgres"
+      ],
+      "acceptance": [
+        "operational panel reads return unauthorized without controlled identity headers",
+        "API client sends x-operator-id and x-operator-role on panel reads",
+        "web console does not load operational data before identity is provided",
+        "all verification gates remain passing"
+      ]
+    },
+    {
+      "id": "DBG-COR-08",
+      "priority": "P1",
+      "finding_ids": ["DBG-F09"],
+      "title": "Expose audit evidence summary by session and correlation",
+      "status": "completed",
+      "task_file": "docs/09_debug_corrections/0909_cc_s9_audit_governance_review.md",
+      "owned_files": [
+        "packages/persistence/src/schema.ts",
+        "packages/persistence/src/repositories/audit-repository.ts",
+        "apps/api/src/__tests__/audit-evidence.test.ts",
+        "packages/persistence/src/__tests__/postgres-migration-smoke.test.ts"
+      ],
+      "required_tests": [
+        "npx vitest run apps/api/src/__tests__/audit-evidence.test.ts packages/persistence/src/__tests__/postgres-migration-smoke.test.ts",
+        "npm run verify"
+      ],
+      "acceptance": [
+        "AuditEvidenceSummary includes byCorrelationId",
+        "AuditEvidenceSummary includes bySessionId",
+        "API and repository tests validate the new aggregate fields"
+      ]
+    },
+    {
+      "id": "DBG-COR-09",
+      "priority": "P0",
+      "finding_ids": ["DBG-F10", "DBG-F11"],
+      "title": "Sanitize audit evidence payloads and expand filter coverage",
+      "status": "completed",
+      "task_file": "docs/09_debug_corrections/0909_cc_s9_audit_governance_review.md",
+      "owned_files": [
+        "apps/api/src/server.ts",
+        "apps/api/src/__tests__/audit-evidence.test.ts",
+        "packages/persistence/src/schema.ts",
+        "packages/shared/src/audit-governance.ts",
+        "packages/shared/src/__tests__/shared-contracts.test.ts"
+      ],
+      "required_tests": ["npm test", "npm run verify"],
+      "acceptance": [
+        "audit evidence endpoint does not expose forbidden sensitive fields by default",
+        "tests cover sessionId, type and actorId filters positively",
+        "page totals and summary totals are consistent for each filter"
+      ]
+    },
+    {
+      "id": "DBG-COR-10",
+      "priority": "P1",
+      "finding_ids": ["DBG-F12"],
+      "title": "Add PostgreSQL indexes for audit evidence filters",
+      "status": "completed",
+      "task_file": "docs/09_debug_corrections/0907_cc_s7_audit_evidence_review.md",
+      "owned_files": [
+        "packages/persistence/migrations/0000_initial.sql",
+        "packages/persistence/src/__tests__/postgres-migration-smoke.test.ts"
+      ],
+      "required_tests": [
+        "npm test",
+        "TEST_DATABASE_URL=... npm run test:postgres"
+      ],
+      "acceptance": [
+        "migration includes indexes for type and actor_id",
+        "migration includes an index for payload sessionId lookup",
+        "PostgreSQL smoke or migration test verifies the indexes exist"
+      ]
+    },
+    {
+      "id": "DBG-COR-11",
+      "priority": "P1",
+      "finding_ids": ["DBG-F13", "DBG-F14"],
+      "title": "Close CC-S8 console evidence RBAC coverage and coverage flag detection",
+      "status": "completed",
+      "task_file": "docs/09_debug_corrections/0908_cc_s8_console_evidence_review_audit.md",
+      "owned_files": [
+        "apps/web/src/__tests__/app.test.tsx",
+        "vitest.config.ts"
+      ],
+      "required_tests": [
+        "npx vitest run apps/web/src/__tests__/app.test.tsx",
+        "npm run verify"
+      ],
+      "acceptance": [
+        "web tests prove Supervisor and Admin can review audit evidence",
+        "web tests prove Operator and Approver cannot call audit evidence endpoint",
+        "coverage serialization is active for --coverage and --coverage=<value> invocations"
+      ]
+    },
+    {
+      "id": "DBG-COR-12",
+      "priority": "P1",
+      "finding_ids": ["DBG-F15"],
+      "title": "Add controlled pagination state to console audit evidence review",
+      "status": "completed",
+      "task_file": "docs/03_build/0320_controlled_construction_sprint_10.md",
+      "owned_files": [
+        "apps/web/src/api/client.ts",
+        "apps/web/src/App.tsx",
+        "apps/web/src/features/audit/index.tsx",
+        "apps/web/src/styles.css",
+        "apps/web/src/__tests__/app.test.tsx"
+      ],
+      "required_tests": [
+        "npx vitest run apps/web/src/__tests__/app.test.tsx",
+        "npm run verify",
+        "npm run test:e2e",
+        "npm run readiness",
+        "npm run test:postgres"
+      ],
+      "acceptance": [
+        "console displays evidence pageInfo including total and current page boundaries",
+        "console exposes next/previous or incremental load when hasNextPage is true",
+        "web tests cover hasNextPage true without external export dispatch"
+      ]
+    },
+    {
+      "id": "DBG-COR-13",
+      "priority": "P1",
+      "finding_ids": ["DBG-F16", "DBG-F17"],
+      "title": "Tighten CC-S9 audit governance test evidence and PII redaction",
+      "status": "completed",
+      "task_file": "docs/09_debug_corrections/0909_cc_s9_audit_governance_review.md",
+      "owned_files": [
+        "apps/api/src/__tests__/audit-evidence.test.ts",
+        "packages/shared/src/audit-governance.ts",
+        "packages/shared/src/__tests__/shared-contracts.test.ts"
+      ],
+      "required_tests": [
+        "npx vitest run apps/api/src/__tests__/audit-evidence.test.ts packages/shared/src/__tests__/shared-contracts.test.ts packages/persistence/src/__tests__/postgres-migration-smoke.test.ts",
+        "npm run verify"
+      ],
+      "acceptance": [
+        "positive governance filter test asserts summary and page totals match",
+        "audit payload sanitizer redacts common personal identifiers before API response",
+        "shared contract tests cover PII redaction examples with fictitious data"
+      ]
+    },
+    {
+      "id": "DBG-COR-14",
+      "priority": "P0",
+      "finding_ids": ["DBG-F18"],
+      "title": "Require controlled identity for audit evidence export approval requests",
+      "status": "completed",
+      "task_file": "docs/09_debug_corrections/0910_cc_s10_evidence_pagination_export_audit.md",
+      "owned_files": [
+        "apps/api/src/server.ts",
+        "apps/api/src/__tests__/operator-identity-rbac.test.ts"
+      ],
+      "required_tests": [
+        "npx vitest run apps/api/src/__tests__/operator-identity-rbac.test.ts apps/web/src/__tests__/app.test.tsx",
+        "npm run verify"
+      ],
+      "acceptance": [
+        "audit_evidence_export_review creation fails closed without operator identity",
+        "roles without audit:view_full cannot create audit evidence export approval requests",
+        "approval creation audit records the controlled operator identity for export review requests"
+      ]
+    },
+    {
+      "id": "DBG-COR-15",
+      "priority": "P0",
+      "finding_ids": ["DBG-F19"],
+      "title": "Reconcile CC-S10 gate evidence with reproducible final validation",
+      "status": "completed",
+      "task_file": "docs/09_debug_corrections/0910_cc_s10_evidence_pagination_export_audit.md",
+      "owned_files": [
+        "docs/03_build/0310_construction_readiness_95.json",
+        "docs/03_build/0310_construction_readiness_95.md",
+        "docs/03_build/0304_traceability_matrix.json",
+        "package.json",
+        "packages/persistence/migrations/0000_initial.sql",
+        "docs/20_master_execution_log.md",
+        "docs/99_runtime_state.md"
+      ],
+      "required_tests": [
+        "npm run verify",
+        "npm run readiness",
+        "npm run test:postgres"
+      ],
+      "acceptance": [
+        "CC-S10 gate evidence matches fresh command output",
+        "verify includes the format gate or documentation no longer claims it does",
+        "readiness score is not 100 while P0/P1 debug corrections remain open",
+        "migration/idempotency expectations pass or are reconciled with documented scope"
+      ]
+    },
+    {
+      "id": "DBG-COR-16",
+      "priority": "P1",
+      "finding_ids": ["DBG-F20"],
+      "title": "Materialize release candidate boundary artifacts required by verify",
+      "status": "completed",
+      "task_file": "docs/09_debug_corrections/0911_cc_s11_release_candidate_boundary_audit.md",
+      "owned_files": [
+        "docs/08_runtime/release_candidate_boundary.json",
+        "docs/04_audit/0492_release_candidate_audit.md",
+        "docs/04_audit/pilot_report_template.md",
+        "docs/04_audit/remediation_loop_template.md",
+        "docs/04_audit/0491_runtime_evidence.md"
+      ],
+      "required_tests": [
+        "npm test -- tests/release-candidate-boundary.test.js",
+        "npm run verify"
+      ],
+      "acceptance": [
+        "release candidate boundary JSON exists and keeps real pilot, production, real channels, real RAG, external export and sensitive automation blocked",
+        "pilot report and remediation loop templates exist with decision-oriented fields",
+        "release candidate audit links CC-S12 to npm run verify evidence",
+        "runtime evidence links docs/08_runtime/release_candidate_boundary.json"
+      ]
+    }
+  ]
+}

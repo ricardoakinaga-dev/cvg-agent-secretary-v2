@@ -1,0 +1,7 @@
+interface:
+  display_name: 'Audit Engine'
+  short_description: 'Audita aderencia, runtime, logs, metricas, dados, integracoes e seguranca.'
+  brand_color: '#2563EB'
+
+policy:
+  allow_implicit_invocation: true

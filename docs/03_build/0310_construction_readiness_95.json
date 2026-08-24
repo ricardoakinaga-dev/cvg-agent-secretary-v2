@@ -1,0 +1,171 @@
+{
+  "version": "1.0.0",
+  "project": "cvg-agent-secretary-v2",
+  "status": "READY_FOR_CONTROLLED_CONSTRUCTION",
+  "target_confidence_percent": 95,
+  "current_confidence_percent": 100,
+  "readiness_policy": {
+    "max_confidence_while_p0_or_p1_open": 90,
+    "confidence_100_allowed_only_when_all_findings_closed": true
+  },
+  "last_update": "2026-04-30T00:26:00-03:00",
+  "scope": "certeza de entrar na fase de construcao com alto controle de execucao; nao equivale a producao irrestrita",
+  "entry_decision": {
+    "allowed": true,
+    "allowed_mode": "controlled_construction",
+    "forbidden_until_new_prd_spec_decision": [
+      "confirmar_cancelar_reagendar_consulta_real_automaticamente",
+      "responder_rag_sem_fonte_institucional_aprovada",
+      "usar_dados_reais_sem_politica_de_retencao_aprovada",
+      "executar_acao_clinica_financeira_ou_prontuario_definitivo",
+      "remover_aprovacao_humana_de_acoes_sensiveis"
+    ]
+  },
+  "score_model": [
+    {
+      "id": "CR-01",
+      "name": "PRD_SPEC_TRACEABILITY",
+      "weight": 15,
+      "score": 15,
+      "status": "PASS",
+      "evidence": [
+        "docs/03_build/0304_traceability_matrix.json",
+        "tests/docs-readiness.test.js"
+      ]
+    },
+    {
+      "id": "CR-02",
+      "name": "DETERMINISTIC_BUILD_PLAN",
+      "weight": 15,
+      "score": 15,
+      "status": "PASS",
+      "evidence": [
+        "docs/03_build/0306_phase_sprint_plan.json",
+        "docs/03_build/0308_task_catalog.json"
+      ]
+    },
+    {
+      "id": "CR-03",
+      "name": "EXECUTABLE_RUNTIME_BASELINE",
+      "weight": 15,
+      "score": 15,
+      "status": "PASS",
+      "evidence": [
+        "apps/api/src/server.ts",
+        "apps/worker/src/worker.ts",
+        "apps/web/src/App.tsx"
+      ]
+    },
+    {
+      "id": "CR-04",
+      "name": "TEST_AND_COVERAGE_GATES",
+      "weight": 15,
+      "score": 15,
+      "status": "PASS",
+      "evidence": [
+        "npm run verify",
+        "coverage/coverage-summary.json",
+        "apps/api/src/__tests__/audit-evidence.test.ts",
+        "packages/shared/src/__tests__/shared-contracts.test.ts",
+        "apps/web/src/__tests__/app.test.tsx"
+      ]
+    },
+    {
+      "id": "CR-05",
+      "name": "SECURITY_SAFETY_FAIL_CLOSED",
+      "weight": 15,
+      "score": 15,
+      "status": "PASS",
+      "evidence": [
+        "packages/policy/src/policy-engine.ts",
+        ".env.example",
+        "npm audit --audit-level=high"
+      ]
+    },
+    {
+      "id": "CR-06",
+      "name": "CI_REPRODUCIBILITY",
+      "weight": 10,
+      "score": 10,
+      "status": "PASS",
+      "evidence": [
+        ".github/workflows/verify.yml",
+        "package-lock.json",
+        "npm ci",
+        "npm run test:postgres"
+      ]
+    },
+    {
+      "id": "CR-07",
+      "name": "DATA_PERSISTENCE_CONTRACT",
+      "weight": 10,
+      "score": 10,
+      "status": "PASS",
+      "evidence": [
+        "packages/persistence/migrations/0000_initial.sql",
+        "packages/persistence/src/schema.ts",
+        "packages/shared/src/audit-governance.ts",
+        "packages/persistence/src/postgres.ts",
+        "packages/persistence/src/__tests__/postgres-migration-smoke.test.ts",
+        "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+        "apps/api/src/__tests__/conversation-list.test.ts"
+      ]
+    },
+    {
+      "id": "CR-08",
+      "name": "ROLLOUT_AND_RISK_CONTROL",
+      "weight": 5,
+      "score": 5,
+      "status": "PASS",
+      "evidence": [
+        "docs/04_audit/0491_runtime_evidence.md",
+        "docs/03_build/tracking/enterprise_decisions.json",
+        "apps/api/src/__tests__/approval-actions.test.ts",
+        "apps/api/src/__tests__/operator-identity-rbac.test.ts",
+        "apps/api/src/__tests__/audit-evidence.test.ts",
+        "apps/api/src/__tests__/task-lifecycle.test.ts",
+        "apps/api/src/__tests__/observability.test.ts",
+        "apps/web/src/__tests__/app.test.tsx",
+        "apps/web/src/features/audit/index.tsx",
+        "apps/web/src/api/client.ts",
+        "packages/shared/src/audit-governance.ts",
+        "docs/08_runtime/release_candidate_boundary.json",
+        "tests/release-candidate-boundary.test.js"
+      ]
+    }
+  ],
+  "residual_risks": [
+    {
+      "id": "RR-01",
+      "risk": "PostgreSQL real ja foi exercitado em ambiente efemero e API pode operar em modo Postgres; fallback in-memory permanece default por seguranca",
+      "severity": "low",
+      "mitigation": "manter API_PERSISTENCE_MODE=memory por default e ativar postgres apenas em ambiente controlado"
+    },
+    {
+      "id": "RR-02",
+      "risk": "Identidade operacional controlada existe no runtime, mas ainda nao ha provedor externo de autenticacao/SSO conectado",
+      "severity": "low",
+      "mitigation": "manter headers controlados e RBAC fail-closed ate integrar autenticacao real em rollout aprovado"
+    },
+    {
+      "id": "RR-03",
+      "risk": "Logs estruturados internos, consulta controlada de audit evidence, UI de revisao paginada, governanca de payload/retencao e pedido de export via aprovacao interna existem; exportador externo de observabilidade ainda nao esta conectado",
+      "severity": "low",
+      "mitigation": "manter export metadata com externalDispatch false e exigir aprovacao humana antes de qualquer exporter externo"
+    },
+    {
+      "id": "RR-04",
+      "risk": "Cargos reais do hospital ainda nao foram mapeados",
+      "severity": "low",
+      "mitigation": "usar roles genericas ate decisao humana de RBAC real"
+    }
+  ],
+  "mandatory_next_sprint_gates": [
+    "npm run verify",
+    "npm run test:e2e",
+    "npm run readiness",
+    "migration_smoke_against_ephemeral_postgres",
+    "runtime_http_smoke",
+    "audit_log_contains_correlation_id"
+  ]
+}

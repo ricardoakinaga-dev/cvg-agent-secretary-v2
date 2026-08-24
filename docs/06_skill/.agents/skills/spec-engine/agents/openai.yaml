@@ -1,0 +1,7 @@
+interface:
+  display_name: 'Spec Engine'
+  short_description: 'Transforma PRD aprovado em arquitetura, contratos e plano de build.'
+  brand_color: '#2563EB'
+
+policy:
+  allow_implicit_invocation: true

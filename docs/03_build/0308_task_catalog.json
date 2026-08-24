@@ -1,0 +1,1017 @@
+{
+  "version": "1.0.0",
+  "rule": "Every task id referenced by 0306_phase_sprint_plan.json must exist here before implementation.",
+  "default_validation_commands": [
+    "npm test",
+    "npm run typecheck",
+    "npm run lint"
+  ],
+  "tasks": [
+    {
+      "id": "P0-S1-T00",
+      "name": "Freeze deterministic build docs",
+      "phase": "P0",
+      "sprint": "P0-S1",
+      "files_expected": [
+        "docs/03_build/0303_build_execution_contract.md",
+        "docs/03_build/0304_traceability_matrix.json",
+        "docs/03_build/0306_phase_sprint_plan.json"
+      ],
+      "tests_expected": ["tests/docs-readiness.test.js"],
+      "validation_commands": ["npm test"]
+    },
+    {
+      "id": "P0-S1-T01",
+      "name": "Create repository skeleton",
+      "phase": "P0",
+      "sprint": "P0-S1",
+      "files_expected": [
+        "apps/api",
+        "apps/worker",
+        "apps/web",
+        "packages/shared",
+        "packages/persistence",
+        "packages/agent-core",
+        "packages/policy",
+        "packages/tools",
+        "packages/workflows",
+        "packages/adapters",
+        "packages/memory",
+        "packages/rag"
+      ],
+      "tests_expected": ["tests/repository-structure.test.js"],
+      "validation_commands": ["npm test"]
+    },
+    {
+      "id": "P0-S1-T02",
+      "name": "Create root workspace package files",
+      "phase": "P0",
+      "sprint": "P0-S1",
+      "files_expected": ["package.json", "package-lock.json"],
+      "tests_expected": ["tests/workspace-scripts.test.js"],
+      "validation_commands": ["npm install", "npm test"]
+    },
+    {
+      "id": "P0-S2-T01",
+      "name": "Create TypeScript baseline",
+      "phase": "P0",
+      "sprint": "P0-S2",
+      "files_expected": [
+        "tsconfig.base.json",
+        "apps/*/tsconfig.json",
+        "packages/*/tsconfig.json",
+        "packages/*/src/index.ts"
+      ],
+      "tests_expected": ["tests/repository-structure.test.js"],
+      "validation_commands": ["npm run typecheck", "npm test"]
+    },
+    {
+      "id": "P0-S2-T02",
+      "name": "Create test lint and coverage gates",
+      "phase": "P0",
+      "sprint": "P0-S2",
+      "files_expected": [
+        "vitest.config.ts",
+        "eslint.config.js",
+        ".prettierrc.json"
+      ],
+      "tests_expected": ["tests/workspace-scripts.test.js"],
+      "validation_commands": [
+        "npm test",
+        "npm run lint",
+        "npm run test:coverage"
+      ]
+    },
+    {
+      "id": "P0-S2-T03",
+      "name": "Create env and secrets baseline",
+      "phase": "P0",
+      "sprint": "P0-S2",
+      "files_expected": [".env.example", "packages/shared/src/env.ts"],
+      "tests_expected": ["packages/shared/src/__tests__/env.test.ts"],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P0-S3-T01",
+      "name": "Create CI-local verify command and tracking",
+      "phase": "P0",
+      "sprint": "P0-S3",
+      "files_expected": [
+        "package.json",
+        "docs/03_build/tracking/build_tracking.json",
+        "docs/03_build/phase_0/sprint_0_tracking.json"
+      ],
+      "tests_expected": [
+        "tests/docs-readiness.test.js",
+        "tests/workspace-scripts.test.js"
+      ],
+      "validation_commands": ["npm run verify"]
+    },
+    {
+      "id": "P0-S3-T02",
+      "name": "Run dependency audit and document findings",
+      "phase": "P0",
+      "sprint": "P0-S3",
+      "files_expected": [
+        "docs/04_audit/0430_enterprise_readiness_audit.md",
+        "docs/30_backlog_master.md"
+      ],
+      "tests_expected": ["tests/docs-readiness.test.js"],
+      "validation_commands": ["npm audit --audit-level=high", "npm test"]
+    },
+    {
+      "id": "P1-S1-T01",
+      "name": "Implement id value object schemas",
+      "phase": "P1",
+      "sprint": "P1-S1",
+      "files_expected": [
+        "packages/shared/src/ids.ts",
+        "packages/shared/src/__tests__/ids.test.ts"
+      ],
+      "tests_expected": ["packages/shared/src/__tests__/ids.test.ts"],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P1-S1-T02",
+      "name": "Implement domain enums",
+      "phase": "P1",
+      "sprint": "P1-S1",
+      "files_expected": [
+        "packages/shared/src/enums.ts",
+        "packages/shared/src/__tests__/enums.test.ts"
+      ],
+      "tests_expected": ["packages/shared/src/__tests__/enums.test.ts"],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P1-S1-T03",
+      "name": "Export shared public API",
+      "phase": "P1",
+      "sprint": "P1-S1",
+      "files_expected": ["packages/shared/src/index.ts"],
+      "tests_expected": [
+        "packages/shared/src/__tests__/shared-contracts.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P1-S2-T01",
+      "name": "Implement API envelope and pagination",
+      "phase": "P1",
+      "sprint": "P1-S2",
+      "files_expected": [
+        "packages/shared/src/envelope.ts",
+        "packages/shared/src/pagination.ts"
+      ],
+      "tests_expected": ["packages/shared/src/__tests__/envelope.test.ts"],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P1-S2-T02",
+      "name": "Implement domain error catalog",
+      "phase": "P1",
+      "sprint": "P1-S2",
+      "files_expected": ["packages/shared/src/errors.ts"],
+      "tests_expected": ["packages/shared/src/__tests__/errors.test.ts"],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P1-S2-T03",
+      "name": "Implement roles and auth contract schemas",
+      "phase": "P1",
+      "sprint": "P1-S2",
+      "files_expected": ["packages/shared/src/auth.ts"],
+      "tests_expected": ["packages/shared/src/__tests__/auth.test.ts"],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P1-S3-T01",
+      "name": "Implement application command schemas",
+      "phase": "P1",
+      "sprint": "P1-S3",
+      "files_expected": ["packages/shared/src/schemas/application.ts"],
+      "tests_expected": [
+        "packages/shared/src/__tests__/application-schemas.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P1-S3-T02",
+      "name": "Implement API payload schemas",
+      "phase": "P1",
+      "sprint": "P1-S3",
+      "files_expected": ["packages/shared/src/schemas/api.ts"],
+      "tests_expected": ["packages/shared/src/__tests__/api-schemas.test.ts"],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P2-S1-T01",
+      "name": "Create Drizzle schema for core entities",
+      "phase": "P2",
+      "sprint": "P2-S1",
+      "files_expected": [
+        "packages/persistence/src/schema.ts",
+        "packages/persistence/drizzle.config.ts"
+      ],
+      "tests_expected": [
+        "packages/persistence/src/__tests__/persistence-schema.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P2-S1-T02",
+      "name": "Create initial migration",
+      "phase": "P2",
+      "sprint": "P2-S1",
+      "files_expected": ["packages/persistence/migrations/0000_initial.sql"],
+      "tests_expected": [
+        "packages/persistence/src/__tests__/migration-smoke.test.ts"
+      ],
+      "validation_commands": ["npm test"]
+    },
+    {
+      "id": "P2-S1-T03",
+      "name": "Add data classification columns",
+      "phase": "P2",
+      "sprint": "P2-S1",
+      "files_expected": ["packages/persistence/src/schema.ts"],
+      "tests_expected": [
+        "packages/persistence/src/__tests__/data-classification.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P2-S2-T01",
+      "name": "Implement conversation repository",
+      "phase": "P2",
+      "sprint": "P2-S2",
+      "files_expected": [
+        "packages/persistence/src/repositories/conversation-repository.ts"
+      ],
+      "tests_expected": [
+        "packages/persistence/src/__tests__/conversation-repository.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P2-S2-T02",
+      "name": "Implement idempotency repository",
+      "phase": "P2",
+      "sprint": "P2-S2",
+      "files_expected": [
+        "packages/persistence/src/repositories/idempotency-repository.ts"
+      ],
+      "tests_expected": [
+        "packages/persistence/src/__tests__/idempotency-repository.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P2-S2-T03",
+      "name": "Implement task repository",
+      "phase": "P2",
+      "sprint": "P2-S2",
+      "files_expected": [
+        "packages/persistence/src/repositories/task-repository.ts"
+      ],
+      "tests_expected": [
+        "packages/persistence/src/__tests__/task-repository.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P2-S3-T01",
+      "name": "Implement append-only audit repository",
+      "phase": "P2",
+      "sprint": "P2-S3",
+      "files_expected": [
+        "packages/persistence/src/repositories/audit-repository.ts"
+      ],
+      "tests_expected": [
+        "packages/persistence/src/__tests__/audit-repository.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P2-S3-T02",
+      "name": "Implement outbox repository",
+      "phase": "P2",
+      "sprint": "P2-S3",
+      "files_expected": ["packages/persistence/src/outbox.ts"],
+      "tests_expected": ["packages/persistence/src/__tests__/outbox.test.ts"],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P3-S1-T01",
+      "name": "Implement ReceiveInboundMessage",
+      "phase": "P3",
+      "sprint": "P3-S1",
+      "files_expected": [
+        "packages/agent-core/src/commands/receive-inbound-message.ts"
+      ],
+      "tests_expected": [
+        "packages/agent-core/src/__tests__/receive-inbound-message.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P3-S1-T02",
+      "name": "Implement SessionManager",
+      "phase": "P3",
+      "sprint": "P3-S1",
+      "files_expected": ["packages/agent-core/src/session/session-manager.ts"],
+      "tests_expected": [
+        "packages/agent-core/src/__tests__/session-manager.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P3-S1-T03",
+      "name": "Implement conversation timeline query",
+      "phase": "P3",
+      "sprint": "P3-S1",
+      "files_expected": [
+        "packages/agent-core/src/queries/get-conversation-timeline.ts"
+      ],
+      "tests_expected": [
+        "packages/agent-core/src/__tests__/conversation-timeline.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P3-S2-T01",
+      "name": "Implement CreateInternalTask",
+      "phase": "P3",
+      "sprint": "P3-S2",
+      "files_expected": [
+        "packages/agent-core/src/commands/create-internal-task.ts"
+      ],
+      "tests_expected": [
+        "packages/agent-core/src/__tests__/internal-task.integration.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P3-S2-T02",
+      "name": "Implement CreateHandoffSummary command shell",
+      "phase": "P3",
+      "sprint": "P3-S2",
+      "files_expected": [
+        "packages/agent-core/src/commands/create-handoff-summary.ts"
+      ],
+      "tests_expected": [
+        "packages/agent-core/src/__tests__/create-handoff-summary.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P3-S3-T01",
+      "name": "Implement RunAgentTurn skeleton",
+      "phase": "P3",
+      "sprint": "P3-S3",
+      "files_expected": ["packages/agent-core/src/commands/run-agent-turn.ts"],
+      "tests_expected": [
+        "packages/agent-core/src/__tests__/run-agent-turn.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P3-S3-T02",
+      "name": "Implement AgentRun lifecycle persistence",
+      "phase": "P3",
+      "sprint": "P3-S3",
+      "files_expected": [
+        "packages/agent-core/src/agent-run/agent-run-service.ts"
+      ],
+      "tests_expected": [
+        "packages/agent-core/src/__tests__/agent-run-lifecycle.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P4-S1-T01",
+      "name": "Implement clinical boundary blocks",
+      "phase": "P4",
+      "sprint": "P4-S1",
+      "files_expected": ["packages/policy/src/safety/clinical-boundaries.ts"],
+      "tests_expected": [
+        "packages/policy/src/__tests__/clinical-boundaries.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P4-S1-T02",
+      "name": "Implement autonomy decision engine",
+      "phase": "P4",
+      "sprint": "P4-S1",
+      "files_expected": ["packages/policy/src/policy-engine.ts"],
+      "tests_expected": ["packages/policy/src/__tests__/policy-engine.test.ts"],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P4-S1-T03",
+      "name": "Implement policy version audit metadata",
+      "phase": "P4",
+      "sprint": "P4-S1",
+      "files_expected": ["packages/policy/src/policy-version.ts"],
+      "tests_expected": [
+        "packages/policy/src/__tests__/policy-version.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P4-S2-T01",
+      "name": "Implement approval request and decision service",
+      "phase": "P4",
+      "sprint": "P4-S2",
+      "files_expected": ["packages/policy/src/approvals/approval-service.ts"],
+      "tests_expected": [
+        "packages/policy/src/__tests__/approval-state.integration.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P4-S2-T02",
+      "name": "Implement approval commands",
+      "phase": "P4",
+      "sprint": "P4-S2",
+      "files_expected": [
+        "packages/agent-core/src/commands/request-human-approval.ts",
+        "packages/agent-core/src/commands/resolve-approval.ts"
+      ],
+      "tests_expected": [
+        "packages/agent-core/src/__tests__/approval-commands.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P4-S3-T01",
+      "name": "Implement tool registry",
+      "phase": "P4",
+      "sprint": "P4-S3",
+      "files_expected": [
+        "packages/tools/src/registry.ts",
+        "packages/tools/src/contracts.ts"
+      ],
+      "tests_expected": ["packages/tools/src/__tests__/tool-registry.test.ts"],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P4-S3-T02",
+      "name": "Implement owner and patient local tools",
+      "phase": "P4",
+      "sprint": "P4-S3",
+      "files_expected": [
+        "packages/tools/src/local/search-owner-by-phone.ts",
+        "packages/tools/src/local/create-owner-draft.ts",
+        "packages/tools/src/local/search-patient.ts",
+        "packages/tools/src/local/create-patient-draft.ts"
+      ],
+      "tests_expected": [
+        "packages/tools/src/__tests__/owner-patient-tools.integration.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P4-S3-T03",
+      "name": "Implement scheduling draft local tools",
+      "phase": "P4",
+      "sprint": "P4-S3",
+      "files_expected": [
+        "packages/tools/src/local/find-available-slots.ts",
+        "packages/tools/src/local/create-appointment-draft.ts"
+      ],
+      "tests_expected": [
+        "packages/tools/src/__tests__/scheduling-tools.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P5-S1-T01",
+      "name": "Implement intent workflow",
+      "phase": "P5",
+      "sprint": "P5-S1",
+      "files_expected": ["packages/workflows/src/intent/intent-workflow.ts"],
+      "tests_expected": [
+        "packages/workflows/src/__tests__/intent-workflow.flow.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P5-S1-T02",
+      "name": "Implement owner patient workflow",
+      "phase": "P5",
+      "sprint": "P5-S1",
+      "files_expected": [
+        "packages/workflows/src/owner-patient/owner-patient-workflow.ts"
+      ],
+      "tests_expected": [
+        "packages/workflows/src/__tests__/owner-patient-workflow.flow.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P5-S2-T01",
+      "name": "Implement triage safe workflow",
+      "phase": "P5",
+      "sprint": "P5-S2",
+      "files_expected": ["packages/workflows/src/triage/triage-workflow.ts"],
+      "tests_expected": [
+        "packages/workflows/src/__tests__/triage-safety.flow.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P5-S2-T02",
+      "name": "Implement handoff summary workflow",
+      "phase": "P5",
+      "sprint": "P5-S2",
+      "files_expected": ["packages/workflows/src/handoff/handoff-summary.ts"],
+      "tests_expected": [
+        "packages/workflows/src/__tests__/handoff-summary.unit.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P5-S3-T01",
+      "name": "Implement scheduling draft workflow",
+      "phase": "P5",
+      "sprint": "P5-S3",
+      "files_expected": [
+        "packages/workflows/src/scheduling/scheduling-draft-workflow.ts"
+      ],
+      "tests_expected": [
+        "packages/workflows/src/__tests__/scheduling-draft.flow.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P5-S3-T02",
+      "name": "Implement institutional question safe workflow",
+      "phase": "P5",
+      "sprint": "P5-S3",
+      "files_expected": [
+        "packages/workflows/src/institutional/institutional-question-workflow.ts"
+      ],
+      "tests_expected": [
+        "packages/workflows/src/__tests__/institutional-rag-safe.flow.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P6-S1-T01",
+      "name": "Implement Fastify app shell",
+      "phase": "P6",
+      "sprint": "P6-S1",
+      "files_expected": [
+        "apps/api/src/main.ts",
+        "apps/api/src/server.ts",
+        "apps/api/src/routes/health.ts"
+      ],
+      "tests_expected": ["apps/api/src/__tests__/health.test.ts"],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P6-S1-T02",
+      "name": "Implement API auth shell and error envelope",
+      "phase": "P6",
+      "sprint": "P6-S1",
+      "files_expected": [
+        "apps/api/src/auth.ts",
+        "apps/api/src/error-handler.ts"
+      ],
+      "tests_expected": ["apps/api/src/__tests__/api-envelope.test.ts"],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P6-S2-T01",
+      "name": "Implement webhook endpoint",
+      "phase": "P6",
+      "sprint": "P6-S2",
+      "files_expected": ["apps/api/src/routes/webhooks.ts"],
+      "tests_expected": ["apps/api/src/__tests__/webhooks.integration.test.ts"],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P6-S2-T02",
+      "name": "Implement conversations and timeline endpoints",
+      "phase": "P6",
+      "sprint": "P6-S2",
+      "files_expected": ["apps/api/src/routes/conversations.ts"],
+      "tests_expected": [
+        "apps/api/src/__tests__/conversations.integration.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P6-S2-T03",
+      "name": "Implement audit endpoint",
+      "phase": "P6",
+      "sprint": "P6-S2",
+      "files_expected": ["apps/api/src/routes/audit.ts"],
+      "tests_expected": [
+        "apps/api/src/__tests__/audit-route.integration.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P6-S3-T01",
+      "name": "Implement process agent turn job",
+      "phase": "P6",
+      "sprint": "P6-S3",
+      "files_expected": ["apps/worker/src/jobs/process-agent-turn.ts"],
+      "tests_expected": [
+        "apps/worker/src/__tests__/process-agent-turn.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P6-S3-T02",
+      "name": "Implement outbox processor",
+      "phase": "P6",
+      "sprint": "P6-S3",
+      "files_expected": ["apps/worker/src/jobs/process-outbox-event.ts"],
+      "tests_expected": [
+        "apps/worker/src/__tests__/process-outbox-event.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P7-S1-T01",
+      "name": "Implement React app shell",
+      "phase": "P7",
+      "sprint": "P7-S1",
+      "files_expected": [
+        "apps/web/index.html",
+        "apps/web/src/main.tsx",
+        "apps/web/src/App.tsx"
+      ],
+      "tests_expected": ["apps/web/src/__tests__/app.test.tsx"],
+      "validation_commands": ["npm test", "npm run typecheck", "npm run lint"]
+    },
+    {
+      "id": "P7-S1-T02",
+      "name": "Implement web API client and auth guard",
+      "phase": "P7",
+      "sprint": "P7-S1",
+      "files_expected": [
+        "apps/web/src/api/client.ts",
+        "apps/web/src/auth/AuthGuard.tsx"
+      ],
+      "tests_expected": ["apps/web/src/__tests__/api-client.test.tsx"],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P7-S2-T01",
+      "name": "Implement conversations list",
+      "phase": "P7",
+      "sprint": "P7-S2",
+      "files_expected": ["apps/web/src/features/conversations/index.tsx"],
+      "tests_expected": [
+        "apps/web/src/features/conversations/conversations.test.tsx"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P7-S2-T02",
+      "name": "Implement conversation timeline",
+      "phase": "P7",
+      "sprint": "P7-S2",
+      "files_expected": ["apps/web/src/features/conversations/Timeline.tsx"],
+      "tests_expected": [
+        "apps/web/src/features/conversations/timeline.test.tsx"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P7-S3-T01",
+      "name": "Implement approvals and tasks views",
+      "phase": "P7",
+      "sprint": "P7-S3",
+      "files_expected": [
+        "apps/web/src/features/approvals/index.tsx",
+        "apps/web/src/features/tasks/index.tsx"
+      ],
+      "tests_expected": [
+        "apps/web/src/features/approvals/approvals.test.tsx",
+        "apps/web/src/features/tasks/tasks.test.tsx"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P7-S3-T02",
+      "name": "Implement audit view",
+      "phase": "P7",
+      "sprint": "P7-S3",
+      "files_expected": ["apps/web/src/features/audit/index.tsx"],
+      "tests_expected": ["apps/web/src/features/audit/audit-view.test.tsx"],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P8-S1-T01",
+      "name": "Implement channel adapter interface",
+      "phase": "P8",
+      "sprint": "P8-S1",
+      "files_expected": ["packages/adapters/src/channel-adapter.ts"],
+      "tests_expected": [
+        "packages/adapters/src/__tests__/channel-adapter-contract.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P8-S1-T02",
+      "name": "Implement fake WhatsApp adapter",
+      "phase": "P8",
+      "sprint": "P8-S1",
+      "files_expected": ["packages/adapters/src/fake/fake-whatsapp-adapter.ts"],
+      "tests_expected": [
+        "packages/adapters/src/__tests__/fake-whatsapp-adapter.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P8-S2-T01",
+      "name": "Implement source-gated institutional RAG",
+      "phase": "P8",
+      "sprint": "P8-S2",
+      "files_expected": [
+        "packages/rag/src/institutional-rag.ts",
+        "packages/rag/src/noop-rag-source.ts"
+      ],
+      "tests_expected": [
+        "packages/rag/src/__tests__/institutional-rag.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P8-S2-T02",
+      "name": "Implement approved memory facts",
+      "phase": "P8",
+      "sprint": "P8-S2",
+      "files_expected": ["packages/memory/src/memory-facts.ts"],
+      "tests_expected": ["packages/memory/src/__tests__/memory-facts.test.ts"],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P8-S3-T01",
+      "name": "Implement integration event contracts",
+      "phase": "P8",
+      "sprint": "P8-S3",
+      "files_expected": ["packages/adapters/src/integration-events.ts"],
+      "tests_expected": [
+        "packages/adapters/src/__tests__/integration-events.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P8-S3-T02",
+      "name": "Implement retry and circuit breaker shell",
+      "phase": "P8",
+      "sprint": "P8-S3",
+      "files_expected": ["packages/adapters/src/resilience.ts"],
+      "tests_expected": ["packages/adapters/src/__tests__/resilience.test.ts"],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P9-S1-T01",
+      "name": "Implement structured logs and correlation propagation",
+      "phase": "P9",
+      "sprint": "P9-S1",
+      "files_expected": [
+        "packages/shared/src/observability.ts",
+        "apps/api/src/plugins/correlation.ts"
+      ],
+      "tests_expected": ["apps/api/src/__tests__/correlation.test.ts"],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P9-S1-T02",
+      "name": "Implement metrics and health checks",
+      "phase": "P9",
+      "sprint": "P9-S1",
+      "files_expected": [
+        "apps/api/src/routes/health.ts",
+        "apps/worker/src/health.ts"
+      ],
+      "tests_expected": [
+        "apps/api/src/__tests__/health.test.ts",
+        "apps/worker/src/__tests__/health.test.ts"
+      ],
+      "validation_commands": ["npm test", "npm run typecheck"]
+    },
+    {
+      "id": "P9-S2-T01",
+      "name": "Implement runtime SLO smoke tests",
+      "phase": "P9",
+      "sprint": "P9-S2",
+      "files_expected": ["tests/e2e/runtime-slo.spec.ts"],
+      "tests_expected": ["tests/e2e/runtime-slo.spec.ts"],
+      "validation_commands": ["npm test", "npm run test:e2e"]
+    },
+    {
+      "id": "P9-S2-T02",
+      "name": "Implement idempotency stress tests",
+      "phase": "P9",
+      "sprint": "P9-S2",
+      "files_expected": ["tests/e2e/idempotency-stress.spec.ts"],
+      "tests_expected": ["tests/e2e/idempotency-stress.spec.ts"],
+      "validation_commands": ["npm test", "npm run test:e2e"]
+    },
+    {
+      "id": "P9-S3-T01",
+      "name": "Run security audit checklist",
+      "phase": "P9",
+      "sprint": "P9-S3",
+      "files_expected": ["docs/04_audit/0417_security_governance_audit.md"],
+      "tests_expected": ["tests/e2e/security-critical.spec.ts"],
+      "validation_commands": ["npm audit --audit-level=high", "npm test"]
+    },
+    {
+      "id": "P9-S3-T02",
+      "name": "Run critical E2E flows",
+      "phase": "P9",
+      "sprint": "P9-S3",
+      "files_expected": ["tests/e2e/critical-flows.spec.ts"],
+      "tests_expected": ["tests/e2e/critical-flows.spec.ts"],
+      "validation_commands": ["npm run test:e2e"]
+    },
+    {
+      "id": "P10-S1-T01",
+      "name": "Create operator runbook",
+      "phase": "P10",
+      "sprint": "P10-S1",
+      "files_expected": ["docs/08_runtime/operator_runbook.md"],
+      "tests_expected": ["tests/docs-readiness.test.js"],
+      "validation_commands": ["npm test"]
+    },
+    {
+      "id": "P10-S1-T02",
+      "name": "Create rollback and incident playbooks",
+      "phase": "P10",
+      "sprint": "P10-S1",
+      "files_expected": [
+        "docs/08_runtime/rollback_playbook.md",
+        "docs/08_runtime/incident_playbook.md"
+      ],
+      "tests_expected": ["tests/docs-readiness.test.js"],
+      "validation_commands": ["npm test"]
+    },
+    {
+      "id": "P10-S2-T01",
+      "name": "Create staging checklist",
+      "phase": "P10",
+      "sprint": "P10-S2",
+      "files_expected": ["docs/08_runtime/staging_checklist.md"],
+      "tests_expected": ["tests/docs-readiness.test.js"],
+      "validation_commands": ["npm test", "npm audit --audit-level=high"]
+    },
+    {
+      "id": "P10-S2-T02",
+      "name": "Record data governance signoff",
+      "phase": "P10",
+      "sprint": "P10-S2",
+      "files_expected": ["docs/08_runtime/data_governance_signoff.md"],
+      "tests_expected": ["tests/docs-readiness.test.js"],
+      "validation_commands": ["npm test"]
+    },
+    {
+      "id": "P10-S3-T01",
+      "name": "Create pilot report template",
+      "phase": "P10",
+      "sprint": "P10-S3",
+      "files_expected": ["docs/04_audit/pilot_report_template.md"],
+      "tests_expected": ["tests/docs-readiness.test.js"],
+      "validation_commands": ["npm test"]
+    },
+    {
+      "id": "P10-S3-T02",
+      "name": "Create remediation loop template",
+      "phase": "P10",
+      "sprint": "P10-S3",
+      "files_expected": ["docs/04_audit/remediation_loop_template.md"],
+      "tests_expected": ["tests/docs-readiness.test.js"],
+      "validation_commands": ["npm test"]
+    },
+    {
+      "id": "PLAT-S03-001",
+      "name": "Implement tenant-scoped PostgreSQL RLS boundary",
+      "phase": "CONTROLLED_CONSTRUCTION",
+      "sprint": "PLAT-S03",
+      "files_expected": [
+        "packages/persistence/migrations/0001_tenant_isolation.sql",
+        "package.json",
+        ".env.example",
+        "packages/shared/src/env.ts",
+        "packages/shared/src/__tests__/shared-contracts.test.ts",
+        "packages/persistence/src/postgres.ts",
+        "packages/persistence/src/tenant-scoped-postgres.ts",
+        "apps/api/src/server.ts",
+        "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+        "packages/persistence/src/__tests__/tenant-isolation.test.ts",
+        "packages/persistence/src/__tests__/postgres-migration-smoke.test.ts",
+        "packages/persistence/src/index.ts",
+        "scripts/baseline-postgres.ts",
+        "docs/04_audit/0494_plat_s03_tenant_isolation_evidence.md",
+        "docs/platform/08-security-release-boundary.md"
+      ],
+      "tests_expected": [
+        "packages/persistence/src/__tests__/tenant-isolation.test.ts",
+        "packages/persistence/src/__tests__/postgres-migration-smoke.test.ts",
+        "apps/api/src/__tests__/postgres-persistence-mode.test.ts"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run test:coverage",
+        "npm run test:postgres",
+        "npm audit --audit-level=high"
+      ]
+    },
+    {
+      "id": "PLAT-S04-001",
+      "name": "Implement durable capability approval and safe legacy adapter",
+      "phase": "CONTROLLED_CONSTRUCTION",
+      "sprint": "PLAT-S04",
+      "files_expected": [
+        "packages/platform/src/approval-authority.ts",
+        "packages/persistence/migrations/0002_capability_approvals.sql",
+        "packages/persistence/src/platform-approval-repository.ts",
+        "packages/persistence/src/tenant-scoped-capability-approval-repository.ts",
+        "packages/tools/src/platform-adapter.ts",
+        "packages/platform/src/__tests__/approval-authority.test.ts",
+        "packages/platform/src/__tests__/capability-approval-gateway.test.ts",
+        "packages/persistence/src/__tests__/platform-approval-repository.test.ts",
+        "packages/persistence/src/__tests__/platform-approval-postgres.test.ts",
+        "packages/tools/src/__tests__/platform-adapter.test.ts"
+      ],
+      "tests_expected": [
+        "packages/platform/src/__tests__/approval-authority.test.ts",
+        "packages/platform/src/__tests__/capability-approval-gateway.test.ts",
+        "packages/persistence/src/__tests__/platform-approval-postgres.test.ts",
+        "packages/tools/src/__tests__/platform-adapter.test.ts"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run typecheck",
+        "npm run test:coverage",
+        "npm run test:postgres",
+        "npm audit --audit-level=high"
+      ]
+    },
+    {
+      "id": "PLAT-S04-002",
+      "name": "Implement controlled HMAC webhook and replay protection",
+      "phase": "CONTROLLED_CONSTRUCTION",
+      "sprint": "PLAT-S04",
+      "files_expected": [
+        "apps/api/src/webhook-security.ts",
+        "apps/api/src/__tests__/webhook-security.test.ts",
+        "apps/api/src/server.ts",
+        "packages/shared/src/env.ts",
+        ".env.example"
+      ],
+      "tests_expected": [
+        "apps/api/src/__tests__/webhook-security.test.ts",
+        "apps/api/src/__tests__/postgres-persistence-mode.test.ts"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run test:coverage",
+        "npm run test:e2e",
+        "npm audit --audit-level=high"
+      ]
+    },
+    {
+      "id": "PLAT-S04-003",
+      "name": "Implement idempotent inbound runtime retry and atomic finalization",
+      "phase": "CONTROLLED_CONSTRUCTION",
+      "sprint": "PLAT-S04",
+      "files_expected": [
+        "packages/persistence/migrations/0000_initial.sql",
+        "packages/persistence/src/postgres.ts",
+        "packages/persistence/src/tenant-scoped-postgres.ts",
+        "packages/persistence/src/repositories/conversation-repository.ts",
+        "packages/agent-core/src/commands/receive-inbound-message.ts",
+        "apps/api/src/server.ts",
+        "apps/api/src/__tests__/published-runtime-integration.test.ts",
+        "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+        "apps/api/src/__tests__/webhook-security.test.ts"
+      ],
+      "tests_expected": [
+        "apps/api/src/__tests__/published-runtime-integration.test.ts",
+        "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+        "apps/api/src/__tests__/webhook-security.test.ts"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run test:coverage",
+        "npm run test:postgres",
+        "npm run typecheck",
+        "npm run build"
+      ]
+    }
+  ]
+}

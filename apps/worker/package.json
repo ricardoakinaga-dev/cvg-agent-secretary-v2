@@ -1,0 +1,15 @@
+{
+  "name": "@cvg/worker",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/main.ts",
+  "dependencies": {
+    "@cvg/shared": "1.0.0",
+    "@cvg/agent-core": "1.0.0",
+    "@cvg/workflows": "1.0.0",
+    "@cvg/tools": "1.0.0",
+    "@cvg/policy": "1.0.0",
+    "@cvg/memory": "1.0.0",
+    "@cvg/persistence": "1.0.0"
+  }
+}

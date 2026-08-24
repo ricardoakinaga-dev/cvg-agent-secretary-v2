@@ -1,0 +1,426 @@
+{
+  "version": "1.0.0",
+  "status": "waiting_human_approval_for_phase_0",
+  "global_validation_commands": [
+    "npm test",
+    "npm run typecheck",
+    "npm run lint",
+    "npm run test:coverage",
+    "npm audit --audit-level=high"
+  ],
+  "phases": [
+    {
+      "id": "P0",
+      "name": "Foundation Control",
+      "goal": "Create deterministic monorepo foundation, quality gates and security baseline without product behavior.",
+      "entry_gate": "human approval for Phase 0 execution",
+      "exit_gate": "workspaces, TypeScript, tests, lint, coverage command, env baseline and tracking JSON are present and validated",
+      "sprints": [
+        {
+          "id": "P0-S1",
+          "name": "Repository skeleton",
+          "tasks": ["P0-S1-T00", "P0-S1-T01", "P0-S1-T02"],
+          "deliverables": [
+            "npm workspaces",
+            "apps/packages directories",
+            "base tsconfig"
+          ]
+        },
+        {
+          "id": "P0-S2",
+          "name": "Quality and security gates",
+          "tasks": ["P0-S2-T01", "P0-S2-T02", "P0-S2-T03"],
+          "deliverables": [
+            "Vitest config",
+            "ESLint config",
+            ".env.example",
+            "secret-safe env schema"
+          ]
+        },
+        {
+          "id": "P0-S3",
+          "name": "Tracking and dependency audit",
+          "tasks": ["P0-S3-T01", "P0-S3-T02"],
+          "deliverables": [
+            "build tracking JSON",
+            "dependency audit report",
+            "CI-local command set"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P1",
+      "name": "Shared Contracts",
+      "goal": "Create shared contracts consumed by every app and package.",
+      "entry_gate": "P0 completed",
+      "exit_gate": "all shared schemas have unit tests and package exports are stable",
+      "sprints": [
+        {
+          "id": "P1-S1",
+          "name": "Ids and enums",
+          "tasks": ["P1-S1-T01", "P1-S1-T02", "P1-S1-T03"],
+          "deliverables": [
+            "CorrelationId",
+            "domain ids",
+            "Intent",
+            "RiskLevel",
+            "AutonomyLevel",
+            "ApprovalDecision",
+            "TaskPriority"
+          ]
+        },
+        {
+          "id": "P1-S2",
+          "name": "Envelope, errors and auth contracts",
+          "tasks": ["P1-S2-T01", "P1-S2-T02", "P1-S2-T03"],
+          "deliverables": [
+            "ApiEnvelope",
+            "DomainError",
+            "Pagination",
+            "Role schema",
+            "Env schema"
+          ]
+        },
+        {
+          "id": "P1-S3",
+          "name": "Application and API schemas",
+          "tasks": ["P1-S3-T01", "P1-S3-T02"],
+          "deliverables": [
+            "command schemas from SPEC 0106",
+            "endpoint payload schemas from SPEC 0107"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P2",
+      "name": "Persistence and Data Integrity",
+      "goal": "Create database schema, repositories, idempotency and audit storage.",
+      "entry_gate": "P1 completed",
+      "exit_gate": "repositories pass integration tests with transactional behavior",
+      "sprints": [
+        {
+          "id": "P2-S1",
+          "name": "Schema and migrations",
+          "tasks": ["P2-S1-T01", "P2-S1-T02", "P2-S1-T03"],
+          "deliverables": [
+            "Drizzle schema",
+            "initial migration",
+            "data classification fields"
+          ]
+        },
+        {
+          "id": "P2-S2",
+          "name": "Repositories and idempotency",
+          "tasks": ["P2-S2-T01", "P2-S2-T02", "P2-S2-T03"],
+          "deliverables": [
+            "conversation repository",
+            "task repository",
+            "idempotency repository"
+          ]
+        },
+        {
+          "id": "P2-S3",
+          "name": "Audit and outbox",
+          "tasks": ["P2-S3-T01", "P2-S3-T02"],
+          "deliverables": [
+            "audit append-only repository",
+            "outbox table and repository"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P3",
+      "name": "Agent Core and Application Commands",
+      "goal": "Implement application commands without external integrations.",
+      "entry_gate": "P2 completed",
+      "exit_gate": "commands from SPEC 0106 pass contract and integration tests",
+      "sprints": [
+        {
+          "id": "P3-S1",
+          "name": "Conversation and session commands",
+          "tasks": ["P3-S1-T01", "P3-S1-T02", "P3-S1-T03"],
+          "deliverables": [
+            "ReceiveInboundMessage",
+            "SessionManager",
+            "GetConversationTimeline"
+          ]
+        },
+        {
+          "id": "P3-S2",
+          "name": "Task and handoff commands",
+          "tasks": ["P3-S2-T01", "P3-S2-T02"],
+          "deliverables": ["CreateInternalTask", "CreateHandoffSummary"]
+        },
+        {
+          "id": "P3-S3",
+          "name": "Agent run lifecycle",
+          "tasks": ["P3-S3-T01", "P3-S3-T02"],
+          "deliverables": [
+            "RunAgentTurn skeleton",
+            "AgentRun state persistence"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P4",
+      "name": "Policy, Approvals and Tools",
+      "goal": "Guarantee safety fail-closed before workflows call tools.",
+      "entry_gate": "P3 completed",
+      "exit_gate": "policy, approval and tool registry tests pass",
+      "sprints": [
+        {
+          "id": "P4-S1",
+          "name": "Policy engine",
+          "tasks": ["P4-S1-T01", "P4-S1-T02", "P4-S1-T03"],
+          "deliverables": [
+            "clinical boundary blocks",
+            "autonomy decisions",
+            "policy version"
+          ]
+        },
+        {
+          "id": "P4-S2",
+          "name": "Approval state machine",
+          "tasks": ["P4-S2-T01", "P4-S2-T02"],
+          "deliverables": [
+            "RequestHumanApproval",
+            "ResolveApproval",
+            "single final decision"
+          ]
+        },
+        {
+          "id": "P4-S3",
+          "name": "Tool registry and local tools",
+          "tasks": ["P4-S3-T01", "P4-S3-T02", "P4-S3-T03"],
+          "deliverables": [
+            "tool registry",
+            "owner/patient local tools",
+            "scheduling draft local tools"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P5",
+      "name": "Workflows MVP",
+      "goal": "Implement the MVP workflows with safety and handoff.",
+      "entry_gate": "P4 completed",
+      "exit_gate": "all MVP workflow tests pass and sensitive actions remain blocked",
+      "sprints": [
+        {
+          "id": "P5-S1",
+          "name": "Intent and owner/patient workflow",
+          "tasks": ["P5-S1-T01", "P5-S1-T02"],
+          "deliverables": ["intent workflow", "owner/patient workflow"]
+        },
+        {
+          "id": "P5-S2",
+          "name": "Triage and handoff",
+          "tasks": ["P5-S2-T01", "P5-S2-T02"],
+          "deliverables": ["triage workflow", "handoff workflow"]
+        },
+        {
+          "id": "P5-S3",
+          "name": "Scheduling draft and institutional question",
+          "tasks": ["P5-S3-T01", "P5-S3-T02"],
+          "deliverables": [
+            "scheduling draft workflow",
+            "institutional question safe workflow"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P6",
+      "name": "API and Worker Runtime",
+      "goal": "Expose operational endpoints and async processing.",
+      "entry_gate": "P5 completed",
+      "exit_gate": "API contract tests and worker integration tests pass",
+      "sprints": [
+        {
+          "id": "P6-S1",
+          "name": "API shell",
+          "tasks": ["P6-S1-T01", "P6-S1-T02"],
+          "deliverables": [
+            "Fastify app",
+            "health route",
+            "error envelope",
+            "auth shell"
+          ]
+        },
+        {
+          "id": "P6-S2",
+          "name": "API endpoints",
+          "tasks": ["P6-S2-T01", "P6-S2-T02", "P6-S2-T03"],
+          "deliverables": [
+            "webhook route",
+            "conversations/timeline route",
+            "audit route"
+          ]
+        },
+        {
+          "id": "P6-S3",
+          "name": "Worker loop",
+          "tasks": ["P6-S3-T01", "P6-S3-T02"],
+          "deliverables": ["agent turn job", "outbox processor"]
+        }
+      ]
+    },
+    {
+      "id": "P7",
+      "name": "Operational Web Panel",
+      "goal": "Provide a minimal human operations surface.",
+      "entry_gate": "P6 completed and role mapping approved for real use",
+      "exit_gate": "web tests and critical Playwright flows pass",
+      "sprints": [
+        {
+          "id": "P7-S1",
+          "name": "Web shell and API client",
+          "tasks": ["P7-S1-T01", "P7-S1-T02"],
+          "deliverables": ["React/Vite app", "API client", "auth guard"]
+        },
+        {
+          "id": "P7-S2",
+          "name": "Conversation operations",
+          "tasks": ["P7-S2-T01", "P7-S2-T02"],
+          "deliverables": ["conversation list", "timeline view"]
+        },
+        {
+          "id": "P7-S3",
+          "name": "Approval and task operations",
+          "tasks": ["P7-S3-T01", "P7-S3-T02"],
+          "deliverables": ["approval queue", "task board", "audit view"]
+        }
+      ]
+    },
+    {
+      "id": "P8",
+      "name": "Adapters, Memory and Safe RAG",
+      "goal": "Prepare replaceable integrations without unsafe real-world coupling.",
+      "entry_gate": "P7 completed",
+      "exit_gate": "fake adapters and source-gated RAG pass tests",
+      "sprints": [
+        {
+          "id": "P8-S1",
+          "name": "Channel adapters",
+          "tasks": ["P8-S1-T01", "P8-S1-T02"],
+          "deliverables": ["channel adapter interface", "fake WhatsApp adapter"]
+        },
+        {
+          "id": "P8-S2",
+          "name": "Memory and RAG guard",
+          "tasks": ["P8-S2-T01", "P8-S2-T02"],
+          "deliverables": ["approved memory facts", "noop/source-gated RAG"]
+        },
+        {
+          "id": "P8-S3",
+          "name": "Integration resilience",
+          "tasks": ["P8-S3-T01", "P8-S3-T02"],
+          "deliverables": [
+            "integration events",
+            "retry and circuit-breaker shell"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P9",
+      "name": "Observability, Security and Hardening",
+      "goal": "Make runtime auditable, measurable and resilient.",
+      "entry_gate": "P8 completed",
+      "exit_gate": "audit report has no critical open gaps",
+      "sprints": [
+        {
+          "id": "P9-S1",
+          "name": "Observability",
+          "tasks": ["P9-S1-T01", "P9-S1-T02"],
+          "deliverables": [
+            "structured logs",
+            "metrics",
+            "health checks",
+            "correlation propagation"
+          ]
+        },
+        {
+          "id": "P9-S2",
+          "name": "Reliability and SLO tests",
+          "tasks": ["P9-S2-T01", "P9-S2-T02"],
+          "deliverables": [
+            "idempotency stress",
+            "SLO smoke tests",
+            "worker recovery tests"
+          ]
+        },
+        {
+          "id": "P9-S3",
+          "name": "Security and dependency hardening",
+          "tasks": ["P9-S3-T01", "P9-S3-T02"],
+          "deliverables": [
+            "security audit checklist",
+            "dependency remediation",
+            "E2E critical flows"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P10",
+      "name": "Controlled Rollout Readiness",
+      "goal": "Prepare human-assisted pilot without changing MVP scope.",
+      "entry_gate": "P9 completed and human approvals for data governance are recorded",
+      "exit_gate": "pilot checklist approved",
+      "sprints": [
+        {
+          "id": "P10-S1",
+          "name": "Runbooks",
+          "tasks": ["P10-S1-T01", "P10-S1-T02"],
+          "deliverables": [
+            "operator runbook",
+            "rollback playbook",
+            "incident playbook"
+          ]
+        },
+        {
+          "id": "P10-S2",
+          "name": "Staging and governance",
+          "tasks": ["P10-S2-T01", "P10-S2-T02"],
+          "deliverables": [
+            "staging checklist",
+            "retention sign-off",
+            "role mapping sign-off"
+          ]
+        },
+        {
+          "id": "P10-S3",
+          "name": "Pilot report loop",
+          "tasks": ["P10-S3-T01", "P10-S3-T02"],
+          "deliverables": ["pilot report template", "remediation loop"]
+        }
+      ]
+    }
+  ],
+  "controlled_sprints": [
+    {
+      "id": "PLAT-S03",
+      "name": "Pre-production tenant isolation boundary",
+      "status": "COMPLETED_CONTROLLED",
+      "goal": "Enforce tenant isolation at the PostgreSQL boundary without real-data activation.",
+      "entry_gate": "PLAT-S02 controlled gate complete and human decision retained for real-data backfill",
+      "exit_gate": "Versioned migration, forced RLS fixture evidence, tenant-scoped pool and production startup guard pass",
+      "tasks": ["PLAT-S03-001"]
+    },
+    {
+      "id": "PLAT-S04",
+      "name": "Durable approval, safe legacy adapter and runtime reliability",
+      "status": "COMPLETED_CONTROLLED",
+      "goal": "Make approval single-use and durable, and route only the controlled scheduling read through the capability gateway.",
+      "entry_gate": "PLAT-S03 controlled gate complete; no real provider/channel activation",
+      "exit_gate": "Durable approval replay/expiry/revocation/input-hash tests, allowlist-only dry-run adapter, tenant-scoped runtime wiring, pending/completed retry, atomic finalization and controlled raw-body HMAC/replay tests pass",
+      "tasks": ["PLAT-S04-001", "PLAT-S04-002", "PLAT-S04-003"]
+    }
+  ]
+}

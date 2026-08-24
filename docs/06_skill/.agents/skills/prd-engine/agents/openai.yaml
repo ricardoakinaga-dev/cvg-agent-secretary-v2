@@ -1,0 +1,7 @@
+interface:
+  display_name: 'PRD Engine'
+  short_description: 'Transforma discovery aprovado em PRD completo e auditavel.'
+  brand_color: '#2563EB'
+
+policy:
+  allow_implicit_invocation: true

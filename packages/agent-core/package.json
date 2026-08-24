@@ -1,0 +1,13 @@
+{
+  "name": "@cvg/agent-core",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@cvg/shared": "1.0.0",
+    "@cvg/persistence": "1.0.0",
+    "@cvg/policy": "1.0.0",
+    "@cvg/platform": "1.0.0"
+  }
+}

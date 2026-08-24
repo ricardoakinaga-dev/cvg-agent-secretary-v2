@@ -1,0 +1,98 @@
+{
+  "version": "1.0.0",
+  "project": "cvg-agent-secretary-v2",
+  "status": "RELEASE_CANDIDATE_AUDITED_WITH_RESTRICTIONS",
+  "createdAt": "2026-04-30T00:35:00-03:00",
+  "mode": "controlled_construction_only",
+  "scope": {
+    "releaseCandidate": "controlled_pilot_boundary_documentation",
+    "dataPolicy": "fictitious_anonymized_or_explicitly_authorized_only",
+    "externalDispatch": false,
+    "clinicalAutomation": false
+  },
+  "decision": {
+    "releaseCandidateAllowed": true,
+    "realPilotAllowed": false,
+    "productionAllowed": false,
+    "externalChannelsAllowed": false,
+    "realRagAllowed": false,
+    "externalAuditExportAllowed": false,
+    "sensitiveAutomationAllowed": false,
+    "blockedCapabilities": [
+      "real_data",
+      "real_channels",
+      "real_rag",
+      "external_audit_export",
+      "appointment_confirmation",
+      "appointment_cancellation",
+      "appointment_reschedule",
+      "clinical_action",
+      "financial_action",
+      "medical_record_final_write"
+    ]
+  },
+  "requiredSignoffs": [
+    {
+      "id": "RETENTION_REAL_DATA",
+      "title": "Retention and lawful basis for real data",
+      "status": "NOT_APPROVED",
+      "humanDecisionRequired": true
+    },
+    {
+      "id": "REAL_HOSPITAL_ROLE_MAPPING",
+      "title": "Mapping between real hospital job titles and controlled roles",
+      "status": "NOT_APPROVED",
+      "humanDecisionRequired": true
+    },
+    {
+      "id": "APPROVED_INSTITUTIONAL_RAG_SOURCE",
+      "title": "Approved institutional RAG source list",
+      "status": "NOT_APPROVED",
+      "humanDecisionRequired": true
+    },
+    {
+      "id": "REAL_CHANNEL_CONFIGURATION",
+      "title": "Real channel configuration and dispatch policy",
+      "status": "NOT_APPROVED",
+      "humanDecisionRequired": true
+    },
+    {
+      "id": "SENSITIVE_ACTION_POLICY",
+      "title": "Sensitive action policy for appointment, clinical, financial and medical record flows",
+      "status": "NOT_APPROVED",
+      "humanDecisionRequired": true
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "runtime_evidence",
+      "path": "docs/04_audit/0491_runtime_evidence.md",
+      "purpose": "Executed gate evidence for the controlled runtime baseline."
+    },
+    {
+      "id": "release_candidate_audit",
+      "path": "docs/04_audit/0492_release_candidate_audit.md",
+      "purpose": "Release candidate decision with explicit restrictions."
+    },
+    {
+      "id": "pilot_report_template",
+      "path": "docs/04_audit/pilot_report_template.md",
+      "purpose": "Human pilot report template that keeps real data blocked by default."
+    },
+    {
+      "id": "remediation_loop_template",
+      "path": "docs/04_audit/remediation_loop_template.md",
+      "purpose": "Template for issue triage, owner assignment and revalidation."
+    },
+    {
+      "id": "runtime_boundary",
+      "path": "docs/08_runtime/release_candidate_boundary.json",
+      "purpose": "Machine-readable release candidate boundary."
+    }
+  ],
+  "validation": {
+    "requiredCommand": "npm run verify",
+    "blockingTest": "tests/release-candidate-boundary.test.js",
+    "latestAudit": "docs/09_debug_corrections/0911_cc_s11_release_candidate_boundary_audit.md"
+  }
+}

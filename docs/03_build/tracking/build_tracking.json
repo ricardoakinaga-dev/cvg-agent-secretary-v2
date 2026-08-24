@@ -1,0 +1,48 @@
+{
+  "version": "1.0.0",
+  "project": "cvg-agent-secretary-v2",
+  "current_status": "CONTROLLED_CONSTRUCTION_COMPLETE",
+  "current_phase": "CONTROLLED_CONSTRUCTION",
+  "current_sprint": "PLAT-S04_DURABLE_APPROVAL_WEBHOOK_RUNTIME_SECURITY",
+  "human_decision_required": false,
+  "decision_required": null,
+  "decision_record": "docs/03_build/tracking/enterprise_decisions.json",
+  "global_blockers": [
+    "IdP real e tenant binding operacional",
+    "backfill/rollout RLS em banco real sob change control",
+    "rate limiter distribuído e HA/observabilidade operacional de replay",
+    "CSRF/CORS/HTTPS/CSP do host do console",
+    "retenção/PII e role mapping com decisão humana",
+    "conflitos otimistas multioperador",
+    "providers/canais/RAG e ações sensíveis reais"
+  ],
+  "phase_status": {
+    "P0": "COMPLETED",
+    "P1": "MVP_SLICE_VERIFIED",
+    "P2": "MVP_SLICE_VERIFIED",
+    "P3": "MVP_SLICE_VERIFIED",
+    "P4": "MVP_SLICE_VERIFIED",
+    "P5": "MVP_SLICE_VERIFIED",
+    "P6": "MVP_SLICE_VERIFIED",
+    "P7": "MVP_SLICE_VERIFIED",
+    "P8": "MVP_SLICE_VERIFIED",
+    "P9": "MVP_SLICE_VERIFIED",
+    "P10": "MVP_SLICE_VERIFIED"
+  },
+  "required_docs": [
+    "docs/03_build/0303_build_execution_contract.md",
+    "docs/03_build/0304_traceability_matrix.md",
+    "docs/03_build/0304_traceability_matrix.json",
+    "docs/03_build/0305_repository_target_structure.md",
+    "docs/03_build/0305_repository_target_structure.json",
+    "docs/03_build/0306_phase_sprint_plan.md",
+    "docs/03_build/0306_phase_sprint_plan.json",
+    "docs/03_build/0307_technical_tracking_schema.md",
+    "docs/03_build/0308_task_catalog.json"
+  ],
+  "last_verification": {
+    "command": "npm test && npm run test:coverage && TEST_DATABASE_URL=<fixture>@127.0.0.1:55437/cvg_his_v2_test npm run test:postgres && npm run format:check && npm run typecheck && npm run lint && npm run build && npm run audit:security && npm run readiness && npm run test:e2e",
+    "status": "PASS",
+    "notes": "PLAT-S04-001..003 COMPLETED_CONTROLLED: tenant isolation/preflight, durable approval single-consume with approval_decision evidence, checked-out atomic runtime finalization, pending/completed retry, raw-body HMAC, replay purge/stale-lease recovery, production agent/operator bootstrap fail-closed and real PostgreSQL replay integration passed; no real data, provider, channel or production activation is authorized."
+  }
+}

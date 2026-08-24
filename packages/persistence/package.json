@@ -1,0 +1,11 @@
+{
+  "name": "@cvg/persistence",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@cvg/platform": "1.0.0",
+    "@cvg/shared": "1.0.0"
+  }
+}

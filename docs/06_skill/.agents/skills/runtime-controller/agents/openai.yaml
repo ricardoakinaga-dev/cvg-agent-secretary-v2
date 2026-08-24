@@ -1,0 +1,7 @@
+interface:
+  display_name: 'Runtime Controller'
+  short_description: 'Mantem estado, log, backlog, bloqueios e continuidade operacional.'
+  brand_color: '#2563EB'
+
+policy:
+  allow_implicit_invocation: false
