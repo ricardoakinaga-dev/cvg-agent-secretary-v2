@@ -152,6 +152,8 @@ Modo default continua in-memory. PostgreSQL so e ativado com `API_PERSISTENCE_MO
 
 READY_FOR_NEXT_STEP
 
+---
+
 ## Agent Platform — registro PLAT-S03
 
 ### TIMESTAMP
@@ -1342,6 +1344,46 @@ PASS: 62 arquivos, 225 testes aprovados e 14 skips condicionais; coverage 85,58%
 ### DECISIONS
 
 `PLAT-S04-001..003` = `COMPLETED_CONTROLLED`. Nenhum P0/P1 permanece aberto nesta rodada; `CONTROLLED_MVP_READY` é o limite máximo. `PRODUCTION_REAL_DATA_READY` continua bloqueado por IdP/tenant/agente/operator binding, HA/observabilidade de replay e limiter, roles/secrets, host security, retenção/PII, backfill/rollout RLS, providers/canais, compensação de side effects e decisões humanas para ações sensíveis.
+
+### STATUS
+
+READY_FOR_NEXT_STEP
+
+---
+
+## Repository Bootstrap and Controlled Publication
+
+### TIMESTAMP
+
+2026-08-24T16:19:45-03:00
+
+### ENGINE
+
+RUNTIME
+
+### PHASE
+
+REPOSITORY_BOOTSTRAP
+
+### SPRINT
+
+NONE
+
+### TASK
+
+INITIALIZE_GIT_REMOTE_AND_PUBLISH_CONTROLLED_SNAPSHOT
+
+### ACTION
+
+Lidas as constituicoes operacionais e os documentos obrigatorios de runtime, log e backlog. Confirmado que o remoto `https://github.com/ricardoakinaga-dev/cvg-agent-secretary-v2.git` estava vazio; inicializado o Git local na branch `main`, configurado `origin`, excluido o artefato gerado `playwright-results.xml`, corrigida a formatacao de `apps/api/src/operator-identity.ts` e adicionados testes unitarios para identidade de operador confiavel e seus caminhos de rejeicao.
+
+### RESULT
+
+PASS: commit inicial `c433c7b` (`chore: initialize repository with controlled runtime`) publicado com sucesso em `origin/main`. PASS: `npm run verify` com 63 arquivos, 232 testes aprovados e 14 skips; coverage statements 85,82%, branches 80,61%, functions 86,80% e lines 86,71%; format, typecheck, lint, build e `npm audit --audit-level=high` sem vulnerabilidades. PASS: `npm run readiness` com 4 testes. PASS: `npm run test:e2e` com 1 fluxo Playwright. PASS: `npm run test:postgres` com 49 testes aprovados e 14 skips condicionais.
+
+### DECISIONS
+
+O snapshot foi publicado somente na branch `main`; arquivos `.env` reais, dependencias, `dist`, coverage e resultados gerados permanecem fora do Git. Nenhum dado real, canal/provider real, RAG real, agenda real, acao clinica/financeira ou prontuario definitivo foi executado. O backlog nao foi alterado porque a rodada foi exclusivamente de bootstrap/publicacao do repositorio, sem nova task de produto.
 
 ### STATUS
 

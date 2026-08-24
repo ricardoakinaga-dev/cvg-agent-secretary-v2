@@ -17,7 +17,7 @@
 
 ## PROGRESSO
 
-- last_completed_action: PLAT-S04 fechou approval capability durável single-consume, retry idempotente de inbound, finalização PostgreSQL atômica, input-hash/nonce/expiry/revocation, HMAC sobre raw body, purge/lease recovery de replay, tenant/agente binding de bootstrap, resolver de operador obrigatório e preflight estrutural de schema/grants/baseline.
+- last_completed_action: PLAT-S04 fechou approval capability durável single-consume, retry idempotente de inbound, finalização PostgreSQL atômica, input-hash/nonce/expiry/revocation, HMAC sobre raw body, purge/lease recovery de replay, tenant/agente binding de bootstrap, resolver de operador obrigatório e preflight estrutural de schema/grants/baseline; o Git local foi inicializado na branch main, o origin foi configurado e o snapshot controlado foi publicado no GitHub.
 - next_action: aguardar decisão humana/infraestrutura para IdP tenant-bound, backfill/rollout RLS real, stores distribuídos, host security, retenção/PII e provider/canal; qualquer próxima construção deve permanecer em fixture e ser registrada antes do BUILD.
 
 ## BLOQUEIOS
@@ -32,7 +32,7 @@
 
 ## TIMESTAMP
 
-- last_update: 2026-08-24T15:42:25-03:00
+- last_update: 2026-08-24T16:19:45-03:00
 
 ## REGRAS DE USO
 
