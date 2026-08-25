@@ -3,8 +3,8 @@
 ## Identificação
 
 - data da auditoria: `2026-08-24`
-- timestamp do fechamento: `2026-08-24T21:13:45-03:00`
-- base Git: `4c83c13` (`main`), snapshot controlado publicado no remoto
+- timestamp do fechamento: `2026-08-24T22:00:02-03:00`
+- base Git: `420dc90` (`main`) + fechamento controlado `PLAT-S11`
 - escopo: todos os arquivos de `docs/`, o prompt fornecido e o checkout atual
 - modo: `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`
 - dados: somente fixtures e valores fictícios
@@ -26,8 +26,8 @@ O resultado não autoriza piloto, produção irrestrita, migração destrutiva, 
 | Gate                           | Resultado                                                                 |
 | ------------------------------ | ------------------------------------------------------------------------- |
 | `npm run verify`               | PASS — format, typecheck, lint, build, testes, coverage e audit           |
-| `npm test`                     | PASS — 72 arquivos; 257 testes pass; 16 skips condicionais; 273 total     |
-| `npm run test:coverage`        | PASS — statements 84,97%; branches 80,21%; functions 84,93%; lines 85,90% |
+| `npm test`                     | PASS — 74 arquivos; 264 testes pass; 16 skips condicionais; 280 total     |
+| `npm run test:coverage`        | PASS — statements 84,88%; branches 80,11%; functions 85,26%; lines 85,81% |
 | `npm run readiness`            | PASS — 1 arquivo; 4 testes                                                |
 | `npm run test:e2e`             | PASS — 1 fluxo Playwright; 9,7 s                                          |
 | `npm run test:postgres`        | PASS — 6 arquivos; 49 testes pass; 16 skips condicionais                  |
@@ -58,8 +58,9 @@ O E2E final cobre a jornada browser/API de criar, editar, publicar e executar o 
 | Integridade e version pinning de plugins   | invariantes semânticas, registry multi-versão imutável, seleção pinned/legacy e gateway fail-closed                         | PASS controlado |
 | Catálogo declarativo de plugins            | metadata tenant-aware, unique name/version, lifecycle preconditionado, RLS, API admin e ausência de dispatch                | PASS controlado |
 | Control Center do catálogo de plugins      | client/UI tenant-aware, criação metadata-only, status/actor, expectedStatus, conflito stale e E2E browser/API               | PASS controlado |
+| Event bus e hooks de plugins               | allowlist tipada, inscrição declarada/tenant-scoped, payload redigido/imutável, falha isolada e eventos no Test Lab         | PASS controlado |
 
-## Implementação entregue nas rodadas S05/S06/S07/S08/S09/S10
+## Implementação entregue nas rodadas S05/S06/S07/S08/S09/S10/S11
 
 1. O Test Lab passou a produzir um trace compatível com investigação operacional controlada, mantendo campos antigos opcionais para compatibilidade histórica.
 2. O classificador reconhece pedidos explícitos de medicamento em português e inglês. A amostra veterinária é classificada como `medication_advice`, risco `critical`, policy `blocked`, handoff solicitado e provider/tool externo desativado.
@@ -77,6 +78,10 @@ O E2E final cobre a jornada browser/API de criar, editar, publicar e executar o 
 14. O catálogo S09 persiste snapshots declarativos tenant-aware em memória e PostgreSQL, com unique `(tenant, name, version)`, cópia defensiva, lifecycle `DRAFT/APPROVED/ARCHIVED`, precondition e API admin.
 15. A migration `0004_plugin_manifest_catalog.sql` aplica constraints de identidade, trigger de imutabilidade, índice de status, `FORCE ROW LEVEL SECURITY` e política fail-closed; `APPROVED` não alimenta o gateway nem autoriza handler.
 16. O S10 adiciona a superfície operacional do catálogo ao client/UI: lista sob demanda, cria manifests somente metadata, exibe status/actor/versão, envia `expectedStatus`, trata conflito stale e mantém `APPROVED` desacoplado de execução.
+17. O S11 adiciona `PlatformEventBus` com allowlist completa dos eventos internos, envelopes tenant-aware e subscriptions imutáveis; handlers só entram quando o hook está declarado no manifest validado.
+18. O bus sanitiza payloads, congela objetos aninhados, entrega cópia independente por handler, filtra por tenant e isola/audita falhas sem propagar exceções ao pipeline.
+19. O Test Lab emite eventos representativos de mensagem, contexto, agente, intent, policy, knowledge, prompt, model, tool, handoff, segurança, response e conclusão sem texto bruto ou efeito externo.
+20. O catálogo S09 continua metadata-only: aprovação não instala plugin, não registra hook executável e não concede capability, provider, canal ou side effect.
 
 ## Segurança e limites
 
@@ -89,6 +94,8 @@ O E2E final cobre a jornada browser/API de criar, editar, publicar e executar o 
 - Test Lab usa provider fake/determinístico e `externalCall: false`;
 - knowledge sem source/version aprovado não responde e encaminha;
 - output de ferramenta nunca é persistido em claro;
+- hooks recebem somente eventos minimizados e redigidos; tokens e PII em erros
+  de handlers são mascarados e falhas não alteram decisões do Test Lab;
 - `npm audit --audit-level=high` encontrou 0 vulnerabilidades.
 
 ### Bloqueios de produção ainda abertos
@@ -108,9 +115,9 @@ Esses itens não foram simulados como se estivessem prontos. Ativá-los exige no
 
 ## Gaps de produto explicitamente fora deste slice
 
-O catálogo declarativo tenant-aware de manifests agora tem superfície operacional no Control Center, mas continua somente metadata-only; ele não é marketplace nem catálogo de handlers executáveis. A comparação A/B existe somente no Test Lab controlado. Ainda não existe marketplace aberto, instalação de código de terceiros, lifecycle institucional real de knowledge, registry/lease de providers externos, tráfego gradual real, coordenação multioperador distribuída ou publicação automática baseada em A/B. Isso é trabalho de próxima fase, não autorização para inventar dados ou efeitos reais.
+O catálogo declarativo tenant-aware de manifests agora tem superfície operacional no Control Center, mas continua somente metadata-only; ele não é marketplace nem catálogo de handlers executáveis. O event bus e os hooks S11 são process-local/best-effort, sem broker, retry durável ou entrega remota. A comparação A/B existe somente no Test Lab controlado. Ainda não existe marketplace aberto, instalação de código de terceiros, lifecycle institucional real de knowledge, registry/lease de providers externos, tráfego gradual real, coordenação multioperador distribuída ou publicação automática baseada em A/B. Isso é trabalho de próxima fase, não autorização para inventar dados ou efeitos reais.
 
-Também permanecem históricas as descrições antigas de Discovery e das auditorias anteriores. Este arquivo é a fonte de decisão atual para o estado do checkout; os documentos históricos não foram reescritos para apagar evidência temporal. As evidências específicas das rodadas recentes estão em `docs/04_audit/0497_plat_s07_optimistic_conflict_evidence.md`, `docs/04_audit/0498_plat_s08_plugin_manifest_versioning_evidence.md`, `docs/04_audit/0499_plat_s09_plugin_catalog_evidence.md` e `docs/04_audit/0500_plat_s10_plugin_catalog_control_center_evidence.md`.
+Também permanecem históricas as descrições antigas de Discovery e das auditorias anteriores. Este arquivo é a fonte de decisão atual para o estado do checkout; os documentos históricos não foram reescritos para apagar evidência temporal. As evidências específicas das rodadas recentes estão em `docs/04_audit/0497_plat_s07_optimistic_conflict_evidence.md`, `docs/04_audit/0498_plat_s08_plugin_manifest_versioning_evidence.md`, `docs/04_audit/0499_plat_s09_plugin_catalog_evidence.md`, `docs/04_audit/0500_plat_s10_plugin_catalog_control_center_evidence.md` e `docs/04_audit/0501_plat_s11_event_bus_hooks_evidence.md`.
 
 ## Limitação da revisão independente
 

@@ -1846,3 +1846,125 @@ bloqueados.
 ### STATUS
 
 READY_FOR_NEXT_STEP
+
+## Agent Platform — PLAT-S11 event bus e hooks controlados
+
+### TIMESTAMP
+
+2026-08-24T21:26:12-03:00
+
+### ENGINE
+
+BUILD
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S11_CONTROLLED_EVENT_BUS_HOOKS
+
+### TASK
+
+PLAT-S11-001_EVENT_BUS_HOOKS
+
+### ACTION
+
+Registrado o novo lane antes do BUILD após a auditoria confirmar que
+`PluginManifest.hooks` ainda era somente metadata. O SPEC define event bus
+process-local allowlisted, inscrição por plugin local com declaração no
+manifest, tenant scope, payload redigido/imutável, falha isolada e emissão
+observacional no Test Lab.
+
+### RESULT
+
+IN_PROGRESS; nenhum código foi alterado nesta etapa de registro e nenhuma
+autorização de produção, provider, canal, broker, marketplace ou side effect
+foi criada.
+
+### REVIEW
+
+Lead-only por enquanto; child agents continuam indisponíveis por limite de
+conta/incompatibilidade de modelo. A etapa seguinte é TDD RED antes da
+implementação.
+
+### DECISIONS
+
+`PLAT-S11-001` = `IN_PROGRESS`. O catálogo S09 permanece metadata-only e o
+resultado máximo continua `CONTROLLED_MVP_READY`; produção real permanece
+`NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+### EVIDENCE
+
+`docs/platform/05-platform-prd.md`, `docs/platform/06-platform-spec.md`,
+`docs/platform/07-platform-execplan.md`, `docs/platform/04-backlog.md`,
+`docs/30_backlog_master.md`, `docs/99_runtime_state.md`, `.gauntlet/state.md`
+e `.gauntlet/progress.md`.
+
+### STATUS
+
+IN_PROGRESS
+
+## Agent Platform — PLAT-S11 controlled closure
+
+### TIMESTAMP
+
+2026-08-24T22:00:02-03:00
+
+### ENGINE
+
+AUDIT
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S11_CONTROLLED_EVENT_BUS_HOOKS
+
+### TASK
+
+PLAT-S11-001_EVENT_BUS_HOOKS
+
+### ACTION
+
+Fechada a implementação do event bus interno process-local. O runtime agora
+possui allowlist completa de eventos, registro tenant-scoped de hooks somente
+quando declarados no manifest, payload sanitizado e profundamente imutável,
+isolamento/auditoria de falhas e emissão observacional no Test Lab.
+
+### RESULT
+
+PASS controlado. `npm run verify` passou com 74 arquivos, 264 testes aprovados
+e 16 skips condicionais; coverage 84,88% statements, 80,11% branches, 85,26%
+functions e 85,81% lines. Readiness 4/4, E2E 1/1, PostgreSQL controlado 49
+pass/16 skips, format/diff check e audit com 0 vulnerabilidades também
+passaram.
+
+### REVIEW
+
+Auditoria lead-only por RED/GREEN, typecheck/lint/format, cobertura, inspeção
+temporal do diff e gates executáveis. Child agents permaneceram indisponíveis
+por limite de conta/incompatibilidade de modelo; nenhuma aprovação
+independente é reivindicada.
+
+### DECISIONS
+
+`PLAT-S11-001` = `COMPLETED_CONTROLLED`. `CONTROLLED_MVP_READY` permanece o
+resultado máximo. `PRODUCTION_REAL_DATA_READY` continua `NO-GO`/
+`WAITING_HUMAN_APPROVAL`; broker durável, entrega remota, plugins executáveis,
+providers, canais, dados reais e ações sensíveis continuam bloqueados.
+
+### EVIDENCE
+
+`docs/04_audit/0501_plat_s11_event_bus_hooks_evidence.md`,
+`docs/platform/final-technical-audit.md`, `docs/99_runtime_state.md`,
+`docs/platform/04-backlog.md`, `docs/platform/06-platform-spec.md`,
+`docs/platform/07-platform-execplan.md`, `docs/30_backlog_master.md`,
+`.gauntlet/state.md` e `.gauntlet/progress.md` foram sincronizados.
+
+### STATUS
+
+READY_FOR_NEXT_STEP

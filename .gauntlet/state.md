@@ -47,7 +47,7 @@ Do not claim `PRODUCTION_REAL_DATA_READY` while any PROD criterion lacks evidenc
 ## Continuity
 
 - Canonical project state: `docs/99_runtime_state.md`, `docs/20_master_execution_log.md`, `docs/30_backlog_master.md`.
-- Current task: `PLAT-S10-001_PLUGIN_CATALOG_CONTROL_CENTER` (COMPLETED_CONTROLLED; AUDIT closed).
+- Current task: `PLAT-S11-001_EVENT_BUS_HOOKS` (COMPLETED_CONTROLLED; AUDIT closed).
 
 ## Quality bar v6 — PLAT-S09 controlled plugin manifest catalog
 
@@ -133,3 +133,41 @@ Do not claim `PRODUCTION_REAL_DATA_READY` while any PROD criterion lacks evidenc
 - `PLAT-S10-001` = `COMPLETED_CONTROLLED`; evidence is `docs/04_audit/0500_plat_s10_plugin_catalog_control_center_evidence.md`.
 - Final controlled bar: 72 test files, 257 passing tests, 16 conditional skips; coverage 84.97% statements, 80.21% branches, 84.93% functions and 85.90% lines; readiness 4/4; E2E 1/1; PostgreSQL fixture 4 files/49 passed/16 skips; audit 0 vulnerabilities; format and diff check passed.
 - No production authorization changed. Marketplace/installation, executable handlers, provider/channel operations, IdP, HA, retention/PII and sensitive actions remain blocked.
+
+## Quality bar v8 — PLAT-S11 controlled event bus and hooks
+
+| ID      | Criterion                                                       | Required evidence                                           | Current state   |
+| ------- | --------------------------------------------------------------- | ----------------------------------------------------------- | --------------- |
+| CTRL-30 | Event names are typed and allowlisted                           | RED/GREEN contract tests and negative unknown-event tests   | PASS controlled |
+| CTRL-31 | Hook registration requires manifest declaration and tenant      | registry/bus tests for missing declaration and cross-tenant | PASS controlled |
+| CTRL-32 | Event payloads are redacted and deeply immutable                | sensitive-payload and mutation-isolation tests              | PASS controlled |
+| CTRL-33 | Hook errors are isolated and sanitized/audited                  | failure delivery and audit callback tests                   | PASS controlled |
+| CTRL-34 | Test Lab emits representative lifecycle events                  | integration event assertions with dry-run boundary          | PASS controlled |
+| CTRL-35 | Existing controlled behavior and release boundary are unchanged | full verify, E2E, audit and temporal diff review            | PASS controlled |
+
+## Round 16 — PLAT-S11 registered before BUILD
+
+- A auditoria do prompt identificou que `PluginManifest.hooks` existia apenas
+  como metadata: não havia event bus nem inscrição tenant-aware no pipeline.
+- Registrado `PLAT-S11-001` no PRD, SPEC, ExecPlan, backlog da plataforma,
+  backlog master e runtime state antes de alterar código.
+- O escopo congelado é um bus process-local e best-effort, com allowlist,
+  payload redigido/imutável, erro isolado e integração observacional no Test
+  Lab. O catálogo S09 continua metadata-only; broker, marketplace, provider,
+  canal e produção real permanecem bloqueados.
+
+## Round 17 — PLAT-S11 implementation and controlled closure
+
+- RED/GREEN fechou o contrato do event bus, incluindo allowlist completa,
+  declaração de manifest, tenant isolation, redaction/imutabilidade e falha
+  isolada/auditada.
+- `PluginRegistry` preserva handlers de hooks em cópias defensivas e o Test
+  Lab emite eventos representativos sem incluir mensagem bruta ou alterar
+  `externalCall: false`.
+- Gates finais passaram: `npm run verify`, 74 arquivos/264 testes/16 skips,
+  coverage 84,88% statements / 80,11% branches / 85,26% functions / 85,81%
+  lines, readiness 4/4, E2E 1/1, PostgreSQL 49 pass/16 skips, audit 0
+  vulnerabilidades, format e diff check.
+- Evidência: `docs/04_audit/0501_plat_s11_event_bus_hooks_evidence.md`;
+  `PLAT-S11-001` = `COMPLETED_CONTROLLED`. O fechamento é lead-only;
+  produção permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`.

@@ -8,8 +8,8 @@
 ## POSICAO ATUAL
 
 - current_phase: CONTROLLED_CONSTRUCTION
-- current_sprint: PLAT-S10_PLUGIN_CATALOG_CONTROL_CENTER
-- current_task: PLAT-S10-001_PLUGIN_CATALOG_CONTROL_CENTER
+- current_sprint: PLAT-S11_CONTROLLED_EVENT_BUS_HOOKS
+- current_task: PLAT-S11-001_EVENT_BUS_HOOKS
 
 ## STATUS
 
@@ -17,7 +17,7 @@
 
 ## PROGRESSO
 
-- last_completed_action: PLAT-S10-001 implementada e auditada com client/UI tenant-aware, lifecycle metadata-only, conflito stale, E2E e gates completos.
+- last_completed_action: PLAT-S11-001 implementada e auditada com event bus allowlisted, hooks tenant-scoped, payload redigido/imutável, falha isolada e integração observacional no Test Lab.
 - next_action: registrar novo SPEC antes de qualquer lane; produção real continua bloqueada.
 
 ## BLOQUEIOS
@@ -32,7 +32,15 @@
 
 ## TIMESTAMP
 
-- last_update: 2026-08-24T21:13:45-03:00
+- last_update: 2026-08-24T22:00:02-03:00
+
+## INÍCIO CONTROLADO PLAT-S11 — 2026-08-24T21:26:12-03:00
+
+- task: `PLAT-S11-001_EVENT_BUS_HOOKS`
+- status: `IN_PROGRESS`
+- gate: `BUILD` controlado autorizado pela SPEC S11 para event bus process-local e hooks de plugins locais
+- escopo: eventos internos allowlisted, declaração de hook no manifest, tenant scope, redaction/imutabilidade, isolamento de falhas e emissão opcional no Test Lab
+- sem autorização: broker/retry/outbox/webhook, execução do catálogo S09, marketplace, provider/canal, payload bruto, dado real, side effect ou produção irrestrita
 
 ## INÍCIO CONTROLADO PLAT-S10 — 2026-08-24T20:45:00-03:00
 
@@ -53,6 +61,18 @@
 - real_release: `WAITING_HUMAN_APPROVAL` / `NO-GO`
 - blockers preserved: IdP/tenant binding/RBAC operacional, rollout RLS/backfill, roles/secrets, limiter/replay distribuídos, host security, HA, retenção/PII, knowledge institucional, providers/canais, marketplace/handlers executáveis e qualquer ação sensível.
 - next_safe_action: abrir novo SPEC somente após decisão do próximo lane; nenhum deploy, dado real ou efeito externo foi autorizado.
+
+## FECHAMENTO CONTROLADO PLAT-S11 — 2026-08-24T22:00:02-03:00
+
+- current_task: `PLAT-S11-001_EVENT_BUS_HOOKS`
+- status: `READY_FOR_NEXT_STEP`
+- last_completed_action: event bus process-local allowlisted, registro de hooks por plugin local com declaração no manifest, tenant isolation, redaction/imutabilidade, isolamento/auditoria de falhas e emissões representativas no Test Lab.
+- evidence: `docs/04_audit/0501_plat_s11_event_bus_hooks_evidence.md`
+- gates: `npm run verify` PASS; 74 test files/264 passed/16 skips; coverage 84.88% statements, 80.11% branches, 85.26% functions, 85.81% lines; readiness 4/4; E2E 1/1; PostgreSQL controlled 49 passed/16 skips; audit 0 vulnerabilities; format/diff check PASS.
+- controlled_release: `CONTROLLED_MVP_READY`
+- real_release: `WAITING_HUMAN_APPROVAL` / `NO-GO`
+- blockers preserved: IdP/tenant binding/RBAC operacional, rollout RLS/backfill, roles/secrets, limiter/replay distribuídos, host security, HA, retenção/PII, knowledge institucional, providers/canais, marketplace/handlers executáveis e qualquer ação sensível.
+- next_safe_action: abrir novo SPEC somente após decisão do próximo lane; broker durável, entrega remota, plugins executáveis, provider/canal, dados reais e side effects continuam não autorizados.
 
 ## INÍCIO CONTROLADO PLAT-S05 — 2026-08-24
 

@@ -100,3 +100,46 @@ handlers persistentes, provider/canal real, dados reais e qualquer side effect.
 - a UI informa status, versão e actor de aprovação e mantém a mensagem
   metadata-only;
 - o fluxo legado de AgentVersion/Test Lab permanece inalterado.
+
+## PLAT-S11 — event bus e hooks de plugins controlados
+
+### Problema
+
+O contrato de `PluginManifest` já reserva `hooks`, mas a plataforma ainda não
+tem um barramento interno que publique eventos do pipeline nem uma fronteira
+que obrigue cada hook a ser declarado pelo plugin. Sem esse contrato, um
+plugin local não consegue observar lifecycle, policy, handoff ou erro de forma
+tenant-aware e auditável.
+
+### Resultado controlado
+
+Adicionar um event bus tipado, allowlisted e somente em memória para o runtime
+controlado. Hooks são registrados apenas por plugins locais já validados, com
+tenant explícito, declaração correspondente no manifest, payload mínimo
+redigido e envelope imutável. Falhas de hook são isoladas, registradas como
+falha sanitizada e nunca alteram a decisão do Test Lab nem habilitam dispatch
+externo.
+
+### Fora de escopo
+
+- broker durável, retry/outbox, webhook ou entrega entre processos;
+- execução de manifests aprovados do catálogo S09;
+- marketplace, instalação, código de terceiros, provider, canal ou side effect;
+- payload bruto de mensagem, PII deliberada, segredo ou fonte institucional;
+- observabilidade de produção, SLA de entrega ou garantia de HA.
+
+### Aceite
+
+- eventos internos usam nomes tipados e allowlisted e rejeitam nomes
+  desconhecidos;
+- a inscrição falha fechado quando o hook não está declarado no manifest, o
+  handler não existe ou o tenant está inválido;
+- cada entrega recebe cópia profunda redigida e imutável do envelope; um hook
+  não consegue modificar a entrada original nem observar outro tenant;
+- exceções de um hook não interrompem os demais hooks nem o Test Lab e geram
+  resultado/auditoria sanitizados;
+- o Test Lab emite eventos representativos de mensagem, resolução, policy,
+  prompt, model, tool, handoff/security, response e conclusão sem alterar
+  `externalCall: false`;
+- testes RED/GREEN, typecheck, lint, format, build, coverage, readiness, E2E,
+  audit e inspeção de fronteira permanecem verdes.

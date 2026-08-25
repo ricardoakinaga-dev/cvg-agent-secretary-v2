@@ -114,3 +114,30 @@
 - O fechamento continua lead-only: child agents permaneceram indisponíveis por
   limite de conta/incompatibilidade de modelo; nenhuma aprovação independente
   é reivindicada. Produção real permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+## Round 16 — PLAT-S11 registered before BUILD
+
+- A auditoria do prompt identificou que `PluginManifest.hooks` existia apenas
+  como metadata: não havia event bus nem inscrição tenant-aware no pipeline.
+- Registrado `PLAT-S11-001` no PRD, SPEC, ExecPlan, backlog da plataforma,
+  backlog master e runtime state antes de alterar código.
+- O escopo congelado é um bus process-local e best-effort, com allowlist,
+  payload redigido/imutável, erro isolado e integração observacional no Test
+  Lab. O catálogo S09 continua metadata-only; broker, marketplace, provider,
+  canal e produção real permanecem bloqueados.
+
+## Round 17 — PLAT-S11 implementation and controlled closure
+
+- RED/GREEN fechou o contrato do event bus, incluindo allowlist completa,
+  declaração de manifest, tenant isolation, redaction/imutabilidade e falha
+  isolada/auditada.
+- `PluginRegistry` preserva handlers de hooks em cópias defensivas e o Test
+  Lab emite eventos representativos sem incluir mensagem bruta ou alterar
+  `externalCall: false`.
+- Gates finais passaram: `npm run verify`, 74 arquivos/264 testes/16 skips,
+  coverage 84,88% statements / 80,11% branches / 85,26% functions / 85,81%
+  lines, readiness 4/4, E2E 1/1, PostgreSQL 49 pass/16 skips, audit 0
+  vulnerabilidades, format e diff check.
+- Evidência: `docs/04_audit/0501_plat_s11_event_bus_hooks_evidence.md`;
+  `PLAT-S11-001` = `COMPLETED_CONTROLLED`. O fechamento é lead-only;
+  produção permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`.

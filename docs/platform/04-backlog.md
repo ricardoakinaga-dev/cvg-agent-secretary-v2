@@ -273,6 +273,32 @@ mutável pelo Control Center. O lane não altera o boundary metadata-only.
   probe externo, handlers persistentes, provider/canal, dados reais ou produção
   irrestrita
 
+## Sprint de eventos internos e hooks controlados — `PLAT-S11`
+
+Esta sprint fecha a lacuna de execução observável dos `hooks` declarados no
+manifest. O barramento é process-local, best-effort e não conecta o catálogo de
+metadata a handlers executáveis.
+
+### `PLAT-S11-001` — event bus tipado e hooks tenant-scoped
+
+- prioridade: P1
+- estado: COMPLETED_CONTROLLED
+- owner: runtime/security/platform
+- dependências: `PLAT-S10-001`, `PLAT-S08-001`, `PLAT-FOUNDATION-005`
+- escopo: allowlist de eventos, inscrição por plugin local com hook declarado,
+  tenant explícito, payload redigido/imutável, isolamento de falhas e emissão
+  observacional no Test Lab
+- aceite: evento desconhecido, tenant/ID inválido, hook não declarado ou
+  handler ausente falha fechado; hooks só recebem o próprio tenant; mutação do
+  envelope não altera a origem; erro de um hook não para outros nem o Test Lab;
+  eventos representativos ficam cobertos sem dispatch externo
+- evidência: `docs/04_audit/0501_plat_s11_event_bus_hooks_evidence.md`; testes
+  unitários de bus/registry, integração do Test Lab, `npm run verify`,
+  readiness, E2E, PostgreSQL controlado, `npm audit`, `git diff --check` e
+  auditoria técnica
+- limite: sem broker, retry/outbox, webhook, catálogo executável, marketplace,
+  provider/canal, payload bruto, dado real ou produção irrestrita
+
 ## Limites preservados
 
 - Nenhum segredo, dado real ou chamada externa entra na implementação.

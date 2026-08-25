@@ -171,3 +171,34 @@ arquivos, 257 testes, 16 skips condicionais, coverage 84,97% statements /
 controlado, format, diff check e audit. `APPROVED` continua desacoplado de
 handler/permission/provider/canal; nenhuma autorização de produção foi alterada.
 Evidência: `docs/04_audit/0500_plat_s10_plugin_catalog_control_center_evidence.md`.
+
+## PLAT-S11 — ordem de implementação
+
+1. Registrar testes RED para allowlist de eventos, declaração de hooks no
+   manifest, tenant isolation, redaction, imutabilidade e falha isolada.
+2. Implementar o contrato do `PlatformEventBus` com inscrições imutáveis,
+   handlers somente de plugins locais validados e auditoria sanitizada.
+3. Integrar `RegisteredPlugin` com handlers de hooks sem conectar o catálogo
+   persistente S09 à execução.
+4. Emitir eventos representativos no Test Lab de forma opcional e
+   observacional, preservando policy, trace, resposta e `externalCall=false`.
+5. Rodar testes focados RED/GREEN, suíte completa, typecheck, lint, format,
+   build, coverage, readiness, E2E, audit e inspeção de side effects.
+6. Atualizar runtime state, execution log, backlog, evidência e auditoria;
+   manter broker durável, entrega remota, marketplace, provider/canal e
+   produção real fora do escopo.
+
+## Limites do PLAT-S11
+
+O event bus é process-local, best-effort e exclusivo do runtime controlado.
+Não há retry durável, outbox, webhook, execução de manifest APPROVED, código
+de terceiros, payload bruto, dado real ou qualquer efeito externo.
+
+## Resultado controlado PLAT-S11
+
+`PLAT-S11-001` foi concluída como `COMPLETED_CONTROLLED`. O event bus e os
+hooks passaram RED/GREEN, verify, coverage acima de 80%, readiness, E2E,
+PostgreSQL controlado, audit, format e diff check. Evidência:
+`docs/04_audit/0501_plat_s11_event_bus_hooks_evidence.md`. O resultado máximo
+continua `CONTROLLED_MVP_READY`; delivery durável, plugins executáveis,
+provider/canal e produção real continuam bloqueados.

@@ -351,3 +351,73 @@ API e do Control Center, incluindo headers tenant-aware, manifest sem segredo,
 lista vazia, criação, aprovação com precondition e conflito; além de
 typecheck, lint, format, build, cobertura, readiness, E2E e auditoria de que o
 catálogo continua metadata-only.
+
+## PLAT-S11 — event bus e hooks de plugins controlados
+
+### Contrato
+
+O runtime controlado define um conjunto fechado de eventos internos:
+`message.received`, `message.normalized`, `conversation.loaded`,
+`context.loaded`, `agent.resolved`, `policy.input.before`,
+`policy.input.after`, `intent.before`, `intent.after`, `knowledge.before`,
+`knowledge.after`, `prompt.before`, `prompt.after`, `model.before`,
+`model.after`, `model.error`, `tool.before`, `tool.after`, `tool.error`,
+`response.before`, `response.after`, `handoff.requested`, `handoff.created`,
+`handoff.failed`, `human_takeover.started`, `human_takeover.ended`,
+`message.delivery.before`, `message.delivery.after`,
+`conversation.completed`, `security.blocked`, `plugin.started`,
+`plugin.stopped` e `plugin.error`. O conjunto é um contrato de código e não
+aceita nomes arbitrários em runtime.
+
+Cada evento é um envelope com `id`, `name`, `tenantId`, `agentId` opcional,
+`versionId` opcional, `executionMode`, timestamp ISO e payload. O payload é
+sanitizado com a mesma fronteira de auditoria do Test Lab antes de ser
+armazenado ou entregue. O envelope e seus objetos/arrays aninhados são
+profundamente imutáveis para o handler.
+
+Um plugin local pode registrar hooks somente com `tenantId`, manifest validado,
+versão/name de plugin e handler correspondente. Cada chave de handler precisa
+estar em `manifest.hooks` e cada evento precisa pertencer ao allowlist. O
+catálogo persistente S09 não é uma fonte de execução e `APPROVED` não registra
+handlers automaticamente.
+
+### Semântica de entrega
+
+O `PlatformEventBus` mantém inscrições de forma imutável. `emit` cria um novo
+envelope sanitizado e entrega somente a inscrições do mesmo tenant e do mesmo
+nome de evento. Handlers são chamados em ordem determinística; uma exceção é
+capturada, convertida em resultado `failed` sanitizado e não impede os demais
+handlers nem propaga para o pipeline do agente. O callback de auditoria recebe
+somente identidade do plugin, evento, status e erro redigido.
+
+O bus é best-effort e process-local nesta sprint: não há persistência,
+reentrega, consumo remoto ou garantia de entrega após reinício. Erros de hook
+não podem liberar policy, capability, approval, provider, canal, agenda,
+clínica, financeira ou prontuário.
+
+### Integração do Test Lab
+
+`executeConfiguredAgent` aceita um bus opcional e emite, sem incluir texto
+bruto, eventos após as etapas de mensagem, resolução, intent, policy,
+knowledge, prompt, model, tools e resposta. Caminhos controlados de handoff e
+bloqueio de segurança emitem seus respectivos eventos; toda execução termina
+com `conversation.completed` quando o pipeline chega ao resultado. A emissão é
+observacional: não modifica score, policy, trace, resposta ou
+`externalCall=false`.
+
+### Gate de implementação
+
+Antes de fechar `PLAT-S11-001`, devem passar testes RED/GREEN de allowlist,
+declaração de manifest, IDs/tenant, redaction, imutabilidade, isolamento,
+falha isolada/auditoria e integração real do Test Lab; além de typecheck, lint,
+format, build, coverage, readiness, E2E, audit e inspeção de que o catálogo
+S09 continua metadata-only e nenhum efeito externo foi adicionado.
+
+### Resultado controlado
+
+`PLAT-S11-001` foi concluída como `COMPLETED_CONTROLLED`. O event bus
+allowlisted, a inscrição tenant-scoped, a redaction/imutabilidade, o
+isolamento de falhas e a emissão representativa no Test Lab passaram os gates
+executáveis. Evidência: `docs/04_audit/0501_plat_s11_event_bus_hooks_evidence.md`.
+O bus continua process-local/best-effort; broker, entrega durável, catálogo
+executável e produção real permanecem fora do escopo.

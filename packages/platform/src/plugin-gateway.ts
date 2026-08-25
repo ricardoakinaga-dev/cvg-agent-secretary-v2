@@ -16,6 +16,7 @@ import {
 } from './approval-authority.ts'
 import { AgentIdSchema, AgentVersionIdSchema, TenantIdSchema } from './ids.ts'
 import type { AgentId, AgentVersionId, TenantId } from './ids.ts'
+import type { PluginHookHandler } from './event-bus.ts'
 
 export interface PluginHandlerContext {
   tenantId: TenantId
@@ -39,6 +40,7 @@ export type PluginHandler = (
 export interface RegisteredPlugin {
   manifest: PluginManifest
   handlers: Record<string, PluginHandler>
+  hooks?: Record<string, PluginHookHandler>
 }
 
 export interface PluginAuditEvent {
@@ -74,7 +76,20 @@ export class PluginRegistry {
     if (Object.keys(handlers).length !== manifest.tools.length) {
       throw new Error('Every manifest tool requires a handler')
     }
-    return new PluginRegistry([...this.plugins, { manifest, handlers }])
+    const hooks = Object.fromEntries(
+      Object.entries(plugin.hooks ?? {}).map(([name, handler]) => {
+        if (!manifest.hooks.includes(name)) {
+          throw new Error(
+            'Every plugin hook handler must be declared by the manifest'
+          )
+        }
+        if (typeof handler !== 'function') {
+          throw new Error('Every manifest hook requires a handler')
+        }
+        return [name, handler]
+      })
+    )
+    return new PluginRegistry([...this.plugins, { manifest, handlers, hooks }])
   }
 
   get(name: string, version?: string): RegisteredPlugin | null {
@@ -350,7 +365,8 @@ function cloneRegisteredPlugin(plugin: RegisteredPlugin): RegisteredPlugin {
       hooks: [...plugin.manifest.hooks],
       dependencies: [...plugin.manifest.dependencies]
     },
-    handlers: { ...plugin.handlers }
+    handlers: { ...plugin.handlers },
+    ...(plugin.hooks ? { hooks: { ...plugin.hooks } } : {})
   }
 }
 

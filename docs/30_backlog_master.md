@@ -200,6 +200,22 @@
 - limite: `APPROVED` continua metadata-only; sem instalação, handlers, rede,
   provider/canal, dados reais ou produção irrestrita
 
+## PLAT-S11 — event bus e hooks de plugins controlados
+
+- id: `PLAT-S11-001`
+- status: COMPLETED_CONTROLLED
+- entrega: event bus allowlisted, tenant-scoped e process-local; hooks de
+  plugins locais exigem declaração no manifest, recebem payload redigido e
+  imutável e não interrompem o pipeline em caso de erro
+- dependência: `PLAT-S10-001`, `PLAT-S08-001` e SPEC registrada em
+  `docs/platform/06-platform-spec.md`
+- evidência: `docs/04_audit/0501_plat_s11_event_bus_hooks_evidence.md`,
+  testes RED/GREEN do bus/registry e integração Test Lab, verify, readiness,
+  E2E, audit e inspeção de que nenhum efeito externo foi adicionado
+- limite: catálogo S09 continua metadata-only; sem broker, retry durável,
+  webhook, marketplace, código de terceiros, provider/canal, dado real ou
+  produção irrestrita
+
 ## Agent Platform — sprint controlado `PLAT-S01`
 
 O prompt de plataforma foi registrado como uma nova linha de produto compatível com o data plane da Secretary. O inventário, gaps, PRD, SPEC, ExecPlan e ADRs estão em `docs/platform/`.

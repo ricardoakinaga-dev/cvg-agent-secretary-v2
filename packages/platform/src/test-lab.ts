@@ -19,6 +19,7 @@ import type {
   CapabilityGateway,
   PluginAuditEvent
 } from './plugin-gateway.ts'
+import type { PlatformEventBus, PlatformEventName } from './event-bus.ts'
 import { composePrompt } from './prompt-composer.ts'
 import { evaluatePlatformPolicy } from './policy-evaluator.ts'
 
@@ -42,6 +43,8 @@ export interface TestLabInput {
   resolveCapabilityApproval?: CapabilityApprovalResolver
   requireCapabilityApproval?: boolean
   onToolAudit?: (event: PluginAuditEvent) => void | Promise<void>
+  eventBus?: PlatformEventBus
+  context?: { conversationId?: string; sessionId?: string }
 }
 
 export interface AgentExecutionActor {
@@ -52,7 +55,6 @@ export interface AgentExecutionActor {
 
 export interface ControlledAgentExecutionInput extends TestLabInput {
   executionMode: AgentExecutionMode
-  context?: { conversationId?: string; sessionId?: string }
 }
 
 export async function runTestLab(input: TestLabInput): Promise<TestRunTrace> {
@@ -81,10 +83,45 @@ export async function executeConfiguredAgent(
   const history = input.history.map(validateHistoryItem).map(redactTestMessage)
   validateApprovedKnowledge(input.approvedKnowledge)
   const config = version.config
+  await emitPlatformEvent(input, 'message.received', {
+    messageLength: message.length,
+    historySize: input.history.length
+  })
+  await emitPlatformEvent(input, 'message.normalized', {
+    messageLength: message.length,
+    historySize: history.length
+  })
+  await emitPlatformEvent(input, 'conversation.loaded', {
+    historySize: history.length
+  })
+  await emitPlatformEvent(input, 'context.loaded', {
+    hasConversationId: Boolean(input.context?.conversationId),
+    hasSessionId: Boolean(input.context?.sessionId)
+  })
+  await emitPlatformEvent(input, 'agent.resolved', {
+    version: version.version,
+    status: version.status
+  })
+  await emitPlatformEvent(input, 'prompt.before', {
+    blockCount: config.promptBlocks.length
+  })
   const prompt = composePrompt(config)
+  await emitPlatformEvent(input, 'prompt.after', {
+    blockIds: prompt.blockIds,
+    textLength: prompt.text.length
+  })
 
+  await emitPlatformEvent(input, 'intent.before', {
+    messageLength: message.length
+  })
   const intent = classifyForDryRun(message)
+  await emitPlatformEvent(input, 'intent.after', intent)
   const action = actionForMessage(message, intent.name)
+  await emitPlatformEvent(input, 'policy.input.before', {
+    action,
+    confidence: intent.confidence,
+    clarificationCount: history.length
+  })
   const policy = evaluatePlatformPolicy({
     action,
     confidence: intent.confidence,
@@ -92,12 +129,28 @@ export async function executeConfiguredAgent(
     clarificationCount: history.length,
     riskLevel: riskForIntent(intent.name).level
   })
+  await emitPlatformEvent(input, 'policy.input.after', {
+    decision: policy.decision,
+    layer: policy.layer,
+    reason: policy.reason
+  })
+  if (policy.decision === 'blocked') {
+    await emitPlatformEvent(input, 'security.blocked', {
+      action,
+      reason: policy.reason
+    })
+  }
   const risk = riskForIntent(intent.name, policy)
+  await emitPlatformEvent(input, 'knowledge.before', {
+    intent: intent.name,
+    configuredBindings: config.knowledge.length
+  })
   const knowledge = resolveKnowledge(
     intent.name,
     input.approvedKnowledge,
     config.knowledge
   )
+  await emitPlatformEvent(input, 'knowledge.after', knowledge.trace)
   const handoffRequested =
     policy.decision === 'handoff' ||
     policy.decision === 'requires_approval' ||
@@ -107,6 +160,16 @@ export async function executeConfiguredAgent(
   const handoffState: HumanTakeoverState = handoffRequested
     ? 'HANDOFF_REQUESTED'
     : 'BOT_ACTIVE'
+  if (handoffRequested) {
+    await emitPlatformEvent(input, 'handoff.requested', {
+      reason:
+        policy.decision === 'handoff' || policy.decision === 'requires_approval'
+          ? policy.reason
+          : intent.name === 'medication_advice'
+            ? 'veterinary_evaluation_required'
+            : 'approved_source_missing'
+    })
+  }
   const response = buildResponse({
     config,
     intent: intent.name,
@@ -115,12 +178,38 @@ export async function executeConfiguredAgent(
     knowledgeAnswer: knowledge.answer,
     handoffRequested
   })
+  await emitPlatformEvent(input, 'response.before', {
+    mode: response.mode
+  })
   const promptWithHistory = history.length
     ? `${prompt.text}\n\nConversation history:\n${history.join('\n')}`
     : prompt.text
-  const completion = await createDryRunModelProvider(config.model).complete({
-    prompt: promptWithHistory,
-    fallbackText: response.text
+  await emitPlatformEvent(input, 'model.before', {
+    provider: config.model.provider,
+    model: config.model.model,
+    promptLength: promptWithHistory.length
+  })
+  let completion: Awaited<
+    ReturnType<ReturnType<typeof createDryRunModelProvider>['complete']>
+  >
+  try {
+    completion = await createDryRunModelProvider(config.model).complete({
+      prompt: promptWithHistory,
+      fallbackText: response.text
+    })
+  } catch (error) {
+    await emitPlatformEvent(input, 'model.error', {
+      provider: config.model.provider,
+      model: config.model.model,
+      reason: 'model_execution_failed'
+    })
+    throw error
+  }
+  await emitPlatformEvent(input, 'model.after', {
+    provider: completion.provider,
+    model: completion.model,
+    externalCall: completion.externalCall,
+    responseLength: completion.text.length
   })
   const completedResponse = {
     ...response,
@@ -131,6 +220,10 @@ export async function executeConfiguredAgent(
     config,
     intent: intent.name,
     policy
+  })
+  await emitPlatformEvent(input, 'response.after', {
+    mode: completedResponse.mode,
+    responseLength: completedResponse.text.length
   })
   const completedAt = new Date()
   const promptTokens = estimateTokenCount(promptWithHistory)
@@ -197,6 +290,12 @@ export async function executeConfiguredAgent(
     ...(input.context?.sessionId ? { sessionId: input.context.sessionId } : {}),
     createdAt: completedAt
   }
+  await emitPlatformEvent(input, 'conversation.completed', {
+    status: trace.status,
+    policyDecision: policy.decision,
+    handoffRequested,
+    externalCall: trace.provider.externalCall
+  })
   return trace
 }
 
@@ -426,42 +525,60 @@ async function executePlannedTools(input: {
           .flatMap(() => [CONTROLLED_SCHEDULING_TOOL])
       : []
   if (toolNames.length === 0) return []
-  if (!input.input.capabilityGateway || !input.input.actor) {
-    return toolNames.map((name) => ({ name, status: 'blocked' as const }))
-  }
 
   return Promise.all(
     toolNames.map(async (toolName) => {
-      const toolInput = { message: redactTestMessage(input.input.message) }
-      let approval = input.input.capabilityApproval
-      if (!approval && input.input.resolveCapabilityApproval) {
-        approval =
-          (await input.input.resolveCapabilityApproval({
-            tenantId: input.input.tenantId,
-            agentId: input.input.agentId,
-            versionId: input.input.versionId,
-            toolName,
-            input: toolInput,
-            actor: input.input.actor!
-          })) ?? undefined
-      }
-      const result = await input.input.capabilityGateway!.execute({
-        tenantId: input.input.tenantId,
-        agentId: input.input.agentId,
-        versionId: input.input.versionId,
-        config: input.config,
+      await emitPlatformEvent(input.input, 'tool.before', {
         toolName,
-        input: toolInput,
-        actor: input.input.actor!,
-        policy: input.policy,
-        dryRun: input.input.executionMode === 'TEST_LAB',
-        ...(approval ? { approval } : {}),
-        ...(input.input.requireCapabilityApproval
-          ? { requireApproval: true }
-          : {}),
-        ...(input.input.onToolAudit ? { onAudit: input.input.onToolAudit } : {})
+        dryRun: input.input.executionMode === 'TEST_LAB'
       })
-      return { name: toolName, status: result.status }
+      if (!input.input.capabilityGateway || !input.input.actor) {
+        const blocked = { name: toolName, status: 'blocked' as const }
+        await emitPlatformEvent(input.input, 'tool.after', blocked)
+        return blocked
+      }
+      const toolInput = { message: redactTestMessage(input.input.message) }
+      try {
+        let approval = input.input.capabilityApproval
+        if (!approval && input.input.resolveCapabilityApproval) {
+          approval =
+            (await input.input.resolveCapabilityApproval({
+              tenantId: input.input.tenantId,
+              agentId: input.input.agentId,
+              versionId: input.input.versionId,
+              toolName,
+              input: toolInput,
+              actor: input.input.actor!
+            })) ?? undefined
+        }
+        const result = await input.input.capabilityGateway.execute({
+          tenantId: input.input.tenantId,
+          agentId: input.input.agentId,
+          versionId: input.input.versionId,
+          config: input.config,
+          toolName,
+          input: toolInput,
+          actor: input.input.actor,
+          policy: input.policy,
+          dryRun: input.input.executionMode === 'TEST_LAB',
+          ...(approval ? { approval } : {}),
+          ...(input.input.requireCapabilityApproval
+            ? { requireApproval: true }
+            : {}),
+          ...(input.input.onToolAudit
+            ? { onAudit: input.input.onToolAudit }
+            : {})
+        })
+        const completed = { name: toolName, status: result.status }
+        await emitPlatformEvent(input.input, 'tool.after', completed)
+        return completed
+      } catch (error) {
+        await emitPlatformEvent(input.input, 'tool.error', {
+          toolName,
+          reason: 'tool_execution_failed'
+        })
+        throw error
+      }
     })
   )
 }
@@ -474,4 +591,24 @@ const controlledRuntimeActor: AgentExecutionActor = {
 
 function redactTestMessage(message: string): string {
   return redactSensitiveText(message)
+}
+
+async function emitPlatformEvent(
+  input: ControlledAgentExecutionInput,
+  name: PlatformEventName,
+  payload: Record<string, unknown>
+): Promise<void> {
+  if (!input.eventBus) return
+  try {
+    await input.eventBus.emit({
+      name,
+      tenantId: input.tenantId,
+      agentId: input.agentId,
+      versionId: input.versionId,
+      executionMode: input.executionMode,
+      payload
+    })
+  } catch {
+    // Hook observability is strictly non-blocking for the controlled runtime.
+  }
 }
