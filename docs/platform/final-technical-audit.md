@@ -4,7 +4,7 @@
 
 - data da auditoria: `2026-08-24`
 - timestamp do fechamento: `2026-08-24T21:13:45-03:00`
-- base Git: `b165fba` (`main`) + alterações controladas não commitadas desta rodada
+- base Git: `4c83c13` (`main`), snapshot controlado publicado no remoto
 - escopo: todos os arquivos de `docs/`, o prompt fornecido e o checkout atual
 - modo: `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`
 - dados: somente fixtures e valores fictícios

@@ -6,7 +6,7 @@
 - task: `PLAT-S10-001_PLUGIN_CATALOG_CONTROL_CENTER`
 - fase: `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`
 - release máximo: `CONTROLLED_MVP_READY`
-- base: `b165fba` + alterações controladas não commitadas desta rodada
+- base: `4c83c13` (`main`), snapshot controlado publicado no remoto
 - dados: fixtures e manifests fictícios; nenhuma chamada externa ou side effect
 
 ## Gap e entrega controlada
