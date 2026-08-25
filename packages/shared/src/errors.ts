@@ -12,6 +12,7 @@ export const ErrorCodes = {
   validation_failed: 'validation_failed',
   action_requires_approval: 'action_requires_approval',
   invalid_action: 'invalid_action',
+  conflict: 'conflict',
   unauthorized: 'unauthorized',
   missing_summary: 'missing_summary',
   approval_not_pending: 'approval_not_pending',

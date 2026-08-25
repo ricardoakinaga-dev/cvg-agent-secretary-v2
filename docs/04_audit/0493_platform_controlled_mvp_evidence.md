@@ -2,6 +2,8 @@
 
 ## Status
 
+> **Nota temporal:** esta evidência é histórica e cobre a rodada anterior do MVP controlado. O estado corrente, incluindo PLAT-S06, está em `docs/platform/final-technical-audit.md`; este registro não deve ser usado isoladamente para inferir contagens ou gaps atuais.
+
 ```txt
 STATUS: CONTROLLED_MVP_READY
 DATE: 2026-08-24T09:32:45-03:00

@@ -7,7 +7,10 @@ import {
   type AgentId,
   type AgentVersionId,
   type TenantId,
-  type TraceId
+  type TraceId,
+  type TestSuiteId,
+  type TestSuiteRunId,
+  type PluginCatalogId
 } from './ids.ts'
 
 export const TenantScopeSchema = z.object({ tenantId: TenantIdSchema }).strict()
@@ -100,6 +103,7 @@ export const PluginBindingSchema = z
       .min(1)
       .max(120)
       .regex(/^[A-Za-z0-9._:-]+$/),
+    version: z.string().trim().min(1).max(80).optional(),
     enabled: z.boolean(),
     allowedTools: z
       .array(
@@ -304,8 +308,105 @@ export const PluginManifestSchema = z
     configSchemaVersion: z.string().trim().min(1).max(80)
   })
   .strict()
+  .superRefine((manifest, context) => {
+    const assertUnique = (values: string[], path: string) => {
+      const seen = new Set<string>()
+      values.forEach((value, index) => {
+        if (seen.has(value)) {
+          context.addIssue({
+            code: 'custom',
+            path: [path, index],
+            message: `${path} entries must be unique`
+          })
+        }
+        seen.add(value)
+      })
+    }
+
+    assertUnique(manifest.capabilities, 'capabilities')
+    assertUnique(manifest.permissions, 'permissions')
+    assertUnique(
+      manifest.tools.map((tool) => tool.name),
+      'tools'
+    )
+    assertUnique(manifest.hooks, 'hooks')
+    assertUnique(manifest.dependencies, 'dependencies')
+
+    manifest.tools.forEach((tool, index) => {
+      if (!manifest.permissions.includes(tool.permission)) {
+        context.addIssue({
+          code: 'custom',
+          path: ['tools', index, 'permission'],
+          message: 'Tool permission must be declared by the manifest'
+        })
+      }
+    })
+    if (manifest.dependencies.includes(manifest.name)) {
+      context.addIssue({
+        code: 'custom',
+        path: ['dependencies'],
+        message: 'Plugin cannot depend on itself'
+      })
+    }
+  })
 export type PluginManifest = z.infer<typeof PluginManifestSchema>
 export type PluginTool = z.infer<typeof PluginToolSchema>
+
+export const PluginCatalogStatusSchema = z.enum([
+  'DRAFT',
+  'APPROVED',
+  'ARCHIVED'
+])
+export type PluginCatalogStatus = z.infer<typeof PluginCatalogStatusSchema>
+
+export const PluginCatalogCreateInputSchema = z
+  .object({ manifest: PluginManifestSchema })
+  .strict()
+export type PluginCatalogCreateInput = z.infer<
+  typeof PluginCatalogCreateInputSchema
+>
+
+export const PluginCatalogTransitionInputSchema = z
+  .object({
+    target: PluginCatalogStatusSchema,
+    expectedStatus: PluginCatalogStatusSchema.optional()
+  })
+  .strict()
+export type PluginCatalogTransitionInput = z.infer<
+  typeof PluginCatalogTransitionInputSchema
+>
+
+export interface PluginCatalogRecord {
+  tenantId: TenantId
+  id: PluginCatalogId
+  manifest: PluginManifest
+  status: PluginCatalogStatus
+  createdBy: string
+  approvedBy: string | null
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type TraceSpanName =
+  | 'normalize'
+  | 'context'
+  | 'intent'
+  | 'policy'
+  | 'knowledge'
+  | 'prompt'
+  | 'model'
+  | 'tool'
+  | 'response'
+  | 'handoff'
+  | 'delivery'
+
+export type TraceSpanStatus = 'completed' | 'blocked' | 'skipped'
+
+export interface TestRunTraceSpan {
+  name: TraceSpanName
+  status: TraceSpanStatus
+  durationMs: number
+}
 
 export interface TestRunTrace {
   traceId: TraceId
@@ -314,6 +415,10 @@ export interface TestRunTrace {
   versionId: AgentVersionId
   input: { message: string; historySize: number }
   intent: { name: string; confidence: number }
+  risk?: {
+    level: 'low' | 'medium' | 'high' | 'critical'
+    reason: string
+  }
   policy: PlatformPolicyResult[]
   knowledge: {
     status: 'not_requested' | 'approved_source_missing' | 'answered' | 'handoff'
@@ -323,6 +428,11 @@ export interface TestRunTrace {
   tools: Array<{
     name: string
     status: 'not_run' | 'blocked' | 'succeeded' | 'failed'
+  }>
+  toolResults?: Array<{
+    name: string
+    status: 'not_run' | 'blocked' | 'succeeded' | 'failed'
+    output: { redacted: true } | null
   }>
   handoff: {
     requested: boolean
@@ -334,10 +444,123 @@ export interface TestRunTrace {
     mode: 'answer' | 'clarify' | 'handoff' | 'blocked'
   }
   provider: { provider: string; model: string; externalCall: false }
+  prompt?: { version: string; blockIds: string[] }
   configVersion: string
   executionMode: AgentExecutionMode
+  status?: 'completed' | 'blocked' | 'failed'
+  startedAt?: Date
+  completedAt?: Date
+  latencyMs?: number
+  tokenUsage?: {
+    prompt: number
+    completion: number
+    total: number
+    estimated: true
+  }
+  spans?: TestRunTraceSpan[]
   conversationId?: string
   sessionId?: string
+  createdAt: Date
+}
+
+export const TestLabCaseSchema = z
+  .object({
+    id: z
+      .string()
+      .trim()
+      .min(1)
+      .max(120)
+      .regex(/^[A-Za-z0-9._:-]+$/),
+    message: z.string().trim().min(1).max(4000),
+    history: z.array(z.string().max(4000)).max(50).default([]),
+    expectedPolicyDecision: PlatformDecisionSchema.optional(),
+    expectedResponseMode: z.enum(['answer', 'clarify', 'handoff', 'blocked']),
+    expectedHandoff: z.boolean().optional(),
+    approvedKnowledge: z
+      .object({
+        version: z.string().trim().min(1).max(120),
+        answer: z.string().trim().min(1).max(4000),
+        source: z
+          .string()
+          .trim()
+          .regex(/^controlled:\/\//)
+      })
+      .strict()
+      .optional()
+  })
+  .strict()
+export type TestLabCase = z.infer<typeof TestLabCaseSchema>
+
+export const TestSuiteCreateInputSchema = z
+  .object({
+    slug: z
+      .string()
+      .trim()
+      .min(1)
+      .max(80)
+      .regex(/^[a-z][a-z0-9-]+$/),
+    name: z.string().trim().min(1).max(120),
+    description: z.string().trim().max(1000),
+    agentId: AgentIdSchema,
+    versionId: AgentVersionIdSchema,
+    cases: z.array(TestLabCaseSchema).min(1).max(100)
+  })
+  .strict()
+export type TestSuiteCreateInput = z.infer<typeof TestSuiteCreateInputSchema>
+
+export const TestSuiteCloneInputSchema = z
+  .object({
+    name: z.string().trim().min(1).max(120).optional(),
+    description: z.string().trim().max(1000).optional(),
+    versionId: AgentVersionIdSchema.optional(),
+    cases: z.array(TestLabCaseSchema).min(1).max(100).optional()
+  })
+  .strict()
+export type TestSuiteCloneInput = z.infer<typeof TestSuiteCloneInputSchema>
+
+export interface TestSuiteRecord {
+  tenantId: TenantId
+  id: TestSuiteId
+  slug: string
+  name: string
+  description: string
+  agentId: AgentId
+  versionId: AgentVersionId
+  version: number
+  cases: TestLabCase[]
+  previousSuiteId: TestSuiteId | null
+  createdBy: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface TestLabEvaluation {
+  caseId: string
+  passed: boolean
+  failures: string[]
+  trace: TestRunTrace
+}
+
+export interface TestLabSuiteResult {
+  passed: boolean
+  results: TestLabEvaluation[]
+}
+
+export interface TestSuiteVariantResult {
+  label: 'A' | 'B'
+  versionId: AgentVersionId
+  passed: boolean
+  results: TestLabEvaluation[]
+}
+
+export interface TestSuiteRunRecord {
+  tenantId: TenantId
+  id: TestSuiteRunId
+  suiteId: TestSuiteId
+  agentId: AgentId
+  variants: TestSuiteVariantResult[]
+  passed: boolean
+  createdBy: string
   createdAt: Date
 }
 

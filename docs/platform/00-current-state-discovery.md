@@ -1,5 +1,7 @@
 # Discovery — estado atual e ponto de partida da Agent Platform
 
+> **Nota temporal:** este documento registra o Discovery de 2026-08-23 e é histórico. Para o estado atual do checkout após PLAT-S06, consulte `docs/platform/final-technical-audit.md`; os gaps descritos abaixo foram parcialmente fechados pelo vertical slice controlado e os bloqueios de produção continuam válidos.
+
 **Data da rodada:** 2026-08-23
 **Escopo:** `cvg-agent-secretary-v2` e todo o conteúdo de `docs/`
 **Modo operacional:** construção controlada; sem dados reais, canais reais ou produção irrestrita.

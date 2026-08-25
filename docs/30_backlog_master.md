@@ -138,12 +138,67 @@
 - risco: baixo
 - impacto: medio
 
+## PLAT-S05 — fechamento do Test Lab controlado
+
+- id: `PLAT-S05-001`
+- status: COMPLETED_CONTROLLED
+- entrega: trace seguro com risco/prompt/timestamps/latência/tokens/spans, caso de medicamento veterinário explicitamente seguro, validação de IDs no gateway e correções de binding/renderização no Control Center
+- evidência: `docs/platform/final-technical-audit.md`; testes unitários platform/policy, API/UI, `npm run verify`, readiness, E2E e smoke PostgreSQL
+- limite: nenhum provider/canal/RAG/agenda real, dado real, side effect ou release de produção
+
+- id: `PLAT-S05-002`
+- status: COMPLETED_CONTROLLED
+- entrega: preset idempotente `CVG Secretary` publicado somente no bootstrap de desenvolvimento e coberto por teste de lifecycle
+- evidência: `packages/platform/src/secretary-preset.ts`, testes de preset/bootstrap, `npm run verify`, readiness e E2E; sem bootstrap automático em `NODE_ENV=test`
+- limite: nenhum bootstrap automático em produção ou em tenant real
+
+- id: `PLAT-S06-001`
+- status: COMPLETED_CONTROLLED
+- entrega: catálogo tenant-aware persistente de `TestCase`/`TestSuite`, clone versionado imutável, histórico redigido de avaliações e comparação A/B exclusivamente no Test Lab
+- evidência: `docs/04_audit/0496_plat_s06_suite_catalog_evidence.md`; migration `0003_test_suite_catalog.sql`; API/UI, verify, readiness, E2E e smoke PostgreSQL controlado
+- dependência: próximo lane exige novo SPEC; nenhum rollout, provider/canal ou tráfego real
+
+## PLAT-S07 — conflito otimista do Control Center
+
+- id: `PLAT-S07-001`
+- status: COMPLETED_CONTROLLED
+- entrega: precondition `expectedStatus` no lifecycle de AgentVersion, erro de conflito HTTP 409 sem mutação parcial, ausência de audit de sucesso no conflito e integração do status observado na UI
+- evidência: `docs/04_audit/0497_plat_s07_optimistic_conflict_evidence.md`; verify, readiness, E2E, smoke PostgreSQL controlado, format e diff check
+- limite: não representa HA, lock distribuído, ETag de proxy, IdP, coordenação multi-região ou autorização de produção
+
+## PLAT-S08 — integridade de manifests e version pinning controlado
+
+- id: `PLAT-S08-001`
+- status: COMPLETED_CONTROLLED
+- entrega: validação semântica de `PluginManifest`, versões imutáveis por nome, `version` opcional no `PluginBinding` e resolução determinística no gateway
+- evidência: `docs/04_audit/0498_plat_s08_plugin_manifest_versioning_evidence.md`; verify, readiness, E2E, smoke PostgreSQL controlado, format e diff check
+- limite: handlers permanecem fake/local; marketplace, rede, código de terceiros e integração externa continuam bloqueados
+
+## PLAT-S09 — catálogo declarativo tenant-aware de plugins
+
+- id: `PLAT-S09-001`
+- status: COMPLETED_CONTROLLED
+- entrega: persistência de manifests validados sem handlers, lifecycle DRAFT/APPROVED/ARCHIVED com precondition, isolamento tenant/RLS e API admin controlada
+- evidência: `docs/04_audit/0499_plat_s09_plugin_catalog_evidence.md`; migration `0004_plugin_manifest_catalog.sql`; verify, readiness, E2E, smoke PostgreSQL, format, diff check e audit
+- dependência: novo SPEC controlado; aprovação de metadata não concede execução, instalação, permission ou provider/canal
+
 ## Regras de uso
 
 - Atualizar continuamente.
 - Adicionar novos itens imediatamente.
 - Priorizar por risco e impacto.
 - Nao esconder debitos tecnicos.
+
+## PLAT-S10 — Control Center do catálogo declarativo de plugins
+
+- id: `PLAT-S10-001`
+- status: COMPLETED_CONTROLLED
+- entrega: client/API e seção do Control Center para listar, criar e transicionar
+  metadata de plugins com tenant/identidade e precondition stale
+- dependência: `PLAT-S09-001` e novo SPEC `docs/platform/06-platform-spec.md`
+- evidência: `docs/04_audit/0500_plat_s10_plugin_catalog_control_center_evidence.md`
+- limite: `APPROVED` continua metadata-only; sem instalação, handlers, rede,
+  provider/canal, dados reais ou produção irrestrita
 
 ## Agent Platform — sprint controlado `PLAT-S01`
 

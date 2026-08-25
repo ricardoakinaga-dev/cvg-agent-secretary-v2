@@ -67,3 +67,36 @@ Permitir que um operador administrativo autorizado, em ambiente de teste, crie u
 - teste falso verde: aliases locais e teste de origem;
 - vazamento em trace: schemas minimizados/redaction;
 - pressão por piloto real: boundary explícito e signoff separado.
+
+## PLAT-S10 — Control Center para catálogo declarativo de plugins
+
+### Problema
+
+O catálogo tenant-aware de manifests foi implementado no control plane e exposto
+por API, mas o operador Admin ainda precisa sair do Control Center para revisar
+metadata. Isso deixa a governança do plugin parcialmente API-only e não satisfaz
+o requisito de uma superfície operacional para Plugins.
+
+### Resultado controlado
+
+O Admin deve conseguir carregar o catálogo do tenant, criar um snapshot de
+metadata a partir dos campos controlados do editor, revisar o status e solicitar
+as transições `DRAFT → APPROVED` ou `DRAFT → ARCHIVED`. O resultado precisa
+exibir claramente que `APPROVED` é apenas metadata revisada: não instala código,
+não concede permission, não registra handler e não libera provider, canal ou
+efeito externo.
+
+### Fora de escopo
+
+Marketplace, download/instalação, dependências de rede, health probe externo,
+handlers persistentes, provider/canal real, dados reais e qualquer side effect.
+
+### Aceite
+
+- o Control Center lista apenas os registros do tenant autenticado;
+- a criação usa manifest validado e não envia segredo ou código executável;
+- a aprovação envia `expectedStatus` e diferencia conflito stale de erro de
+  validação;
+- a UI informa status, versão e actor de aprovação e mantém a mensagem
+  metadata-only;
+- o fluxo legado de AgentVersion/Test Lab permanece inalterado.

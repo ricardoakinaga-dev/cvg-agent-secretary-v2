@@ -5,9 +5,20 @@ import {
   AgentIdSchema,
   AgentVersionIdSchema,
   AgentVersionStatusSchema,
+  PluginCatalogCreateInputSchema,
+  PluginCatalogIdSchema,
+  PluginCatalogStatusSchema,
+  PluginManifestSchema,
+  createTestSuiteId,
+  TestLabCaseSchema,
+  TestSuiteCloneInputSchema,
+  TestSuiteCreateInputSchema,
+  TestSuiteIdSchema,
+  TestSuiteRunIdSchema,
   TenantScopeSchema,
   createAgentId,
   createAgentVersionId,
+  createPluginCatalogId,
   type AgentConfig,
   type AgentCreateInput,
   type AgentId,
@@ -16,8 +27,19 @@ import {
   type AgentVersionRecord,
   type AgentVersionStatus,
   type ControlPlaneStore,
+  type PluginCatalogCreateInput,
+  type PluginCatalogId,
+  type PluginCatalogRecord,
+  type PluginCatalogStatus,
+  type PluginManifest,
   type TenantScope,
-  type TestRunTrace
+  type TestRunTrace,
+  type TestLabCase,
+  type TestSuiteCloneInput,
+  type TestSuiteCreateInput,
+  type TestSuiteId,
+  type TestSuiteRecord,
+  type TestSuiteRunRecord
 } from '@cvg/platform'
 import type { PostgresQueryable } from './postgres.ts'
 
@@ -199,11 +221,15 @@ export class PostgresControlPlaneRepository implements ControlPlaneStore {
   async transitionVersion(
     rawScope: TenantScope,
     rawVersionId: AgentVersionId,
-    rawTarget: AgentVersionStatus
+    rawTarget: AgentVersionStatus,
+    rawExpectedStatus?: AgentVersionStatus
   ): Promise<AgentVersionRecord> {
     const scope = parseScope(rawScope)
     const versionId = AgentVersionIdSchema.parse(rawVersionId)
     const target = AgentVersionStatusSchema.parse(rawTarget)
+    const expectedStatus = rawExpectedStatus
+      ? AgentVersionStatusSchema.parse(rawExpectedStatus)
+      : undefined
     await this.client.query('BEGIN')
     try {
       const currentResult = await this.client.query<AgentVersionRow>(
@@ -218,6 +244,7 @@ export class PostgresControlPlaneRepository implements ControlPlaneStore {
         throw new DomainError('invalid_action', 'Agent version not found')
       }
       const current = mapVersion(currentRow)
+      assertExpectedStatus(current.status, expectedStatus)
       if (!canTransition(current.status, target)) {
         throw new DomainError(
           'invalid_action',
@@ -248,10 +275,14 @@ export class PostgresControlPlaneRepository implements ControlPlaneStore {
 
   async publishVersion(
     rawScope: TenantScope,
-    rawVersionId: AgentVersionId
+    rawVersionId: AgentVersionId,
+    rawExpectedStatus?: AgentVersionStatus
   ): Promise<AgentVersionRecord> {
     const scope = parseScope(rawScope)
     const versionId = AgentVersionIdSchema.parse(rawVersionId)
+    const expectedStatus = rawExpectedStatus
+      ? AgentVersionStatusSchema.parse(rawExpectedStatus)
+      : undefined
     await this.client.query('BEGIN')
     try {
       const versionIdentity = await this.client.query<{ agent_id: string }>(
@@ -289,6 +320,7 @@ export class PostgresControlPlaneRepository implements ControlPlaneStore {
         throw new DomainError('invalid_action', 'Agent version not found')
       }
       const current = mapVersion(currentRow)
+      assertExpectedStatus(current.status, expectedStatus)
       if (current.status !== 'APPROVED') {
         throw new DomainError(
           'invalid_action',
@@ -331,12 +363,16 @@ export class PostgresControlPlaneRepository implements ControlPlaneStore {
     rawScope: TenantScope,
     rawAgentId: AgentId,
     rawVersionId: AgentVersionId,
-    createdBy: string
+    createdBy: string,
+    rawExpectedStatus?: AgentVersionStatus
   ): Promise<AgentVersionRecord> {
     const scope = parseScope(rawScope)
     const agentId = AgentIdSchema.parse(rawAgentId)
     const versionId = AgentVersionIdSchema.parse(rawVersionId)
     const actor = validateActor(createdBy)
+    const expectedStatus = rawExpectedStatus
+      ? AgentVersionStatusSchema.parse(rawExpectedStatus)
+      : undefined
     await this.client.query('BEGIN')
     try {
       const lockedAgentResult = await this.client.query<AgentRow>(
@@ -366,6 +402,7 @@ export class PostgresControlPlaneRepository implements ControlPlaneStore {
         )
       }
       const target = mapVersion(targetRow)
+      assertExpectedStatus(target.status, expectedStatus)
       if (target.agentId !== agentId) {
         throw new DomainError(
           'invalid_action',
@@ -485,6 +522,191 @@ export class PostgresControlPlaneRepository implements ControlPlaneStore {
     return version?.status === 'PUBLISHED' ? version : null
   }
 
+  async createPluginCatalogEntry(
+    rawScope: TenantScope,
+    rawInput: PluginCatalogCreateInput,
+    createdBy: string
+  ): Promise<PluginCatalogRecord> {
+    const scope = parseScope(rawScope)
+    const input = PluginCatalogCreateInputSchema.parse(rawInput)
+    const actor = validateActor(createdBy)
+    const existing = await this.client.query<{ id: string }>(
+      `SELECT id
+       FROM platform_plugin_catalog
+       WHERE tenant_id = $1 AND name = $2 AND version = $3
+       LIMIT 1`,
+      [scope.tenantId, input.manifest.name, input.manifest.version]
+    )
+    if (existing.rows[0]) {
+      throw new DomainError(
+        'invalid_action',
+        'Plugin manifest name/version already exists'
+      )
+    }
+    const now = new Date()
+    const entry: PluginCatalogRecord = {
+      tenantId: scope.tenantId,
+      id: createPluginCatalogId(),
+      manifest: structuredClone(input.manifest),
+      status: 'DRAFT',
+      createdBy: actor,
+      approvedBy: null,
+      createdAt: now,
+      updatedAt: now
+    }
+    try {
+      await this.client.query(
+        `INSERT INTO platform_plugin_catalog
+         (tenant_id, id, name, version, manifest, status, created_by,
+          approved_by, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7, $8, $9, $10)`,
+        [
+          entry.tenantId,
+          entry.id,
+          entry.manifest.name,
+          entry.manifest.version,
+          JSON.stringify(entry.manifest),
+          entry.status,
+          entry.createdBy,
+          entry.approvedBy,
+          entry.createdAt,
+          entry.updatedAt
+        ]
+      )
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        throw new DomainError(
+          'invalid_action',
+          'Plugin manifest name/version already exists'
+        )
+      }
+      throw error
+    }
+    return clonePluginCatalogRecord(entry)
+  }
+
+  async getPluginCatalogEntry(
+    rawScope: TenantScope,
+    rawPluginId: PluginCatalogId
+  ): Promise<PluginCatalogRecord | null> {
+    const scope = parseScope(rawScope)
+    const pluginId = PluginCatalogIdSchema.parse(rawPluginId)
+    const result = await this.client.query<PluginCatalogRow>(
+      `SELECT tenant_id, id, name, version, manifest, status, created_by,
+              approved_by, created_at, updated_at
+       FROM platform_plugin_catalog
+       WHERE tenant_id = $1 AND id = $2
+       LIMIT 1`,
+      [scope.tenantId, pluginId]
+    )
+    const row = result.rows[0]
+    return row ? mapPluginCatalog(row) : null
+  }
+
+  async listPluginCatalogEntries(
+    rawScope: TenantScope,
+    rawName?: string
+  ): Promise<PluginCatalogRecord[]> {
+    const scope = parseScope(rawScope)
+    const name = rawName?.trim()
+    if (name !== undefined && name.length === 0) {
+      throw new DomainError('validation_failed', 'Plugin name is invalid')
+    }
+    const result = await this.client.query<PluginCatalogRow>(
+      `SELECT tenant_id, id, name, version, manifest, status, created_by,
+              approved_by, created_at, updated_at
+       FROM platform_plugin_catalog
+       WHERE tenant_id = $1
+         AND ($2::text IS NULL OR name = $2)
+       ORDER BY updated_at DESC, id DESC`,
+      [scope.tenantId, name ?? null]
+    )
+    return result.rows.map(mapPluginCatalog)
+  }
+
+  async transitionPluginCatalogEntry(
+    rawScope: TenantScope,
+    rawPluginId: PluginCatalogId,
+    rawTarget: PluginCatalogStatus,
+    actorId: string,
+    rawExpectedStatus?: PluginCatalogStatus
+  ): Promise<PluginCatalogRecord> {
+    const scope = parseScope(rawScope)
+    const pluginId = PluginCatalogIdSchema.parse(rawPluginId)
+    const target = PluginCatalogStatusSchema.parse(rawTarget)
+    const expectedStatus = rawExpectedStatus
+      ? PluginCatalogStatusSchema.parse(rawExpectedStatus)
+      : undefined
+    const actor = validateActor(actorId)
+    await this.client.query('BEGIN')
+    try {
+      const currentResult = await this.client.query<PluginCatalogRow>(
+        `SELECT tenant_id, id, name, version, manifest, status, created_by,
+                approved_by, created_at, updated_at
+         FROM platform_plugin_catalog
+         WHERE tenant_id = $1 AND id = $2
+         LIMIT 1
+         FOR UPDATE`,
+        [scope.tenantId, pluginId]
+      )
+      const currentRow = currentResult.rows[0]
+      if (!currentRow) {
+        throw new DomainError(
+          'invalid_action',
+          'Plugin catalog entry not found'
+        )
+      }
+      const current = mapPluginCatalog(currentRow)
+      assertPluginCatalogExpectedStatus(current.status, expectedStatus)
+      if (!canTransitionPluginCatalog(current.status, target)) {
+        throw new DomainError(
+          'invalid_action',
+          `Plugin catalog entry cannot transition from ${current.status} to ${target}`
+        )
+      }
+      const approvedBy = target === 'APPROVED' ? actor : current.approvedBy
+      const now = new Date()
+      const updatedResult = await this.client.query<PluginCatalogRow>(
+        `UPDATE platform_plugin_catalog
+         SET status = $3, approved_by = $4, updated_at = $5
+         WHERE tenant_id = $1 AND id = $2 AND status = $6
+         RETURNING tenant_id, id, name, version, manifest, status, created_by,
+                   approved_by, created_at, updated_at`,
+        [scope.tenantId, pluginId, target, approvedBy, now, current.status]
+      )
+      const updatedRow = updatedResult.rows[0]
+      if (!updatedRow) {
+        throw new DomainError(
+          'conflict',
+          'Plugin catalog entry changed before transition could be committed'
+        )
+      }
+      await this.client.query('COMMIT')
+      return mapPluginCatalog(updatedRow)
+    } catch (error) {
+      await this.client.query('ROLLBACK')
+      throw error
+    }
+  }
+
+  async resolveApprovedPlugin(
+    rawScope: TenantScope,
+    name: string,
+    version?: string
+  ): Promise<PluginManifest | null> {
+    const entries = await this.listPluginCatalogEntries(rawScope, name)
+    const approved = entries
+      .filter(
+        (entry) =>
+          entry.status === 'APPROVED' &&
+          (version === undefined || entry.manifest.version === version)
+      )
+      .sort((left, right) =>
+        comparePluginVersions(right.manifest.version, left.manifest.version)
+      )[0]
+    return approved ? structuredClone(approved.manifest) : null
+  }
+
   async recordTestRun(
     rawScope: TenantScope,
     trace: TestRunTrace
@@ -569,6 +791,264 @@ export class PostgresControlPlaneRepository implements ControlPlaneStore {
     return result.rows.map((row) => cloneTrace(row.trace))
   }
 
+  async createTestSuite(
+    rawScope: TenantScope,
+    rawInput: TestSuiteCreateInput,
+    createdBy: string
+  ): Promise<TestSuiteRecord> {
+    const scope = parseScope(rawScope)
+    const input = TestSuiteCreateInputSchema.parse(rawInput)
+    const agent = await this.getAgent(scope, input.agentId)
+    const version = await this.getVersion(scope, input.versionId)
+    if (!agent || !version || version.agentId !== agent.id) {
+      throw new DomainError(
+        'invalid_action',
+        'Test suite agent/version is invalid'
+      )
+    }
+    const existing = await this.client.query<{ id: string }>(
+      `SELECT id FROM platform_test_suites
+       WHERE tenant_id = $1 AND slug = $2
+       LIMIT 1`,
+      [scope.tenantId, input.slug]
+    )
+    if (existing.rows[0]) {
+      throw new DomainError('invalid_action', 'Test suite slug already exists')
+    }
+    const now = new Date()
+    const suite: TestSuiteRecord = {
+      tenantId: scope.tenantId,
+      id: createTestSuiteId(),
+      slug: input.slug,
+      name: input.name,
+      description: input.description,
+      agentId: agent.id,
+      versionId: version.id,
+      version: 1,
+      cases: input.cases.map(sanitizeTestCase),
+      previousSuiteId: null,
+      createdBy: validateActor(createdBy),
+      createdAt: now,
+      updatedAt: now
+    }
+    await this.client.query(
+      `INSERT INTO platform_test_suites
+       (tenant_id, id, slug, name, description, agent_id, version_id, version,
+        cases, previous_suite_id, created_by, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10, $11, $12, $13)`,
+      [
+        suite.tenantId,
+        suite.id,
+        suite.slug,
+        suite.name,
+        suite.description,
+        suite.agentId,
+        suite.versionId,
+        suite.version,
+        JSON.stringify(suite.cases),
+        suite.previousSuiteId,
+        suite.createdBy,
+        suite.createdAt,
+        suite.updatedAt
+      ]
+    )
+    return cloneTestSuite(suite)
+  }
+
+  async getTestSuite(
+    rawScope: TenantScope,
+    rawSuiteId: TestSuiteId
+  ): Promise<TestSuiteRecord | null> {
+    const scope = parseScope(rawScope)
+    const suiteId = TestSuiteIdSchema.parse(rawSuiteId)
+    const result = await this.client.query<TestSuiteRow>(
+      `SELECT tenant_id, id, slug, name, description, agent_id, version_id,
+              version, cases, previous_suite_id, created_by, created_at, updated_at
+       FROM platform_test_suites
+       WHERE tenant_id = $1 AND id = $2
+       LIMIT 1`,
+      [scope.tenantId, suiteId]
+    )
+    const row = result.rows[0]
+    return row ? mapTestSuite(row) : null
+  }
+
+  async listTestSuites(
+    rawScope: TenantScope,
+    rawAgentId?: AgentId
+  ): Promise<TestSuiteRecord[]> {
+    const scope = parseScope(rawScope)
+    const agentId = rawAgentId ? AgentIdSchema.parse(rawAgentId) : undefined
+    if (agentId && !(await this.getAgent(scope, agentId))) {
+      throw new DomainError('invalid_action', 'Agent not found')
+    }
+    const result = await this.client.query<TestSuiteRow>(
+      `SELECT tenant_id, id, slug, name, description, agent_id, version_id,
+              version, cases, previous_suite_id, created_by, created_at, updated_at
+       FROM platform_test_suites
+       WHERE tenant_id = $1
+         AND ($2::text IS NULL OR agent_id = $2)
+       ORDER BY updated_at DESC, id DESC`,
+      [scope.tenantId, agentId ?? null]
+    )
+    return result.rows.map(mapTestSuite)
+  }
+
+  async cloneTestSuite(
+    rawScope: TenantScope,
+    rawSuiteId: TestSuiteId,
+    rawInput: TestSuiteCloneInput,
+    createdBy: string
+  ): Promise<TestSuiteRecord> {
+    const scope = parseScope(rawScope)
+    const suiteId = TestSuiteIdSchema.parse(rawSuiteId)
+    const input = TestSuiteCloneInputSchema.parse(rawInput)
+    const source = await this.getTestSuite(scope, suiteId)
+    if (!source) throw new DomainError('invalid_action', 'Test suite not found')
+    const versionId = input.versionId ?? source.versionId
+    const version = await this.getVersion(scope, versionId)
+    if (!version || version.agentId !== source.agentId) {
+      throw new DomainError('invalid_action', 'Test suite version is invalid')
+    }
+    const latest = await this.client.query<{ version: number }>(
+      `SELECT version FROM platform_test_suites
+       WHERE tenant_id = $1 AND slug = $2
+       ORDER BY version DESC LIMIT 1`,
+      [scope.tenantId, source.slug]
+    )
+    const now = new Date()
+    const clone: TestSuiteRecord = {
+      ...source,
+      id: createTestSuiteId(),
+      name: input.name ?? source.name,
+      description: input.description ?? source.description,
+      versionId,
+      version: Number(latest.rows[0]?.version ?? source.version) + 1,
+      cases: (input.cases ?? source.cases).map(sanitizeTestCase),
+      previousSuiteId: source.id,
+      createdBy: validateActor(createdBy),
+      createdAt: now,
+      updatedAt: now
+    }
+    await this.client.query(
+      `INSERT INTO platform_test_suites
+       (tenant_id, id, slug, name, description, agent_id, version_id, version,
+        cases, previous_suite_id, created_by, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10, $11, $12, $13)`,
+      [
+        clone.tenantId,
+        clone.id,
+        clone.slug,
+        clone.name,
+        clone.description,
+        clone.agentId,
+        clone.versionId,
+        clone.version,
+        JSON.stringify(clone.cases),
+        clone.previousSuiteId,
+        clone.createdBy,
+        clone.createdAt,
+        clone.updatedAt
+      ]
+    )
+    return cloneTestSuite(clone)
+  }
+
+  async recordTestSuiteRun(
+    rawScope: TenantScope,
+    rawRun: TestSuiteRunRecord
+  ): Promise<TestSuiteRunRecord> {
+    const scope = parseScope(rawScope)
+    const run = cloneTestSuiteRun(rawRun)
+    TestSuiteRunIdSchema.parse(run.id)
+    if (run.tenantId !== scope.tenantId) {
+      throw new DomainError(
+        'forbidden',
+        'Suite run tenant does not match scope'
+      )
+    }
+    const suite = await this.getTestSuite(scope, run.suiteId)
+    if (!suite || suite.agentId !== run.agentId) {
+      throw new DomainError('invalid_action', 'Test suite run scope is invalid')
+    }
+    const variantsPassed = run.variants.every((variant) => variant.passed)
+    if (
+      run.variants.length < 1 ||
+      run.variants.length > 2 ||
+      new Set(run.variants.map((variant) => variant.label)).size !==
+        run.variants.length ||
+      run.variants.some(
+        (variant) => variant.label !== 'A' && variant.label !== 'B'
+      ) ||
+      run.passed !== variantsPassed
+    ) {
+      throw new DomainError(
+        'invalid_action',
+        'Test suite run variants are invalid'
+      )
+    }
+    for (const variant of run.variants) {
+      const version = await this.getVersion(scope, variant.versionId)
+      if (!version || version.agentId !== run.agentId) {
+        throw new DomainError(
+          'invalid_action',
+          'Test suite run version is invalid'
+        )
+      }
+      for (const result of variant.results) {
+        if (
+          result.trace.tenantId !== scope.tenantId ||
+          result.trace.agentId !== run.agentId ||
+          result.trace.versionId !== variant.versionId
+        ) {
+          throw new DomainError(
+            'invalid_action',
+            'Suite trace scope is invalid'
+          )
+        }
+        await this.assertTraceReferences(scope, result.trace)
+      }
+    }
+    await this.client.query(
+      `INSERT INTO platform_test_suite_runs
+       (tenant_id, id, suite_id, agent_id, result, created_by, created_at)
+       VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7)`,
+      [
+        run.tenantId,
+        run.id,
+        run.suiteId,
+        run.agentId,
+        JSON.stringify({
+          variants: run.variants,
+          passed: run.passed
+        }),
+        run.createdBy,
+        run.createdAt
+      ]
+    )
+    return cloneTestSuiteRun(run)
+  }
+
+  async listTestSuiteRuns(
+    rawScope: TenantScope,
+    rawSuiteId: TestSuiteId,
+    limit = 50
+  ): Promise<TestSuiteRunRecord[]> {
+    const scope = parseScope(rawScope)
+    const suiteId = TestSuiteIdSchema.parse(rawSuiteId)
+    const suite = await this.getTestSuite(scope, suiteId)
+    if (!suite) throw new DomainError('invalid_action', 'Test suite not found')
+    const result = await this.client.query<TestSuiteRunRow>(
+      `SELECT tenant_id, id, suite_id, agent_id, result, created_by, created_at
+       FROM platform_test_suite_runs
+       WHERE tenant_id = $1 AND suite_id = $2
+       ORDER BY created_at DESC
+       LIMIT $3`,
+      [scope.tenantId, suiteId, normalizeTraceLimit(limit)]
+    )
+    return result.rows.map(mapTestSuiteRun)
+  }
+
   private async assertTraceReferences(
     scope: TenantScope,
     trace: TestRunTrace
@@ -611,6 +1091,45 @@ interface AgentVersionRow {
   published_at: Date | string | null
 }
 
+interface TestSuiteRow {
+  tenant_id: string
+  id: string
+  slug: string
+  name: string
+  description: string
+  agent_id: string
+  version_id: string
+  version: number
+  cases: unknown
+  previous_suite_id: string | null
+  created_by: string
+  created_at: Date | string
+  updated_at: Date | string
+}
+
+interface TestSuiteRunRow {
+  tenant_id: string
+  id: string
+  suite_id: string
+  agent_id: string
+  result: { variants: TestSuiteRunRecord['variants']; passed: boolean }
+  created_by: string
+  created_at: Date | string
+}
+
+interface PluginCatalogRow {
+  tenant_id: string
+  id: string
+  name: string
+  version: string
+  manifest: unknown
+  status: PluginCatalogStatus
+  created_by: string
+  approved_by: string | null
+  created_at: Date | string
+  updated_at: Date | string
+}
+
 function parseScope(scope: TenantScope): TenantScope {
   return TenantScopeSchema.parse(scope)
 }
@@ -627,6 +1146,18 @@ function validateActor(actorId: string): string {
   return value
 }
 
+function assertExpectedStatus(
+  actual: AgentVersionStatus,
+  expected?: AgentVersionStatus
+): void {
+  if (expected !== undefined && actual !== expected) {
+    throw new DomainError(
+      'conflict',
+      `Agent version changed: expected ${expected}, observed ${actual}`
+    )
+  }
+}
+
 function canTransition(
   from: AgentVersionStatus,
   to: AgentVersionStatus
@@ -639,6 +1170,53 @@ function canTransition(
     ARCHIVED: []
   }
   return transitions[from].includes(to)
+}
+
+function assertPluginCatalogExpectedStatus(
+  actual: PluginCatalogStatus,
+  expected?: PluginCatalogStatus
+): void {
+  if (expected !== undefined && actual !== expected) {
+    throw new DomainError(
+      'conflict',
+      `Plugin catalog entry changed: expected ${expected}, observed ${actual}`
+    )
+  }
+}
+
+function canTransitionPluginCatalog(
+  from: PluginCatalogStatus,
+  to: PluginCatalogStatus
+): boolean {
+  const transitions: Record<PluginCatalogStatus, PluginCatalogStatus[]> = {
+    DRAFT: ['APPROVED', 'ARCHIVED'],
+    APPROVED: ['ARCHIVED'],
+    ARCHIVED: []
+  }
+  return transitions[from].includes(to)
+}
+
+function isUniqueViolation(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    error.code === '23505'
+  )
+}
+
+function comparePluginVersions(left: string, right: string): number {
+  const leftParts = left.split('.').map((part) => Number(part))
+  const rightParts = right.split('.').map((part) => Number(part))
+  if (leftParts.every(Number.isFinite) && rightParts.every(Number.isFinite)) {
+    const length = Math.max(leftParts.length, rightParts.length)
+    for (let index = 0; index < length; index += 1) {
+      const difference = (leftParts[index] ?? 0) - (rightParts[index] ?? 0)
+      if (difference !== 0) return difference
+    }
+    return 0
+  }
+  return left.localeCompare(right)
 }
 
 function mapAgent(row: AgentRow): AgentRecord {
@@ -668,6 +1246,54 @@ function mapVersion(row: AgentVersionRow): AgentVersionRecord {
   }
 }
 
+function mapTestSuite(row: TestSuiteRow): TestSuiteRecord {
+  return cloneTestSuite({
+    tenantId: row.tenant_id as TestSuiteRecord['tenantId'],
+    id: TestSuiteIdSchema.parse(row.id),
+    slug: row.slug,
+    name: row.name,
+    description: row.description,
+    agentId: row.agent_id as TestSuiteRecord['agentId'],
+    versionId: row.version_id as TestSuiteRecord['versionId'],
+    version: row.version,
+    cases: Array.isArray(row.cases)
+      ? row.cases.map((testCase) => sanitizeTestCase(testCase as TestLabCase))
+      : [],
+    previousSuiteId: row.previous_suite_id
+      ? TestSuiteIdSchema.parse(row.previous_suite_id)
+      : null,
+    createdBy: row.created_by,
+    createdAt: new Date(row.created_at),
+    updatedAt: new Date(row.updated_at)
+  })
+}
+
+function mapTestSuiteRun(row: TestSuiteRunRow): TestSuiteRunRecord {
+  return cloneTestSuiteRun({
+    tenantId: row.tenant_id as TestSuiteRunRecord['tenantId'],
+    id: TestSuiteRunIdSchema.parse(row.id),
+    suiteId: TestSuiteIdSchema.parse(row.suite_id),
+    agentId: row.agent_id as TestSuiteRunRecord['agentId'],
+    variants: row.result.variants,
+    passed: row.result.passed,
+    createdBy: row.created_by,
+    createdAt: new Date(row.created_at)
+  })
+}
+
+function mapPluginCatalog(row: PluginCatalogRow): PluginCatalogRecord {
+  return clonePluginCatalogRecord({
+    tenantId: row.tenant_id as PluginCatalogRecord['tenantId'],
+    id: PluginCatalogIdSchema.parse(row.id),
+    manifest: PluginManifestSchema.parse(row.manifest),
+    status: PluginCatalogStatusSchema.parse(row.status),
+    createdBy: row.created_by,
+    approvedBy: row.approved_by,
+    createdAt: new Date(row.created_at),
+    updatedAt: new Date(row.updated_at)
+  })
+}
+
 function cloneAgent(agent: AgentRecord): AgentRecord {
   return {
     ...agent,
@@ -693,15 +1319,85 @@ function cloneTrace(trace: TestRunTrace): TestRunTrace {
       message: redactSensitiveText(trace.input.message)
     },
     intent: { ...trace.intent },
+    ...(trace.risk ? { risk: { ...trace.risk } } : {}),
     policy: trace.policy.map((item) => ({ ...item })),
     knowledge: { ...trace.knowledge },
     tools: trace.tools.map((tool) => ({ ...tool })),
+    ...(trace.toolResults
+      ? {
+          toolResults: trace.toolResults.map((result) => ({
+            ...result,
+            output: result.output ? { ...result.output } : null
+          }))
+        }
+      : {}),
     handoff: { ...trace.handoff },
     response: {
       ...trace.response,
       text: redactSensitiveText(trace.response.text)
     },
     provider: { ...trace.provider },
+    ...(trace.prompt
+      ? { prompt: { ...trace.prompt, blockIds: [...trace.prompt.blockIds] } }
+      : {}),
+    ...(trace.status ? { status: trace.status } : {}),
+    ...(trace.startedAt ? { startedAt: new Date(trace.startedAt) } : {}),
+    ...(trace.completedAt ? { completedAt: new Date(trace.completedAt) } : {}),
+    ...(trace.latencyMs !== undefined ? { latencyMs: trace.latencyMs } : {}),
+    ...(trace.tokenUsage ? { tokenUsage: { ...trace.tokenUsage } } : {}),
+    ...(trace.spans ? { spans: trace.spans.map((span) => ({ ...span })) } : {}),
     createdAt: new Date(trace.createdAt)
+  }
+}
+
+function cloneTestSuite(suite: TestSuiteRecord): TestSuiteRecord {
+  return {
+    ...suite,
+    cases: structuredClone(suite.cases),
+    createdAt: new Date(suite.createdAt),
+    updatedAt: new Date(suite.updatedAt)
+  }
+}
+
+function sanitizeTestCase(rawCase: TestLabCase): TestLabCase {
+  const testCase = TestLabCaseSchema.parse(rawCase)
+  return {
+    ...testCase,
+    message: redactSensitiveText(testCase.message),
+    history: testCase.history.map((item) => redactSensitiveText(item)),
+    ...(testCase.approvedKnowledge
+      ? {
+          approvedKnowledge: {
+            ...testCase.approvedKnowledge,
+            answer: redactSensitiveText(testCase.approvedKnowledge.answer)
+          }
+        }
+      : {})
+  }
+}
+
+function cloneTestSuiteRun(run: TestSuiteRunRecord): TestSuiteRunRecord {
+  return {
+    ...run,
+    variants: run.variants.map((variant) => ({
+      ...variant,
+      results: variant.results.map((result) => ({
+        ...result,
+        failures: [...result.failures],
+        trace: cloneTrace(result.trace)
+      }))
+    })),
+    createdAt: new Date(run.createdAt)
+  }
+}
+
+function clonePluginCatalogRecord(
+  entry: PluginCatalogRecord
+): PluginCatalogRecord {
+  return {
+    ...entry,
+    manifest: structuredClone(entry.manifest),
+    createdAt: new Date(entry.createdAt),
+    updatedAt: new Date(entry.updatedAt)
   }
 }

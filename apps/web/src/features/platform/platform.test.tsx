@@ -175,4 +175,146 @@ describe('PlatformPanel', () => {
       await screen.findByText('find_available_slots: succeeded')
     ).toBeTruthy()
   })
+
+  it('sends the configured knowledge version to Test Lab', async () => {
+    const agentId = 'agent_00000000-0000-4000-8000-000000000022'
+    const versionId = 'agent_version_00000000-0000-4000-8000-000000000022'
+    const calls: Array<[RequestInfo | URL, RequestInit | undefined]> = []
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      calls.push([input, init])
+      const url = String(input)
+      if (url === '/v1/admin/agents' && !init?.method) {
+        return envelope([
+          {
+            id: agentId,
+            slug: 'knowledge-agent',
+            name: 'Knowledge Agent',
+            description: 'Fixture',
+            activeVersionId: versionId
+          }
+        ])
+      }
+      if (url === '/v1/admin/test-lab/runs?limit=10') {
+        return envelope({
+          items: [],
+          pageInfo: { limit: 10, offset: 0, total: 0, hasNextPage: false }
+        })
+      }
+      if (url === '/v1/admin/execution-traces?limit=10') {
+        return envelope({
+          items: [],
+          pageInfo: { limit: 10, offset: 0, total: 0, hasNextPage: false }
+        })
+      }
+      if (url === `/v1/admin/agents/${agentId}/versions`) {
+        return envelope([
+          {
+            id: versionId,
+            agentId,
+            version: 1,
+            status: 'PUBLISHED',
+            config: {
+              ...configForTestLab,
+              knowledge: [
+                {
+                  source: 'controlled://hours',
+                  version: 'knowledge-v7',
+                  enabled: true,
+                  requiresApprovedSource: true
+                }
+              ]
+            }
+          }
+        ])
+      }
+      if (url === '/v1/admin/test-lab/runs' && init?.method === 'POST') {
+        return envelope({
+          traceId: 'trace_00000000-0000-4000-8000-000000000022',
+          agentId,
+          versionId,
+          configVersion: `${versionId}:v1`,
+          executionMode: 'TEST_LAB',
+          intent: { name: 'institutional_question', confidence: 0.94 },
+          policy: [{ decision: 'allowed', reason: 'action_allowed' }],
+          knowledge: {
+            status: 'answered',
+            source: 'controlled://hours',
+            version: 'knowledge-v7'
+          },
+          tools: [],
+          handoff: { requested: false, reason: null, state: 'BOT_ACTIVE' },
+          response: { text: 'Horário fictício.', mode: 'answer' },
+          provider: {
+            provider: 'fake',
+            model: 'deterministic-v1',
+            externalCall: false
+          }
+        })
+      }
+      return Promise.reject(new Error(`Unexpected URL ${url}`))
+    })
+
+    render(
+      <PlatformPanel
+        identity={{ operatorId: 'admin.platform', role: 'Admin', tenantId }}
+      />
+    )
+
+    await screen.findByDisplayValue('knowledge-v7')
+    fireEvent.change(screen.getByLabelText('Mensagem fictícia para Test Lab'), {
+      target: { value: 'Qual o horário de funcionamento?' }
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Executar dry-run' }))
+
+    await waitFor(() =>
+      expect(
+        calls.find(
+          ([input, init]) =>
+            String(input) === '/v1/admin/test-lab/runs' &&
+            init?.method === 'POST'
+        )
+      ).toBeDefined()
+    )
+    const request = calls.find(
+      ([input, init]) =>
+        String(input) === '/v1/admin/test-lab/runs' && init?.method === 'POST'
+    )
+    const body = JSON.parse(String(request?.[1]?.body)) as {
+      approvedKnowledge?: { version: string }
+    }
+    expect(body.approvedKnowledge?.version).toBe('knowledge-v7')
+  })
 })
+
+const configForTestLab = {
+  persona: { name: 'Agent', role: 'assistant', tone: 'calm' },
+  greeting: 'Como posso ajudar?',
+  promptBlocks: [],
+  responseTemplates: { institutional_question: 'Horário fictício.' },
+  model: {
+    provider: 'fake',
+    model: 'deterministic-v1',
+    temperature: 0,
+    maxTokens: 128,
+    timeoutMs: 1000,
+    retries: 0,
+    secretRef: 'secret://controlled/fake'
+  },
+  featureFlags: { testLab: true, realChannels: false },
+  policies: {
+    version: 'policy-v1',
+    minConfidence: 0.7,
+    lowConfidence: 'clarify',
+    maxClarifications: 2,
+    enabledActions: ['respond', 'institutional_question'],
+    approvalActions: [],
+    blockedActions: []
+  },
+  plugins: [],
+  knowledge: [],
+  handoff: {
+    lowConfidenceDestination: 'controlled-reception',
+    destinations: ['controlled-reception'],
+    maxClarifications: 2
+  }
+}

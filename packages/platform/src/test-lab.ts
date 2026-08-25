@@ -69,6 +69,7 @@ export async function runTestLab(input: TestLabInput): Promise<TestRunTrace> {
 export async function executeConfiguredAgent(
   input: ControlledAgentExecutionInput
 ): Promise<TestRunTrace> {
+  const startedAt = new Date()
   const version = await input.store.getVersion(
     { tenantId: input.tenantId },
     input.versionId
@@ -89,8 +90,9 @@ export async function executeConfiguredAgent(
     confidence: intent.confidence,
     config,
     clarificationCount: history.length,
-    riskLevel: intent.name === 'triage' ? 'high' : 'low'
+    riskLevel: riskForIntent(intent.name).level
   })
+  const risk = riskForIntent(intent.name, policy)
   const knowledge = resolveKnowledge(
     intent.name,
     input.approvedKnowledge,
@@ -99,6 +101,7 @@ export async function executeConfiguredAgent(
   const handoffRequested =
     policy.decision === 'handoff' ||
     policy.decision === 'requires_approval' ||
+    intent.name === 'medication_advice' ||
     knowledge.trace.status === 'approved_source_missing' ||
     knowledge.trace.status === 'handoff'
   const handoffState: HumanTakeoverState = handoffRequested
@@ -123,6 +126,15 @@ export async function executeConfiguredAgent(
     ...response,
     text: redactTestMessage(completion.text)
   }
+  const tools = await executePlannedTools({
+    input,
+    config,
+    intent: intent.name,
+    policy
+  })
+  const completedAt = new Date()
+  const promptTokens = estimateTokenCount(promptWithHistory)
+  const completionTokens = estimateTokenCount(completedResponse.text)
   const trace: TestRunTrace = {
     traceId: createTraceId(),
     tenantId: input.tenantId,
@@ -130,21 +142,24 @@ export async function executeConfiguredAgent(
     versionId: input.versionId,
     input: { message: redactTestMessage(message), historySize: history.length },
     intent,
+    risk,
     policy: [policy],
     knowledge: knowledge.trace,
-    tools: await executePlannedTools({
-      input,
-      config,
-      intent: intent.name,
-      policy
-    }),
+    tools,
+    toolResults: tools.map((tool) => ({
+      name: tool.name,
+      status: tool.status,
+      output: tool.status === 'succeeded' ? { redacted: true } : null
+    })),
     handoff: {
       requested: handoffRequested,
       reason: handoffRequested
         ? policy.decision === 'handoff' ||
           policy.decision === 'requires_approval'
           ? policy.reason
-          : 'approved_source_missing'
+          : intent.name === 'medication_advice'
+            ? 'veterinary_evaluation_required'
+            : 'approved_source_missing'
         : null,
       state: handoffState
     },
@@ -154,13 +169,33 @@ export async function executeConfiguredAgent(
       model: completion.model,
       externalCall: completion.externalCall
     },
+    prompt: {
+      version: `${version.id}:v${version.version}`,
+      blockIds: prompt.blockIds
+    },
     configVersion: `${version.id}:v${version.version}`,
     executionMode: input.executionMode,
+    status: policy.decision === 'blocked' ? 'blocked' : 'completed',
+    startedAt,
+    completedAt,
+    latencyMs: Math.max(0, completedAt.getTime() - startedAt.getTime()),
+    tokenUsage: {
+      prompt: promptTokens,
+      completion: completionTokens,
+      total: promptTokens + completionTokens,
+      estimated: true
+    },
+    spans: createTraceSpans({
+      policy,
+      knowledge: knowledge.trace,
+      tools,
+      handoffRequested
+    }),
     ...(input.context?.conversationId
       ? { conversationId: input.context.conversationId }
       : {}),
     ...(input.context?.sessionId ? { sessionId: input.context.sessionId } : {}),
-    createdAt: new Date()
+    createdAt: completedAt
   }
   return trace
 }
@@ -207,6 +242,13 @@ function classifyForDryRun(message: string): {
   confidence: number
 } {
   const text = message.toLowerCase()
+  if (
+    /dipirona|ibuprofeno|paracetamol|medicamento|medica[cç][aã]o|rem[eé]dio|antibi[oó]tico|medication|medicine|drug/.test(
+      text
+    )
+  ) {
+    return { name: 'medication_advice', confidence: 0.99 }
+  }
   if (/endere[cç]o|hor[aá]rio de funcionamento/.test(text)) {
     return { name: 'institutional_question', confidence: 0.94 }
   }
@@ -266,6 +308,12 @@ function buildResponse(input: {
   knowledgeAnswer: string | undefined
   handoffRequested: boolean
 }): TestRunTrace['response'] {
+  if (input.intent === 'medication_advice') {
+    return {
+      mode: 'handoff',
+      text: 'Não posso orientar o uso de medicamentos. Procure um médico-veterinário para avaliação.'
+    }
+  }
   if (input.policyDecision === 'blocked') {
     return {
       mode: 'blocked',
@@ -297,6 +345,68 @@ function buildResponse(input: {
     mode: 'answer',
     text: input.config.responseTemplates[input.intent] ?? input.config.greeting
   }
+}
+
+function riskForIntent(
+  intent: string,
+  policy?: ReturnType<typeof evaluatePlatformPolicy>
+): { level: 'low' | 'medium' | 'high' | 'critical'; reason: string } {
+  if (intent === 'medication_advice') {
+    return {
+      level: 'critical',
+      reason: 'hard_safety_medication_request'
+    }
+  }
+  if (intent === 'triage') {
+    return { level: 'high', reason: 'high_risk_triage_request' }
+  }
+  if (policy?.layer === 'hard_safety' && policy.decision === 'blocked') {
+    return { level: 'critical', reason: policy.reason }
+  }
+  return { level: 'low', reason: 'controlled_low_risk_request' }
+}
+
+function estimateTokenCount(text: string): number {
+  return Math.ceil(text.length / 4)
+}
+
+function createTraceSpans(input: {
+  policy: ReturnType<typeof evaluatePlatformPolicy>
+  knowledge: TestRunTrace['knowledge']
+  tools: TestRunTrace['tools']
+  handoffRequested: boolean
+}): NonNullable<TestRunTrace['spans']> {
+  const toolStatus = input.tools.length
+    ? input.tools.some((tool) => tool.status === 'blocked')
+      ? 'blocked'
+      : 'completed'
+    : 'skipped'
+  return [
+    { name: 'normalize', status: 'completed', durationMs: 0 },
+    { name: 'context', status: 'completed', durationMs: 0 },
+    { name: 'intent', status: 'completed', durationMs: 0 },
+    {
+      name: 'policy',
+      status: input.policy.decision === 'blocked' ? 'blocked' : 'completed',
+      durationMs: 0
+    },
+    {
+      name: 'knowledge',
+      status:
+        input.knowledge.status === 'not_requested' ? 'skipped' : 'completed',
+      durationMs: 0
+    },
+    { name: 'prompt', status: 'completed', durationMs: 0 },
+    { name: 'model', status: 'completed', durationMs: 0 },
+    { name: 'tool', status: toolStatus, durationMs: 0 },
+    { name: 'response', status: 'completed', durationMs: 0 },
+    {
+      name: 'handoff',
+      status: input.handoffRequested ? 'completed' : 'skipped',
+      durationMs: 0
+    },
+    { name: 'delivery', status: 'skipped', durationMs: 0 }
+  ]
 }
 
 async function executePlannedTools(input: {

@@ -152,6 +152,48 @@ Modo default continua in-memory. PostgreSQL so e ativado com `API_PERSISTENCE_MO
 
 READY_FOR_NEXT_STEP
 
+## Agent Platform — PLAT-S10 plugin catalog Control Center registration
+
+### TIMESTAMP
+
+2026-08-24T20:45:00-03:00
+
+### ENGINE
+
+DISCOVERY -> PRD -> SPEC -> BUILD
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S10_PLUGIN_CATALOG_CONTROL_CENTER
+
+### TASK
+
+PLAT-S10-001_PLUGIN_CATALOG_CONTROL_CENTER
+
+### ACTION
+
+Registrado antes do BUILD o gap controlado de superfície operacional: o
+catálogo S09 possui API/persistência metadata-only, mas ainda não é operável no
+Control Center. O escopo adiciona somente client/UI para listar, criar e
+transicionar manifests com tenant/identidade, `expectedStatus` e conflito
+visível; não instala código nem habilita execução.
+
+### RESULT
+
+IN_PROGRESS: testes RED/GREEN e auditoria ainda pendentes. `CONTROLLED_MVP_READY`
+continua sendo o máximo autorizado e `PRODUCTION_REAL_DATA_READY` permanece
+bloqueado.
+
+### STATUS
+
+IN_PROGRESS
+
+---
+
 ---
 
 ## Agent Platform — registro PLAT-S03
@@ -1384,6 +1426,422 @@ PASS: commit inicial `c433c7b` (`chore: initialize repository with controlled ru
 ### DECISIONS
 
 O snapshot foi publicado somente na branch `main`; arquivos `.env` reais, dependencias, `dist`, coverage e resultados gerados permanecem fora do Git. Nenhum dado real, canal/provider real, RAG real, agenda real, acao clinica/financeira ou prontuario definitivo foi executado. O backlog nao foi alterado porque a rodada foi exclusivamente de bootstrap/publicacao do repositorio, sem nova task de produto.
+
+### STATUS
+
+READY_FOR_NEXT_STEP
+
+---
+
+## Agent Platform — PLAT-S05 final technical audit and controlled closure
+
+### TIMESTAMP
+
+2026-08-24T17:44:15-03:00
+
+### ENGINE
+
+AUDIT
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S05_TEST_LAB_CONTROLLED_CLOSURE
+
+### TASK
+
+PLAT-S05-001_TO_002_TEST_LAB_AND_SECRETARY_PRESET_CLOSURE
+
+### ACTION
+
+Executada a rodada final de RED/GREEN/AUDIT. O Test Lab ganhou risco, prompt snapshot, status, timestamps, latência, tokens estimados, spans e resultados de tool redigidos; pedidos de medicamento veterinário em português, inglês e termos equivalentes seguem hard safety, handoff e provider/tool externo desligados; o CapabilityGateway valida IDs de tenant/agente/versão antes de resolver handlers; e o Control Center envia e exibe a versão de knowledge configurada. Foi adicionado o preset fictício, versionado e idempotente `CVG Secretary`, inicializado somente no bootstrap de desenvolvimento em memória.
+
+### RESULT
+
+PASS: `npm run verify` na árvore final com 65 arquivos, 238 testes aprovados e 14 skips condicionais; coverage de 86,28% statements, 81,22% branches, 87,39% functions e 87,16% lines; format, typecheck, lint, build e `npm audit --audit-level=high` com 0 vulnerabilidades. PASS: `npm run readiness` com 4 testes. PASS: `npm run test:e2e` com 1 fluxo Playwright, incluindo o caso seguro de dipirona e publish/edit. PASS: `npm run test:postgres` com 4 arquivos, 49 testes aprovados e 14 skips condicionais. PASS: `git diff --check`.
+
+### REVIEW
+
+A inspeção verificou redaction de input/response, ausência de segredo material em config/trace, `externalCall: false`, bloqueio de ações clínicas/financeiras/agenda real, isolamento tenant-aware, compatibilidade de traces históricos e preservação do runtime legado. Os scouts/reviewer child foram tentados, mas o runtime recusou os modelos disponíveis por limite de uso da conta/incompatibilidade; portanto, não foi reivindicada aprovação independente. A revisão final é lead-only, suportada por testes, gates e inspeção estática.
+
+### DECISIONS
+
+`PLAT-S05-001..002` = `COMPLETED_CONTROLLED`. `CONTROLLED_MVP_READY` = máximo autorizado. `PRODUCTION_REAL_DATA_READY` = `NO-GO`/`WAITING_HUMAN_APPROVAL`. O catálogo persistente completo de TestCase/TestSuite, A/B visual, knowledge real, marketplace/plugin lifecycle, IdP, RLS/backfill real, operações distribuídas, providers/canais e ações sensíveis ficam registrados como próximos trabalhos ou bloqueios; não foram simulados como entregues.
+
+### EVIDENCE
+
+`docs/platform/final-technical-audit.md`, `docs/99_runtime_state.md`, `docs/platform/04-backlog.md`, `docs/30_backlog_master.md`, `.gauntlet/state.md` e `.gauntlet/progress.md` foram sincronizados. O próximo lane seguro registrado é `PLAT-S06-001`, sujeito a novo SPEC antes de BUILD.
+
+### STATUS
+
+READY_FOR_NEXT_STEP
+
+---
+
+## Agent Platform — PLAT-S06 controlled suite catalog closure
+
+### TIMESTAMP
+
+2026-08-24T19:02:02-03:00
+
+### ENGINE
+
+AUDIT
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S06_TEST_LAB_SUITE_CATALOG_CONTROLLED
+
+### TASK
+
+PLAT-S06-001_PERSISTENT_TEST_SUITE_AND_AB_CONTROLLED
+
+### ACTION
+
+Implementado o catálogo persistente do Test Lab com snapshots de suite tenant/agent/version-scoped, clone versionado sem mutação, redaction de cases e traces, histórico de runs de uma ou duas variantes e comparação A/B em dry-run. A migration `0003_test_suite_catalog.sql` adiciona FK, índices e `FORCE ROW LEVEL SECURITY`; o repository PostgreSQL, API, Control Center e wrapper tenant-scoped preservam a mesma fronteira. A cobertura global foi recuperada acima do limiar com testes de lifecycle, isolamento, redaction, histórico e falhas de escopo.
+
+### RESULT
+
+PASS: `npm run verify` na árvore final — 67 arquivos, 243 testes aprovados e 15 skips condicionais; coverage 84,40% statements, 80,23% branches, 84,72% functions e 85,24% lines; format, typecheck, lint, build e audit sem vulnerabilidades. PASS: readiness com 4 testes. PASS: Playwright com 1 fluxo incluindo criação e comparação A/B. PASS: PostgreSQL controlado com 6 arquivos e 64 testes. PASS: `git diff --check`. Evidência detalhada em `docs/04_audit/0496_plat_s06_suite_catalog_evidence.md`.
+
+### REVIEW
+
+A auditoria lead-only verificou cópia defensiva, vínculo tenant/agent/version, sanitização antes de persistência, validação de variantes e ausência de dispatcher/provider externo. Scouts/reviewer child foram novamente indisponíveis por rejeição de modelo/limite da conta; nenhuma aprovação independente foi reivindicada.
+
+### DECISIONS
+
+`PLAT-S06-001` = `COMPLETED_CONTROLLED`. `CONTROLLED_MVP_READY` continua sendo o máximo autorizado. `PRODUCTION_REAL_DATA_READY` permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`; marketplace, knowledge/provider real, tráfego gradual, conflitos multioperador, RLS/backfill operacional, retenção/PII e ações sensíveis continuam fora do slice.
+
+### EVIDENCE
+
+`docs/platform/final-technical-audit.md`, `docs/04_audit/0496_plat_s06_suite_catalog_evidence.md`, `docs/platform/06-platform-spec.md`, `docs/platform/07-platform-execplan.md`, `docs/99_runtime_state.md`, `docs/30_backlog_master.md`, `.gauntlet/state.md` e `.gauntlet/progress.md` foram sincronizados.
+
+### STATUS
+
+READY_FOR_NEXT_STEP
+
+---
+
+## Agent Platform — PLAT-S07 optimistic lifecycle conflict registration
+
+### TIMESTAMP
+
+2026-08-24T19:02:02-03:00
+
+### ENGINE
+
+SPEC → BUILD
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S07_OPTIMISTIC_CONTROL_PLANE_CONFLICT_CONTROLLED
+
+### TASK
+
+PLAT-S07-001_OPTIMISTIC_VERSION_LIFECYCLE_CONFLICT_CONTROLLED
+
+### ACTION
+
+Registrado antes do BUILD o gap controlado de precondition otimista no lifecycle de AgentVersion. O escopo adiciona `expectedStatus` a transition/publish/rollback, conflito explícito HTTP 409 sem mutação parcial e propagação do status observado pelo Control Center; não inclui HA, lock distribuído, IdP, ETag de proxy, coordenação multi-região ou produção real.
+
+### RESULT
+
+IN_PROGRESS: RED/GREEN/AUDIT ainda pendentes. `CONTROLLED_MVP_READY` continua sendo o máximo autorizado e `PRODUCTION_REAL_DATA_READY` permanece bloqueado.
+
+### STATUS
+
+IN_PROGRESS
+
+---
+
+## Agent Platform — PLAT-S07 optimistic lifecycle conflict controlled closure
+
+### TIMESTAMP
+
+2026-08-24T19:17:01-03:00
+
+### ENGINE
+
+AUDIT
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S07_OPTIMISTIC_CONTROL_PLANE_CONFLICT_CONTROLLED
+
+### TASK
+
+PLAT-S07-001_OPTIMISTIC_VERSION_LIFECYCLE_CONFLICT_CONTROLLED
+
+### ACTION
+
+Implementado e auditado o compare-and-swap controlado do lifecycle de `AgentVersion`. `expectedStatus` foi integrado a transition, publish e rollback em memória, PostgreSQL, wrapper tenant-scoped, API e Control Center. Snapshot stale falha com `conflict`/HTTP 409, sem mutação parcial e sem audit de sucesso; a UI diferencia o conflito de uma recusa de policy e orienta o operador a recarregar.
+
+### RESULT
+
+PASS: `npm run verify` com 67 arquivos, 247 testes aprovados e 15 skips condicionais; coverage 84,82% statements, 80,18% branches, 85,13% functions e 85,69% lines; format, typecheck, lint, build e audit com 0 vulnerabilidades. PASS: readiness 4/4. PASS: Playwright E2E 1/1. PASS: PostgreSQL controlado com 6 arquivos, 49 testes aprovados e 15 skips condicionais. PASS: `git diff --check`.
+
+### REVIEW
+
+A auditoria lead-only verificou compare-and-swap transacional, tenant boundary, ausência de audit de sucesso/efeitos externos no conflito e compatibilidade limitada do caminho legacy controlado. Child agents permaneceram indisponíveis por limite de conta/incompatibilidade de modelo; nenhuma aprovação independente foi reivindicada.
+
+### DECISIONS
+
+`PLAT-S07-001` = `COMPLETED_CONTROLLED`. `CONTROLLED_MVP_READY` continua sendo o máximo autorizado. `PRODUCTION_REAL_DATA_READY` permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`; HA, IdP, ETag de proxy, lock distribuído, coordenação multi-região, providers/canais, retenção/PII e ações sensíveis continuam bloqueados.
+
+### EVIDENCE
+
+`docs/04_audit/0497_plat_s07_optimistic_conflict_evidence.md`, `docs/platform/final-technical-audit.md`, `docs/99_runtime_state.md`, `docs/platform/04-backlog.md`, `docs/30_backlog_master.md`, `.gauntlet/state.md` e `.gauntlet/progress.md` foram sincronizados.
+
+### STATUS
+
+READY_FOR_NEXT_STEP
+
+---
+
+## Agent Platform — PLAT-S08 plugin manifest integrity registration
+
+### TIMESTAMP
+
+2026-08-24T19:23:32-03:00
+
+### ENGINE
+
+SPEC → BUILD
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S08_PLUGIN_MANIFEST_INTEGRITY_AND_VERSION_PINNING_CONTROLLED
+
+### TASK
+
+PLAT-S08-001_PLUGIN_MANIFEST_SEMANTIC_VALIDATION_AND_VERSION_PINNING
+
+### ACTION
+
+Registrado antes do BUILD o gap controlado de reprodutibilidade do registry de plugins. O escopo valida invariantes semânticas de manifestos, permite múltiplas versões imutáveis do mesmo plugin, aceita pinning opcional no binding e mantém o gateway fail-closed para versão inexistente; marketplace, rede, código de terceiros e produção permanecem fora do slice.
+
+### RESULT
+
+IN_PROGRESS: RED/GREEN/AUDIT ainda pendentes. `CONTROLLED_MVP_READY` continua sendo o máximo autorizado e `PRODUCTION_REAL_DATA_READY` permanece bloqueado.
+
+### STATUS
+
+IN_PROGRESS
+
+---
+
+## Agent Platform — PLAT-S08 plugin manifest integrity controlled closure
+
+### TIMESTAMP
+
+2026-08-24T19:33:10-03:00
+
+### ENGINE
+
+AUDIT
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S08_PLUGIN_MANIFEST_INTEGRITY_AND_VERSION_PINNING_CONTROLLED
+
+### TASK
+
+PLAT-S08-001_PLUGIN_MANIFEST_SEMANTIC_VALIDATION_AND_VERSION_PINNING
+
+### ACTION
+
+Implementadas e auditadas as invariantes semânticas de `PluginManifest`, o registry multi-versão imutável, o `version` opcional em `PluginBinding`, a resolução pinned/legacy determinística e a falha fechada do `CapabilityGateway` para versão inexistente. O Control Center permite informar ou remover a versão pinned; nenhuma rede, instalação, handler externo, provider ou canal foi adicionado.
+
+### RESULT
+
+PASS: `npm run verify` com 68 arquivos, 250 testes aprovados e 15 skips condicionais; coverage 84,88% statements, 80,17% branches, 85,22% functions e 85,74% lines; format, typecheck, lint, build e audit com 0 vulnerabilidades. PASS: readiness 4/4. PASS: Playwright E2E 1/1. PASS: PostgreSQL controlado com 6 arquivos, 49 testes aprovados e 15 skips condicionais. PASS: `git diff --check`.
+
+### REVIEW
+
+A auditoria lead-only verificou que pinning não concede permission, approval ou bypass do gateway, que cópias do registry não mutam o estado interno e que a versão pinned inexistente não invoca handler. Child agents permaneceram indisponíveis por limite de conta/incompatibilidade de modelo; nenhuma aprovação independente foi reivindicada.
+
+### DECISIONS
+
+`PLAT-S08-001` = `COMPLETED_CONTROLLED`. `CONTROLLED_MVP_READY` continua sendo o máximo autorizado. `PRODUCTION_REAL_DATA_READY` permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`; marketplace, catálogo persistente, código de terceiros, providers/canais, HA, retenção/PII e ações sensíveis continuam bloqueados.
+
+### EVIDENCE
+
+`docs/04_audit/0498_plat_s08_plugin_manifest_versioning_evidence.md`, `docs/platform/final-technical-audit.md`, `docs/99_runtime_state.md`, `docs/platform/04-backlog.md`, `docs/30_backlog_master.md`, `.gauntlet/state.md` e `.gauntlet/progress.md` foram sincronizados.
+
+### STATUS
+
+READY_FOR_NEXT_STEP
+
+---
+
+## Agent Platform — PLAT-S09 controlled plugin manifest catalog registration
+
+### TIMESTAMP
+
+2026-08-24T19:40:32-03:00
+
+### ENGINE
+
+SPEC → BUILD
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S09_CONTROLLED_PLUGIN_MANIFEST_CATALOG
+
+### TASK
+
+PLAT-S09-001_TENANT_AWARE_PLUGIN_MANIFEST_CATALOG
+
+### ACTION
+
+Registrado antes do BUILD o gap controlado de governança de metadata: manifests validados ainda não possuem catálogo tenant-aware persistente nem lifecycle separado de handlers. O escopo adiciona somente snapshots declarativos, DRAFT/APPROVED/ARCHIVED, precondition, RLS e API admin; aprovação de metadata não concede execução, instalação, permission ou side effect.
+
+### RESULT
+
+IN_PROGRESS: RED/GREEN/AUDIT ainda pendentes. `CONTROLLED_MVP_READY` continua sendo o máximo autorizado e `PRODUCTION_REAL_DATA_READY` permanece bloqueado.
+
+### STATUS
+
+IN_PROGRESS
+
+---
+
+## Agent Platform — PLAT-S09 controlled plugin manifest catalog closure
+
+### TIMESTAMP
+
+2026-08-24T20:23:51-03:00
+
+### ENGINE
+
+AUDIT
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S09_CONTROLLED_PLUGIN_MANIFEST_CATALOG
+
+### TASK
+
+PLAT-S09-001_TENANT_AWARE_PLUGIN_MANIFEST_CATALOG
+
+### ACTION
+
+Implementado e auditado o catálogo tenant-aware de metadata declarativa: contratos/IDs e cópia defensiva em memória, repository PostgreSQL e wrapper com precondition transacional, migration `0004_plugin_manifest_catalog.sql` com JSONB/constraints/trigger/RLS, API admin de create/list/get/transition e testes de isolamento, duplicate name/version e HTTP 409. Nenhuma aprovação de metadata chama handler, provider, canal, rede ou side effect.
+
+### RESULT
+
+PASS: `npm run verify` com 71 arquivos, 253 testes aprovados e 16 skips condicionais; coverage 84,73% statements, 80,11% branches, 84,40% functions e 85,67% lines. PASS: readiness 4/4, Playwright E2E 1/1, PostgreSQL controlado com 6 arquivos/49 testes aprovados/16 skips condicionais, format/diff check e audit com 0 vulnerabilidades.
+
+### REVIEW
+
+A auditoria lead-only confirmou isolamento por tenant, imutabilidade da identidade/manifest, lifecycle fail-closed, unique name/version, conflito stale sem mutação e ausência de dispatch externo. Child agents permaneceram indisponíveis por limite de conta/incompatibilidade de modelo; nenhuma aprovação independente foi reivindicada.
+
+### DECISIONS
+
+`PLAT-S09-001` = `COMPLETED_CONTROLLED`. `CONTROLLED_MVP_READY` continua sendo o máximo autorizado. `PRODUCTION_REAL_DATA_READY` permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`; marketplace aberto, instalação de código de terceiros, handlers persistentes, providers/canais, dados reais e ações sensíveis continuam bloqueados.
+
+### EVIDENCE
+
+`docs/04_audit/0499_plat_s09_plugin_catalog_evidence.md`, `docs/platform/final-technical-audit.md`, `docs/99_runtime_state.md`, `docs/platform/04-backlog.md`, `docs/platform/06-platform-spec.md`, `docs/platform/07-platform-execplan.md`, `docs/30_backlog_master.md`, `.gauntlet/state.md` e `.gauntlet/progress.md` foram sincronizados.
+
+### STATUS
+
+READY_FOR_NEXT_STEP
+
+## Agent Platform — PLAT-S10 Control Center plugin catalog closure
+
+### TIMESTAMP
+
+2026-08-24T21:13:45-03:00
+
+### ENGINE
+
+AUDIT
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S10_PLUGIN_CATALOG_CONTROL_CENTER
+
+### TASK
+
+PLAT-S10-001_PLUGIN_CATALOG_CONTROL_CENTER
+
+### ACTION
+
+Implementado o client web e a seção do Control Center para o catálogo
+declarativo S09. O fluxo tenant-aware lista sob demanda, cria manifest
+metadata-only, exibe DRAFT/APPROVED/ARCHIVED com actor e versão, envia
+`expectedStatus` em aprovação/arquivamento e diferencia conflito stale 409.
+Foram adicionados testes RED/GREEN do client/UI, validação local sem
+segredo/código e cobertura E2E browser/API. Nenhuma migration, instalação,
+handler, rede, provider, canal ou side effect foi adicionado.
+
+### RESULT
+
+PASS controlado. `npm run verify` passou com 72 arquivos, 257 testes aprovados,
+16 skips condicionais, coverage 84,97% statements / 80,21% branches / 84,93%
+functions / 85,90% lines e audit de dependências com 0 vulnerabilidades.
+Readiness 4/4, E2E 1/1, PostgreSQL controlado 49 pass/16 skips e diff check
+passaram.
+
+### REVIEW
+
+Auditoria lead-only por RED/GREEN, inspeção temporal do diff, testes de
+fronteira e gates executáveis. Child agents permaneceram indisponíveis por
+limite de conta/incompatibilidade de modelo; nenhuma aprovação independente é
+reivindicada.
+
+### DECISIONS
+
+`PLAT-S10-001` = `COMPLETED_CONTROLLED`. `CONTROLLED_MVP_READY` permanece o
+resultado máximo. `PRODUCTION_REAL_DATA_READY` continua `NO-GO`/
+`WAITING_HUMAN_APPROVAL`; IdP, tenant/RBAC, rollout RLS/backfill, secret
+manager, operações distribuídas, host security, retenção/PII, providers,
+canais, knowledge institucional, marketplace e ações sensíveis continuam
+bloqueados.
+
+### EVIDENCE
+
+`docs/04_audit/0500_plat_s10_plugin_catalog_control_center_evidence.md`,
+`docs/platform/final-technical-audit.md`, `docs/99_runtime_state.md`,
+`docs/platform/04-backlog.md`, `docs/platform/06-platform-spec.md`,
+`docs/platform/07-platform-execplan.md`, `docs/30_backlog_master.md`,
+`.gauntlet/state.md` e `.gauntlet/progress.md` foram sincronizados.
 
 ### STATUS
 

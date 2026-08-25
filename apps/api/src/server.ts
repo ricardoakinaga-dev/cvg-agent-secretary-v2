@@ -21,13 +21,21 @@ import {
   AgentIdSchema,
   AgentVersionIdSchema,
   AgentVersionStatusSchema,
+  PluginCatalogCreateInputSchema,
+  PluginCatalogIdSchema,
+  PluginCatalogTransitionInputSchema,
   canBotRespond,
   createControlledCapabilityGateway,
   CONTROLLED_SCHEDULING_TOOL,
+  createTestSuiteRunId,
   executeConfiguredAgent,
+  ensureControlledSecretaryPreset,
   InMemoryControlPlaneStore,
   TenantIdSchema,
   TestLabCaseSchema,
+  TestSuiteCloneInputSchema,
+  TestSuiteCreateInputSchema,
+  TestSuiteIdSchema,
   evaluateTestLabSuite,
   runTestLab,
   InMemoryCapabilityApprovalAuthority,
@@ -41,7 +49,12 @@ import {
   type AgentId,
   type PluginAuditEvent,
   type TenantId,
-  type ControlPlaneStore
+  type AgentVersionId,
+  type ControlPlaneStore,
+  type TestLabCase,
+  type TestSuiteRecord,
+  type TestSuiteRunRecord,
+  type TestSuiteVariantResult
 } from '@cvg/platform'
 import {
   ApprovalRepository,
@@ -1115,6 +1128,152 @@ export function buildServer(options: BuildServerOptions = {}) {
     }
   })
 
+  app.post('/v1/admin/plugins/catalog', async (request, reply) => {
+    const correlationId = createCorrelationId()
+    try {
+      const scope = requirePlatformScope(
+        request.headers,
+        'agent:configure',
+        options.operatorIdentityResolver
+      )
+      const identity = resolveOperatorIdentity(
+        request.headers,
+        options.operatorIdentityResolver
+      )
+      const entry = await platform.createPluginCatalogEntry(
+        scope,
+        PluginCatalogCreateInputSchema.parse(request.body),
+        identity.operatorId
+      )
+      await appendPlatformAudit(
+        audit,
+        identity,
+        correlationId,
+        scope.tenantId,
+        {
+          event: 'plugin_catalog_created',
+          tenantId: scope.tenantId,
+          pluginCatalogId: entry.id,
+          pluginName: entry.manifest.name,
+          pluginVersion: entry.manifest.version,
+          status: entry.status
+        }
+      )
+      return ok(entry, correlationId)
+    } catch (error) {
+      const safeError = toSafeError(error)
+      reply.code(statusCodeForError(safeError.code))
+      return fail(safeError.code, safeError.message, correlationId)
+    }
+  })
+
+  app.get('/v1/admin/plugins/catalog', async (request, reply) => {
+    const correlationId = createCorrelationId()
+    try {
+      const scope = requirePlatformScope(
+        request.headers,
+        'agent:configure',
+        options.operatorIdentityResolver
+      )
+      const query = z
+        .object({
+          name: z
+            .string()
+            .trim()
+            .min(1)
+            .max(120)
+            .regex(/^[A-Za-z0-9._:-]+$/)
+            .optional()
+        })
+        .strict()
+        .parse(request.query)
+      return ok(
+        await platform.listPluginCatalogEntries(scope, query.name),
+        correlationId
+      )
+    } catch (error) {
+      const safeError = toSafeError(error)
+      reply.code(statusCodeForError(safeError.code))
+      return fail(safeError.code, safeError.message, correlationId)
+    }
+  })
+
+  app.get('/v1/admin/plugins/catalog/:pluginId', async (request, reply) => {
+    const correlationId = createCorrelationId()
+    try {
+      const scope = requirePlatformScope(
+        request.headers,
+        'agent:configure',
+        options.operatorIdentityResolver
+      )
+      const params = z
+        .object({ pluginId: PluginCatalogIdSchema })
+        .strict()
+        .parse(request.params)
+      const entry = await platform.getPluginCatalogEntry(scope, params.pluginId)
+      if (!entry) {
+        throw new DomainError(
+          'invalid_action',
+          'Plugin catalog entry not found'
+        )
+      }
+      return ok(entry, correlationId)
+    } catch (error) {
+      const safeError = toSafeError(error)
+      reply.code(statusCodeForError(safeError.code))
+      return fail(safeError.code, safeError.message, correlationId)
+    }
+  })
+
+  app.post(
+    '/v1/admin/plugins/catalog/:pluginId/transition',
+    async (request, reply) => {
+      const correlationId = createCorrelationId()
+      try {
+        const scope = requirePlatformScope(
+          request.headers,
+          'agent:configure',
+          options.operatorIdentityResolver
+        )
+        const identity = resolveOperatorIdentity(
+          request.headers,
+          options.operatorIdentityResolver
+        )
+        const params = z
+          .object({ pluginId: PluginCatalogIdSchema })
+          .strict()
+          .parse(request.params)
+        const body = PluginCatalogTransitionInputSchema.parse(request.body)
+        const entry = await platform.transitionPluginCatalogEntry(
+          scope,
+          params.pluginId,
+          body.target,
+          identity.operatorId,
+          body.expectedStatus
+        )
+        await appendPlatformAudit(
+          audit,
+          identity,
+          correlationId,
+          scope.tenantId,
+          {
+            event: 'plugin_catalog_transitioned',
+            tenantId: scope.tenantId,
+            pluginCatalogId: entry.id,
+            pluginName: entry.manifest.name,
+            pluginVersion: entry.manifest.version,
+            status: entry.status
+          }
+        )
+        return ok(entry, correlationId)
+      } catch (error) {
+        const safeError = toSafeError(error)
+        reply.code(statusCodeForError(safeError.code))
+        return fail(safeError.code, safeError.message, correlationId)
+      }
+    }
+  )
+
   app.post('/v1/admin/agents', async (request, reply) => {
     const correlationId = createCorrelationId()
     try {
@@ -1303,12 +1462,17 @@ export function buildServer(options: BuildServerOptions = {}) {
         }
         const agentId = AgentIdSchema.parse(params.agentId)
         const versionId = AgentVersionIdSchema.parse(params.versionId)
-        const body = request.body as { target?: unknown }
+        const body = z
+          .object({
+            target: AgentVersionStatusSchema,
+            expectedStatus: AgentVersionStatusSchema.optional()
+          })
+          .strict()
+          .parse(request.body)
         const version = await platform.getVersion(scope, versionId)
         if (!version || version.agentId !== agentId) {
           throw new DomainError('invalid_action', 'Agent version not found')
         }
-        const target = AgentVersionStatusSchema.parse(body.target)
         const identity = resolveOperatorIdentity(
           request.headers,
           options.operatorIdentityResolver
@@ -1316,7 +1480,8 @@ export function buildServer(options: BuildServerOptions = {}) {
         const updated = await platform.transitionVersion(
           scope,
           versionId,
-          target
+          body.target,
+          body.expectedStatus
         )
         await appendPlatformAudit(
           audit,
@@ -1364,7 +1529,15 @@ export function buildServer(options: BuildServerOptions = {}) {
           request.headers,
           options.operatorIdentityResolver
         )
-        const published = await platform.publishVersion(scope, versionId)
+        const body = z
+          .object({ expectedStatus: AgentVersionStatusSchema.optional() })
+          .strict()
+          .parse(request.body ?? {})
+        const published = await platform.publishVersion(
+          scope,
+          versionId,
+          body.expectedStatus
+        )
         await appendPlatformAudit(
           audit,
           identity,
@@ -1401,13 +1574,20 @@ export function buildServer(options: BuildServerOptions = {}) {
       )
       const params = request.params as { agentId: string }
       const agentId = AgentIdSchema.parse(params.agentId)
-      const body = request.body as { versionId?: unknown }
-      const versionId = AgentVersionIdSchema.parse(body.versionId)
+      const body = z
+        .object({
+          versionId: AgentVersionIdSchema,
+          expectedStatus: AgentVersionStatusSchema.optional()
+        })
+        .strict()
+        .parse(request.body)
+      const versionId = body.versionId
       const version = await platform.rollback(
         scope,
         agentId,
         versionId,
-        identity.operatorId
+        identity.operatorId,
+        body.expectedStatus
       )
       await appendPlatformAudit(
         audit,
@@ -1477,6 +1657,254 @@ export function buildServer(options: BuildServerOptions = {}) {
         resourceId: trace.traceId
       })
       return ok(trace, correlationId)
+    } catch (error) {
+      const safeError = toSafeError(error)
+      reply.code(statusCodeForError(safeError.code))
+      return fail(safeError.code, safeError.message, correlationId)
+    }
+  })
+
+  app.post('/v1/admin/test-lab/suites', async (request, reply) => {
+    const correlationId = createCorrelationId()
+    try {
+      const scope = requirePlatformScope(
+        request.headers,
+        'agent:configure',
+        options.operatorIdentityResolver
+      )
+      const identity = resolveOperatorIdentity(
+        request.headers,
+        options.operatorIdentityResolver
+      )
+      const suite = await platform.createTestSuite(
+        scope,
+        TestSuiteCreateInputSchema.parse(request.body),
+        identity.operatorId
+      )
+      await appendPlatformAudit(
+        audit,
+        identity,
+        correlationId,
+        scope.tenantId,
+        {
+          event: 'test_suite_created',
+          tenantId: scope.tenantId,
+          suiteId: suite.id,
+          agentId: suite.agentId,
+          versionId: suite.versionId,
+          version: suite.version
+        }
+      )
+      return ok(suite, correlationId)
+    } catch (error) {
+      const safeError = toSafeError(error)
+      reply.code(statusCodeForError(safeError.code))
+      return fail(safeError.code, safeError.message, correlationId)
+    }
+  })
+
+  app.get('/v1/admin/test-lab/suites', async (request, reply) => {
+    const correlationId = createCorrelationId()
+    try {
+      const scope = requirePlatformScope(
+        request.headers,
+        'test:run',
+        options.operatorIdentityResolver
+      )
+      const query = z
+        .object({ agentId: AgentIdSchema.optional() })
+        .strict()
+        .parse(request.query)
+      return ok(
+        await platform.listTestSuites(scope, query.agentId),
+        correlationId
+      )
+    } catch (error) {
+      const safeError = toSafeError(error)
+      reply.code(statusCodeForError(safeError.code))
+      return fail(safeError.code, safeError.message, correlationId)
+    }
+  })
+
+  app.post(
+    '/v1/admin/test-lab/suites/:suiteId/clone',
+    async (request, reply) => {
+      const correlationId = createCorrelationId()
+      try {
+        const scope = requirePlatformScope(
+          request.headers,
+          'agent:configure',
+          options.operatorIdentityResolver
+        )
+        const identity = resolveOperatorIdentity(
+          request.headers,
+          options.operatorIdentityResolver
+        )
+        const params = z
+          .object({ suiteId: TestSuiteIdSchema })
+          .strict()
+          .parse(request.params)
+        return ok(
+          await platform.cloneTestSuite(
+            scope,
+            params.suiteId,
+            TestSuiteCloneInputSchema.parse(request.body),
+            identity.operatorId
+          ),
+          correlationId
+        )
+      } catch (error) {
+        const safeError = toSafeError(error)
+        reply.code(statusCodeForError(safeError.code))
+        return fail(safeError.code, safeError.message, correlationId)
+      }
+    }
+  )
+
+  app.post(
+    '/v1/admin/test-lab/suites/:suiteId/evaluate',
+    async (request, reply) => {
+      const correlationId = createCorrelationId()
+      try {
+        const scope = requirePlatformScope(
+          request.headers,
+          'test:run',
+          options.operatorIdentityResolver
+        )
+        const identity = resolveOperatorIdentity(
+          request.headers,
+          options.operatorIdentityResolver
+        )
+        const params = z
+          .object({ suiteId: TestSuiteIdSchema })
+          .strict()
+          .parse(request.params)
+        const body = z
+          .object({ versionId: AgentVersionIdSchema.optional() })
+          .strict()
+          .parse(request.body)
+        const suite = await platform.getTestSuite(scope, params.suiteId)
+        if (!suite)
+          throw new DomainError('invalid_action', 'Test suite not found')
+        const versionId = body.versionId ?? suite.versionId
+        const variant = await evaluateTestSuiteVariant({
+          store: platform,
+          tenantId: scope.tenantId,
+          agentId: suite.agentId,
+          versionId,
+          cases: suite.cases,
+          label: 'A'
+        })
+        const run = await recordSuiteRun({
+          platform,
+          scope,
+          suite,
+          variants: [variant],
+          createdBy: identity.operatorId
+        })
+        return ok(run, correlationId)
+      } catch (error) {
+        const safeError = toSafeError(error)
+        reply.code(statusCodeForError(safeError.code))
+        return fail(safeError.code, safeError.message, correlationId)
+      }
+    }
+  )
+
+  app.post(
+    '/v1/admin/test-lab/suites/:suiteId/compare',
+    async (request, reply) => {
+      const correlationId = createCorrelationId()
+      try {
+        const scope = requirePlatformScope(
+          request.headers,
+          'test:run',
+          options.operatorIdentityResolver
+        )
+        const identity = resolveOperatorIdentity(
+          request.headers,
+          options.operatorIdentityResolver
+        )
+        const params = z
+          .object({ suiteId: TestSuiteIdSchema })
+          .strict()
+          .parse(request.params)
+        const body = z
+          .object({
+            versionAId: AgentVersionIdSchema,
+            versionBId: AgentVersionIdSchema
+          })
+          .strict()
+          .parse(request.body)
+        const suite = await platform.getTestSuite(scope, params.suiteId)
+        if (!suite)
+          throw new DomainError('invalid_action', 'Test suite not found')
+        const variants: TestSuiteVariantResult[] = await Promise.all([
+          evaluateTestSuiteVariant({
+            store: platform,
+            tenantId: scope.tenantId,
+            agentId: suite.agentId,
+            versionId: body.versionAId,
+            cases: suite.cases,
+            label: 'A'
+          }),
+          evaluateTestSuiteVariant({
+            store: platform,
+            tenantId: scope.tenantId,
+            agentId: suite.agentId,
+            versionId: body.versionBId,
+            cases: suite.cases,
+            label: 'B'
+          })
+        ])
+        return ok(
+          await recordSuiteRun({
+            platform,
+            scope,
+            suite,
+            variants,
+            createdBy: identity.operatorId
+          }),
+          correlationId
+        )
+      } catch (error) {
+        const safeError = toSafeError(error)
+        reply.code(statusCodeForError(safeError.code))
+        return fail(safeError.code, safeError.message, correlationId)
+      }
+    }
+  )
+
+  app.get('/v1/admin/test-lab/suites/:suiteId/runs', async (request, reply) => {
+    const correlationId = createCorrelationId()
+    try {
+      const scope = requirePlatformScope(
+        request.headers,
+        'test:run',
+        options.operatorIdentityResolver
+      )
+      const params = z
+        .object({ suiteId: TestSuiteIdSchema })
+        .strict()
+        .parse(request.params)
+      const limit = parseTraceLimit(request.query)
+      const items = await platform.listTestSuiteRuns(
+        scope,
+        params.suiteId,
+        limit
+      )
+      return ok(
+        {
+          items,
+          pageInfo: {
+            limit,
+            offset: 0,
+            total: items.length,
+            hasNextPage: false
+          }
+        },
+        correlationId
+      )
     } catch (error) {
       const safeError = toSafeError(error)
       reply.code(statusCodeForError(safeError.code))
@@ -1590,6 +2018,59 @@ export function buildServer(options: BuildServerOptions = {}) {
 const CONTROLLED_TENANT_ID = TenantIdSchema.parse(
   'tenant_00000000-0000-4000-8000-000000000001'
 )
+
+async function evaluateTestSuiteVariant(input: {
+  store: ControlPlaneStore
+  tenantId: TenantId
+  agentId: AgentId
+  versionId: AgentVersionId
+  cases: TestLabCase[]
+  label: 'A' | 'B'
+}): Promise<TestSuiteVariantResult> {
+  const version = await input.store.getVersion(
+    { tenantId: input.tenantId },
+    input.versionId
+  )
+  if (!version || version.agentId !== input.agentId) {
+    throw new DomainError(
+      'invalid_action',
+      'A/B version is outside agent scope'
+    )
+  }
+  const result = await evaluateTestLabSuite({
+    store: input.store,
+    tenantId: input.tenantId,
+    agentId: input.agentId,
+    versionId: version.id,
+    cases: input.cases
+  })
+  return {
+    label: input.label,
+    versionId: version.id,
+    passed: result.passed,
+    results: result.results
+  }
+}
+
+async function recordSuiteRun(input: {
+  platform: ControlPlaneStore
+  scope: { tenantId: TenantId }
+  suite: TestSuiteRecord
+  variants: TestSuiteVariantResult[]
+  createdBy: string
+}): Promise<TestSuiteRunRecord> {
+  const run: TestSuiteRunRecord = {
+    id: createTestSuiteRunId(),
+    tenantId: input.scope.tenantId,
+    suiteId: input.suite.id,
+    agentId: input.suite.agentId,
+    variants: input.variants,
+    passed: input.variants.every((variant) => variant.passed),
+    createdBy: input.createdBy,
+    createdAt: new Date()
+  }
+  return input.platform.recordTestSuiteRun(input.scope, run)
+}
 
 async function executeInboundRuntime(input: {
   options: AgentRuntimeOptions
@@ -2088,6 +2569,7 @@ async function appendPlatformAudit(
 function statusCodeForError(code: string): number {
   if (code === 'unauthorized') return 401
   if (code === 'forbidden') return 403
+  if (code === 'conflict') return 409
   if (code === 'rate_limited') return 429
   if (code === 'internal_error') return 500
   return 400
@@ -2108,7 +2590,10 @@ const tenantIsolationTables = [
   'platform_agent_versions',
   'platform_test_runs',
   'platform_execution_traces',
-  'platform_capability_approvals'
+  'platform_capability_approvals',
+  'platform_test_suites',
+  'platform_test_suite_runs',
+  'platform_plugin_catalog'
 ] as const
 
 const webhookReplayTables = ['webhook_replay_events'] as const
@@ -2123,7 +2608,9 @@ const tenantIsolationMigrationTables = [
 const tenantIsolationMigrationVersions = [
   '0000_initial',
   '0001_tenant_isolation',
-  '0002_capability_approvals'
+  '0002_capability_approvals',
+  '0003_test_suite_catalog',
+  '0004_plugin_manifest_catalog'
 ] as const
 
 const tenantIsolationRequiredConstraints = [
@@ -2146,7 +2633,16 @@ const tenantIsolationRequiredConstraints = [
   'platform_test_runs_tenant_agent_version_fk',
   'platform_execution_traces_tenant_agent_version_fk',
   'platform_capability_approvals_tenant_nonce_key',
-  'platform_capability_approvals_tenant_agent_version_fk'
+  'platform_capability_approvals_tenant_agent_version_fk',
+  'platform_test_suites_tenant_agent_version_fk',
+  'platform_test_suites_previous_agent_fk',
+  'platform_test_suite_runs_tenant_suite_fk',
+  'platform_test_suite_runs_tenant_agent_fk',
+  'platform_test_suite_runs_tenant_suite_agent_fk',
+  'platform_plugin_catalog_pkey',
+  'platform_plugin_catalog_tenant_name_version_key',
+  'platform_plugin_catalog_status_check',
+  'platform_plugin_catalog_manifest_identity_check'
 ] as const
 
 const tenantIsolationRequiredIndexes = [
@@ -2166,7 +2662,10 @@ const tenantIsolationRequiredIndexes = [
   'idx_platform_test_runs_tenant_created',
   'idx_platform_execution_traces_tenant_created',
   'idx_platform_capability_approvals_tenant_status',
-  'idx_platform_capability_approvals_tenant_actor'
+  'idx_platform_capability_approvals_tenant_actor',
+  'idx_platform_test_suites_tenant_agent',
+  'idx_platform_test_suite_runs_tenant_created',
+  'idx_platform_plugin_catalog_tenant_status'
 ] as const
 
 export async function assertTenantIsolationMigrationState(
@@ -3069,7 +3568,7 @@ export async function buildServerFromEnv(
       env,
       buildOptions.agentRuntime
     )
-    return buildServer({
+    const app = buildServer({
       ...buildOptions,
       ...(configuredInboundAgentRuntime
         ? { agentRuntime: configuredInboundAgentRuntime }
@@ -3079,6 +3578,15 @@ export async function buildServerFromEnv(
         : {}),
       persistence: { kind: 'memory' }
     })
+    if (env.NODE_ENV === 'development') {
+      try {
+        await ensureControlledSecretaryPreset(app.platform)
+      } catch (error) {
+        await app.close()
+        throw error
+      }
+    }
+    return app
   }
 
   if (!env.DATABASE_URL) {

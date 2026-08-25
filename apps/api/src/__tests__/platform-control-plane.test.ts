@@ -141,6 +141,60 @@ describe('platform control plane API', () => {
     ).toContainEqual(expect.objectContaining({ slug: 'controlled-agent' }))
   })
 
+  it('returns HTTP 409 when an Admin submits a stale lifecycle status', async () => {
+    const app = buildServer()
+    const create = await app.inject({
+      method: 'POST',
+      url: '/v1/admin/agents',
+      headers: adminHeaders(tenantA),
+      payload: {
+        slug: 'optimistic-api-agent',
+        name: 'Optimistic API Agent',
+        description: 'Controlled conflict fixture'
+      }
+    })
+    const agentId = (create.json() as Envelope<{ id: string }>).data?.id
+    const versionResponse = await app.inject({
+      method: 'POST',
+      url: `/v1/admin/agents/${agentId}/versions`,
+      headers: adminHeaders(tenantA),
+      payload: { config: config() }
+    })
+    const version = (
+      versionResponse.json() as Envelope<{
+        id: string
+        status: string
+      }>
+    ).data
+    const first = await app.inject({
+      method: 'POST',
+      url: `/v1/admin/agents/${agentId}/versions/${version?.id}/transition`,
+      headers: adminHeaders(tenantA),
+      payload: { target: 'TESTING', expectedStatus: 'DRAFT' }
+    })
+    const stale = await app.inject({
+      method: 'POST',
+      url: `/v1/admin/agents/${agentId}/versions/${version?.id}/transition`,
+      headers: adminHeaders(tenantA),
+      payload: { target: 'APPROVED', expectedStatus: 'DRAFT' }
+    })
+    const reread = await app.inject({
+      method: 'GET',
+      url: `/v1/admin/agents/${agentId}/versions`,
+      headers: adminHeaders(tenantA)
+    })
+    await app.close()
+
+    expect(first.statusCode).toBe(200)
+    expect(stale.statusCode).toBe(409)
+    expect((stale.json() as Envelope<null>).error).toMatchObject({
+      code: 'conflict'
+    })
+    expect((reread.json() as Envelope<Array<{ status: string }>>).data).toEqual(
+      [expect.objectContaining({ status: 'TESTING' })]
+    )
+  })
+
   it('creates an immutable draft when an Admin edits a version', async () => {
     const app = buildServer()
     const created = await app.inject({

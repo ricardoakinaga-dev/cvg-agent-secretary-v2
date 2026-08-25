@@ -1,49 +1,12 @@
-import { z } from 'zod'
 import type { ControlPlaneStore } from './control-plane-store.ts'
-import { PlatformDecisionSchema, type TestRunTrace } from './contracts.ts'
+import {
+  TestLabCaseSchema,
+  type TestLabCase,
+  type TestLabEvaluation,
+  type TestLabSuiteResult
+} from './contracts.ts'
 import type { AgentId, AgentVersionId, TenantId } from './ids.ts'
 import { runTestLab, type TestLabInput } from './test-lab.ts'
-
-export const TestLabCaseSchema = z
-  .object({
-    id: z
-      .string()
-      .trim()
-      .min(1)
-      .max(120)
-      .regex(/^[A-Za-z0-9._:-]+$/),
-    message: z.string().trim().min(1).max(4000),
-    history: z.array(z.string().max(4000)).max(50).default([]),
-    expectedPolicyDecision: PlatformDecisionSchema.optional(),
-    expectedResponseMode: z.enum(['answer', 'clarify', 'handoff', 'blocked']),
-    expectedHandoff: z.boolean().optional(),
-    approvedKnowledge: z
-      .object({
-        version: z.string().trim().min(1).max(120),
-        answer: z.string().trim().min(1).max(4000),
-        source: z
-          .string()
-          .trim()
-          .regex(/^controlled:\/\//)
-      })
-      .strict()
-      .optional()
-  })
-  .strict()
-
-export type TestLabCase = z.infer<typeof TestLabCaseSchema>
-
-export interface TestLabEvaluation {
-  caseId: string
-  passed: boolean
-  failures: string[]
-  trace: TestRunTrace
-}
-
-export interface TestLabSuiteResult {
-  passed: boolean
-  results: TestLabEvaluation[]
-}
 
 export async function evaluateTestLabCase(input: {
   store: ControlPlaneStore
@@ -100,7 +63,7 @@ export async function evaluateTestLabSuite(input: {
   versionId: AgentVersionId
   cases: TestLabCase[]
 }): Promise<TestLabSuiteResult> {
-  const cases = z.array(TestLabCaseSchema).min(1).max(100).parse(input.cases)
+  const cases = input.cases.map((testCase) => TestLabCaseSchema.parse(testCase))
   let results: TestLabEvaluation[] = []
   for (const testCase of cases) {
     const result = await evaluateTestLabCase({ ...input, testCase })

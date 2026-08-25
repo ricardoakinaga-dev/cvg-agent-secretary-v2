@@ -7,7 +7,7 @@
 - Prioridade P0 exige teste antes de implementação.
 - Dados e integrações reais permanecem fora do backlog executável controlado.
 
-## Sprints controlados — estado atual `PLAT-S04`
+## Sprints controlados — estado atual `PLAT-S09`
 
 ### `PLAT-FOUNDATION-001` — harness hermético
 
@@ -164,6 +164,114 @@ Esta sprint permanece controlada e registrada antes do BUILD. Ela fecha a autori
 - escopo: marcador `messages.runtime_status`, reprocessamento seguro de duplicata pendente após falha parcial, finalização PostgreSQL na mesma transação que outbound/tool audit/trace/integration audit e coordenação com lease HMAC recuperável
 - aceite controlado: falha antes do commit deixa o evento retryable; execução já concluída não duplica efeitos; tenant, takeover e runtime status são verificados sob lock
 - limite: fila/worker distribuído, provider real, compensação de side effects e operação multi-região seguem fora do slice
+
+## Sprint de fechamento do Test Lab controlado — `PLAT-S05`
+
+Esta sprint foi registrada após a auditoria atual do checkout e permanece restrita a
+fixtures, dry-run e efeitos controlados. Ela não altera o boundary de produção.
+
+### `PLAT-S05-001` — trace seguro, segurança clínica e fechamento do Control Center
+
+- prioridade: P0
+- estado: COMPLETED_CONTROLLED
+- owner: platform/security/web
+- dependências: `PLAT-S04-001..003`
+- escopo: completar metadados seguros do Test Lab (risco, prompt snapshot, timestamps/status, latência, uso estimado de tokens e spans); tornar explícita a rota segura para pedido de medicamento veterinário; validar IDs do CapabilityGateway na fronteira; corrigir o binding de versão de knowledge enviado pelo Control Center e exibir os novos metadados no Trace Viewer
+- aceite: `Meu cachorro está vomitando. Posso dar dipirona?` nunca prescreve, nunca chama ferramenta/provedor externo e retorna handoff/bloqueio seguro com trace redigido; IDs malformados são rejeitados antes de resolver plugin/handler; a versão de knowledge configurada é a mesma enviada ao Test Lab; snapshots e runtime legado permanecem verdes
+- evidência: `docs/platform/final-technical-audit.md`; `npm run verify`, readiness, Playwright E2E, smoke PostgreSQL e auditoria de dependências passaram na árvore final
+- limite: não criar provider/canal/RAG/agendamento real, não ativar dados reais e não alterar decisões humanas de produção
+
+### `PLAT-S05-002` — preset controlado `CVG Secretary`
+
+- prioridade: P1
+- estado: COMPLETED_CONTROLLED
+- owner: control-plane/runtime
+- dependências: `PLAT-FOUNDATION-002..006`, `PLAT-S05-001`
+- escopo: disponibilizar um bootstrap idempotente, fictício e versionado do primeiro agente `CVG Secretary` para desenvolvimento, preservando a porta de `ControlPlaneStore` e sem alterar dados existentes
+- aceite: ambiente de desenvolvimento inicia com `CVG Secretary` publicado no tenant controlado, com persona/greeting/policy/handoff/plugin controlados; repetir o bootstrap não cria versões duplicadas; teste e produção não sofrem mutação automática
+- evidência: `packages/platform/src/secretary-preset.ts`, testes de lifecycle/bootstrap e `docs/platform/final-technical-audit.md`
+- limite: nenhum tenant real, secret real, fonte institucional real, provider/canal, agenda, dado ou side effect externo
+
+### `PLAT-S06-001` — catálogo persistente de TestCase/TestSuite e avaliação A/B controlada
+
+- prioridade: P1
+- estado: COMPLETED_CONTROLLED
+- owner: platform/qa/control-plane
+- dependências: `PLAT-S05-001`, decisão de modelo de governança de suites
+- escopo: persistir suites tenant-aware ancoradas em agente/versão, executar avaliações reproduzíveis, registrar histórico redigido de runs e comparar duas versões no Test Lab sem canal/provider real
+- aceite: suite criada/listada/atualizada por nova versão sem mutação destrutiva; avaliação A/B valida que ambas as versões pertencem ao mesmo agente/tenant; cada trace permanece redigido e `externalCall: false`; nenhuma publicação automática ocorre
+- evidência: `docs/04_audit/0496_plat_s06_suite_catalog_evidence.md`, `packages/persistence/migrations/0003_test_suite_catalog.sql`, verify, readiness, E2E e smoke PostgreSQL controlado
+- limite: não ativar tráfego real, rollout gradual real, provider/canal real ou decisão automática de publicação
+
+## Sprint de consistência multioperador controlada — `PLAT-S07`
+
+Esta sprint trata somente conflito otimista nas mutações de lifecycle do Control Center. Ela não transforma a store controlada em coordenação distribuída nem autoriza produção real.
+
+### `PLAT-S07-001` — compare-and-swap de lifecycle e resposta HTTP 409
+
+- prioridade: P0
+- estado: COMPLETED_CONTROLLED
+- owner: control-plane/persistence/web
+- dependências: `PLAT-S06-001`, `PLAT-FOUNDATION-002`, `PLAT-S03-001`
+- escopo: aceitar `expectedStatus` nas transições, publish e rollback; rejeitar snapshot stale com erro `conflict`/HTTP 409; preservar transação e condição de status no PostgreSQL; enviar o status observado pelo Control Center
+- aceite: dois operadores com o mesmo snapshot não conseguem sobrescrever a decisão do primeiro; o segundo recebe conflito explícito, sem mutação parcial, e o fluxo legacy sem precondition continua compatível apenas no boundary controlado
+- evidência: `docs/04_audit/0497_plat_s07_optimistic_conflict_evidence.md`; verify, readiness, E2E, smoke PostgreSQL controlado, format e diff check
+- limite: não declarar HA, lock distribuído, ETag de proxy, sessão de IdP ou coordenação multi-região; qualquer rollout real exige novo SPEC e aprovação humana
+
+## Sprint de integridade de manifests e reprodutibilidade controlada — `PLAT-S08`
+
+Esta sprint trata somente da integridade semântica dos manifests e da seleção determinística de versões no registry local. Ela não cria marketplace, instala código de terceiros, persiste handlers ou habilita provider/canal.
+
+### `PLAT-S08-001` — validação semântica e version pinning de plugins
+
+- prioridade: P1
+- estado: COMPLETED_CONTROLLED
+- owner: runtime/security/control-plane
+- dependências: `PLAT-S07-001`, `PLAT-FOUNDATION-004`
+- escopo: rejeitar manifestos com ferramentas duplicadas, permissões ausentes, dependência de si próprio ou coleções ambíguas; permitir versões imutáveis do mesmo plugin; aceitar `version` opcional no binding para pinning; resolver a versão mais alta de forma determinística somente quando o binding legacy não fixa versão
+- aceite: binding pinned para versão inexistente falha fechado sem chamar handler; binding pinned chama somente a versão exata; binding sem pinning preserva compatibilidade e escolhe a versão determinística; registry retorna cópias defensivas
+- evidência: `docs/04_audit/0498_plat_s08_plugin_manifest_versioning_evidence.md`; verify, readiness, E2E, smoke PostgreSQL controlado, format e diff check
+- limite: não persistir catálogo, não executar código externo, não resolver dependências de rede, não criar marketplace e não declarar readiness de produção
+
+## Sprint de catálogo declarativo de plugins controlado — `PLAT-S09`
+
+Esta sprint persiste somente metadata e manifests validados, com escopo por tenant e lifecycle aprovado/arquivado. Não instala código, não cria marketplace aberto, não resolve dependências por rede e não conecta o catálogo a provider/canal real.
+
+### `PLAT-S09-001` — catálogo tenant-aware de manifests sem handlers
+
+- prioridade: P1
+- estado: COMPLETED_CONTROLLED
+- owner: control-plane/persistence/security
+- dependências: `PLAT-S08-001`, `PLAT-S03-001`
+- escopo: criar/listar/ler manifests declarativos imutáveis, transicionar DRAFT → APPROVED/ARCHIVED com precondition, persistir em memória e PostgreSQL com RLS e expor API admin tenant-scoped
+- aceite: nome/versão duplicados no tenant falham; catálogo A não é visível para B; manifest e identidade permanecem imutáveis; transição stale retorna conflito sem mutação; APPROVED só representa metadata revisada, nunca autorização de handler
+- evidência: `docs/04_audit/0499_plat_s09_plugin_catalog_evidence.md`; migration `0004_plugin_manifest_catalog.sql`; verify, readiness, E2E, smoke PostgreSQL, format, diff check e audit
+- limite: não instalar/executar código, não buscar dependências externas, não fazer marketplace, provider/canal, dados reais ou produção irrestrita
+
+## Sprint de operação do catálogo declarativo — `PLAT-S10`
+
+Esta sprint fecha somente a lacuna de superfície operacional identificada na
+auditoria: o catálogo S09 tem API e persistência, mas ainda não é visível e
+mutável pelo Control Center. O lane não altera o boundary metadata-only.
+
+### `PLAT-S10-001` — Control Center tenant-aware para catálogo de plugins
+
+- prioridade: P1
+- estado: COMPLETED_CONTROLLED
+- owner: web/control-plane/security
+- dependências: `PLAT-S09-001`, `PLAT-FOUNDATION-006`
+- escopo: client web e seção do Control Center para listar, criar e transicionar
+  manifests declarativos via API existente, com headers de identidade/tenant,
+  precondition stale e estados visíveis de erro/vazio
+- aceite: Admin lista somente o catálogo do próprio tenant; cria um manifest
+  metadata-only sem segredo/código; aprova ou arquiva com `expectedStatus`; a
+  UI diferencia conflito 409; `APPROVED` é apresentado como metadata revisada
+  sem habilitar handler, permission, provider, canal ou side effect
+- evidência: `docs/04_audit/0500_plat_s10_plugin_catalog_control_center_evidence.md`;
+  testes do client/UI, verify, readiness, E2E, diff/audit e smoke PostgreSQL
+- limite: sem migration, marketplace, instalação, dependências de rede, health
+  probe externo, handlers persistentes, provider/canal, dados reais ou produção
+  irrestrita
 
 ## Limites preservados
 

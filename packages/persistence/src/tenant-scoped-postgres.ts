@@ -11,7 +11,17 @@ import {
   type AgentVersionRecord,
   type TenantScope,
   type TestRunTrace,
-  type TenantId
+  type PluginCatalogCreateInput,
+  type PluginCatalogId,
+  type PluginCatalogRecord,
+  type PluginCatalogStatus,
+  type PluginManifest,
+  type TenantId,
+  type TestSuiteCloneInput,
+  type TestSuiteCreateInput,
+  type TestSuiteId,
+  type TestSuiteRecord,
+  type TestSuiteRunRecord
 } from '@cvg/platform'
 import type {
   ApprovalRequestRecord,
@@ -356,19 +366,21 @@ export class TenantScopedPostgresControlPlaneRepository {
   transitionVersion(
     scope: TenantScope,
     versionId: AgentVersionId,
-    target: AgentVersionStatus
+    target: AgentVersionStatus,
+    expectedStatus?: AgentVersionStatus
   ): Promise<AgentVersionRecord> {
     return this.run(scope, (repository) =>
-      repository.transitionVersion(scope, versionId, target)
+      repository.transitionVersion(scope, versionId, target, expectedStatus)
     )
   }
 
   publishVersion(
     scope: TenantScope,
-    versionId: AgentVersionId
+    versionId: AgentVersionId,
+    expectedStatus?: AgentVersionStatus
   ): Promise<AgentVersionRecord> {
     return this.run(scope, (repository) =>
-      repository.publishVersion(scope, versionId)
+      repository.publishVersion(scope, versionId, expectedStatus)
     )
   }
 
@@ -376,10 +388,11 @@ export class TenantScopedPostgresControlPlaneRepository {
     scope: TenantScope,
     agentId: AgentId,
     versionId: AgentVersionId,
-    createdBy: string
+    createdBy: string,
+    expectedStatus?: AgentVersionStatus
   ): Promise<AgentVersionRecord> {
     return this.run(scope, (repository) =>
-      repository.rollback(scope, agentId, versionId, createdBy)
+      repository.rollback(scope, agentId, versionId, createdBy, expectedStatus)
     )
   }
 
@@ -389,6 +402,62 @@ export class TenantScopedPostgresControlPlaneRepository {
   ): Promise<AgentVersionRecord | null> {
     return this.run(scope, (repository) =>
       repository.resolvePublished(scope, agentId)
+    )
+  }
+
+  createPluginCatalogEntry(
+    scope: TenantScope,
+    input: PluginCatalogCreateInput,
+    createdBy: string
+  ): Promise<PluginCatalogRecord> {
+    return this.run(scope, (repository) =>
+      repository.createPluginCatalogEntry(scope, input, createdBy)
+    )
+  }
+
+  getPluginCatalogEntry(
+    scope: TenantScope,
+    pluginId: PluginCatalogId
+  ): Promise<PluginCatalogRecord | null> {
+    return this.run(scope, (repository) =>
+      repository.getPluginCatalogEntry(scope, pluginId)
+    )
+  }
+
+  listPluginCatalogEntries(
+    scope: TenantScope,
+    name?: string
+  ): Promise<PluginCatalogRecord[]> {
+    return this.run(scope, (repository) =>
+      repository.listPluginCatalogEntries(scope, name)
+    )
+  }
+
+  transitionPluginCatalogEntry(
+    scope: TenantScope,
+    pluginId: PluginCatalogId,
+    target: PluginCatalogStatus,
+    actorId: string,
+    expectedStatus?: PluginCatalogStatus
+  ): Promise<PluginCatalogRecord> {
+    return this.run(scope, (repository) =>
+      repository.transitionPluginCatalogEntry(
+        scope,
+        pluginId,
+        target,
+        actorId,
+        expectedStatus
+      )
+    )
+  }
+
+  resolveApprovedPlugin(
+    scope: TenantScope,
+    name: string,
+    version?: string
+  ): Promise<PluginManifest | null> {
+    return this.run(scope, (repository) =>
+      repository.resolveApprovedPlugin(scope, name, version)
     )
   }
 
@@ -422,6 +491,64 @@ export class TenantScopedPostgresControlPlaneRepository {
   ): Promise<TestRunTrace[]> {
     return this.run(scope, (repository) =>
       repository.listExecutionTraces(scope, limit)
+    )
+  }
+
+  createTestSuite(
+    scope: TenantScope,
+    input: TestSuiteCreateInput,
+    createdBy: string
+  ): Promise<TestSuiteRecord> {
+    return this.run(scope, (repository) =>
+      repository.createTestSuite(scope, input, createdBy)
+    )
+  }
+
+  getTestSuite(
+    scope: TenantScope,
+    suiteId: TestSuiteId
+  ): Promise<TestSuiteRecord | null> {
+    return this.run(scope, (repository) =>
+      repository.getTestSuite(scope, suiteId)
+    )
+  }
+
+  listTestSuites(
+    scope: TenantScope,
+    agentId?: AgentId
+  ): Promise<TestSuiteRecord[]> {
+    return this.run(scope, (repository) =>
+      repository.listTestSuites(scope, agentId)
+    )
+  }
+
+  cloneTestSuite(
+    scope: TenantScope,
+    suiteId: TestSuiteId,
+    input: TestSuiteCloneInput,
+    createdBy: string
+  ): Promise<TestSuiteRecord> {
+    return this.run(scope, (repository) =>
+      repository.cloneTestSuite(scope, suiteId, input, createdBy)
+    )
+  }
+
+  recordTestSuiteRun(
+    scope: TenantScope,
+    run: TestSuiteRunRecord
+  ): Promise<TestSuiteRunRecord> {
+    return this.run(scope, (repository) =>
+      repository.recordTestSuiteRun(scope, run)
+    )
+  }
+
+  listTestSuiteRuns(
+    scope: TenantScope,
+    suiteId: TestSuiteId,
+    limit?: number
+  ): Promise<TestSuiteRunRecord[]> {
+    return this.run(scope, (repository) =>
+      repository.listTestSuiteRuns(scope, suiteId, limit)
     )
   }
 

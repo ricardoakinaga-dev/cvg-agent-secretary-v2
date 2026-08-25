@@ -38,6 +38,21 @@ export interface OperatorIdentity {
   tenantId?: string
 }
 
+export class ApiRequestError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+    readonly code: string
+  ) {
+    super(message)
+    this.name = 'ApiRequestError'
+  }
+}
+
+export function isApiConflict(error: unknown): boolean {
+  return error instanceof ApiRequestError && error.status === 409
+}
+
 export interface PlatformAgentView {
   id: string
   slug: string
@@ -63,9 +78,15 @@ export interface PlatformTraceView {
   conversationId?: string
   sessionId?: string
   intent: { name: string; confidence: number }
+  risk?: { level: string; reason: string }
   policy: Array<{ decision: string; reason: string }>
   knowledge: { status: string; source?: string; version?: string }
   tools: Array<{ name: string; status: string }>
+  toolResults?: Array<{
+    name: string
+    status: string
+    output: { redacted: true } | null
+  }>
   handoff: {
     requested: boolean
     reason: string | null
@@ -73,6 +94,22 @@ export interface PlatformTraceView {
   }
   response: { text: string; mode: string }
   provider: { provider: string; model: string; externalCall: false }
+  prompt?: { version: string; blockIds: string[] }
+  status?: 'completed' | 'blocked' | 'failed'
+  startedAt?: string
+  completedAt?: string
+  latencyMs?: number
+  tokenUsage?: {
+    prompt: number
+    completion: number
+    total: number
+    estimated: true
+  }
+  spans?: Array<{
+    name: string
+    status: string
+    durationMs: number
+  }>
   createdAt?: string
 }
 
@@ -84,6 +121,84 @@ interface PlatformTracePageView {
     total: number
     hasNextPage: boolean
   }
+}
+
+export interface PlatformTestCaseView {
+  id: string
+  message: string
+  history?: string[]
+  expectedPolicyDecision?: string
+  expectedResponseMode: 'answer' | 'clarify' | 'handoff' | 'blocked'
+  expectedHandoff?: boolean
+  approvedKnowledge?: { version: string; answer: string; source: string }
+}
+
+export interface PlatformTestSuiteView {
+  id: string
+  tenantId: string
+  slug: string
+  name: string
+  description: string
+  agentId: string
+  versionId: string
+  version: number
+  cases: PlatformTestCaseView[]
+  previousSuiteId: string | null
+  createdBy: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface PlatformTestSuiteRunView {
+  id: string
+  tenantId: string
+  suiteId: string
+  agentId: string
+  variants: Array<{
+    label: 'A' | 'B'
+    versionId: string
+    passed: boolean
+    results: Array<{
+      caseId: string
+      passed: boolean
+      failures: string[]
+      trace: PlatformTraceView
+    }>
+  }>
+  passed: boolean
+  createdBy: string
+  createdAt: string
+}
+
+export type PlatformPluginCatalogStatus = 'DRAFT' | 'APPROVED' | 'ARCHIVED'
+
+export interface PlatformPluginToolView {
+  name: string
+  permission: string
+  risk: 'low' | 'medium' | 'high' | 'critical'
+  requiresApproval: boolean
+}
+
+export interface PlatformPluginManifestView {
+  name: string
+  version: string
+  capabilities: string[]
+  permissions: string[]
+  tools: PlatformPluginToolView[]
+  hooks: string[]
+  dependencies: string[]
+  configSchemaVersion: string
+}
+
+export interface PlatformPluginCatalogView {
+  tenantId: string
+  id: string
+  manifest: PlatformPluginManifestView
+  status: PlatformPluginCatalogStatus
+  createdBy: string
+  approvedBy: string | null
+  createdAt: string
+  updatedAt: string
 }
 
 export interface ApprovalView {
@@ -160,7 +275,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = init ? await fetch(path, init) : await fetch(path)
   const envelope = (await response.json()) as ApiEnvelope<T>
   if (!envelope.success || !envelope.data) {
-    throw new Error(envelope.error?.message ?? 'Request failed')
+    throw new ApiRequestError(
+      envelope.error?.message ?? 'Request failed',
+      response.status,
+      envelope.error?.code ?? 'request_failed'
+    )
   }
   return envelope.data
 }
@@ -355,6 +474,7 @@ export const apiClient = {
     agentId: string
     versionId: string
     target: 'TESTING' | 'APPROVED' | 'ARCHIVED' | 'DRAFT'
+    expectedStatus?: string
   }): Promise<PlatformVersionView> {
     return request(
       `/v1/admin/agents/${input.agentId}/versions/${input.versionId}/transition`,
@@ -364,7 +484,12 @@ export const apiClient = {
           'content-type': 'application/json',
           ...operatorHeaders(input.identity)
         },
-        body: JSON.stringify({ target: input.target })
+        body: JSON.stringify({
+          target: input.target,
+          ...(input.expectedStatus
+            ? { expectedStatus: input.expectedStatus }
+            : {})
+        })
       }
     )
   },
@@ -373,12 +498,19 @@ export const apiClient = {
     identity: OperatorIdentity & { tenantId: string }
     agentId: string
     versionId: string
+    expectedStatus?: string
   }): Promise<PlatformVersionView> {
     return request(
       `/v1/admin/agents/${input.agentId}/versions/${input.versionId}/publish`,
       {
         method: 'POST',
-        headers: operatorHeaders(input.identity)
+        headers: {
+          'content-type': 'application/json',
+          ...operatorHeaders(input.identity)
+        },
+        body: JSON.stringify(
+          input.expectedStatus ? { expectedStatus: input.expectedStatus } : {}
+        )
       }
     )
   },
@@ -387,6 +519,7 @@ export const apiClient = {
     identity: OperatorIdentity & { tenantId: string }
     agentId: string
     versionId: string
+    expectedStatus?: string
   }): Promise<PlatformVersionView> {
     return request(`/v1/admin/agents/${input.agentId}/rollback`, {
       method: 'POST',
@@ -394,7 +527,12 @@ export const apiClient = {
         'content-type': 'application/json',
         ...operatorHeaders(input.identity)
       },
-      body: JSON.stringify({ versionId: input.versionId })
+      body: JSON.stringify({
+        versionId: input.versionId,
+        ...(input.expectedStatus
+          ? { expectedStatus: input.expectedStatus }
+          : {})
+      })
     })
   },
 
@@ -465,6 +603,94 @@ export const apiClient = {
     })
   },
 
+  async createPlatformTestSuite(input: {
+    identity: OperatorIdentity & { tenantId: string }
+    slug: string
+    name: string
+    description: string
+    agentId: string
+    versionId: string
+    cases: PlatformTestCaseView[]
+  }): Promise<PlatformTestSuiteView> {
+    return request('/v1/admin/test-lab/suites', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        ...operatorHeaders(input.identity)
+      },
+      body: JSON.stringify({
+        slug: input.slug,
+        name: input.name,
+        description: input.description,
+        agentId: input.agentId,
+        versionId: input.versionId,
+        cases: input.cases
+      })
+    })
+  },
+
+  async listPlatformTestSuites(
+    identity: OperatorIdentity & { tenantId: string },
+    agentId?: string
+  ): Promise<PlatformTestSuiteView[]> {
+    const query = agentId ? `?agentId=${encodeURIComponent(agentId)}` : ''
+    return request(`/v1/admin/test-lab/suites${query}`, operatorInit(identity))
+  },
+
+  async evaluatePlatformTestSuite(input: {
+    identity: OperatorIdentity & { tenantId: string }
+    suiteId: string
+    versionId?: string
+  }): Promise<PlatformTestSuiteRunView> {
+    return request(`/v1/admin/test-lab/suites/${input.suiteId}/evaluate`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        ...operatorHeaders(input.identity)
+      },
+      body: JSON.stringify({ versionId: input.versionId })
+    })
+  },
+
+  async comparePlatformTestSuite(input: {
+    identity: OperatorIdentity & { tenantId: string }
+    suiteId: string
+    versionAId: string
+    versionBId: string
+  }): Promise<PlatformTestSuiteRunView> {
+    return request(`/v1/admin/test-lab/suites/${input.suiteId}/compare`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        ...operatorHeaders(input.identity)
+      },
+      body: JSON.stringify({
+        versionAId: input.versionAId,
+        versionBId: input.versionBId
+      })
+    })
+  },
+
+  async listPlatformTestSuiteRuns(
+    identity: OperatorIdentity & { tenantId: string },
+    suiteId: string,
+    limit = 10
+  ): Promise<PlatformTestSuiteRunView[]> {
+    const page = await request<{
+      items: PlatformTestSuiteRunView[]
+      pageInfo: {
+        limit: number
+        offset: number
+        total: number
+        hasNextPage: boolean
+      }
+    }>(
+      `/v1/admin/test-lab/suites/${suiteId}/runs?limit=${limit}`,
+      operatorInit(identity)
+    )
+    return page.items
+  },
+
   async listPlatformTestRuns(
     identity: OperatorIdentity & { tenantId: string },
     limit = 10
@@ -485,5 +711,48 @@ export const apiClient = {
       operatorInit(identity)
     )
     return page.items
+  },
+
+  async listPlatformPluginCatalog(
+    identity: OperatorIdentity & { tenantId: string },
+    name?: string
+  ): Promise<PlatformPluginCatalogView[]> {
+    const query = name ? `?name=${encodeURIComponent(name)}` : ''
+    return request(`/v1/admin/plugins/catalog${query}`, operatorInit(identity))
+  },
+
+  async createPlatformPluginCatalog(input: {
+    identity: OperatorIdentity & { tenantId: string }
+    manifest: PlatformPluginManifestView
+  }): Promise<PlatformPluginCatalogView> {
+    return request('/v1/admin/plugins/catalog', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        ...operatorHeaders(input.identity)
+      },
+      body: JSON.stringify({ manifest: input.manifest })
+    })
+  },
+
+  async transitionPlatformPluginCatalog(input: {
+    identity: OperatorIdentity & { tenantId: string }
+    pluginId: string
+    target: PlatformPluginCatalogStatus
+    expectedStatus?: PlatformPluginCatalogStatus
+  }): Promise<PlatformPluginCatalogView> {
+    return request(`/v1/admin/plugins/catalog/${input.pluginId}/transition`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        ...operatorHeaders(input.identity)
+      },
+      body: JSON.stringify({
+        target: input.target,
+        ...(input.expectedStatus
+          ? { expectedStatus: input.expectedStatus }
+          : {})
+      })
+    })
   }
 }

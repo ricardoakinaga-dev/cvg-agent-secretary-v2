@@ -9,11 +9,23 @@ export const AgentVersionIdSchema = z
   .string()
   .regex(new RegExp(`^agent_version_${uuid}$`))
 export const TraceIdSchema = z.string().regex(new RegExp(`^trace_${uuid}$`))
+export const TestSuiteIdSchema = z
+  .string()
+  .regex(new RegExp(`^test_suite_${uuid}$`))
+export const TestSuiteRunIdSchema = z
+  .string()
+  .regex(new RegExp(`^test_suite_run_${uuid}$`))
+export const PluginCatalogIdSchema = z
+  .string()
+  .regex(new RegExp(`^plugin_catalog_${uuid}$`))
 
 export type TenantId = z.infer<typeof TenantIdSchema>
 export type AgentId = z.infer<typeof AgentIdSchema>
 export type AgentVersionId = z.infer<typeof AgentVersionIdSchema>
 export type TraceId = z.infer<typeof TraceIdSchema>
+export type TestSuiteId = z.infer<typeof TestSuiteIdSchema>
+export type TestSuiteRunId = z.infer<typeof TestSuiteRunIdSchema>
+export type PluginCatalogId = z.infer<typeof PluginCatalogIdSchema>
 
 export function createTenantId(): TenantId {
   return `tenant_${randomUUID()}`
@@ -29,4 +41,16 @@ export function createAgentVersionId(): AgentVersionId {
 
 export function createTraceId(): TraceId {
   return `trace_${randomUUID()}`
+}
+
+export function createTestSuiteId(): TestSuiteId {
+  return `test_suite_${randomUUID()}`
+}
+
+export function createTestSuiteRunId(): TestSuiteRunId {
+  return `test_suite_run_${randomUUID()}`
+}
+
+export function createPluginCatalogId(): PluginCatalogId {
+  return `plugin_catalog_${randomUUID()}`
 }

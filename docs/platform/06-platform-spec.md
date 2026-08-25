@@ -242,3 +242,112 @@ Testes obrigatórios: migration runner idempotente, checksum e baseline legado e
 Antes de qualquer ferramenta real, a autoridade de capability approval deve persistir pelo menos: tenant, agent/version, tool, hash canônico do input, actor, nonce único, issuer, expiração, status, consumo e revogação. A verificação precisa ser atômica e single-use; approval ausente, expirado, revogado, reutilizado, com input diferente ou fora do tenant deve bloquear e auditar.
 
 O `ToolRegistry` legado não pode executar handlers diretamente no runtime publicado. O adapter controlado expõe somente `find_available_slots`, encaminha pelo `CapabilityGateway` em `dryRun=true` e rejeita qualquer ferramenta não allowlisted. Confirmar, cancelar, reagendar, provider real, canal real e outbox de side effect continuam fora desta sprint.
+
+## PLAT-S06 — catálogo persistente do Test Lab e comparação A/B controlada
+
+O Test Lab passa a ter um catálogo persistente, ainda exclusivamente controlado e sem qualquer tráfego externo. Uma suite é um snapshot imutável de casos redigidos, sempre vinculada ao mesmo tenant, agente e versão de configuração. Criar ou clonar uma suite gera um novo identificador e uma nova versão do catálogo; a suite de origem não pode ser mutada.
+
+O caso de teste aceita somente mensagem, histórico sintético, intenção esperada opcional e fonte institucional aprovada opcional. Antes de persistir, mensagem, histórico e resposta de conhecimento são redigidos com a mesma fronteira do trace. O catálogo não aceita segredo, PII deliberada, provider, canal ou ferramenta externa.
+
+Cada avaliação pode registrar um histórico redigido com uma ou duas variantes (`A` e `B`). As variantes precisam pertencer ao mesmo tenant e agente da suite, executam somente em `dryRun`, usam o evaluator determinístico do Test Lab e mantêm `externalCall: false`. A comparação A/B é uma comparação de resultados controlados; não mede tráfego real, não altera publicação e não libera feature flag.
+
+### Contrato mínimo
+
+- `TestSuiteRecord`: tenant, slug/name, agent/version, casos redigidos, versão do catálogo, origem de clone e auditoria de criação;
+- `TestSuiteRunRecord`: tenant, suite, agente, variantes A/B, resultados redigidos, status agregado e ator;
+- ids opacos `test_suite_<uuid>` e `test_suite_run_<uuid>`;
+- unicidade de slug por tenant/agente e unicidade de variante por execução;
+- cópia defensiva em memória e cópia sanitizada no PostgreSQL;
+- `FORCE ROW LEVEL SECURITY`, `tenant_id` não-quarentenado e políticas exatas nas tabelas novas.
+
+### API e UI controladas
+
+As rotas admin são `POST/GET /v1/admin/test-lab/suites`, `POST /:suiteId/clone`, `POST /:suiteId/evaluate`, `POST /:suiteId/compare` e `GET /:suiteId/runs`. Todas exigem identidade admin e permissão `test:run` ou `agent:configure`, conforme a operação, além de validar tenant/agente/versão antes de consultar ou executar.
+
+O Control Center expõe criação, carregamento, avaliação e comparação A/B de suites sem auto-fetch, para preservar o comportamento legado e evitar chamadas não solicitadas. O resultado visualizado é apenas PASS/FAIL e metadados redigidos.
+
+### Gate de implementação
+
+Antes de fechar `PLAT-S06-001`, devem passar: testes RED/GREEN de lifecycle, clone imutável, redaction, isolamento tenant e histórico; rotas API e UI; typecheck, lint, format, build, cobertura, audit, readiness e E2E; além de smoke PostgreSQL real em fixture controlada para migration `0003`, persistência, clone, histórico e RLS. A conclusão não altera o boundary de release: dados reais, provider/canal, RAG, marketplace, agenda e ações clínicas/financeiras continuam bloqueados.
+
+## PLAT-S07 — conflito otimista do Control Center
+
+O lifecycle de `AgentVersion` deve aceitar uma precondition opcional `expectedStatus` em `transition`, `publish` e `rollback`. Quando o snapshot observado pelo operador não é mais o estado atual, a operação deve falhar com `conflict`, sem executar auditoria de sucesso, sem alterar qualquer versão e com envelope HTTP 409 na API.
+
+O PostgreSQL mantém a proteção dentro da transação: a linha é lida com lock, o status observado é comparado à precondition e a atualização continua condicionada ao status lido. A store em memória aplica a mesma regra para manter os testes semânticos equivalentes. Chamadas internas históricas sem precondition continuam aceitas somente como compatibilidade do boundary controlado; a UI sempre envia o status que observou.
+
+### Gate de implementação
+
+Antes de fechar `PLAT-S07-001`, devem passar testes RED/GREEN de dois operadores com snapshot stale, erro 409, ausência de mutação parcial, tenant isolation e caminho PostgreSQL; typecheck, lint, format, build, cobertura, audit, readiness, E2E e smoke PostgreSQL. Esse slice não afirma HA, lock distribuído, ETag de proxy, IdP ou coordenação multi-região.
+
+### Resultado controlado
+
+`PLAT-S07-001` foi concluída como `COMPLETED_CONTROLLED`. A precondition é aplicada em memória, no repository PostgreSQL, na API e na UI; os gates executáveis passaram com 247 testes, cobertura acima de 80%, readiness, E2E, PostgreSQL fixture, format e audit. O resultado máximo permanece `CONTROLLED_MVP_READY`; coordenação distribuída e produção real continuam fora do escopo.
+
+## PLAT-S08 — integridade de manifests e version pinning controlado
+
+`PluginManifestSchema` deve validar invariantes semânticas além do formato: nomes de tools, capabilities, permissions, hooks e dependencies não podem se repetir; cada `tool.permission` deve estar declarado em `permissions`; e o plugin não pode depender de si próprio. O registry deve aceitar múltiplas versões imutáveis do mesmo plugin, rejeitar a mesma combinação nome/versão e sempre devolver cópias defensivas.
+
+`PluginBinding` recebe `version` opcional. Quando informado, o gateway resolve somente a versão exata e falha fechado se ela não estiver registrada. Sem pinning, o comportamento legacy permanece compatível, mas a resolução escolhe determinísticamente a versão mais alta disponível. Nenhuma operação desta sprint acessa rede, instala código, persiste handler ou chama provider/canal.
+
+### Gate de implementação
+
+Antes de fechar `PLAT-S08-001`, devem passar testes RED/GREEN de invariantes de manifest, registro de versões, resolução pinned/unpinned, cópia defensiva e ausência de chamada do handler em versão inexistente; typecheck, lint, format, build, cobertura, audit, readiness, E2E e smoke PostgreSQL devem continuar verdes. O resultado máximo permanece `CONTROLLED_MVP_READY`.
+
+### Resultado controlado
+
+`PLAT-S08-001` foi concluída como `COMPLETED_CONTROLLED`. A validação, o registry e o gateway passaram os gates com 250 testes, cobertura acima de 80%, readiness, E2E, PostgreSQL fixture, format e audit. O resultado máximo permanece `CONTROLLED_MVP_READY`; marketplace, rede, código de terceiros e produção real continuam fora do escopo.
+
+## PLAT-S09 — catálogo declarativo tenant-aware de plugins
+
+O control plane deve oferecer um catálogo persistente de metadata de plugins, separado do `PluginRegistry` de handlers. Cada registro contém `tenantId`, id validado, `PluginManifest` já validado, status `DRAFT | APPROVED | ARCHIVED`, actor de criação/aprovação e timestamps. Manifest, nome e versão são imutáveis; uma combinação nome/versão só pode existir uma vez por tenant.
+
+O lifecycle aceita `DRAFT → APPROVED | ARCHIVED` e `APPROVED → ARCHIVED`, com `expectedStatus` opcional e erro `conflict` quando o snapshot está stale. O catálogo deve usar RLS tenant-aware no PostgreSQL, cópia defensiva em memória/repository e API admin com envelope padrão. `APPROVED` significa somente metadata revisada: não concede permission, approval, instalação, resolução de dependências, handler, provider, canal ou side effect.
+
+### Gate de implementação
+
+Antes de fechar `PLAT-S09-001`, devem passar testes RED/GREEN de lifecycle, duplicate name/version, cópia imutável, tenant isolation, conflito stale, migration/RLS e API; typecheck, lint, format, build, cobertura, audit, readiness, E2E e smoke PostgreSQL devem continuar verdes. O resultado máximo permanece `CONTROLLED_MVP_READY`.
+
+### Resultado controlado
+
+`PLAT-S09-001` foi concluída como `COMPLETED_CONTROLLED`. O catálogo, o lifecycle, a migration/RLS, o repository tenant-scoped e a API passaram os gates com 253 testes, 16 skips condicionais e coverage acima de 80%. `APPROVED` permanece somente uma decisão de metadata; marketplace, instalação, handlers, provider/canal e produção real continuam fora do escopo.
+
+## PLAT-S10 — Control Center do catálogo declarativo de plugins
+
+### Contrato
+
+O S10 não altera o contrato de persistência do S09. O cliente web usa as rotas
+existentes:
+
+- `GET /v1/admin/plugins/catalog?name=<optional>`;
+- `POST /v1/admin/plugins/catalog` com `{ manifest }`;
+- `POST /v1/admin/plugins/catalog/:pluginId/transition` com `{ target,
+expectedStatus }`.
+
+Cada chamada deve enviar a identidade do operador e `x-tenant-id` pelo cliente
+controlado. A UI deve tratar `409/conflict` como snapshot stale, sem repetir a
+mutação automaticamente.
+
+O manifest criado pelo Control Center contém somente metadata validável:
+`name`, `version`, capabilities, permissions, tools, hooks, dependencies e
+`configSchemaVersion`. Não há campo de código, URL de instalação, credential,
+secret value ou configuração de provider/canal. O editor pode reutilizar os
+campos de plugin lógico existentes, mas aprovação de catálogo não transforma a
+binding em handler executável.
+
+### Qualidade e fronteiras
+
+- lista, criação e lifecycle permanecem tenant-aware e Admin-only na API;
+- o Control Center mostra `DRAFT`, `APPROVED` e `ARCHIVED`, além de actor e
+  versão;
+- `APPROVED` é rotulado como metadata-only e não é conectado ao gateway;
+- casos de API failure, conflito e catálogo vazio têm estado visível;
+- não são adicionadas chamadas externas, migrations, handlers ou side effects.
+
+### Gate de implementação
+
+Antes do fechamento do `PLAT-S10-001`, devem passar testes RED/GREEN do cliente
+API e do Control Center, incluindo headers tenant-aware, manifest sem segredo,
+lista vazia, criação, aprovação com precondition e conflito; além de
+typecheck, lint, format, build, cobertura, readiness, E2E e auditoria de que o
+catálogo continua metadata-only.

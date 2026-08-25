@@ -23,6 +23,11 @@ describe('policy engine', () => {
     expect(
       containsSensitiveClinicalOrFinancialAction('fazer diagnostico')
     ).toBe(true)
+    expect(
+      containsSensitiveClinicalOrFinancialAction(
+        'Meu cachorro está vomitando. Posso dar dipirona?'
+      )
+    ).toBe(true)
   })
 
   it('requires approval or handoff for risky and appointment actions', () => {

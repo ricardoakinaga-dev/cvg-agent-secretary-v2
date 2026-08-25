@@ -2,20 +2,40 @@ import { DomainError, redactSensitiveText } from '@cvg/shared'
 import {
   AgentConfigSchema,
   AgentCreateInputSchema,
+  PluginCatalogCreateInputSchema,
+  PluginCatalogStatusSchema,
+  TestLabCaseSchema,
+  TestSuiteCloneInputSchema,
+  TestSuiteCreateInputSchema,
   TenantScopeSchema,
   type AgentConfig,
   type AgentCreateInput,
   type AgentRecord,
   type AgentVersionRecord,
   type AgentVersionStatus,
+  type PluginCatalogCreateInput,
+  type PluginCatalogRecord,
+  type PluginCatalogStatus,
+  type PluginManifest,
   type TenantScope,
-  type TestRunTrace
+  type TestRunTrace,
+  type TestLabCase,
+  type TestSuiteCloneInput,
+  type TestSuiteCreateInput,
+  type TestSuiteRecord,
+  type TestSuiteRunRecord
 } from './contracts.ts'
 import {
   createAgentId,
   createAgentVersionId,
+  createPluginCatalogId,
+  createTestSuiteId,
+  PluginCatalogIdSchema,
+  TestSuiteRunIdSchema,
   type AgentId,
-  type AgentVersionId
+  type AgentVersionId,
+  type TestSuiteId,
+  type PluginCatalogId
 } from './ids.ts'
 
 export interface ControlPlaneStore {
@@ -39,22 +59,50 @@ export interface ControlPlaneStore {
   transitionVersion(
     scope: TenantScope,
     versionId: AgentVersionId,
-    target: AgentVersionStatus
+    target: AgentVersionStatus,
+    expectedStatus?: AgentVersionStatus
   ): Promise<AgentVersionRecord>
   publishVersion(
     scope: TenantScope,
-    versionId: AgentVersionId
+    versionId: AgentVersionId,
+    expectedStatus?: AgentVersionStatus
   ): Promise<AgentVersionRecord>
   rollback(
     scope: TenantScope,
     agentId: AgentId,
     versionId: AgentVersionId,
-    createdBy: string
+    createdBy: string,
+    expectedStatus?: AgentVersionStatus
   ): Promise<AgentVersionRecord>
   resolvePublished(
     scope: TenantScope,
     agentId: AgentId
   ): Promise<AgentVersionRecord | null>
+  createPluginCatalogEntry(
+    scope: TenantScope,
+    input: PluginCatalogCreateInput,
+    createdBy: string
+  ): Promise<PluginCatalogRecord>
+  getPluginCatalogEntry(
+    scope: TenantScope,
+    pluginId: PluginCatalogId
+  ): Promise<PluginCatalogRecord | null>
+  listPluginCatalogEntries(
+    scope: TenantScope,
+    name?: string
+  ): Promise<PluginCatalogRecord[]>
+  transitionPluginCatalogEntry(
+    scope: TenantScope,
+    pluginId: PluginCatalogId,
+    target: PluginCatalogStatus,
+    actorId: string,
+    expectedStatus?: PluginCatalogStatus
+  ): Promise<PluginCatalogRecord>
+  resolveApprovedPlugin(
+    scope: TenantScope,
+    name: string,
+    version?: string
+  ): Promise<PluginManifest | null>
   recordTestRun(scope: TenantScope, trace: TestRunTrace): Promise<TestRunTrace>
   listTestRuns(scope: TenantScope, limit?: number): Promise<TestRunTrace[]>
   recordExecutionTrace(
@@ -65,6 +113,34 @@ export interface ControlPlaneStore {
     scope: TenantScope,
     limit?: number
   ): Promise<TestRunTrace[]>
+  createTestSuite(
+    scope: TenantScope,
+    input: TestSuiteCreateInput,
+    createdBy: string
+  ): Promise<TestSuiteRecord>
+  getTestSuite(
+    scope: TenantScope,
+    suiteId: TestSuiteId
+  ): Promise<TestSuiteRecord | null>
+  listTestSuites(
+    scope: TenantScope,
+    agentId?: AgentId
+  ): Promise<TestSuiteRecord[]>
+  cloneTestSuite(
+    scope: TenantScope,
+    suiteId: TestSuiteId,
+    input: TestSuiteCloneInput,
+    createdBy: string
+  ): Promise<TestSuiteRecord>
+  recordTestSuiteRun(
+    scope: TenantScope,
+    run: TestSuiteRunRecord
+  ): Promise<TestSuiteRunRecord>
+  listTestSuiteRuns(
+    scope: TenantScope,
+    suiteId: TestSuiteId,
+    limit?: number
+  ): Promise<TestSuiteRunRecord[]>
 }
 
 export class InMemoryControlPlaneStore implements ControlPlaneStore {
@@ -72,6 +148,9 @@ export class InMemoryControlPlaneStore implements ControlPlaneStore {
   private versions: AgentVersionRecord[] = []
   private testRuns: TestRunTrace[] = []
   private executionTraces: TestRunTrace[] = []
+  private testSuites: TestSuiteRecord[] = []
+  private testSuiteRuns: TestSuiteRunRecord[] = []
+  private pluginCatalog: PluginCatalogRecord[] = []
 
   async createAgent(
     rawScope: TenantScope,
@@ -184,10 +263,12 @@ export class InMemoryControlPlaneStore implements ControlPlaneStore {
   async transitionVersion(
     rawScope: TenantScope,
     versionId: AgentVersionId,
-    target: AgentVersionStatus
+    target: AgentVersionStatus,
+    expectedStatus?: AgentVersionStatus
   ): Promise<AgentVersionRecord> {
     const scope = parseScope(rawScope)
     const current = this.requireVersion(scope, versionId)
+    assertExpectedStatus(current.status, expectedStatus)
     if (!canTransition(current.status, target)) {
       throw new DomainError(
         'invalid_action',
@@ -203,10 +284,12 @@ export class InMemoryControlPlaneStore implements ControlPlaneStore {
 
   async publishVersion(
     rawScope: TenantScope,
-    versionId: AgentVersionId
+    versionId: AgentVersionId,
+    expectedStatus?: AgentVersionStatus
   ): Promise<AgentVersionRecord> {
     const scope = parseScope(rawScope)
     const current = this.requireVersion(scope, versionId)
+    assertExpectedStatus(current.status, expectedStatus)
     if (current.status !== 'APPROVED') {
       throw new DomainError(
         'invalid_action',
@@ -243,10 +326,12 @@ export class InMemoryControlPlaneStore implements ControlPlaneStore {
     rawScope: TenantScope,
     agentId: AgentId,
     versionId: AgentVersionId,
-    createdBy: string
+    createdBy: string,
+    expectedStatus?: AgentVersionStatus
   ): Promise<AgentVersionRecord> {
     const scope = parseScope(rawScope)
     const target = this.requireVersion(scope, versionId)
+    assertExpectedStatus(target.status, expectedStatus)
     if (target.agentId !== agentId) {
       throw new DomainError(
         'invalid_action',
@@ -284,6 +369,143 @@ export class InMemoryControlPlaneStore implements ControlPlaneStore {
         candidate.status === 'PUBLISHED'
     )
     return version ? cloneVersion(version) : null
+  }
+
+  async createPluginCatalogEntry(
+    rawScope: TenantScope,
+    rawInput: PluginCatalogCreateInput,
+    createdBy: string
+  ): Promise<PluginCatalogRecord> {
+    const scope = parseScope(rawScope)
+    const input = PluginCatalogCreateInputSchema.parse(rawInput)
+    if (
+      this.pluginCatalog.some(
+        (entry) =>
+          entry.tenantId === scope.tenantId &&
+          entry.manifest.name === input.manifest.name &&
+          entry.manifest.version === input.manifest.version
+      )
+    ) {
+      throw new DomainError(
+        'invalid_action',
+        'Plugin manifest name/version already exists'
+      )
+    }
+    const now = new Date()
+    const entry: PluginCatalogRecord = {
+      tenantId: scope.tenantId,
+      id: createPluginCatalogId(),
+      manifest: structuredClone(input.manifest),
+      status: 'DRAFT',
+      createdBy: validateActor(createdBy),
+      approvedBy: null,
+      createdAt: now,
+      updatedAt: now
+    }
+    this.pluginCatalog = [...this.pluginCatalog, entry]
+    return clonePluginCatalogRecord(entry)
+  }
+
+  async getPluginCatalogEntry(
+    rawScope: TenantScope,
+    rawPluginId: PluginCatalogId
+  ): Promise<PluginCatalogRecord | null> {
+    const scope = parseScope(rawScope)
+    const pluginId = PluginCatalogIdSchema.parse(rawPluginId)
+    const entry = this.pluginCatalog.find(
+      (candidate) =>
+        candidate.tenantId === scope.tenantId && candidate.id === pluginId
+    )
+    return entry ? clonePluginCatalogRecord(entry) : null
+  }
+
+  async listPluginCatalogEntries(
+    rawScope: TenantScope,
+    rawName?: string
+  ): Promise<PluginCatalogRecord[]> {
+    const scope = parseScope(rawScope)
+    const name = rawName?.trim()
+    if (name !== undefined && name.length === 0) {
+      throw new DomainError('validation_failed', 'Plugin name is invalid')
+    }
+    return this.pluginCatalog
+      .filter(
+        (entry) =>
+          entry.tenantId === scope.tenantId &&
+          (name === undefined || entry.manifest.name === name)
+      )
+      .sort(
+        (left, right) =>
+          right.updatedAt.getTime() - left.updatedAt.getTime() ||
+          right.id.localeCompare(left.id)
+      )
+      .map(clonePluginCatalogRecord)
+  }
+
+  async transitionPluginCatalogEntry(
+    rawScope: TenantScope,
+    rawPluginId: PluginCatalogId,
+    rawTarget: PluginCatalogStatus,
+    actorId: string,
+    rawExpectedStatus?: PluginCatalogStatus
+  ): Promise<PluginCatalogRecord> {
+    const scope = parseScope(rawScope)
+    const pluginId = PluginCatalogIdSchema.parse(rawPluginId)
+    const target = PluginCatalogStatusSchema.parse(rawTarget)
+    const expectedStatus = rawExpectedStatus
+      ? PluginCatalogStatusSchema.parse(rawExpectedStatus)
+      : undefined
+    const current = this.pluginCatalog.find(
+      (candidate) =>
+        candidate.tenantId === scope.tenantId && candidate.id === pluginId
+    )
+    if (!current) {
+      throw new DomainError('invalid_action', 'Plugin catalog entry not found')
+    }
+    assertPluginCatalogExpectedStatus(current.status, expectedStatus)
+    if (!canTransitionPluginCatalog(current.status, target)) {
+      throw new DomainError(
+        'invalid_action',
+        `Plugin catalog entry cannot transition from ${current.status} to ${target}`
+      )
+    }
+    const actor = validateActor(actorId)
+    const updated: PluginCatalogRecord = {
+      ...current,
+      status: target,
+      approvedBy: target === 'APPROVED' ? actor : current.approvedBy,
+      updatedAt: new Date()
+    }
+    this.pluginCatalog = this.pluginCatalog.map((entry) =>
+      entry.tenantId === scope.tenantId && entry.id === pluginId
+        ? updated
+        : entry
+    )
+    return clonePluginCatalogRecord(updated)
+  }
+
+  async resolveApprovedPlugin(
+    rawScope: TenantScope,
+    rawName: string,
+    version?: string
+  ): Promise<PluginManifest | null> {
+    const scope = parseScope(rawScope)
+    const name = rawName.trim()
+    if (!name) {
+      throw new DomainError('validation_failed', 'Plugin name is invalid')
+    }
+    const entry = this.pluginCatalog
+      .filter(
+        (candidate) =>
+          candidate.tenantId === scope.tenantId &&
+          candidate.status === 'APPROVED' &&
+          candidate.manifest.name === name &&
+          (version === undefined || candidate.manifest.version === version)
+      )
+      .sort((left, right) =>
+        comparePluginVersions(right.manifest.version, left.manifest.version)
+      )[0]
+    return entry ? structuredClone(entry.manifest) : null
   }
 
   async recordTestRun(
@@ -338,6 +560,181 @@ export class InMemoryControlPlaneStore implements ControlPlaneStore {
       .map(cloneTrace)
   }
 
+  async createTestSuite(
+    rawScope: TenantScope,
+    rawInput: TestSuiteCreateInput,
+    createdBy: string
+  ): Promise<TestSuiteRecord> {
+    const scope = parseScope(rawScope)
+    const input = TestSuiteCreateInputSchema.parse(rawInput)
+    const agent = this.requireAgent(scope, input.agentId)
+    this.requireVersionForAgent(scope, input.agentId, input.versionId)
+    if (
+      this.testSuites.some(
+        (suite) =>
+          suite.tenantId === scope.tenantId && suite.slug === input.slug
+      )
+    ) {
+      throw new DomainError('invalid_action', 'Test suite slug already exists')
+    }
+    const now = new Date()
+    const suite: TestSuiteRecord = {
+      tenantId: scope.tenantId,
+      id: createTestSuiteId(),
+      slug: input.slug,
+      name: input.name,
+      description: input.description,
+      agentId: agent.id,
+      versionId: input.versionId,
+      version: 1,
+      cases: input.cases.map(sanitizeTestCase),
+      previousSuiteId: null,
+      createdBy: validateActor(createdBy),
+      createdAt: now,
+      updatedAt: now
+    }
+    this.testSuites = [...this.testSuites, suite]
+    return cloneTestSuite(suite)
+  }
+
+  async getTestSuite(
+    rawScope: TenantScope,
+    suiteId: TestSuiteId
+  ): Promise<TestSuiteRecord | null> {
+    const scope = parseScope(rawScope)
+    const suite = this.testSuites.find(
+      (candidate) =>
+        candidate.tenantId === scope.tenantId && candidate.id === suiteId
+    )
+    return suite ? cloneTestSuite(suite) : null
+  }
+
+  async listTestSuites(
+    rawScope: TenantScope,
+    agentId?: AgentId
+  ): Promise<TestSuiteRecord[]> {
+    const scope = parseScope(rawScope)
+    if (agentId) this.requireAgent(scope, agentId)
+    return this.testSuites
+      .filter(
+        (suite) =>
+          suite.tenantId === scope.tenantId &&
+          (agentId === undefined || suite.agentId === agentId)
+      )
+      .sort(
+        (left, right) => right.updatedAt.getTime() - left.updatedAt.getTime()
+      )
+      .map(cloneTestSuite)
+  }
+
+  async cloneTestSuite(
+    rawScope: TenantScope,
+    suiteId: TestSuiteId,
+    rawInput: TestSuiteCloneInput,
+    createdBy: string
+  ): Promise<TestSuiteRecord> {
+    const scope = parseScope(rawScope)
+    const input = TestSuiteCloneInputSchema.parse(rawInput)
+    const source = this.requireTestSuite(scope, suiteId)
+    const versionId = input.versionId ?? source.versionId
+    this.requireVersionForAgent(scope, source.agentId, versionId)
+    const now = new Date()
+    const clone: TestSuiteRecord = {
+      ...source,
+      id: createTestSuiteId(),
+      name: input.name ?? source.name,
+      description: input.description ?? source.description,
+      versionId,
+      version:
+        Math.max(
+          0,
+          ...this.testSuites
+            .filter(
+              (suite) =>
+                suite.tenantId === scope.tenantId && suite.slug === source.slug
+            )
+            .map((suite) => suite.version)
+        ) + 1,
+      cases: (input.cases ?? source.cases).map(sanitizeTestCase),
+      previousSuiteId: source.id,
+      createdBy: validateActor(createdBy),
+      createdAt: now,
+      updatedAt: now
+    }
+    this.testSuites = [...this.testSuites, clone]
+    return cloneTestSuite(clone)
+  }
+
+  async recordTestSuiteRun(
+    rawScope: TenantScope,
+    rawRun: TestSuiteRunRecord
+  ): Promise<TestSuiteRunRecord> {
+    const scope = parseScope(rawScope)
+    const run = cloneTestSuiteRun(rawRun)
+    TestSuiteRunIdSchema.parse(run.id)
+    if (run.tenantId !== scope.tenantId) {
+      throw new DomainError(
+        'forbidden',
+        'Suite run tenant does not match scope'
+      )
+    }
+    const suite = this.requireTestSuite(scope, run.suiteId)
+    const variantsPassed = run.variants.every((variant) => variant.passed)
+    if (
+      suite.agentId !== run.agentId ||
+      run.variants.length < 1 ||
+      run.variants.length > 2 ||
+      run.variants.some(
+        (variant) => variant.label !== 'A' && variant.label !== 'B'
+      ) ||
+      run.passed !== variantsPassed
+    ) {
+      throw new DomainError('invalid_action', 'Test suite run scope is invalid')
+    }
+    if (
+      new Set(run.variants.map((variant) => variant.label)).size !==
+      run.variants.length
+    ) {
+      throw new DomainError(
+        'invalid_action',
+        'Test suite run variants are duplicated'
+      )
+    }
+    run.variants.forEach((variant) => {
+      this.requireVersionForAgent(scope, run.agentId, variant.versionId)
+      variant.results.forEach((result) => {
+        this.assertTraceReferences(scope, result.trace)
+        if (
+          result.trace.agentId !== run.agentId ||
+          result.trace.versionId !== variant.versionId
+        ) {
+          throw new DomainError(
+            'invalid_action',
+            'Suite trace scope is invalid'
+          )
+        }
+      })
+    })
+    this.testSuiteRuns = [...this.testSuiteRuns, run]
+    return cloneTestSuiteRun(run)
+  }
+
+  async listTestSuiteRuns(
+    rawScope: TenantScope,
+    suiteId: TestSuiteId,
+    limit = 50
+  ): Promise<TestSuiteRunRecord[]> {
+    const scope = parseScope(rawScope)
+    this.requireTestSuite(scope, suiteId)
+    return this.testSuiteRuns
+      .filter(
+        (run) => run.tenantId === scope.tenantId && run.suiteId === suiteId
+      )
+      .reverse()
+      .slice(0, normalizeTraceLimit(limit))
+      .map(cloneTestSuiteRun)
+  }
+
   private requireAgent(scope: TenantScope, agentId: AgentId): AgentRecord {
     const agent = this.agents.find((candidate) => candidate.id === agentId)
     if (!agent) throw new DomainError('invalid_action', 'Agent not found')
@@ -363,6 +760,33 @@ export class InMemoryControlPlaneStore implements ControlPlaneStore {
       )
     }
     return version
+  }
+
+  private requireVersionForAgent(
+    scope: TenantScope,
+    agentId: AgentId,
+    versionId: AgentVersionId
+  ): AgentVersionRecord {
+    const version = this.requireVersion(scope, versionId)
+    if (version.agentId !== agentId) {
+      throw new DomainError(
+        'invalid_action',
+        'Version does not belong to agent'
+      )
+    }
+    return version
+  }
+
+  private requireTestSuite(
+    scope: TenantScope,
+    suiteId: TestSuiteId
+  ): TestSuiteRecord {
+    const suite = this.testSuites.find((candidate) => candidate.id === suiteId)
+    if (!suite) throw new DomainError('invalid_action', 'Test suite not found')
+    if (suite.tenantId !== scope.tenantId) {
+      throw new DomainError('forbidden', 'Test suite is outside tenant scope')
+    }
+    return suite
   }
 
   private assertTraceReferences(scope: TenantScope, trace: TestRunTrace): void {
@@ -393,6 +817,18 @@ function validateActor(actorId: string): string {
   return value
 }
 
+function assertExpectedStatus(
+  actual: AgentVersionStatus,
+  expected?: AgentVersionStatus
+): void {
+  if (expected !== undefined && actual !== expected) {
+    throw new DomainError(
+      'conflict',
+      `Agent version changed: expected ${expected}, observed ${actual}`
+    )
+  }
+}
+
 function canTransition(
   from: AgentVersionStatus,
   to: AgentVersionStatus
@@ -405,6 +841,44 @@ function canTransition(
     ARCHIVED: []
   }
   return transitions[from].includes(to)
+}
+
+function assertPluginCatalogExpectedStatus(
+  actual: PluginCatalogStatus,
+  expected?: PluginCatalogStatus
+): void {
+  if (expected !== undefined && actual !== expected) {
+    throw new DomainError(
+      'conflict',
+      `Plugin catalog entry changed: expected ${expected}, observed ${actual}`
+    )
+  }
+}
+
+function canTransitionPluginCatalog(
+  from: PluginCatalogStatus,
+  to: PluginCatalogStatus
+): boolean {
+  const transitions: Record<PluginCatalogStatus, PluginCatalogStatus[]> = {
+    DRAFT: ['APPROVED', 'ARCHIVED'],
+    APPROVED: ['ARCHIVED'],
+    ARCHIVED: []
+  }
+  return transitions[from].includes(to)
+}
+
+function comparePluginVersions(left: string, right: string): number {
+  const leftParts = left.split('.').map((part) => Number(part))
+  const rightParts = right.split('.').map((part) => Number(part))
+  if (leftParts.every(Number.isFinite) && rightParts.every(Number.isFinite)) {
+    const length = Math.max(leftParts.length, rightParts.length)
+    for (let index = 0; index < length; index += 1) {
+      const difference = (leftParts[index] ?? 0) - (rightParts[index] ?? 0)
+      if (difference !== 0) return difference
+    }
+    return 0
+  }
+  return left.localeCompare(right)
 }
 
 function cloneConfig(config: AgentConfig): AgentConfig {
@@ -436,15 +910,86 @@ function cloneTrace(trace: TestRunTrace): TestRunTrace {
       message: redactSensitiveText(trace.input.message)
     },
     intent: { ...trace.intent },
+    ...(trace.risk ? { risk: { ...trace.risk } } : {}),
     policy: trace.policy.map((item) => ({ ...item })),
     knowledge: { ...trace.knowledge },
     tools: trace.tools.map((tool) => ({ ...tool })),
+    ...(trace.toolResults
+      ? {
+          toolResults: trace.toolResults.map((result) => ({
+            ...result,
+            output: result.output ? { ...result.output } : null
+          }))
+        }
+      : {}),
     handoff: { ...trace.handoff },
     response: {
       ...trace.response,
       text: redactSensitiveText(trace.response.text)
     },
     provider: { ...trace.provider },
+    ...(trace.prompt
+      ? { prompt: { ...trace.prompt, blockIds: [...trace.prompt.blockIds] } }
+      : {}),
+    ...(trace.status ? { status: trace.status } : {}),
+    ...(trace.startedAt ? { startedAt: new Date(trace.startedAt) } : {}),
+    ...(trace.completedAt ? { completedAt: new Date(trace.completedAt) } : {}),
+    ...(trace.latencyMs !== undefined ? { latencyMs: trace.latencyMs } : {}),
+    ...(trace.tokenUsage ? { tokenUsage: { ...trace.tokenUsage } } : {}),
+    ...(trace.spans ? { spans: trace.spans.map((span) => ({ ...span })) } : {}),
     createdAt: new Date(trace.createdAt)
+  }
+}
+
+function cloneTestSuite(suite: TestSuiteRecord): TestSuiteRecord {
+  return {
+    ...suite,
+    cases: structuredClone(suite.cases),
+    createdAt: new Date(suite.createdAt),
+    updatedAt: new Date(suite.updatedAt),
+    previousSuiteId: suite.previousSuiteId
+  }
+}
+
+function sanitizeTestCase(rawCase: TestLabCase): TestLabCase {
+  const testCase = TestLabCaseSchema.parse(rawCase)
+  return {
+    ...testCase,
+    message: redactSensitiveText(testCase.message),
+    history: testCase.history.map((item) => redactSensitiveText(item)),
+    ...(testCase.approvedKnowledge
+      ? {
+          approvedKnowledge: {
+            ...testCase.approvedKnowledge,
+            answer: redactSensitiveText(testCase.approvedKnowledge.answer)
+          }
+        }
+      : {})
+  }
+}
+
+function cloneTestSuiteRun(run: TestSuiteRunRecord): TestSuiteRunRecord {
+  return {
+    ...run,
+    variants: run.variants.map((variant) => ({
+      ...variant,
+      results: variant.results.map((result) => ({
+        ...result,
+        failures: [...result.failures],
+        trace: cloneTrace(result.trace)
+      }))
+    })),
+    createdAt: new Date(run.createdAt)
+  }
+}
+
+function clonePluginCatalogRecord(
+  entry: PluginCatalogRecord
+): PluginCatalogRecord {
+  return {
+    ...entry,
+    manifest: structuredClone(entry.manifest),
+    createdAt: new Date(entry.createdAt),
+    updatedAt: new Date(entry.updatedAt)
   }
 }

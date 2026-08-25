@@ -19,6 +19,7 @@ const hardBlockedPatterns = [
   /rem[eé]dio/i,
   /tratamento/i,
   /medica[cç][aã]o/i,
+  /medication|medicamento|dipirona|ibuprofeno|paracetamol|antibi[oó]tico/i,
   /prontu[aá]rio/i,
   /cobran[cç]a|pagamento/i,
   /confirm_appointment|cancel_appointment|reschedule_appointment/i,

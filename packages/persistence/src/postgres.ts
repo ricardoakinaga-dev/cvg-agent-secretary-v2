@@ -56,7 +56,9 @@ const migrationDirectory = resolve(
 const defaultPostgresMigrations = [
   '0000_initial',
   '0001_tenant_isolation',
-  '0002_capability_approvals'
+  '0002_capability_approvals',
+  '0003_test_suite_catalog',
+  '0004_plugin_manifest_catalog'
 ]
 
 export interface PostgresQueryable {

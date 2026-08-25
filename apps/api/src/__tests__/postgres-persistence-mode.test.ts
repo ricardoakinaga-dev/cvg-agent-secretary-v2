@@ -195,7 +195,9 @@ describe('api PostgreSQL persistence mode', () => {
     const versions = [
       '0000_initial',
       '0001_tenant_isolation',
-      '0002_capability_approvals'
+      '0002_capability_approvals',
+      '0003_test_suite_catalog',
+      '0004_plugin_manifest_catalog'
     ] as const
     const rows: Array<{
       version: string
@@ -233,7 +235,9 @@ describe('api PostgreSQL persistence mode', () => {
     const versions = [
       '0000_initial',
       '0001_tenant_isolation',
-      '0002_capability_approvals'
+      '0002_capability_approvals',
+      '0003_test_suite_catalog',
+      '0004_plugin_manifest_catalog'
     ] as const
     const rows = await Promise.all(
       versions.map(async (version, index) => ({
@@ -1052,6 +1056,9 @@ describe('api PostgreSQL persistence mode', () => {
         'platform_test_runs',
         'platform_execution_traces',
         'platform_capability_approvals',
+        'platform_test_suites',
+        'platform_test_suite_runs',
+        'platform_plugin_catalog',
         'webhook_replay_events'
       ]
 

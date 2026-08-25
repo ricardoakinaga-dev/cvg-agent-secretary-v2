@@ -1,9 +1,15 @@
 import { Client } from 'pg'
 import { describe, expect, it } from 'vitest'
-import { AgentConfigSchema, createTraceId } from '@cvg/platform'
+import {
+  AgentConfigSchema,
+  createTestSuiteRunId,
+  createTraceId,
+  type PluginManifest
+} from '@cvg/platform'
 import {
   PostgresControlPlaneRepository,
-  runInitialPostgresMigration
+  runInitialPostgresMigration,
+  runPostgresMigrations
 } from '../index.ts'
 
 const testDatabaseUrl = process.env.TEST_DATABASE_URL
@@ -43,6 +49,26 @@ function config() {
   })
 }
 
+function pluginManifest(): PluginManifest {
+  return {
+    name: 'controlled.catalog',
+    version: '1.0.0',
+    capabilities: ['catalog.read'],
+    permissions: ['catalog:read'],
+    tools: [
+      {
+        name: 'catalog.read',
+        permission: 'catalog:read',
+        risk: 'low',
+        requiresApproval: false
+      }
+    ],
+    hooks: [],
+    dependencies: [],
+    configSchemaVersion: 'v1'
+  }
+}
+
 describe('Postgres platform control plane smoke', () => {
   const itWithPostgres = testDatabaseUrl ? it : it.skip
 
@@ -69,12 +95,26 @@ describe('Postgres platform control plane smoke', () => {
           config(),
           'admin.postgres'
         )
-        await repository.transitionVersion({ tenantId }, draft.id, 'TESTING')
-        await repository.transitionVersion({ tenantId }, draft.id, 'APPROVED')
+        await repository.transitionVersion(
+          { tenantId },
+          draft.id,
+          'TESTING',
+          'DRAFT'
+        )
+        await repository.transitionVersion(
+          { tenantId },
+          draft.id,
+          'APPROVED',
+          'TESTING'
+        )
         const published = await repository.publishVersion(
           { tenantId },
-          draft.id
+          draft.id,
+          'APPROVED'
         )
+        await expect(
+          repository.publishVersion({ tenantId }, draft.id, 'APPROVED')
+        ).rejects.toMatchObject({ code: 'conflict' })
         const trace = {
           traceId: createTraceId(),
           tenantId,
@@ -118,6 +158,175 @@ describe('Postgres platform control plane smoke', () => {
             response: { text: 'Telefone [redacted-phone]' }
           }
         ])
+      } finally {
+        await client.query(`DROP SCHEMA IF EXISTS ${schemaName} CASCADE`)
+        await client.end()
+      }
+    }
+  )
+
+  itWithPostgres(
+    'persists versioned suites and redacted A/B run metadata under tenant RLS',
+    async () => {
+      const client = new Client({ connectionString: testDatabaseUrl })
+      const schemaName = `cvg_suite_${Date.now()}`
+      await client.connect()
+      try {
+        await runPostgresMigrations(client, { schemaName })
+        await client.query(`SET search_path TO ${schemaName}`)
+        await client.query(`SELECT set_config('cvg.tenant_id', $1, false)`, [
+          tenantId
+        ])
+        const repository = new PostgresControlPlaneRepository(client)
+        const agent = await repository.createAgent(
+          { tenantId },
+          {
+            slug: 'suite-postgres-agent',
+            name: 'Suite Postgres Agent',
+            description: 'Fictício'
+          }
+        )
+        const version = await repository.createVersion(
+          { tenantId },
+          agent.id,
+          config(),
+          'admin.postgres'
+        )
+        const suite = await repository.createTestSuite(
+          { tenantId },
+          {
+            slug: 'postgres-suite',
+            name: 'Postgres Suite',
+            description: 'Fictícia',
+            agentId: agent.id,
+            versionId: version.id,
+            cases: [
+              {
+                id: 'case-one',
+                message: 'Olá',
+                history: [],
+                expectedResponseMode: 'clarify'
+              }
+            ]
+          },
+          'admin.postgres'
+        )
+        const clone = await repository.cloneTestSuite(
+          { tenantId },
+          suite.id,
+          {
+            cases: [
+              {
+                id: 'case-two',
+                message: 'Oi',
+                history: [],
+                expectedResponseMode: 'clarify'
+              }
+            ]
+          },
+          'admin.postgres'
+        )
+        await repository.recordTestSuiteRun(
+          { tenantId },
+          {
+            id: createTestSuiteRunId(),
+            tenantId,
+            suiteId: clone.id,
+            agentId: agent.id,
+            variants: [
+              { label: 'A', versionId: version.id, passed: true, results: [] },
+              { label: 'B', versionId: version.id, passed: true, results: [] }
+            ],
+            passed: true,
+            createdBy: 'admin.postgres',
+            createdAt: new Date()
+          }
+        )
+
+        await expect(repository.listTestSuites({ tenantId })).resolves.toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              id: clone.id,
+              version: 2,
+              previousSuiteId: suite.id
+            })
+          ])
+        )
+        await expect(
+          repository.listTestSuiteRuns({ tenantId }, clone.id)
+        ).resolves.toMatchObject([
+          { suiteId: clone.id, variants: [{ label: 'A' }, { label: 'B' }] }
+        ])
+        await expect(
+          repository.listTestSuites({
+            tenantId: 'tenant_00000000-0000-4000-0000-000000000042'
+          })
+        ).resolves.toEqual([])
+      } finally {
+        await client.query(`DROP SCHEMA IF EXISTS ${schemaName} CASCADE`)
+        await client.end()
+      }
+    }
+  )
+
+  itWithPostgres(
+    'persists tenant-scoped plugin metadata with immutable identity and guarded status',
+    async () => {
+      const client = new Client({ connectionString: testDatabaseUrl })
+      const schemaName = `cvg_plugin_catalog_${Date.now()}`
+      await client.connect()
+      try {
+        await runPostgresMigrations(client, { schemaName })
+        await client.query(`SET search_path TO ${schemaName}`)
+        await client.query(`SELECT set_config('cvg.tenant_id', $1, false)`, [
+          tenantId
+        ])
+        const repository = new PostgresControlPlaneRepository(client)
+        const draft = await repository.createPluginCatalogEntry(
+          { tenantId },
+          { manifest: pluginManifest() },
+          'admin.postgres'
+        )
+
+        await expect(
+          repository.createPluginCatalogEntry(
+            { tenantId },
+            { manifest: pluginManifest() },
+            'admin.postgres'
+          )
+        ).rejects.toMatchObject({ code: 'invalid_action' })
+        await expect(
+          repository.listPluginCatalogEntries({
+            tenantId: 'tenant_00000000-0000-4000-8000-000000000042'
+          })
+        ).resolves.toEqual([])
+
+        const approved = await repository.transitionPluginCatalogEntry(
+          { tenantId },
+          draft.id,
+          'APPROVED',
+          'approver.postgres',
+          'DRAFT'
+        )
+        expect(approved).toMatchObject({
+          status: 'APPROVED',
+          approvedBy: 'approver.postgres'
+        })
+        await expect(
+          repository.transitionPluginCatalogEntry(
+            { tenantId },
+            draft.id,
+            'ARCHIVED',
+            'admin.postgres',
+            'DRAFT'
+          )
+        ).rejects.toMatchObject({ code: 'conflict' })
+        await expect(
+          repository.getPluginCatalogEntry({ tenantId }, draft.id)
+        ).resolves.toMatchObject({
+          manifest: pluginManifest(),
+          status: 'APPROVED'
+        })
       } finally {
         await client.query(`DROP SCHEMA IF EXISTS ${schemaName} CASCADE`)
         await client.end()

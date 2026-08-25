@@ -62,8 +62,10 @@ export class PluginRegistry {
 
   register(plugin: RegisteredPlugin): PluginRegistry {
     const manifest = PluginManifestSchema.parse(plugin.manifest)
-    if (this.get(manifest.name)) {
-      throw new Error(`Plugin already registered: ${manifest.name}`)
+    if (this.get(manifest.name, manifest.version)) {
+      throw new Error(
+        `Plugin already registered: ${manifest.name}@${manifest.version}`
+      )
     }
     const toolNames = new Set(manifest.tools.map((tool) => tool.name))
     const handlers = Object.fromEntries(
@@ -75,15 +77,27 @@ export class PluginRegistry {
     return new PluginRegistry([...this.plugins, { manifest, handlers }])
   }
 
-  get(name: string): RegisteredPlugin | null {
-    const plugin = this.plugins.find(
-      (candidate) => candidate.manifest.name === name
+  get(name: string, version?: string): RegisteredPlugin | null {
+    const candidates = this.plugins.filter(
+      (candidate) =>
+        candidate.manifest.name === name &&
+        (version === undefined || candidate.manifest.version === version)
     )
+    const plugin = [...candidates].sort((left, right) =>
+      comparePluginVersions(right.manifest.version, left.manifest.version)
+    )[0]
     return plugin ? cloneRegisteredPlugin(plugin) : null
   }
 
   list(): RegisteredPlugin[] {
-    return this.plugins.map(cloneRegisteredPlugin)
+    return [...this.plugins]
+      .sort((left, right) => {
+        const byName = left.manifest.name.localeCompare(right.manifest.name)
+        return byName !== 0
+          ? byName
+          : comparePluginVersions(left.manifest.version, right.manifest.version)
+      })
+      .map(cloneRegisteredPlugin)
   }
 }
 
@@ -152,6 +166,17 @@ export class CapabilityGateway {
     input: CapabilityExecutionInput
   ): Promise<CapabilityExecutionResult> {
     const correlationId = createCorrelationId()
+    if (
+      !TenantIdSchema.safeParse(input.tenantId).success ||
+      !AgentIdSchema.safeParse(input.agentId).success ||
+      !AgentVersionIdSchema.safeParse(input.versionId).success
+    ) {
+      return {
+        status: 'blocked',
+        reason: 'invalid_scope_id',
+        correlationId
+      }
+    }
     const binding = input.config.plugins.find(
       (candidate) =>
         candidate.enabled && candidate.allowedTools.includes(input.toolName)
@@ -160,9 +185,15 @@ export class CapabilityGateway {
       return this.blocked(input, correlationId, 'plugin_binding_missing')
     }
 
-    const registered = this.registry.get(binding.plugin)
+    const registered = this.registry.get(binding.plugin, binding.version)
     if (!registered) {
-      return this.blocked(input, correlationId, 'plugin_not_registered')
+      return this.blocked(
+        input,
+        correlationId,
+        binding.version
+          ? 'plugin_version_not_registered'
+          : 'plugin_not_registered'
+      )
     }
     const tool = registered.manifest.tools.find(
       (candidate) => candidate.name === input.toolName
@@ -325,4 +356,22 @@ function cloneRegisteredPlugin(plugin: RegisteredPlugin): RegisteredPlugin {
 
 function cloneTool(tool: PluginTool): PluginTool {
   return { ...tool }
+}
+
+function comparePluginVersions(left: string, right: string): number {
+  const leftParts = numericVersionParts(left)
+  const rightParts = numericVersionParts(right)
+  if (leftParts && rightParts) {
+    for (let index = 0; index < leftParts.length; index += 1) {
+      const difference = leftParts[index]! - rightParts[index]!
+      if (difference !== 0) return difference
+    }
+    return left.localeCompare(right)
+  }
+  return left.localeCompare(right)
+}
+
+function numericVersionParts(value: string): [number, number, number] | null {
+  const match = /^(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/.exec(value)
+  return match ? [Number(match[1]), Number(match[2]), Number(match[3])] : null
 }

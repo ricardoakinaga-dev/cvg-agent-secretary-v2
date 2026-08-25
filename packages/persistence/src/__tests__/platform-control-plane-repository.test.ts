@@ -2,10 +2,12 @@ import type { QueryResult, QueryResultRow } from 'pg'
 import { describe, expect, it } from 'vitest'
 import {
   AgentConfigSchema,
+  createTestSuiteRunId,
   createTraceId,
   type AgentConfig,
   type AgentVersionStatus,
-  type TestRunTrace
+  type TestRunTrace,
+  type TestSuiteRunRecord
 } from '@cvg/platform'
 import { PostgresControlPlaneRepository } from '../platform-control-plane-repository.ts'
 import type { PostgresQueryable } from '../postgres.ts'
@@ -200,6 +202,35 @@ describe('Postgres control plane repository', () => {
     expect((await repository.listVersions(scope, agent.id)).length).toBe(2)
   })
 
+  it('rejects a stale status precondition inside the repository transaction', async () => {
+    const client = new StatefulPlatformClient()
+    const repository = new PostgresControlPlaneRepository(client)
+    const scope = { tenantId }
+    const agent = await repository.createAgent(scope, {
+      slug: 'optimistic-repository-agent',
+      name: 'Optimistic Repository Agent',
+      description: 'Controlled conflict fixture'
+    })
+    const draft = await repository.createVersion(
+      scope,
+      agent.id,
+      createConfig(),
+      'admin.optimistic'
+    )
+    await repository.transitionVersion(scope, draft.id, 'TESTING', 'DRAFT')
+    await expect(
+      repository.transitionVersion(scope, draft.id, 'APPROVED', 'DRAFT')
+    ).rejects.toMatchObject({ code: 'conflict' })
+    await expect(repository.getVersion(scope, draft.id)).resolves.toMatchObject(
+      {
+        status: 'TESTING'
+      }
+    )
+    expect(
+      client.queries.filter((query) => query === 'ROLLBACK')
+    ).not.toHaveLength(0)
+  })
+
   it('fails closed for missing agents, invalid rollback targets, and cross-tenant traces', async () => {
     const client = new StatefulPlatformClient()
     const repository = new PostgresControlPlaneRepository(client)
@@ -237,6 +268,228 @@ describe('Postgres control plane repository', () => {
     await expect(repository.recordTestRun(scope, trace)).rejects.toMatchObject({
       code: 'forbidden'
     })
+  })
+
+  it('persists immutable redacted suites and controlled run history', async () => {
+    const client = new StatefulPlatformClient()
+    const repository = new PostgresControlPlaneRepository(client)
+    const scope = { tenantId }
+    const agent = await repository.createAgent(scope, {
+      slug: 'suite-repository-agent',
+      name: 'Suite Repository Agent',
+      description: 'Fictício'
+    })
+    const version = await repository.createVersion(
+      scope,
+      agent.id,
+      createConfig(),
+      'admin.suite'
+    )
+    const suite = await repository.createTestSuite(
+      scope,
+      {
+        slug: 'repository-suite',
+        name: 'Repository Suite',
+        description: 'Fictícia',
+        agentId: agent.id,
+        versionId: version.id,
+        cases: [
+          {
+            id: 'redacted-case',
+            message: 'Email ana@example.com e +5511999999999',
+            history: ['Contato joao@example.com'],
+            expectedResponseMode: 'clarify',
+            approvedKnowledge: {
+              version: 'knowledge-v1',
+              answer: 'Ligue +5511888888888',
+              source: 'controlled://institutional'
+            }
+          }
+        ]
+      },
+      'admin.suite'
+    )
+    expect(suite.cases[0]).toMatchObject({
+      message: 'Email [redacted-email] e [redacted-phone]',
+      history: ['Contato [redacted-email]'],
+      approvedKnowledge: { answer: 'Ligue [redacted-phone]' }
+    })
+
+    const clone = await repository.cloneTestSuite(
+      scope,
+      suite.id,
+      { name: 'Repository Suite v2' },
+      'admin.suite'
+    )
+    expect(clone).toMatchObject({
+      version: 2,
+      previousSuiteId: suite.id,
+      name: 'Repository Suite v2'
+    })
+    await expect(
+      repository.getTestSuite(scope, suite.id)
+    ).resolves.toMatchObject({
+      version: 1,
+      name: 'Repository Suite'
+    })
+    await expect(repository.listTestSuites(scope, agent.id)).resolves.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: suite.id }),
+        expect.objectContaining({ id: clone.id })
+      ])
+    )
+
+    const trace: TestRunTrace = {
+      traceId: createTraceId(),
+      tenantId,
+      agentId: agent.id,
+      versionId: version.id,
+      input: { message: 'Email trace@example.com', historySize: 0 },
+      intent: { name: 'unknown', confidence: 0.2 },
+      policy: [],
+      knowledge: { status: 'not_requested' },
+      tools: [],
+      handoff: { requested: false, reason: null, state: 'BOT_ACTIVE' },
+      response: { text: 'Telefone +5511777777777', mode: 'clarify' },
+      provider: { provider: 'fake', model: 'dry-run', externalCall: false },
+      configVersion: 'suite-repository',
+      executionMode: 'TEST_LAB',
+      createdAt: new Date()
+    }
+    const run: TestSuiteRunRecord = {
+      id: createTestSuiteRunId(),
+      tenantId,
+      suiteId: clone.id,
+      agentId: agent.id,
+      variants: [
+        {
+          label: 'A',
+          versionId: version.id,
+          passed: true,
+          results: [
+            { caseId: 'redacted-case', passed: true, failures: [], trace }
+          ]
+        }
+      ],
+      passed: true,
+      createdBy: 'admin.suite',
+      createdAt: new Date()
+    }
+    const storedRun = await repository.recordTestSuiteRun(scope, run)
+    expect(storedRun.variants[0]?.results[0]?.trace.response.text).toBe(
+      'Telefone [redacted-phone]'
+    )
+    await expect(
+      repository.listTestSuiteRuns(scope, clone.id)
+    ).resolves.toMatchObject([
+      {
+        suiteId: clone.id,
+        variants: [{ label: 'A', results: [{ caseId: 'redacted-case' }] }]
+      }
+    ])
+  })
+
+  it('rejects suite collisions, invalid scope, and invalid run variants', async () => {
+    const client = new StatefulPlatformClient()
+    const repository = new PostgresControlPlaneRepository(client)
+    const scope = { tenantId }
+    const agent = await repository.createAgent(scope, {
+      slug: 'suite-errors-agent',
+      name: 'Suite Errors Agent',
+      description: 'Fictício'
+    })
+    const version = await repository.createVersion(
+      scope,
+      agent.id,
+      createConfig(),
+      'admin.suite'
+    )
+    const input = {
+      slug: 'suite-errors',
+      name: 'Suite Errors',
+      description: 'Fictícia',
+      agentId: agent.id,
+      versionId: version.id,
+      cases: [
+        {
+          id: 'case',
+          message: 'Olá',
+          history: [],
+          expectedResponseMode: 'clarify' as const
+        }
+      ]
+    }
+    const suite = await repository.createTestSuite(scope, input, 'admin.suite')
+    await expect(
+      repository.createTestSuite(scope, input, 'admin.suite')
+    ).rejects.toMatchObject({ code: 'invalid_action' })
+    await expect(
+      repository.getTestSuite(
+        { tenantId: 'tenant_00000000-0000-4000-0000-000000000099' },
+        suite.id
+      )
+    ).resolves.toBeNull()
+    await expect(
+      repository.cloneTestSuite(
+        scope,
+        suite.id,
+        {
+          versionId: 'agent_version_00000000-0000-4000-8000-000000000099'
+        },
+        'admin.suite'
+      )
+    ).rejects.toMatchObject({ code: 'invalid_action' })
+
+    const baseRun = {
+      id: createTestSuiteRunId(),
+      tenantId,
+      suiteId: suite.id,
+      agentId: agent.id,
+      passed: false,
+      createdBy: 'admin.suite',
+      createdAt: new Date()
+    }
+    await expect(
+      repository.recordTestSuiteRun(scope, {
+        ...baseRun,
+        id: 'invalid-run-id',
+        variants: []
+      })
+    ).rejects.toThrow()
+    await expect(
+      repository.recordTestSuiteRun(scope, {
+        ...baseRun,
+        variants: []
+      })
+    ).rejects.toMatchObject({ code: 'invalid_action' })
+    await expect(
+      repository.recordTestSuiteRun(scope, {
+        ...baseRun,
+        variants: [
+          { label: 'A', versionId: version.id, passed: true, results: [] },
+          { label: 'A', versionId: version.id, passed: true, results: [] }
+        ]
+      })
+    ).rejects.toMatchObject({ code: 'invalid_action' })
+    await expect(
+      repository.recordTestSuiteRun(scope, {
+        ...baseRun,
+        variants: [
+          {
+            label: 'C' as 'A',
+            versionId: version.id,
+            passed: false,
+            results: []
+          }
+        ]
+      })
+    ).rejects.toMatchObject({ code: 'invalid_action' })
+    await expect(
+      repository.listTestSuiteRuns(
+        { tenantId: 'tenant_00000000-0000-4000-0000-000000000099' },
+        suite.id
+      )
+    ).rejects.toMatchObject({ code: 'invalid_action' })
   })
 })
 
@@ -297,11 +550,39 @@ interface StatefulVersionRow {
   published_at: Date | null
 }
 
+interface StatefulSuiteRow {
+  tenant_id: string
+  id: string
+  slug: string
+  name: string
+  description: string
+  agent_id: string
+  version_id: string
+  version: number
+  cases: unknown[]
+  previous_suite_id: string | null
+  created_by: string
+  created_at: Date
+  updated_at: Date
+}
+
+interface StatefulRunRow {
+  tenant_id: string
+  id: string
+  suite_id: string
+  agent_id: string
+  result: { variants: unknown[]; passed: boolean }
+  created_by: string
+  created_at: Date
+}
+
 class StatefulPlatformClient implements PostgresQueryable {
   readonly queries: string[] = []
   private readonly agents: StatefulAgentRow[] = []
   private readonly versions: StatefulVersionRow[] = []
   private readonly traces: TestRunTrace[] = []
+  private readonly suites: StatefulSuiteRow[] = []
+  private readonly runs: StatefulRunRow[] = []
 
   async query<T extends QueryResultRow = QueryResultRow>(
     text: string,
@@ -342,6 +623,83 @@ class StatefulPlatformClient implements PostgresQueryable {
     if (text.includes('INSERT INTO platform_test_runs')) {
       this.traces.push(JSON.parse(String(values[4])) as TestRunTrace)
       return resultRows<T>([])
+    }
+
+    if (text.includes('INSERT INTO platform_test_suites')) {
+      this.suites.push({
+        tenant_id: String(values[0]),
+        id: String(values[1]),
+        slug: String(values[2]),
+        name: String(values[3]),
+        description: String(values[4]),
+        agent_id: String(values[5]),
+        version_id: String(values[6]),
+        version: Number(values[7]),
+        cases: JSON.parse(String(values[8])) as unknown[],
+        previous_suite_id: (values[9] as string | null) ?? null,
+        created_by: String(values[10]),
+        created_at: values[11] as Date,
+        updated_at: values[12] as Date
+      })
+      return resultRows<T>([])
+    }
+
+    if (text.includes('INSERT INTO platform_test_suite_runs')) {
+      this.runs.push({
+        tenant_id: String(values[0]),
+        id: String(values[1]),
+        suite_id: String(values[2]),
+        agent_id: String(values[3]),
+        result: JSON.parse(String(values[4])) as StatefulRunRow['result'],
+        created_by: String(values[5]),
+        created_at: values[6] as Date
+      })
+      return resultRows<T>([])
+    }
+
+    if (
+      text.includes('SELECT version') &&
+      text.includes('FROM platform_test_suites')
+    ) {
+      const latest = this.suites
+        .filter(
+          (suite) =>
+            suite.tenant_id === String(values[0]) &&
+            suite.slug === String(values[1])
+        )
+        .sort((left, right) => right.version - left.version)[0]
+      return resultRows<T>(latest ? [{ version: latest.version }] : [])
+    }
+
+    if (text.includes('SELECT id FROM platform_test_suites')) {
+      const rows = this.suites
+        .filter(
+          (suite) =>
+            suite.tenant_id === String(values[0]) &&
+            suite.slug === String(values[1])
+        )
+        .map((suite) => ({ id: suite.id }))
+      return resultRows<T>(rows)
+    }
+
+    if (text.includes('FROM platform_test_suites')) {
+      const rows = this.suites.filter((suite) => {
+        if (suite.tenant_id !== String(values[0])) return false
+        if (text.includes('AND id = $2')) return suite.id === String(values[1])
+        return values[1] === null || suite.agent_id === String(values[1])
+      })
+      return resultRows<T>(rows)
+    }
+
+    if (text.includes('FROM platform_test_suite_runs')) {
+      const rows = this.runs
+        .filter(
+          (run) =>
+            run.tenant_id === String(values[0]) &&
+            run.suite_id === String(values[1])
+        )
+        .map((run) => ({ ...run }))
+      return resultRows<T>(rows)
     }
 
     if (text.includes('SELECT version')) {

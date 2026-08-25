@@ -136,6 +136,42 @@ describe('control plane foundation', () => {
     ).rejects.toMatchObject({ code: 'forbidden' })
   })
 
+  it('rejects a stale lifecycle precondition without mutating the version', async () => {
+    const store = new InMemoryControlPlaneStore()
+    const agent = await store.createAgent(
+      { tenantId: tenantA },
+      {
+        slug: 'optimistic-agent',
+        name: 'Optimistic Agent',
+        description: 'Test'
+      }
+    )
+    const version = await store.createVersion(
+      { tenantId: tenantA },
+      agent.id,
+      createConfig(),
+      'admin-a'
+    )
+
+    await store.transitionVersion(
+      { tenantId: tenantA },
+      version.id,
+      'TESTING',
+      'DRAFT'
+    )
+    await expect(
+      store.transitionVersion(
+        { tenantId: tenantA },
+        version.id,
+        'APPROVED',
+        'DRAFT'
+      )
+    ).rejects.toMatchObject({ code: 'conflict' })
+    await expect(
+      store.getVersion({ tenantId: tenantA }, version.id)
+    ).resolves.toMatchObject({ status: 'TESTING' })
+  })
+
   it('publishes and rolls back through new immutable versions', async () => {
     const store = new InMemoryControlPlaneStore()
     const agent = await store.createAgent(
@@ -297,6 +333,64 @@ describe('platform policy and capability gateway', () => {
       decision: 'blocked',
       reason: 'policy_unavailable_fail_closed'
     })
+  })
+
+  it('rejects malformed gateway scope ids before resolving or invoking a tool', async () => {
+    const handler = vi.fn(async () => ({ status: 'succeeded' as const }))
+    const gateway = new CapabilityGateway(
+      new PluginRegistry().register({
+        manifest: {
+          name: 'fixture.gateway',
+          version: '1.0.0',
+          capabilities: ['fixture.read'],
+          permissions: ['fixture:read'],
+          tools: [
+            {
+              name: 'read',
+              permission: 'fixture:read',
+              risk: 'low',
+              requiresApproval: false
+            }
+          ],
+          hooks: [],
+          dependencies: [],
+          configSchemaVersion: '1'
+        },
+        handlers: { read: handler }
+      })
+    )
+
+    const result = await gateway.execute({
+      tenantId: 'not-a-tenant' as never,
+      agentId: 'agent_00000000-0000-4000-8000-000000000001',
+      versionId: 'agent_version_00000000-0000-4000-8000-000000000001',
+      config: AgentConfigSchema.parse({
+        ...createConfig(),
+        plugins: [
+          {
+            plugin: 'fixture.gateway',
+            enabled: true,
+            allowedTools: ['read'],
+            config: {}
+          }
+        ]
+      }),
+      toolName: 'read',
+      input: {},
+      actor: {
+        id: 'operator',
+        role: 'Operator',
+        permissions: ['fixture:read']
+      },
+      policy: { decision: 'allowed', reason: 'test' },
+      dryRun: true
+    })
+
+    expect(result).toMatchObject({
+      status: 'blocked',
+      reason: 'invalid_scope_id'
+    })
+    expect(handler).not.toHaveBeenCalled()
   })
 
   it('blocks an unpermissioned plugin before invoking its handler', async () => {
@@ -660,6 +754,23 @@ describe('Test Lab dry-run', () => {
     })
     expect(trace.response.mode).toBe('answer')
     expect(trace.traceId).toMatch(/^trace_[0-9a-f-]{36}$/)
+    expect(trace).toMatchObject({
+      status: 'completed',
+      risk: { level: 'low' },
+      prompt: { version: `${version.id}:v1`, blockIds: ['a-first', 'z-last'] },
+      tokenUsage: {
+        estimated: true,
+        total: expect.any(Number)
+      },
+      spans: expect.arrayContaining([
+        expect.objectContaining({ name: 'prompt' }),
+        expect.objectContaining({ name: 'model' })
+      ]),
+      toolResults: [],
+      startedAt: expect.any(Date),
+      completedAt: expect.any(Date),
+      latencyMs: expect.any(Number)
+    })
     expect(await store.listTestRuns({ tenantId: tenantA })).toHaveLength(1)
   })
 
@@ -1016,6 +1127,41 @@ describe('Test Lab dry-run', () => {
     expect(triage.handoff).toMatchObject({
       requested: true,
       reason: 'high_risk_requires_handoff'
+    })
+
+    const medication = await runTestLab({
+      ...base,
+      message: 'Meu cachorro está vomitando. Posso dar dipirona?',
+      history: []
+    })
+    expect(medication).toMatchObject({
+      intent: { name: 'medication_advice' },
+      risk: { level: 'critical' },
+      policy: [
+        expect.objectContaining({
+          decision: 'blocked',
+          layer: 'hard_safety'
+        })
+      ],
+      handoff: { requested: true },
+      response: { mode: 'handoff' },
+      provider: { externalCall: false },
+      tools: [],
+      toolResults: []
+    })
+    expect(medication.response.text).toMatch(/veterin[aá]ri/i)
+
+    const EnglishMedication = await runTestLab({
+      ...base,
+      message: 'Can I give my dog medicine?',
+      history: []
+    })
+    expect(EnglishMedication).toMatchObject({
+      intent: { name: 'medication_advice' },
+      risk: { level: 'critical' },
+      handoff: { requested: true },
+      response: { mode: 'handoff' },
+      provider: { externalCall: false }
     })
 
     const clarify = await runTestLab({

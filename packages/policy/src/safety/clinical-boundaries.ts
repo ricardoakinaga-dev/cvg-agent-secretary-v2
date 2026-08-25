@@ -4,6 +4,7 @@ const blockedPatterns = [
   /rem[eé]dio/i,
   /tratamento/i,
   /medica[cç][aã]o/i,
+  /medication|medicamento|dipirona|ibuprofeno|paracetamol|antibi[oó]tico/i,
   /prontu[aá]rio definitivo/i,
   /cobran[cç]a/i,
   /cancelar consulta/i
