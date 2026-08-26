@@ -40,9 +40,9 @@ export const RunAgentTurnSchema = z.object({
 })
 
 export const RequestHumanApprovalSchema = z.object({
-  sessionId: z.string().min(1),
-  proposedAction: z.string().min(1),
-  summary: z.string().min(1),
+  sessionId: z.string().min(1).max(160),
+  proposedAction: z.string().min(1).max(200),
+  summary: z.string().min(1).max(4000),
   riskLevel: RiskLevelSchema
 })
 
@@ -50,14 +50,14 @@ export const ResolveApprovalSchema = z.object({
   approvalRequestId: z.string().min(1),
   decision: ApprovalDecisionSchema,
   operatorId: z.string().min(1),
-  note: z.string().optional()
+  note: z.string().max(4000).optional()
 })
 
 export const CreateInternalTaskSchema = z.object({
-  sessionId: z.string().min(1),
-  title: z.string().min(1),
-  description: z.string().min(1),
+  sessionId: z.string().min(1).max(160),
+  title: z.string().min(1).max(200),
+  description: z.string().min(1).max(4000),
   priority: TaskPrioritySchema,
-  source: z.string().min(1),
-  idempotencyKey: z.string().min(8)
+  source: z.string().min(1).max(120),
+  idempotencyKey: z.string().min(8).max(200)
 })

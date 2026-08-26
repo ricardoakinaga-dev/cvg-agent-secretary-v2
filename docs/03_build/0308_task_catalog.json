@@ -1012,6 +1012,599 @@
         "npm run typecheck",
         "npm run build"
       ]
+    },
+    {
+      "id": "PLAT-S34-001",
+      "name": "Implement controlled CI gate parity and worker startup smoke",
+      "phase": "CONTROLLED_CONSTRUCTION",
+      "sprint": "PLAT-S34",
+      "files_expected": [
+        ".github/workflows/verify.yml",
+        "package.json",
+        "scripts/worker-startup-smoke.mjs",
+        "tests/ci-workflow-contract.test.js",
+        "tests/worker-startup-smoke.test.js",
+        "docs/04_audit/0524_plat_s34_controlled_ci_gate_parity_evidence.md"
+      ],
+      "tests_expected": [
+        "tests/ci-workflow-contract.test.js",
+        "tests/worker-startup-smoke.test.js"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run test:coverage",
+        "npm run readiness",
+        "npm run test:postgres",
+        "npm run test:e2e",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run build",
+        "npm run format:check",
+        "npm audit --audit-level=high",
+        "git diff --check"
+      ]
+    },
+    {
+      "id": "PLAT-S33-001",
+      "name": "Implement controlled worker published-runtime boundary",
+      "phase": "AUDIT",
+      "sprint": "PLAT-S33",
+      "files_expected": [
+        "apps/worker/src/worker.ts",
+        "apps/worker/src/main.ts",
+        "apps/worker/src/__tests__/worker.test.ts",
+        "apps/worker/src/__tests__/published-worker-runtime.test.ts",
+        "packages/agent-core/src/commands/published-worker-job.ts",
+        "packages/agent-core/src/commands/execute-published-agent.ts",
+        "docs/04_audit/0523_plat_s33_controlled_worker_runtime_boundary_evidence.md"
+      ],
+      "tests_expected": [
+        "apps/worker/src/__tests__/published-worker-runtime.test.ts",
+        "apps/worker/src/__tests__/worker.test.ts"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run test:coverage",
+        "npm run readiness",
+        "npm run test:e2e",
+        "npm run test:postgres",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run build",
+        "npm run format:check",
+        "npm audit --audit-level=high",
+        "git diff --check"
+      ]
+    },
+    {
+      "id": "PLAT-S32-001",
+      "name": "Implement controlled session agent-version pinning",
+      "phase": "CONTROLLED_CONSTRUCTION",
+      "sprint": "PLAT-S32",
+      "files_expected": [
+        "packages/persistence/migrations/0008_session_agent_version_pin.sql",
+        "packages/persistence/src/schema.ts",
+        "packages/persistence/src/repositories/conversation-repository.ts",
+        "packages/persistence/src/postgres.ts",
+        "packages/persistence/src/tenant-scoped-postgres.ts",
+        "packages/agent-core/src/commands/execute-published-agent.ts",
+        "apps/api/src/server.ts",
+        "packages/platform/src/__tests__/published-agent-runtime.test.ts",
+        "apps/api/src/__tests__/published-runtime-integration.test.ts",
+        "packages/persistence/src/__tests__/session-version-pinning.test.ts",
+        "packages/persistence/src/__tests__/session-version-pinning-postgres.test.ts",
+        "tests/e2e/session-version-pinning.spec.ts",
+        "docs/04_audit/0522_plat_s32_controlled_session_version_pinning_evidence.md"
+      ],
+      "tests_expected": [
+        "packages/platform/src/__tests__/published-agent-runtime.test.ts",
+        "apps/api/src/__tests__/published-runtime-integration.test.ts",
+        "packages/persistence/src/__tests__/session-version-pinning.test.ts",
+        "packages/persistence/src/__tests__/session-version-pinning-postgres.test.ts",
+        "tests/e2e/session-version-pinning.spec.ts"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run test:coverage",
+        "npm run test:e2e",
+        "npm run test:postgres",
+        "npm audit --audit-level=high",
+        "git diff --check"
+      ]
+    },
+    {
+      "id": "PLAT-S35-001",
+      "name": "Implement controlled tool registry identity boundary",
+      "phase": "AUDIT",
+      "sprint": "PLAT-S35",
+      "files_expected": [
+        "packages/platform/src/contracts.ts",
+        "packages/platform/src/plugin-gateway.ts",
+        "packages/platform/src/controlled-plugins.ts",
+        "packages/platform/src/test-lab.ts",
+        "packages/platform/src/__tests__/controlled-tool-registry.test.ts",
+        "packages/platform/src/__tests__/plugin-registry-versioning.test.ts",
+        "packages/platform/src/__tests__/platform-foundation.test.ts",
+        "apps/api/src/server.ts",
+        "apps/api/src/__tests__/capability-approval-api.test.ts",
+        "apps/api/src/__tests__/published-runtime-integration.test.ts",
+        "docs/04_audit/0525_plat_s35_controlled_tool_registry_identity_evidence.md"
+      ],
+      "tests_expected": [
+        "packages/platform/src/__tests__/controlled-tool-registry.test.ts",
+        "packages/platform/src/__tests__/plugin-registry-versioning.test.ts",
+        "packages/platform/src/__tests__/platform-foundation.test.ts",
+        "apps/api/src/__tests__/capability-approval-api.test.ts",
+        "apps/api/src/__tests__/published-runtime-integration.test.ts"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run test:coverage",
+        "npm run readiness",
+        "npm run test:e2e",
+        "npm run test:postgres",
+        "npm audit --audit-level=high",
+        "git diff --check"
+      ]
+    },
+    {
+      "id": "PLAT-S36-001",
+      "name": "Implement controlled knowledge input provenance boundary",
+      "phase": "AUDIT",
+      "sprint": "PLAT-S36",
+      "files_expected": [
+        "packages/platform/src/contracts.ts",
+        "packages/platform/src/test-lab.ts",
+        "packages/platform/src/__tests__/knowledge-input-boundary.test.ts",
+        "apps/api/src/server.ts",
+        "apps/api/src/__tests__/knowledge-input-boundary.test.ts",
+        "apps/api/src/__tests__/capability-approval-api.test.ts",
+        "docs/04_audit/0526_plat_s36_controlled_knowledge_input_boundary_evidence.md"
+      ],
+      "tests_expected": [
+        "packages/platform/src/__tests__/knowledge-input-boundary.test.ts",
+        "apps/api/src/__tests__/knowledge-input-boundary.test.ts",
+        "apps/api/src/__tests__/capability-approval-api.test.ts"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run test:coverage",
+        "npm run readiness",
+        "npm run test:e2e",
+        "npm run test:postgres",
+        "npm audit --audit-level=high",
+        "git diff --check"
+      ]
+    },
+    {
+      "id": "PLAT-S37-001",
+      "name": "Implement controlled publish evidence authority boundary",
+      "phase": "AUDIT",
+      "sprint": "PLAT-S37",
+      "files_expected": [
+        "packages/platform/src/control-plane-store.ts",
+        "packages/platform/src/release-candidate.ts",
+        "packages/platform/src/__tests__/publish-evidence-authority.test.ts",
+        "packages/persistence/src/platform-control-plane-repository.ts",
+        "packages/persistence/src/tenant-scoped-postgres.ts",
+        "packages/persistence/src/__tests__/platform-control-plane-repository.test.ts",
+        "packages/persistence/src/__tests__/platform-postgres-smoke.test.ts",
+        "apps/api/src/server.ts",
+        "apps/api/src/__tests__/publish-evidence-authority.test.ts",
+        "apps/web/src/api/client.ts",
+        "apps/web/src/features/platform/index.tsx",
+        "tests/e2e/platform-control-center.spec.ts",
+        "docs/04_audit/0527_plat_s37_controlled_publish_evidence_authority_evidence.md"
+      ],
+      "tests_expected": [
+        "packages/platform/src/__tests__/publish-evidence-authority.test.ts",
+        "apps/api/src/__tests__/publish-evidence-authority.test.ts",
+        "packages/persistence/src/__tests__/platform-control-plane-repository.test.ts",
+        "packages/persistence/src/__tests__/platform-postgres-smoke.test.ts",
+        "tests/e2e/platform-control-center.spec.ts"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run test:coverage",
+        "npm run readiness",
+        "npm run test:e2e",
+        "npm run test:postgres",
+        "npm audit --audit-level=high",
+        "git diff --check"
+      ]
+    },
+    {
+      "id": "PLAT-S38-001",
+      "name": "Implement controlled worker knowledge input parity",
+      "phase": "AUDIT",
+      "sprint": "PLAT-S38",
+      "files_expected": [
+        "packages/agent-core/src/commands/published-worker-job.ts",
+        "apps/worker/src/worker.ts",
+        "apps/worker/src/__tests__/published-worker-knowledge-boundary.test.ts",
+        "docs/04_audit/0528_plat_s38_controlled_worker_knowledge_input_parity_evidence.md"
+      ],
+      "tests_expected": [
+        "apps/worker/src/__tests__/published-worker-knowledge-boundary.test.ts"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run test:coverage",
+        "npm run readiness",
+        "npm run test:e2e",
+        "npm run test:postgres",
+        "npm audit --audit-level=high",
+        "git diff --check"
+      ]
+    },
+    {
+      "id": "PLAT-S40-001",
+      "name": "Implement controlled model provider identity boundary",
+      "phase": "AUDIT",
+      "sprint": "PLAT-S40",
+      "files_expected": [
+        "packages/platform/src/model-provider.ts",
+        "packages/platform/src/test-lab.ts",
+        "packages/platform/src/__tests__/model-provider.test.ts",
+        "packages/platform/src/__tests__/model-provider-boundary.test.ts",
+        "packages/agent-core/src/__tests__/published-agent-runtime.test.ts",
+        "apps/worker/src/__tests__/published-worker-runtime.test.ts",
+        "docs/04_audit/0530_plat_s40_controlled_model_provider_identity_evidence.md"
+      ],
+      "tests_expected": [
+        "packages/platform/src/__tests__/model-provider.test.ts",
+        "packages/platform/src/__tests__/model-provider-boundary.test.ts",
+        "packages/agent-core/src/__tests__/published-agent-runtime.test.ts",
+        "apps/worker/src/__tests__/published-worker-runtime.test.ts"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run test:coverage",
+        "npm run readiness",
+        "npm run test:worker:startup",
+        "npm run test:e2e",
+        "npm run test:postgres",
+        "npm run audit:security",
+        "npm run build",
+        "npm run format:check",
+        "git diff --check"
+      ]
+    },
+    {
+      "id": "PLAT-S39-001",
+      "name": "Implement controlled release candidate lifecycle integrity",
+      "phase": "AUDIT",
+      "sprint": "PLAT-S39",
+      "files_expected": [
+        "packages/platform/src/release-candidate.ts",
+        "packages/platform/src/control-plane-store.ts",
+        "packages/platform/src/secretary-preset.ts",
+        "packages/platform/src/__tests__/release-candidate-ledger.test.ts",
+        "packages/platform/src/__tests__/publish-evidence-authority.test.ts",
+        "packages/persistence/src/platform-control-plane-repository.ts",
+        "packages/persistence/src/postgres.ts",
+        "packages/persistence/migrations/0009_release_candidate_validator_integrity.sql",
+        "packages/persistence/src/__tests__/release-candidate-repository.test.ts",
+        "packages/persistence/src/__tests__/postgres-migration-smoke.test.ts",
+        "packages/persistence/src/__tests__/platform-postgres-smoke.test.ts",
+        "apps/api/src/server.ts",
+        "apps/api/src/__tests__/release-candidate-ledger.test.ts",
+        "apps/api/src/__tests__/publish-evidence-authority.test.ts",
+        "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+        "apps/web/src/features/platform/index.tsx",
+        "apps/web/src/features/platform/release-candidate-ledger.test.tsx",
+        "docs/04_audit/0529_plat_s39_controlled_release_candidate_lifecycle_integrity_evidence.md"
+      ],
+      "tests_expected": [
+        "packages/platform/src/__tests__/release-candidate-ledger.test.ts",
+        "packages/platform/src/__tests__/publish-evidence-authority.test.ts",
+        "packages/persistence/src/__tests__/release-candidate-repository.test.ts",
+        "packages/persistence/src/__tests__/postgres-migration-smoke.test.ts",
+        "packages/persistence/src/__tests__/platform-postgres-smoke.test.ts",
+        "apps/api/src/__tests__/release-candidate-ledger.test.ts",
+        "apps/api/src/__tests__/publish-evidence-authority.test.ts",
+        "apps/web/src/features/platform/release-candidate-ledger.test.tsx"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run test:coverage",
+        "npm run readiness",
+        "npm run test:e2e",
+        "npm run test:postgres",
+        "npm audit --audit-level=high",
+        "git diff --check"
+      ]
+    },
+    {
+      "id": "PLAT-S41-001",
+      "name": "Implement controlled output safety boundary",
+      "phase": "CONTROLLED_CONSTRUCTION",
+      "sprint": "PLAT-S41",
+      "files_expected": [
+        "packages/platform/src/output-policy.ts",
+        "packages/platform/src/test-lab.ts",
+        "packages/platform/src/index.ts",
+        "packages/platform/src/event-bus.ts",
+        "packages/platform/src/contracts.ts",
+        "packages/platform/src/control-plane-store.ts",
+        "packages/platform/src/trace-governance.ts",
+        "packages/persistence/src/platform-control-plane-repository.ts",
+        "packages/persistence/src/postgres.ts",
+        "packages/agent-core/src/commands/execute-published-agent.ts",
+        "apps/api/src/server.ts",
+        "apps/web/src/api/client.ts",
+        "apps/web/src/features/platform/index.tsx",
+        "packages/platform/src/__tests__/output-policy.test.ts",
+        "packages/platform/src/__tests__/malformed-model-output.test.ts",
+        "packages/agent-core/src/__tests__/published-agent-runtime.test.ts",
+        "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+        "docs/04_audit/0531_plat_s41_controlled_output_safety_boundary_evidence.md"
+      ],
+      "tests_expected": [
+        "packages/platform/src/__tests__/output-policy.test.ts",
+        "packages/platform/src/__tests__/test-lab-events.test.ts",
+        "packages/agent-core/src/__tests__/published-agent-runtime.test.ts"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run test:coverage",
+        "npm run readiness",
+        "npm run test:worker:startup",
+        "npm run test:e2e",
+        "npm run test:postgres",
+        "npm run audit:security",
+        "npm run build",
+        "npm run format:check",
+        "git diff --check"
+      ]
+    },
+    {
+      "id": "PLAT-S42-001",
+      "name": "Implement controlled trace provenance boundary",
+      "phase": "CONTROLLED_CONSTRUCTION",
+      "sprint": "PLAT-S42",
+      "status": "READY_FOR_NEXT_STEP",
+      "files_expected": [
+        "packages/platform/src/trace-governance.ts",
+        "packages/platform/src/index.ts",
+        "packages/platform/src/control-plane-store.ts",
+        "packages/persistence/src/platform-control-plane-repository.ts",
+        "packages/persistence/src/postgres.ts",
+        "packages/platform/src/__tests__/trace-governance.test.ts",
+        "packages/platform/src/__tests__/test-suite-catalog.test.ts",
+        "packages/persistence/src/__tests__/platform-control-plane-repository.test.ts",
+        "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+        "docs/04_audit/0532_plat_s42_controlled_trace_provenance_boundary_evidence.md"
+      ],
+      "tests_expected": [
+        "packages/platform/src/__tests__/trace-governance.test.ts",
+        "packages/platform/src/__tests__/test-suite-catalog.test.ts",
+        "packages/persistence/src/__tests__/platform-control-plane-repository.test.ts",
+        "apps/api/src/__tests__/postgres-persistence-mode.test.ts"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run test:coverage",
+        "npm run readiness",
+        "npm run test:worker:startup",
+        "npm run test:e2e",
+        "npm run test:postgres",
+        "npm run audit:security",
+        "npm run build",
+        "npm run format:check",
+        "git diff --check"
+      ]
+    },
+    {
+      "id": "PLAT-S43-001",
+      "name": "Implement controlled trace temporal integrity",
+      "phase": "CONTROLLED_CONSTRUCTION",
+      "sprint": "PLAT-S43",
+      "status": "COMPLETED_CONTROLLED",
+      "files_expected": [
+        "packages/platform/src/trace-governance.ts",
+        "packages/platform/src/__tests__/trace-governance.test.ts",
+        "docs/04_audit/0533_plat-s43_controlled_trace_temporal_integrity_evidence.md"
+      ],
+      "tests_expected": [
+        "packages/platform/src/__tests__/trace-governance.test.ts"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run test:coverage",
+        "npm run readiness",
+        "npm run test:worker:startup",
+        "npm run test:e2e",
+        "npm run test:postgres",
+        "npm run audit:security",
+        "npm run build",
+        "npm run format:check",
+        "git diff --check"
+      ]
+    },
+    {
+      "id": "PLAT-S44-001",
+      "name": "Implement controlled trace stage timing",
+      "phase": "CONTROLLED_CONSTRUCTION",
+      "sprint": "PLAT-S44",
+      "status": "COMPLETED_CONTROLLED",
+      "files_expected": [
+        "packages/platform/src/test-lab.ts",
+        "packages/platform/src/__tests__/test-lab-events.test.ts",
+        "packages/platform/src/__tests__/trace-governance.test.ts",
+        "docs/04_audit/0534_plat-s44_controlled_trace_stage_timing_evidence.md"
+      ],
+      "tests_expected": [
+        "packages/platform/src/__tests__/test-lab-events.test.ts",
+        "packages/platform/src/__tests__/trace-governance.test.ts"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run test:coverage",
+        "npm run readiness",
+        "npm run test:worker:startup",
+        "npm run test:e2e",
+        "npm run test:postgres",
+        "npm run audit:security",
+        "npm run build",
+        "npm run format:check",
+        "git diff --check"
+      ]
+    },
+    {
+      "id": "PLAT-S45-001",
+      "name": "Implement controlled tool invocation boundary",
+      "phase": "CONTROLLED_CONSTRUCTION",
+      "sprint": "PLAT-S45",
+      "status": "COMPLETED_CONTROLLED",
+      "files_expected": [
+        "packages/platform/src/plugin-gateway.ts",
+        "packages/platform/src/tool-invocation-boundary.ts",
+        "packages/platform/src/contracts.ts",
+        "packages/platform/src/controlled-plugins.ts",
+        "apps/api/src/server.ts",
+        "packages/platform/src/__tests__/tool-invocation-boundary.test.ts",
+        "packages/platform/src/__tests__/controlled-tool-registry.test.ts",
+        "packages/platform/src/__tests__/capability-approval-gateway.test.ts",
+        "packages/platform/src/__tests__/platform-foundation.test.ts",
+        "packages/platform/src/__tests__/plugin-registry-versioning.test.ts",
+        "apps/api/src/__tests__/capability-approval-api.test.ts",
+        "packages/tools/src/__tests__/platform-adapter.test.ts",
+        "docs/04_audit/0535_plat-s45_controlled_tool_invocation_boundary_evidence.md"
+      ],
+      "tests_expected": [
+        "packages/platform/src/__tests__/tool-invocation-boundary.test.ts",
+        "packages/platform/src/__tests__/controlled-tool-registry.test.ts",
+        "packages/platform/src/__tests__/capability-approval-gateway.test.ts",
+        "packages/tools/src/__tests__/platform-adapter.test.ts"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run test:coverage",
+        "npm run readiness",
+        "npm run test:worker:startup",
+        "npm run test:e2e",
+        "npm run test:postgres",
+        "npm run audit:security",
+        "npm run build",
+        "npm run format:check",
+        "git diff --check"
+      ]
+    },
+    {
+      "id": "PLAT-S46-001",
+      "name": "Implement controlled execution trace correlation boundary",
+      "phase": "AUDIT",
+      "sprint": "PLAT-S46",
+      "status": "COMPLETED_CONTROLLED",
+      "files_expected": [
+        "packages/platform/src/test-lab.ts",
+        "packages/platform/src/event-bus.ts",
+        "packages/platform/src/plugin-gateway.ts",
+        "packages/platform/src/trace-governance.ts",
+        "packages/agent-core/src/commands/execute-published-agent.ts",
+        "packages/platform/src/__tests__/test-lab-events.test.ts",
+        "packages/platform/src/__tests__/event-bus.test.ts",
+        "packages/platform/src/__tests__/tool-invocation-boundary.test.ts",
+        "packages/platform/src/__tests__/trace-governance.test.ts",
+        "docs/04_audit/0536_plat-s46_controlled_execution_trace_correlation_boundary_evidence.md"
+      ],
+      "tests_expected": [
+        "packages/platform/src/__tests__/test-lab-events.test.ts",
+        "packages/platform/src/__tests__/event-bus.test.ts",
+        "packages/platform/src/__tests__/tool-invocation-boundary.test.ts",
+        "packages/platform/src/__tests__/trace-governance.test.ts"
+      ],
+      "validation_commands": [
+        "npm test",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run test:coverage",
+        "npm run readiness",
+        "npm run test:worker:startup",
+        "npm run test:e2e",
+        "npm run test:postgres",
+        "npm run audit:security",
+        "npm run build",
+        "npm run format:check",
+        "git diff --check"
+      ],
+      "completion": {
+        "timestamp": "2026-08-26T11:22:54-03:00",
+        "red": "4 arquivos/33 testes; 8 falhas esperadas; 25 pass",
+        "green": "6 arquivos/25 testes pass",
+        "verification": "126 arquivos pass/2 skipped; 523 testes pass/19 skipped; coverage 85.07/80.06/85.95/86.10; PostgreSQL 8/72; readiness 4/4; worker smoke; E2E 4/4; build 70 módulos; audit 0; typecheck/lint/format/diff PASS",
+        "review": "PASS compatível read-only sem P0/P1/P2",
+        "evidence": "docs/04_audit/0536_plat-s46_controlled_execution_trace_correlation_boundary_evidence.md"
+      }
+    },
+    {
+      "id": "PLAT-S47-001",
+      "name": "Implement controlled multi-agent creation mode",
+      "phase": "AUDIT",
+      "sprint": "PLAT-S47",
+      "status": "COMPLETED_CONTROLLED",
+      "files_expected": [
+        "apps/web/src/features/platform/index.tsx",
+        "apps/web/src/features/platform/platform.test.tsx",
+        "apps/web/src/features/platform/multi-agent-creation.test.tsx",
+        "tests/e2e/platform-control-center.spec.ts",
+        "tests/e2e/pages/control-center.ts",
+        "docs/04_audit/0537_plat-s47_controlled_multi_agent_creation_evidence.md"
+      ],
+      "tests_expected": [
+        "apps/web/src/features/platform/multi-agent-creation.test.tsx",
+        "apps/web/src/features/platform/platform.test.tsx",
+        "tests/e2e/platform-control-center.spec.ts"
+      ],
+      "validation_commands": [
+        "npx vitest run apps/web/src/features/platform/multi-agent-creation.test.tsx apps/web/src/features/platform/platform.test.tsx --no-file-parallelism --maxWorkers=2",
+        "npm test",
+        "npm run typecheck",
+        "npm run lint",
+        "npx vitest run --coverage --no-file-parallelism --maxWorkers=1",
+        "npm run readiness",
+        "npm run test:worker:startup",
+        "npm run test:e2e",
+        "npm run test:postgres",
+        "npm run audit:security",
+        "npm run build",
+        "npm run format:check",
+        "git diff --check"
+      ],
+      "completion": {
+        "timestamp": "2026-08-26T15:59:02-03:00",
+        "red": "focused inicial 1 arquivo/1 teste falhou como esperado pela ausência de Novo agente",
+        "green": "focused platform/client 4 arquivos/18 testes pass; auditoria negativa de spans legado passou; E2E específico 1/1",
+        "verification": "regressão integral 127 arquivos/534 testes pass, 2 arquivos/19 testes skipped; coverage 84.86/80.12/84.97/85.97; readiness 4/4; worker smoke; PostgreSQL 8/72; E2E 4/4; build 158 módulos; audit 0; typecheck/lint/format/diff PASS",
+        "review": "PASS_CONTROLLED compatible independent read-only; P0/P1/P2/P3 = 0",
+        "evidence": "docs/04_audit/0537_plat-s47_controlled_multi_agent_creation_evidence.md",
+        "production": "NO-GO"
+      }
     }
   ]
 }

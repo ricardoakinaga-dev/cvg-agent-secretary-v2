@@ -10,6 +10,7 @@ import {
   type PluginManifest
 } from '../index.ts'
 import type { TenantId } from '../ids.ts'
+import type { TraceId } from '../ids.ts'
 
 const tenantA = 'tenant_00000000-0000-4000-8000-000000000201' as TenantId
 const tenantB = 'tenant_00000000-0000-4000-8000-000000000202' as TenantId
@@ -84,6 +85,54 @@ describe('PlatformEventBus', () => {
         payload: {}
       })
     ).rejects.toMatchObject({ code: 'validation_failed' })
+  })
+
+  it('propagates the execution trace parent while keeping event ids local', async () => {
+    const observed: PlatformEventEnvelope[] = []
+    const audits: PlatformHookAuditEvent[] = []
+    const plugin = createPlugin(createManifest(), {
+      [eventName]: (event) => {
+        observed.push(event)
+      }
+    })
+    const traceId = 'trace_00000000-0000-4000-8000-000000000201' as TraceId
+    const bus = new PlatformEventBus({
+      onAudit: (audit) => {
+        audits.push(audit)
+      }
+    }).registerPlugin({ tenantId: tenantA, plugin })
+
+    const result = await bus.emit({
+      name: eventName,
+      tenantId: tenantA,
+      traceId,
+      payload: { decision: 'allowed' }
+    })
+
+    expect(result.event.traceId).toBe(traceId)
+    expect(observed[0]?.traceId).toBe(traceId)
+    expect(audits[0]?.traceId).toBe(traceId)
+    expect(audits[0]?.correlationId).toBe(result.event.id)
+    expect(result.event.id).not.toBe(traceId)
+    expect(result.event.id).toMatch(/^corr_/)
+  })
+
+  it('rejects an invalid execution trace before delivering a hook', async () => {
+    const handler = vi.fn<PluginHookHandler>(() => undefined)
+    const bus = new PlatformEventBus().registerPlugin({
+      tenantId: tenantA,
+      plugin: createPlugin(createManifest(), { [eventName]: handler })
+    })
+
+    await expect(
+      bus.emit({
+        name: eventName,
+        tenantId: tenantA,
+        traceId: 'trace-invalid' as never,
+        payload: {}
+      })
+    ).rejects.toMatchObject({ code: 'validation_failed' })
+    expect(handler).not.toHaveBeenCalled()
   })
 
   it('rejects undeclared or missing hook handlers before subscribing', () => {
@@ -236,6 +285,8 @@ describe('PlatformEventBus', () => {
         'agent.resolved',
         'policy.input.before',
         'policy.input.after',
+        'policy.output.before',
+        'policy.output.after',
         'intent.before',
         'intent.after',
         'knowledge.before',

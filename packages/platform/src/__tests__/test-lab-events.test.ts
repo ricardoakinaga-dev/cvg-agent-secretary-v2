@@ -4,12 +4,14 @@ import {
   InMemoryControlPlaneStore,
   PlatformEventBus,
   PluginManifestSchema,
+  createControlledTraceTiming,
   runTestLab,
   type PlatformEventEnvelope,
   type PlatformEventName,
   type PluginHookHandler
 } from '../index.ts'
 import type { TenantId } from '../ids.ts'
+import type { TraceId } from '../ids.ts'
 
 const tenantId = 'tenant_00000000-0000-4000-8000-000000000203' as TenantId
 
@@ -21,6 +23,8 @@ const observedEventNames = [
   'agent.resolved',
   'policy.input.before',
   'policy.input.after',
+  'policy.output.before',
+  'policy.output.after',
   'intent.before',
   'intent.after',
   'knowledge.before',
@@ -78,6 +82,32 @@ function createConfig() {
 }
 
 describe('Test Lab event integration', () => {
+  it('records bounded stage duration with an injectable monotonic clock', async () => {
+    const ticks = [100, 103, 107, 111]
+    const timing = createControlledTraceTiming(() => ticks.shift() ?? 111)
+
+    expect(timing.measure('model', () => 'controlled')).toBe('controlled')
+    await expect(timing.measureAsync('tool', async () => 'done')).resolves.toBe(
+      'done'
+    )
+    expect(timing.snapshot()).toEqual({ model: 3, tool: 4 })
+  })
+
+  it('rejects a non-monotonic clock and keeps snapshots isolated', () => {
+    const ticks = [10, 9]
+    const timing = createControlledTraceTiming(() => ticks.shift() ?? 9)
+
+    expect(() => timing.measure('model', () => 'never')).toThrowError(
+      expect.objectContaining({ code: 'validation_failed' })
+    )
+
+    const stable = createControlledTraceTiming(() => 10)
+    stable.measure('model', () => 'controlled')
+    const snapshot = stable.snapshot()
+    snapshot.model = 999
+    expect(stable.snapshot()).toEqual({ model: 0 })
+  })
+
   it('emits representative lifecycle events without raw message or external calls', async () => {
     const store = new InMemoryControlPlaneStore()
     const agent = await store.createAgent(
@@ -136,8 +166,99 @@ describe('Test Lab event integration', () => {
     expect(observed.every((event) => event.executionMode === 'TEST_LAB')).toBe(
       true
     )
+    expect(observed.every((event) => event.traceId === trace.traceId)).toBe(
+      true
+    )
+    expect(new Set(observed.map((event) => event.id)).size).toBe(
+      observed.length
+    )
     expect(JSON.stringify(observed)).not.toContain('contato@example.com')
     expect(trace.provider.externalCall).toBe(false)
     expect(trace.handoff.requested).toBe(true)
+  })
+
+  it('rejects an injected invalid trace before emitting or executing', async () => {
+    const store = new InMemoryControlPlaneStore()
+    const agent = await store.createAgent(
+      { tenantId },
+      {
+        slug: 'invalid-trace-input',
+        name: 'Invalid Trace Input',
+        description: 'Controlled invalid trace fixture'
+      }
+    )
+    const version = await store.createVersion(
+      { tenantId },
+      agent.id,
+      createConfig(),
+      'admin-event'
+    )
+    const observed: PlatformEventEnvelope[] = []
+    const manifest = PluginManifestSchema.parse({
+      name: 'invalid-trace.observer',
+      version: '1.0.0',
+      capabilities: [],
+      permissions: [],
+      tools: [],
+      hooks: ['message.received'],
+      dependencies: [],
+      configSchemaVersion: '1'
+    })
+    const bus = new PlatformEventBus().registerPlugin({
+      tenantId,
+      plugin: {
+        manifest,
+        handlers: {},
+        hooks: {
+          'message.received': (event) => {
+            observed.push(event)
+          }
+        }
+      }
+    })
+
+    await expect(
+      runTestLab({
+        store,
+        tenantId,
+        agentId: agent.id,
+        versionId: version.id,
+        message: 'Mensagem controlada',
+        history: [],
+        eventBus: bus,
+        traceId: 'trace-invalid' as never
+      })
+    ).rejects.toMatchObject({ code: 'validation_failed' })
+    expect(observed).toHaveLength(0)
+  })
+
+  it('keeps a valid injected trace as the only execution identity', async () => {
+    const store = new InMemoryControlPlaneStore()
+    const agent = await store.createAgent(
+      { tenantId },
+      {
+        slug: 'valid-trace-input',
+        name: 'Valid Trace Input',
+        description: 'Controlled valid trace fixture'
+      }
+    )
+    const version = await store.createVersion(
+      { tenantId },
+      agent.id,
+      createConfig(),
+      'admin-event'
+    )
+    const traceId = 'trace_00000000-0000-4000-8000-000000000204' as TraceId
+    const trace = await runTestLab({
+      store,
+      tenantId,
+      agentId: agent.id,
+      versionId: version.id,
+      message: 'Mensagem controlada',
+      history: [],
+      traceId
+    })
+
+    expect(trace.traceId).toBe(traceId)
   })
 })

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AuditPanel } from './features/audit/index.tsx'
 import { ApprovalsPanel } from './features/approvals/index.tsx'
 import { ConversationsPanel } from './features/conversations/index.tsx'
@@ -8,6 +8,7 @@ import {
   apiClient,
   type ApprovalDecision,
   type ApprovalView,
+  type AuditEvidenceCheckpointView,
   type AuditEvidenceReviewView,
   type AuditEventView,
   type ConversationView,
@@ -67,6 +68,15 @@ export function App() {
   const [auditEvidenceExportMessage, setAuditEvidenceExportMessage] = useState<
     string | null
   >(null)
+  const [auditEvidenceCheckpoint, setAuditEvidenceCheckpoint] = useState<
+    PanelState<AuditEvidenceCheckpointView | null>
+  >(loaded(null))
+  const [auditEvidenceCheckpointMessage, setAuditEvidenceCheckpointMessage] =
+    useState<string | null>(null)
+  const [
+    isManagingAuditEvidenceCheckpoint,
+    setIsManagingAuditEvidenceCheckpoint
+  ] = useState(false)
   const [isRequestingAuditEvidenceExport, setIsRequestingAuditEvidenceExport] =
     useState(false)
   const [selectedConversationId, setSelectedConversationId] = useState<
@@ -83,13 +93,43 @@ export function App() {
   })
   const [tenantId, setTenantId] = useState('')
 
+  const normalizedOperatorId = operatorIdentity.operatorId.trim()
+  const normalizedTenantId = tenantId.trim()
+  const identityKey = JSON.stringify([
+    normalizedOperatorId,
+    operatorIdentity.role,
+    normalizedTenantId
+  ])
+  const identityScopeRef = useRef(identityKey)
+  const identityChanged = identityScopeRef.current !== identityKey
+  if (identityChanged) identityScopeRef.current = identityKey
+
+  const viewScopeKey = JSON.stringify([
+    identityKey,
+    selectedConversationId,
+    selectedSessionId
+  ])
+  const viewScopeRef = useRef({ key: viewScopeKey, generation: 0 })
+  const viewScopeChanged = viewScopeRef.current.key !== viewScopeKey
+  if (viewScopeChanged) {
+    viewScopeRef.current = {
+      key: viewScopeKey,
+      generation: viewScopeRef.current.generation + 1
+    }
+  }
+  const viewScopeToken = `${viewScopeRef.current.generation}:${viewScopeKey}`
+
+  const isCurrentIdentity = (scope: string): boolean =>
+    identityScopeRef.current === scope
+  const isCurrentViewScope = (scope: string): boolean =>
+    `${viewScopeRef.current.generation}:${viewScopeRef.current.key}` === scope
+
   const currentOperatorIdentity = (): OperatorIdentity | null => {
-    const operatorId = operatorIdentity.operatorId.trim()
-    return operatorId.length > 0
+    return normalizedOperatorId.length > 0
       ? {
-          operatorId,
+          operatorId: normalizedOperatorId,
           role: operatorIdentity.role,
-          ...(tenantId.trim() ? { tenantId: tenantId.trim() } : {})
+          ...(normalizedTenantId ? { tenantId: normalizedTenantId } : {})
         }
       : null
   }
@@ -105,8 +145,14 @@ export function App() {
       setAuditEvidence(loaded(null))
       setAuditEvidenceOffset(0)
       setAuditEvidenceExportMessage(null)
+      setAuditEvidenceCheckpoint(loaded(null))
+      setAuditEvidenceCheckpointMessage(null)
       setSelectedConversationId(null)
       setSelectedSessionId(null)
+      setApprovalActionId(null)
+      setTaskActionId(null)
+      setIsManagingAuditEvidenceCheckpoint(false)
+      setIsRequestingAuditEvidenceExport(false)
       return
     }
 
@@ -119,11 +165,20 @@ export function App() {
     setAuditEvidence(loaded(null))
     setAuditEvidenceOffset(0)
     setAuditEvidenceExportMessage(null)
+    setAuditEvidenceCheckpoint(loaded(null))
+    setAuditEvidenceCheckpointMessage(null)
+    setSelectedConversationId(null)
+    setSelectedSessionId(null)
+    setApprovalActionId(null)
+    setTaskActionId(null)
+    setIsManagingAuditEvidenceCheckpoint(false)
+    setIsRequestingAuditEvidenceExport(false)
+    const scope = identityKey
 
     apiClient
       .listConversations(identity, { limit: 25, offset: 0 })
       .then((page) => {
-        if (!active) return
+        if (!active || !isCurrentIdentity(scope)) return
         const firstConversation = page.items[0] ?? null
         setConversations(loaded(page.items))
         setSelectedConversationId(firstConversation?.id ?? null)
@@ -135,7 +190,7 @@ export function App() {
         }
       })
       .catch(() => {
-        if (!active) return
+        if (!active || !isCurrentIdentity(scope)) return
         setConversations(failed([]))
         setMessages(failed([]))
         setAuditEvents(failed([]))
@@ -144,50 +199,52 @@ export function App() {
     apiClient
       .listApprovals(identity)
       .then((data) => {
-        if (active) setApprovals(loaded(data))
+        if (active && isCurrentIdentity(scope)) setApprovals(loaded(data))
       })
       .catch(() => {
-        if (active) setApprovals(failed([]))
+        if (active && isCurrentIdentity(scope)) setApprovals(failed([]))
       })
 
     apiClient
       .listTasks(identity)
       .then((data) => {
-        if (active) setTasks(loaded(data))
+        if (active && isCurrentIdentity(scope)) setTasks(loaded(data))
       })
       .catch(() => {
-        if (active) setTasks(failed([]))
+        if (active && isCurrentIdentity(scope)) setTasks(failed([]))
       })
 
     return () => {
       active = false
     }
-  }, [operatorIdentity])
+  }, [identityKey])
 
   useEffect(() => {
     const identity = currentOperatorIdentity()
-    if (!identity) return
+    if (!identity || identityChanged) return
     if (!selectedConversationId) return
     let active = true
+    const scope = viewScopeToken
     setMessages(loading([]))
 
     apiClient
       .getTimeline(selectedConversationId, identity)
       .then((timeline) => {
-        if (active) setMessages(loaded(timeline.messages))
+        if (active && isCurrentViewScope(scope))
+          setMessages(loaded(timeline.messages))
       })
       .catch(() => {
-        if (active) setMessages(failed([]))
+        if (active && isCurrentViewScope(scope)) setMessages(failed([]))
       })
 
     return () => {
       active = false
     }
-  }, [selectedConversationId, operatorIdentity])
+  }, [selectedConversationId, identityKey, identityChanged, viewScopeToken])
 
   useEffect(() => {
     const identity = currentOperatorIdentity()
-    if (!identity) return
+    if (!identity || identityChanged) return
     if (!selectedConversationId) return
     if (!selectedSessionId) {
       setAuditEvents(loaded([]))
@@ -195,39 +252,52 @@ export function App() {
     }
 
     let active = true
+    const scope = viewScopeToken
     setAuditEvents(loading([]))
 
     apiClient
       .getAudit(selectedSessionId, identity)
       .then((audit) => {
-        if (active) setAuditEvents(loaded(audit.events))
+        if (active && isCurrentViewScope(scope))
+          setAuditEvents(loaded(audit.events))
       })
       .catch(() => {
-        if (active) setAuditEvents(failed([]))
+        if (active && isCurrentViewScope(scope)) setAuditEvents(failed([]))
       })
 
     return () => {
       active = false
     }
-  }, [selectedConversationId, selectedSessionId, operatorIdentity])
+  }, [
+    selectedConversationId,
+    selectedSessionId,
+    identityKey,
+    identityChanged,
+    viewScopeToken
+  ])
 
   useEffect(() => {
     const identity = currentOperatorIdentity()
-    if (!identity) return
+    if (!identity || identityChanged) return
     if (!selectedSessionId) {
       setAuditEvidence(loaded(null))
       setAuditEvidenceOffset(0)
       setAuditEvidenceExportMessage(null)
+      setAuditEvidenceCheckpoint(loaded(null))
+      setAuditEvidenceCheckpointMessage(null)
       return
     }
     if (!canReviewAuditEvidence(identity.role)) {
       setAuditEvidence(loaded(null))
       setAuditEvidenceOffset(0)
       setAuditEvidenceExportMessage(null)
+      setAuditEvidenceCheckpoint(loaded(null))
+      setAuditEvidenceCheckpointMessage(null)
       return
     }
 
     let active = true
+    const scope = viewScopeToken
     setAuditEvidence(loading(null))
 
     apiClient
@@ -238,16 +308,62 @@ export function App() {
         offset: auditEvidenceOffset
       })
       .then((evidence) => {
-        if (active) setAuditEvidence(loaded(evidence))
+        if (active && isCurrentViewScope(scope))
+          setAuditEvidence(loaded(evidence))
       })
       .catch(() => {
-        if (active) setAuditEvidence(failed(null))
+        if (active && isCurrentViewScope(scope)) setAuditEvidence(failed(null))
       })
 
     return () => {
       active = false
     }
-  }, [selectedSessionId, operatorIdentity, auditEvidenceOffset])
+  }, [
+    selectedSessionId,
+    identityKey,
+    identityChanged,
+    auditEvidenceOffset,
+    viewScopeToken
+  ])
+
+  useEffect(() => {
+    const identity = currentOperatorIdentity()
+    if (
+      !identity ||
+      identityChanged ||
+      !selectedSessionId ||
+      !canReviewAuditEvidence(identity.role)
+    ) {
+      setAuditEvidenceCheckpoint(loaded(null))
+      return
+    }
+    let active = true
+    const scope = viewScopeToken
+    setAuditEvidenceCheckpoint(loading(null))
+    apiClient
+      .listAuditEvidenceCheckpoints(identity)
+      .then(({ checkpoints }) => {
+        if (!active || !isCurrentViewScope(scope)) return
+        const current =
+          checkpoints.find(
+            (checkpoint) =>
+              checkpoint.filters.sessionId === selectedSessionId &&
+              checkpoint.status !== 'ARCHIVED'
+          ) ??
+          checkpoints.find(
+            (checkpoint) => checkpoint.filters.sessionId === selectedSessionId
+          ) ??
+          null
+        setAuditEvidenceCheckpoint(loaded(current))
+      })
+      .catch(() => {
+        if (active && isCurrentViewScope(scope))
+          setAuditEvidenceCheckpoint(failed(null))
+      })
+    return () => {
+      active = false
+    }
+  }, [selectedSessionId, identityKey, identityChanged, viewScopeToken])
 
   const selectConversation = (
     conversation: Pick<ConversationView, 'id' | 'openSessionId'>
@@ -256,38 +372,125 @@ export function App() {
     setSelectedSessionId(conversation.openSessionId)
     setAuditEvidenceOffset(0)
     setAuditEvidenceExportMessage(null)
+    setAuditEvidenceCheckpoint(loaded(null))
+    setAuditEvidenceCheckpointMessage(null)
   }
 
-  const refreshApprovals = async () => {
+  const refreshApprovals = async (scope = viewScopeToken) => {
     const identity = currentOperatorIdentity()
-    if (!identity) return
-    setApprovals(loaded(await apiClient.listApprovals(identity)))
+    if (!identity || !isCurrentViewScope(scope)) return
+    const data = await apiClient.listApprovals(identity)
+    if (!isCurrentViewScope(scope)) return
+    setApprovals(loaded(data))
   }
 
-  const refreshAudit = async () => {
+  const refreshAudit = async (scope = viewScopeToken) => {
     const identity = currentOperatorIdentity()
-    if (!identity) return
-    if (!selectedSessionId) return
-    setAuditEvents(
-      loaded((await apiClient.getAudit(selectedSessionId, identity)).events)
+    if (!identity || !isCurrentViewScope(scope) || !selectedSessionId) return
+    const audit = await apiClient.getAudit(selectedSessionId, identity)
+    if (!isCurrentViewScope(scope)) return
+    setAuditEvents(loaded(audit.events))
+  }
+
+  const refreshAuditEvidence = async (scope = viewScopeToken) => {
+    const identity = currentOperatorIdentity()
+    if (
+      !identity ||
+      !isCurrentViewScope(scope) ||
+      !selectedSessionId ||
+      !canReviewAuditEvidence(identity.role)
     )
-  }
-
-  const refreshAuditEvidence = async () => {
-    const identity = currentOperatorIdentity()
-    if (!identity) return
-    if (!selectedSessionId) return
-    if (!canReviewAuditEvidence(identity.role)) return
-    setAuditEvidence(
+      return
+    const evidence = await apiClient.getAuditEvidence({
+      identity,
+      sessionId: selectedSessionId,
+      limit: auditEvidenceLimit,
+      offset: auditEvidenceOffset
+    })
+    if (!isCurrentViewScope(scope)) return
+    setAuditEvidence(loaded(evidence))
+    const { checkpoints } =
+      await apiClient.listAuditEvidenceCheckpoints(identity)
+    if (!isCurrentViewScope(scope)) return
+    setAuditEvidenceCheckpoint(
       loaded(
-        await apiClient.getAuditEvidence({
-          identity,
-          sessionId: selectedSessionId,
-          limit: auditEvidenceLimit,
-          offset: auditEvidenceOffset
-        })
+        checkpoints.find(
+          (checkpoint) => checkpoint.filters.sessionId === selectedSessionId
+        ) ?? null
       )
     )
+  }
+
+  const sealAuditEvidenceCheckpoint = async () => {
+    const scope = viewScopeToken
+    const identity = currentOperatorIdentity()
+    const page = auditEvidence.data?.page.items
+    if (
+      !identity ||
+      !isCurrentViewScope(scope) ||
+      !selectedSessionId ||
+      !page?.length
+    )
+      return
+    if (!canReviewAuditEvidence(identity.role)) return
+    setIsManagingAuditEvidenceCheckpoint(true)
+    setAuditEvidenceCheckpointMessage(null)
+    try {
+      const result = await apiClient.createAuditEvidenceCheckpoint({
+        identity,
+        eventIds: page.map((event) => event.id),
+        filters: { sessionId: selectedSessionId }
+      })
+      if (!isCurrentViewScope(scope)) return
+      setAuditEvidenceCheckpoint(loaded(result.checkpoint))
+      setAuditEvidenceCheckpointMessage(
+        'Checkpoint selado com IDs e digest; nenhum payload foi persistido.'
+      )
+    } catch (error) {
+      if (!isCurrentViewScope(scope)) return
+      setAuditEvidenceCheckpointMessage(
+        error instanceof Error
+          ? error.message
+          : 'Nao foi possivel selar o checkpoint.'
+      )
+    } finally {
+      if (isCurrentViewScope(scope)) setIsManagingAuditEvidenceCheckpoint(false)
+    }
+  }
+
+  const archiveAuditEvidenceCheckpoint = async () => {
+    const scope = viewScopeToken
+    const identity = currentOperatorIdentity()
+    const checkpoint = auditEvidenceCheckpoint.data
+    if (
+      !identity ||
+      !isCurrentViewScope(scope) ||
+      !checkpoint ||
+      checkpoint.status !== 'SEALED'
+    )
+      return
+    if (!canReviewAuditEvidence(identity.role)) return
+    setIsManagingAuditEvidenceCheckpoint(true)
+    setAuditEvidenceCheckpointMessage(null)
+    try {
+      const result = await apiClient.transitionAuditEvidenceCheckpoint({
+        identity,
+        checkpointId: checkpoint.id,
+        expectedStatus: 'SEALED'
+      })
+      if (!isCurrentViewScope(scope)) return
+      setAuditEvidenceCheckpoint(loaded(result.checkpoint))
+      setAuditEvidenceCheckpointMessage('Checkpoint arquivado com CAS.')
+    } catch (error) {
+      if (!isCurrentViewScope(scope)) return
+      setAuditEvidenceCheckpointMessage(
+        error instanceof Error
+          ? error.message
+          : 'Nao foi possivel arquivar o checkpoint.'
+      )
+    } finally {
+      if (isCurrentViewScope(scope)) setIsManagingAuditEvidenceCheckpoint(false)
+    }
   }
 
   const goToPreviousAuditEvidencePage = () => {
@@ -305,8 +508,9 @@ export function App() {
   }
 
   const requestAuditEvidenceExportApproval = async () => {
+    const scope = viewScopeToken
     const identity = currentOperatorIdentity()
-    if (!identity) return
+    if (!identity || !isCurrentViewScope(scope)) return
     if (!selectedSessionId) return
     if (!canReviewAuditEvidence(identity.role)) return
 
@@ -317,23 +521,27 @@ export function App() {
         identity,
         sessionId: selectedSessionId
       })
-      await refreshApprovals()
+      await refreshApprovals(scope)
+      if (!isCurrentViewScope(scope)) return
       setAuditEvidenceExportMessage(
         'Solicitacao de export registrada para aprovacao humana.'
       )
     } catch {
+      if (!isCurrentViewScope(scope)) return
       setAuditEvidenceExportMessage(
         'Erro ao solicitar aprovacao de export controlado.'
       )
     } finally {
-      setIsRequestingAuditEvidenceExport(false)
+      if (isCurrentViewScope(scope)) setIsRequestingAuditEvidenceExport(false)
     }
   }
 
-  const refreshTasks = async () => {
+  const refreshTasks = async (scope = viewScopeToken) => {
     const identity = currentOperatorIdentity()
-    if (!identity) return
-    setTasks(loaded(await apiClient.listTasks(identity)))
+    if (!identity || !isCurrentViewScope(scope)) return
+    const data = await apiClient.listTasks(identity)
+    if (!isCurrentViewScope(scope)) return
+    setTasks(loaded(data))
   }
 
   const decideApproval = async (
@@ -341,8 +549,10 @@ export function App() {
     decision: ApprovalDecision,
     note: string
   ) => {
+    const scope = viewScopeToken
     const identity = currentOperatorIdentity()
-    if (!identity) {
+    if (!identity || !isCurrentViewScope(scope)) {
+      if (!isCurrentViewScope(scope)) return
       setApprovals(failed(approvals.data))
       return
     }
@@ -354,31 +564,37 @@ export function App() {
         identity,
         note
       })
-      await refreshApprovals()
-      await refreshAudit()
-      await refreshAuditEvidence()
+      if (!isCurrentViewScope(scope)) return
+      await refreshApprovals(scope)
+      await refreshAudit(scope)
+      await refreshAuditEvidence(scope)
     } catch {
+      if (!isCurrentViewScope(scope)) return
       setApprovals(failed(approvals.data))
     } finally {
-      setApprovalActionId(null)
+      if (isCurrentViewScope(scope)) setApprovalActionId(null)
     }
   }
 
   const updateTaskStatus = async (taskId: string, status: TaskStatus) => {
+    const scope = viewScopeToken
     const identity = currentOperatorIdentity()
-    if (!identity) {
+    if (!identity || !isCurrentViewScope(scope)) {
+      if (!isCurrentViewScope(scope)) return
       setTasks(failed(tasks.data))
       return
     }
     setTaskActionId(taskId)
     try {
       await apiClient.updateTaskStatus({ taskId, status, identity })
-      await refreshTasks()
-      await refreshAudit()
+      if (!isCurrentViewScope(scope)) return
+      await refreshTasks(scope)
+      await refreshAudit(scope)
     } catch {
+      if (!isCurrentViewScope(scope)) return
       setTasks(failed(tasks.data))
     } finally {
-      setTaskActionId(null)
+      if (isCurrentViewScope(scope)) setTaskActionId(null)
     }
   }
 
@@ -507,6 +723,18 @@ export function App() {
           canReviewEvidence={canReviewEvidence}
           evidenceExportMessage={auditEvidenceExportMessage}
           isRequestingEvidenceExport={isRequestingAuditEvidenceExport}
+          checkpoint={auditEvidenceCheckpoint.data}
+          canManageEvidenceCheckpoint={
+            canReviewEvidence &&
+            !auditEvidenceCheckpoint.isLoading &&
+            !auditEvidenceCheckpoint.error
+          }
+          checkpointMessage={auditEvidenceCheckpointMessage}
+          isManagingEvidenceCheckpoint={isManagingAuditEvidenceCheckpoint}
+          onSealEvidenceCheckpoint={() => void sealAuditEvidenceCheckpoint()}
+          onArchiveEvidenceCheckpoint={() =>
+            void archiveAuditEvidenceCheckpoint()
+          }
           onNextEvidencePage={goToNextAuditEvidencePage}
           onPreviousEvidencePage={goToPreviousAuditEvidencePage}
           onRequestEvidenceExport={() =>

@@ -1,4 +1,5 @@
 import {
+  CorrelationIdSchema,
   createDomainId,
   DomainIdSchema,
   sanitizeAuditEvidencePayload
@@ -6,6 +7,7 @@ import {
 import {
   AgentIdSchema,
   AgentVersionIdSchema,
+  TraceIdSchema,
   TenantIdSchema,
   createCapabilityInputHash,
   type CapabilityApprovalAuthority,
@@ -171,7 +173,10 @@ export class PostgresCapabilityApprovalRepository implements CapabilityApprovalA
           agentId: row.agent_id,
           versionId: row.version_id,
           toolName: row.tool_name,
-          actorId: row.actor_id
+          actorId: row.actor_id,
+          ...(input.consumptionAudit.traceId !== undefined
+            ? { traceId: input.consumptionAudit.traceId }
+            : {})
         }).payload
         await this.client.query(
           `INSERT INTO audit_events
@@ -310,10 +315,11 @@ function normalizeVerificationInput(
     consumptionAudit === undefined ||
     (typeof consumptionAudit === 'object' &&
       consumptionAudit !== null &&
-      typeof consumptionAudit.correlationId === 'string' &&
-      consumptionAudit.correlationId.trim().length > 0 &&
+      CorrelationIdSchema.safeParse(consumptionAudit.correlationId).success &&
       typeof consumptionAudit.policyVersion === 'string' &&
-      consumptionAudit.policyVersion.trim().length > 0)
+      consumptionAudit.policyVersion.trim().length > 0 &&
+      (consumptionAudit.traceId === undefined ||
+        TraceIdSchema.safeParse(consumptionAudit.traceId).success))
   if (
     !tenantId.success ||
     !agentId.success ||
@@ -337,8 +343,13 @@ function normalizeVerificationInput(
     ...(consumptionAudit
       ? {
           consumptionAudit: {
-            correlationId: consumptionAudit.correlationId.trim(),
-            policyVersion: consumptionAudit.policyVersion.trim()
+            correlationId: CorrelationIdSchema.parse(
+              consumptionAudit.correlationId
+            ),
+            policyVersion: consumptionAudit.policyVersion.trim(),
+            ...(consumptionAudit.traceId !== undefined
+              ? { traceId: TraceIdSchema.parse(consumptionAudit.traceId) }
+              : {})
           }
         }
       : {})

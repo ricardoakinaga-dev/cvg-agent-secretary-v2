@@ -1,16 +1,75 @@
 import type { ControlPlaneStore } from './control-plane-store.ts'
 import {
   AgentConfigSchema,
+  ReleaseCandidateCreateInputSchema,
   type AgentConfig,
-  type AgentRecord
+  type AgentRecord,
+  type ReleaseCandidateRecord
 } from './contracts.ts'
-import { TenantIdSchema, type TenantId } from './ids.ts'
+import {
+  TenantIdSchema,
+  type AgentId,
+  type AgentVersionId,
+  type TenantId
+} from './ids.ts'
+import { runCriticalSafetyPreflight } from './critical-safety-preflight.ts'
 
 export const CONTROLLED_SECRETARY_TENANT_ID = TenantIdSchema.parse(
   'tenant_00000000-0000-4000-8000-000000000001'
 )
 
 export const CONTROLLED_SECRETARY_SLUG = 'cvg-secretary'
+
+export async function createValidatedControlledReleaseCandidate(
+  store: ControlPlaneStore,
+  tenantId: TenantId,
+  agentId: AgentId,
+  versionId: AgentVersionId,
+  createdBy: string
+): Promise<ReleaseCandidateRecord> {
+  const scope = { tenantId }
+  const candidate = await store.createReleaseCandidate(
+    scope,
+    ReleaseCandidateCreateInputSchema.parse({
+      agentId,
+      versionId,
+      gateResults: [
+        {
+          key: 'safety_preflight',
+          status: 'PASS',
+          evidenceRef: 'controlled://evidence/safety-preflight-v1'
+        },
+        {
+          key: 'test_lab_regression',
+          status: 'PASS',
+          evidenceRef: 'controlled://evidence/test-lab-regression-v1'
+        },
+        {
+          key: 'snapshot_integrity',
+          status: 'PASS',
+          evidenceRef: 'controlled://evidence/snapshot-integrity-v1'
+        },
+        {
+          key: 'external_boundary',
+          status: 'PASS',
+          evidenceRef: 'controlled://evidence/external-boundary-v1'
+        }
+      ]
+    }),
+    createdBy
+  )
+  const validatorId =
+    createdBy === 'approver.controlled'
+      ? 'admin.controlled'
+      : 'approver.controlled'
+  return store.transitionReleaseCandidate(
+    scope,
+    candidate.id,
+    'VALIDATED',
+    validatorId,
+    'DRAFT'
+  )
+}
 
 export async function ensureControlledSecretaryPreset(
   store: ControlPlaneStore,
@@ -36,7 +95,23 @@ export async function ensureControlledSecretaryPreset(
   )
   const testing = await store.transitionVersion(scope, draft.id, 'TESTING')
   const approved = await store.transitionVersion(scope, testing.id, 'APPROVED')
-  await store.publishVersion(scope, approved.id)
+  const preflight = await runCriticalSafetyPreflight({
+    store,
+    tenantId,
+    agentId: agent.id,
+    versionId: approved.id
+  })
+  if (!preflight.passed) {
+    throw new Error('Controlled Secretary safety preflight failed')
+  }
+  const validatedCandidate = await createValidatedControlledReleaseCandidate(
+    store,
+    tenantId,
+    agent.id,
+    approved.id,
+    createdBy
+  )
+  await store.publishVersion(scope, approved.id, validatedCandidate.id)
   return (await store.getAgent(scope, agent.id)) ?? agent
 }
 
@@ -103,6 +178,7 @@ export function createControlledSecretaryConfig(): AgentConfig {
     plugins: [
       {
         plugin: 'scheduling.controlled',
+        version: '1.0.0',
         enabled: true,
         allowedTools: ['find_available_slots'],
         config: {}

@@ -15,8 +15,37 @@ test('configures, publishes and dry-runs an agent through the real web/API bound
     slug,
     name: 'E2E Controlled Agent',
     greeting: 'Olá, resposta fictícia.',
-    knowledgeSource: 'controlled://e2e-hours'
+    knowledgeSource: 'controlled://e2e-hours',
+    handoff: {
+      clarifyThreshold: '0.7',
+      handoffThreshold: '0',
+      maxClarifications: '3',
+      destinations: 'controlled-reception, controlled-supervisor',
+      priority: 'low'
+    }
   })
+  await expect(page.getByRole('button', { name: 'Novo agente' })).toBeVisible()
+  await controlCenter.startNewAgent()
+  await expect(page.getByLabel('Slug do agente')).toHaveValue('')
+  const secondSlug = `${slug}-b`
+  await controlCenter.createDraft({
+    slug: secondSlug,
+    name: 'E2E Controlled Agent B',
+    greeting: 'Olá, resposta do Agent B.',
+    knowledgeSource: 'controlled://e2e-hours-b',
+    handoff: {
+      clarifyThreshold: '0.7',
+      handoffThreshold: '0',
+      maxClarifications: '3',
+      destinations: 'controlled-reception, controlled-supervisor',
+      priority: 'low'
+    }
+  })
+  await expect(page.getByText('E2E Controlled Agent B')).toBeVisible()
+  await controlCenter.selectAgent(slug)
+  await expect(page.getByLabel('Saudação')).toHaveValue(
+    'Olá, resposta fictícia.'
+  )
   await controlCenter.runDryRun('Qual o horário de funcionamento?')
   await expect(page.getByText('externalCall: false')).toBeVisible()
   await expect(page.getByLabel('Trace Viewer')).toContainText('TEST_LAB')
@@ -28,6 +57,12 @@ test('configures, publishes and dry-runs an agent through the real web/API bound
   )
   await expect(page.getByLabel('Resultado do Test Lab')).toContainText(
     'médico-veterinário'
+  )
+  await expect(page.getByLabel('Resultado do Test Lab')).toContainText(
+    'handoff destination: controlled-reception'
+  )
+  await expect(page.getByLabel('Resultado do Test Lab')).toContainText(
+    'handoff priority: high'
   )
   await expect(page.getByLabel('Resultado do Test Lab')).toContainText(
     'externalCall: false'
@@ -46,6 +81,16 @@ test('configures, publishes and dry-runs an agent through the real web/API bound
   ).toBeVisible()
   await controlCenter.saveEditedVersion('Olá, nova versão fictícia.')
   await expect(page.getByText('Versão 2 — DRAFT')).toBeVisible()
+  await controlCenter.runDryRun('Olá')
+  await expect(page.getByLabel('Resultado do Test Lab')).toContainText(
+    'Pode esclarecer sua solicitação para a equipe controlada?'
+  )
+  await expect(page.getByLabel('Resultado do Test Lab')).toContainText(
+    'prompt status: DRAFT'
+  )
+  await expect(page.getByLabel('Resultado do Test Lab')).toContainText(
+    /prompt checksum: [a-f0-9]{64}/
+  )
 
   const catalogPluginName = `e2e.catalog.${Date.now()}`
   await page
@@ -64,4 +109,14 @@ test('configures, publishes and dry-runs an agent through the real web/API bound
   await expect(
     page.getByText('Metadata do plugin aprovada; execução continua bloqueada.')
   ).toBeVisible()
+  await controlCenter.createAndApproveKnowledgeSource(
+    'controlled://e2e-institutional-hours'
+  )
+  await controlCenter.createAndValidateReleaseCandidate()
+  await expect(
+    page.getByText(
+      'Atestação controlada validada; isto não é publish nem deploy.'
+    )
+  ).toBeVisible()
+  await expect(page.getByText('Versão 2 — DRAFT')).toBeVisible()
 })

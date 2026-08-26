@@ -1,14 +1,23 @@
 import { describe, expect, it, vi } from 'vitest'
+import { z } from 'zod'
 import { AgentConfigSchema, PluginManifestSchema } from '../contracts.ts'
 import {
   CapabilityGateway,
   PluginRegistry,
+  type CapabilityActorAuthorizer,
   type PluginHandler
 } from '../plugin-gateway.ts'
 
 const tenantId = 'tenant_00000000-0000-0000-0000-000000000081' as const
 const agentId = 'agent_00000000-0000-0000-0000-000000000081' as const
 const versionId = 'agent_version_00000000-0000-0000-0000-000000000081' as const
+const versionedInputSchema = z
+  .object({ request: z.string().max(4000) })
+  .strict()
+const versionedActorAuthorizer: CapabilityActorAuthorizer = ({
+  actor,
+  requiredPermission
+}) => (actor.id === 'operator.versioned' ? [requiredPermission] : [])
 
 function manifest(version: string) {
   return {
@@ -97,14 +106,26 @@ describe('plugin manifest and registry versioning', () => {
       data: { version: context.versionId }
     }))
     const registry = new PluginRegistry()
-      .register({ manifest: manifest('1.0.0'), handlers: { read: handler } })
-      .register({ manifest: manifest('2.0.0'), handlers: { read: handler } })
+      .register({
+        manifest: manifest('1.0.0'),
+        handlers: { read: handler },
+        inputValidators: { read: versionedInputSchema },
+        outputValidators: { read: z.string().max(4000) }
+      })
+      .register({
+        manifest: manifest('2.0.0'),
+        handlers: { read: handler },
+        inputValidators: { read: versionedInputSchema },
+        outputValidators: { read: z.string().max(4000) }
+      })
 
     expect(registry.list()).toHaveLength(2)
     expect(registry.get('fixture.versioned', '1.0.0')?.manifest.version).toBe(
       '1.0.0'
     )
-    expect(registry.get('fixture.versioned')?.manifest.version).toBe('2.0.0')
+    expect(registry.getLatest('fixture.versioned')?.manifest.version).toBe(
+      '2.0.0'
+    )
 
     const snapshot = registry.get('fixture.versioned', '1.0.0')
     if (!snapshot) throw new Error('Expected plugin snapshot')
@@ -115,12 +136,14 @@ describe('plugin manifest and registry versioning', () => {
     expect(() =>
       registry.register({
         manifest: manifest('1.0.0'),
-        handlers: { read: handler }
+        handlers: { read: handler },
+        inputValidators: { read: versionedInputSchema },
+        outputValidators: { read: z.string().max(4000) }
       })
     ).toThrow('already registered')
   })
 
-  it('pins exact versions and fails closed when the pinned version is missing', async () => {
+  it('pins exact versions and fails closed when version pinning is missing', async () => {
     const v1Handler = vi.fn<PluginHandler>(async () => ({
       status: 'succeeded',
       data: 'v1'
@@ -133,12 +156,17 @@ describe('plugin manifest and registry versioning', () => {
       new PluginRegistry()
         .register({
           manifest: manifest('1.0.0'),
-          handlers: { read: v1Handler }
+          handlers: { read: v1Handler },
+          inputValidators: { read: versionedInputSchema },
+          outputValidators: { read: z.string().max(4000) }
         })
         .register({
           manifest: manifest('2.0.0'),
-          handlers: { read: v2Handler }
-        })
+          handlers: { read: v2Handler },
+          inputValidators: { read: versionedInputSchema },
+          outputValidators: { read: z.string().max(4000) }
+        }),
+      { actorAuthorizer: versionedActorAuthorizer }
     )
     const base = {
       tenantId,
@@ -160,7 +188,10 @@ describe('plugin manifest and registry versioning', () => {
     ).resolves.toMatchObject({ status: 'succeeded', data: 'v1' })
     await expect(
       gateway.execute({ ...base, config: config() })
-    ).resolves.toMatchObject({ status: 'succeeded', data: 'v2' })
+    ).resolves.toMatchObject({
+      status: 'blocked',
+      reason: 'plugin_version_required'
+    })
     await expect(
       gateway.execute({ ...base, config: config('9.0.0') })
     ).resolves.toMatchObject({
@@ -168,6 +199,6 @@ describe('plugin manifest and registry versioning', () => {
       reason: 'plugin_version_not_registered'
     })
     expect(v1Handler).toHaveBeenCalledTimes(1)
-    expect(v2Handler).toHaveBeenCalledTimes(1)
+    expect(v2Handler).not.toHaveBeenCalled()
   })
 })

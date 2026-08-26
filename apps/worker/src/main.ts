@@ -1,6 +1,14 @@
-import { processAgentTurnJob } from './worker.ts'
+import { getWorkerStartupFailure } from './worker.ts'
 
-void processAgentTurnJob({
-  sessionId: 'sess_bootstrap',
-  triggerMessageId: 'msg_bootstrap'
-})
+const startupFailure = getWorkerStartupFailure()
+
+if (startupFailure) {
+  console.error(
+    JSON.stringify({
+      event: 'worker.startup_failed',
+      code: startupFailure.code,
+      message: startupFailure.message
+    })
+  )
+  process.exitCode = 1
+}

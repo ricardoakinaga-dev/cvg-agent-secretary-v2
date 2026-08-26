@@ -115,6 +115,11 @@ describe('controlled Test Lab suite API', () => {
         versionBId: versionId
       }
     })
+    const scopedSuites = await app.inject({
+      method: 'GET',
+      url: `/v1/admin/test-lab/suites?agentId=${agentId}`,
+      headers: headers(tenantA)
+    })
     const otherTenant = await app.inject({
       method: 'GET',
       url: '/v1/admin/test-lab/suites',
@@ -133,7 +138,8 @@ describe('controlled Test Lab suite API', () => {
       (comparison.json() as Envelope<{ variants: unknown[] }>).data?.variants
     ).toHaveLength(2)
     expect(invalidComparison.statusCode).toBe(400)
-    expect(otherTenant.statusCode).toBe(200)
-    expect((otherTenant.json() as Envelope<unknown[]>).data).toEqual([])
+    expect(scopedSuites.statusCode).toBe(200)
+    expect((scopedSuites.json() as Envelope<unknown[]>).data).toHaveLength(1)
+    expect(otherTenant.statusCode).toBe(400)
   })
 })

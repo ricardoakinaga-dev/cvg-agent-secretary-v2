@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto'
+import { performance } from 'node:perf_hooks'
 import Fastify from 'fastify'
 import {
   auditEvidenceGovernance,
@@ -21,12 +22,20 @@ import {
   AgentIdSchema,
   AgentVersionIdSchema,
   AgentVersionStatusSchema,
+  ApprovedKnowledgeForTestSchema,
+  assertReleaseCandidatePublishAuthority,
+  assertPromptProfileClone,
+  KnowledgeSourceCreateInputSchema,
+  KnowledgeSourceIdSchema,
+  KnowledgeSourceTransitionInputSchema,
+  ReleaseCandidateCreateInputSchema,
+  ReleaseCandidateIdSchema,
+  ReleaseCandidateTransitionInputSchema,
   PluginCatalogCreateInputSchema,
   PluginCatalogIdSchema,
   PluginCatalogTransitionInputSchema,
   canBotRespond,
   createControlledCapabilityGateway,
-  CONTROLLED_SCHEDULING_TOOL,
   createTestSuiteRunId,
   executeConfiguredAgent,
   ensureControlledSecretaryPreset,
@@ -36,10 +45,13 @@ import {
   TestSuiteCloneInputSchema,
   TestSuiteCreateInputSchema,
   TestSuiteIdSchema,
+  runCriticalSafetyPreflight,
   evaluateTestLabSuite,
   runTestLab,
   InMemoryCapabilityApprovalAuthority,
+  sanitizeTraceForPersistence,
   type AgentExecutionActor,
+  type CapabilityActorAuthorizer,
   type CapabilityApproval,
   type CapabilityApprovalAuthority,
   type CapabilityApprovalRecord,
@@ -62,6 +74,11 @@ import {
   type AuditEventType,
   type AuditEvidenceFilters,
   type AuditEvidenceQuery,
+  AuditEvidenceCheckpointCreateInputSchema,
+  AuditEvidenceCheckpointIdSchema,
+  AuditEvidenceCheckpointTransitionInputSchema,
+  type AuditEvidenceCheckpointCreateInput,
+  type AuditEvidenceCheckpointRecord,
   AuditRepository,
   ConversationRepository,
   InMemoryDatabase,
@@ -72,6 +89,7 @@ import {
   TenantScopedPostgresControlPlaneRepository,
   type InboundRuntimeCompletionInput,
   type PostgresPoolLike,
+  type SessionRecord,
   runInitialPostgresMigration,
   runPostgresMigrations,
   readPostgresMigrationSql,
@@ -88,7 +106,29 @@ import {
 } from '@cvg/agent-core'
 import { Pool } from 'pg'
 import { z } from 'zod'
+import {
+  installHttpSecurityHooks,
+  normalizeHttpSecurityOptions,
+  parseHttpSecurityEnv,
+  type HttpSecurityOptions
+} from './http-security.ts'
 import { InMemoryRateLimiter } from './rate-limit.ts'
+import { ControlledRequestMetrics } from './request-metrics.ts'
+import { installResponseCorrelationHook } from './response-correlation.ts'
+import {
+  classifyHttpRequestError,
+  createInvalidJsonBodyError,
+  HTTP_REQUEST_BODY_LIMIT_BYTES
+} from './http-request-boundary.ts'
+import {
+  classifyHttpRequestTarget,
+  HTTP_REQUEST_MAX_PARAM_LENGTH
+} from './http-target-boundary.ts'
+import {
+  classifyPaginationOffset,
+  PAGINATION_OFFSET_ERROR_MESSAGE
+} from './pagination-boundary.ts'
+import { classifyAuditFilterValue } from './audit-filter-duplicate-boundary.ts'
 import {
   HmacWebhookVerifier,
   PostgresWebhookReplayStore,
@@ -143,6 +183,20 @@ export interface AgentRuntimeOptions {
   completeInboundRuntime?: InboundRuntimeCompletion
 }
 
+const CONTROLLED_CAPABILITY_PERMISSION = 'scheduling:read'
+const serverCapabilityActorAuthorizer: CapabilityActorAuthorizer = ({
+  actor,
+  requiredPermission
+}) => {
+  if (requiredPermission !== CONTROLLED_CAPABILITY_PERMISSION) return []
+  if (actor.role === 'System') {
+    return actor.id.startsWith('system.') ? [requiredPermission] : []
+  }
+  return ['Operator', 'Approver', 'Supervisor', 'Admin'].includes(actor.role)
+    ? [requiredPermission]
+    : []
+}
+
 export interface BuildServerOptions {
   runtimeLogger?: (entry: RuntimeLogEntry) => void
   persistence?:
@@ -156,6 +210,9 @@ export interface BuildServerOptions {
   agentRuntime?: AgentRuntimeOptions
   capabilityApprovalAuthority?: CapabilityApprovalAuthority
   requireAuthenticatedMutations?: boolean
+  httpSecurity?: HttpSecurityOptions
+  requestMetrics?: ControlledRequestMetrics
+  requestMetricsEnabled?: boolean
 }
 
 export type BuildServerFromEnvOptions = Omit<
@@ -181,7 +238,8 @@ export function buildServer(options: BuildServerOptions = {}) {
   )
   const configuredAgentRuntime = withDefaultCapabilityGateway(
     options.agentRuntime,
-    capabilityApprovalAuthority
+    capabilityApprovalAuthority,
+    serverCapabilityActorAuthorizer
   )
   const agentRuntime = withDefaultInboundCompletion(
     configuredAgentRuntime,
@@ -196,9 +254,71 @@ export function buildServer(options: BuildServerOptions = {}) {
             options.persistence.pool
           )
         : new InMemoryControlPlaneStore())
-  const app = Object.assign(Fastify({ logger: false }), {
-    persistence,
-    platform
+  const httpSecurity = normalizeHttpSecurityOptions(options.httpSecurity)
+  const requestMetrics =
+    options.requestMetrics ?? new ControlledRequestMetrics()
+  const requestMetricsEnabled =
+    (process.env.NODE_ENV === 'test' ||
+      process.env.NODE_ENV === 'development') &&
+    options.requestMetricsEnabled !== false
+  const requestStartedAt = new WeakMap<object, number>()
+  const app = Object.assign(
+    Fastify({
+      logger: false,
+      trustProxy: httpSecurity.trustedProxyHops || false,
+      bodyLimit: HTTP_REQUEST_BODY_LIMIT_BYTES,
+      routerOptions: { maxParamLength: HTTP_REQUEST_MAX_PARAM_LENGTH }
+    }),
+    {
+      persistence,
+      platform,
+      requestMetrics
+    }
+  )
+  app.setErrorHandler((error, _request, reply) => {
+    const failure = classifyHttpRequestError(error)
+    reply.code(failure.statusCode)
+    return reply.send(
+      fail(failure.code, failure.message, createCorrelationId())
+    )
+  })
+  app.setNotFoundHandler((request, reply) => {
+    const targetFailure = classifyHttpRequestTarget(request.raw.url)
+    if (targetFailure) {
+      reply.code(targetFailure.statusCode)
+      return reply.send(
+        fail(targetFailure.code, targetFailure.message, createCorrelationId())
+      )
+    }
+
+    reply.code(404)
+    return reply.send(
+      fail('not_found', 'Route not found', createCorrelationId())
+    )
+  })
+  app.addHook('onRequest', async (request, reply) => {
+    const targetFailure = classifyHttpRequestTarget(request.raw.url)
+    if (!targetFailure) return
+
+    reply.code(targetFailure.statusCode)
+    return reply.send(
+      fail(targetFailure.code, targetFailure.message, createCorrelationId())
+    )
+  })
+  installHttpSecurityHooks(app, httpSecurity)
+  installResponseCorrelationHook(app)
+  app.addHook('onRequest', async (request) => {
+    requestStartedAt.set(request, performance.now())
+  })
+  app.addHook('onResponse', async (request, reply) => {
+    const startedAt = requestStartedAt.get(request) ?? performance.now()
+    requestMetrics.record({
+      method: request.method,
+      routeTemplate: request.routeOptions.url,
+      statusCode: reply.statusCode,
+      latencyMs: Math.max(0, performance.now() - startedAt)
+    })
+    requestStartedAt.delete(request)
   })
   const rawBodyByRequest = new WeakMap<object, string>()
   app.removeContentTypeParser('application/json')
@@ -211,7 +331,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       try {
         done(null, JSON.parse(rawBody))
       } catch {
-        done(new Error('Invalid JSON body'))
+        done(createInvalidJsonBodyError())
       }
     }
   )
@@ -223,7 +343,10 @@ export function buildServer(options: BuildServerOptions = {}) {
     })
     if (!limit.allowed) {
       const correlationId = createCorrelationId()
-      reply.code(429).header('retry-after', String(limit.retryAfterSeconds))
+      reply
+        .code(429)
+        .header('retry-after', String(limit.retryAfterSeconds))
+        .header('cache-control', 'no-store')
       return reply.send(
         fail(
           'rate_limited',
@@ -233,18 +356,13 @@ export function buildServer(options: BuildServerOptions = {}) {
       )
     }
   })
-  app.addHook('onSend', async (_request, reply, payload) => {
-    reply.header('x-content-type-options', 'nosniff')
-    reply.header('x-frame-options', 'DENY')
-    reply.header('referrer-policy', 'no-referrer')
-    return payload
-  })
   const conversations = persistence.conversations
   const tasks = persistence.tasks
   const approvals = persistence.approvals
   const audit = persistence.audit
   const fallbackCapabilityGateway = createControlledCapabilityGateway({
-    approvalAuthority: capabilityApprovalAuthority
+    approvalAuthority: capabilityApprovalAuthority,
+    actorAuthorizer: serverCapabilityActorAuthorizer
   })
   const emitRuntimeLog = (entry: RuntimeLogEntry) =>
     options.runtimeLogger?.(entry)
@@ -275,6 +393,16 @@ export function buildServer(options: BuildServerOptions = {}) {
     ok({ status: 'ok', runtime: 'api' }, createCorrelationId())
   )
 
+  app.get('/health/metrics', async (_request, reply) => {
+    const correlationId = createCorrelationId()
+    reply.header('cache-control', 'no-store')
+    if (!requestMetricsEnabled) {
+      reply.code(404)
+      return fail('invalid_action', 'Not found', correlationId)
+    }
+    return ok({ metrics: requestMetrics.snapshot() }, correlationId)
+  })
+
   app.get('/v1/conversations', async (request, reply) => {
     const correlationId = createCorrelationId()
     try {
@@ -287,7 +415,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       if (!pagination) {
         throw new DomainError(
           'invalid_pagination',
-          'limit must be between 1 and 100 and offset must be zero or greater'
+          `limit must be between 1 and 100 and ${PAGINATION_OFFSET_ERROR_MESSAGE}`
         )
       }
 
@@ -380,7 +508,8 @@ export function buildServer(options: BuildServerOptions = {}) {
                 sessionId: runtimeSessionId,
                 messageId: result.messageId,
                 audit,
-                conversations
+                conversations,
+                sessionVersionPinning: persistence.sessionVersionPinning
               })
             : undefined
         if (
@@ -809,6 +938,18 @@ export function buildServer(options: BuildServerOptions = {}) {
           'Only an approved agent version can receive a capability approval'
         )
       }
+      const approvalGateway =
+        agentRuntime?.capabilityGateway ?? fallbackCapabilityGateway
+      const configuredTool = approvalGateway.resolveConfiguredTool(
+        version.config,
+        body.toolName
+      )
+      if (configuredTool.status !== 'resolved') {
+        throw new DomainError(
+          'invalid_action',
+          'Capability tool is not available in the approved agent version'
+        )
+      }
       if (body.actorId === identity.operatorId) {
         throw new DomainError(
           'forbidden',
@@ -974,16 +1115,22 @@ export function buildServer(options: BuildServerOptions = {}) {
             'Approved agent version is no longer executable'
           )
         }
-        if (record.toolName !== CONTROLLED_SCHEDULING_TOOL) {
+        const runtimeGateway =
+          agentRuntime?.capabilityGateway ?? fallbackCapabilityGateway
+        const configuredTool = runtimeGateway.resolveConfiguredTool(
+          version.config,
+          record.toolName
+        )
+        if (configuredTool.status !== 'resolved') {
           throw new DomainError(
             'invalid_action',
-            'This controlled runtime only executes the scheduling read tool'
+            'Capability tool is not available in the approved agent version'
           )
         }
         const actor: AgentExecutionActor = {
           id: identity.operatorId,
           role: identity.role,
-          permissions: ['scheduling:read']
+          permissions: [configuredTool.permission]
         }
         const trace = await executeConfiguredAgent({
           store: platform,
@@ -993,8 +1140,7 @@ export function buildServer(options: BuildServerOptions = {}) {
           message: body.message,
           history: body.history,
           executionMode: 'CONTROLLED_RUNTIME',
-          capabilityGateway:
-            agentRuntime?.capabilityGateway ?? fallbackCapabilityGateway,
+          capabilityGateway: runtimeGateway,
           actor,
           capabilityApproval: capabilityApprovalReference(record),
           requireCapabilityApproval: true,
@@ -1010,6 +1156,7 @@ export function buildServer(options: BuildServerOptions = {}) {
                   tenantId: event.tenantId,
                   agentId: event.agentId,
                   versionId: event.versionId,
+                  traceId: event.traceId,
                   plugin: event.plugin,
                   toolName: event.toolName,
                   status: event.status,
@@ -1127,6 +1274,164 @@ export function buildServer(options: BuildServerOptions = {}) {
       return fail(safeError.code, safeError.message, correlationId)
     }
   })
+
+  app.post(
+    '/v1/observability/audit-evidence/checkpoints',
+    async (request, reply) => {
+      const correlationId = createCorrelationId()
+      try {
+        const identity = requireIdentity(request.headers, 'audit:view_full')
+        const tenantId = resolveDataPlaneTenant(request.headers, identity)
+        const input = AuditEvidenceCheckpointCreateInputSchema.parse(
+          request.body
+        )
+        const checkpoint = await audit.createAuditEvidenceCheckpoint(
+          input,
+          identity.operatorId,
+          tenantId
+        )
+        await appendPlatformAudit(audit, identity, correlationId, tenantId, {
+          event: 'audit_evidence_checkpoint_sealed',
+          tenantId,
+          checkpointId: checkpoint.id,
+          eventIds: checkpoint.eventIds,
+          eventCount: checkpoint.eventCount,
+          evidenceDigest: checkpoint.evidenceDigest,
+          status: checkpoint.status,
+          filters: checkpoint.filters
+        })
+        emitRuntimeLog({
+          event: 'observability.audit_evidence_checkpoint_sealed',
+          correlationId,
+          route: '/v1/observability/audit-evidence/checkpoints',
+          status: 'ok',
+          sessionId: checkpoint.filters.sessionId ?? null,
+          resourceId: checkpoint.id
+        })
+        return ok({ checkpoint }, correlationId)
+      } catch (error) {
+        const safeError = toSafeError(error)
+        reply.code(statusCodeForError(safeError.code))
+        emitRuntimeLog({
+          event: 'observability.audit_evidence_checkpoint_failed',
+          correlationId,
+          route: '/v1/observability/audit-evidence/checkpoints',
+          status: 'error',
+          errorCode: safeError.code
+        })
+        return fail(safeError.code, safeError.message, correlationId)
+      }
+    }
+  )
+
+  app.get(
+    '/v1/observability/audit-evidence/checkpoints',
+    async (request, reply) => {
+      const correlationId = createCorrelationId()
+      try {
+        const identity = requireIdentity(request.headers, 'audit:view_full')
+        const tenantId = resolveDataPlaneTenant(request.headers, identity)
+        const checkpoints = await audit.listAuditEvidenceCheckpoints(tenantId)
+        return ok({ checkpoints }, correlationId)
+      } catch (error) {
+        const safeError = toSafeError(error)
+        reply.code(statusCodeForError(safeError.code))
+        return fail(safeError.code, safeError.message, correlationId)
+      }
+    }
+  )
+
+  app.get(
+    '/v1/observability/audit-evidence/checkpoints/:checkpointId',
+    async (request, reply) => {
+      const correlationId = createCorrelationId()
+      try {
+        const identity = requireIdentity(request.headers, 'audit:view_full')
+        const tenantId = resolveDataPlaneTenant(request.headers, identity)
+        const params = request.params as { checkpointId: string }
+        const checkpointId = AuditEvidenceCheckpointIdSchema.parse(
+          params.checkpointId
+        )
+        const checkpoint = await audit.getAuditEvidenceCheckpoint(
+          checkpointId,
+          tenantId
+        )
+        if (!checkpoint) {
+          throw new DomainError(
+            'invalid_action',
+            'Audit evidence checkpoint not found'
+          )
+        }
+        return ok({ checkpoint }, correlationId)
+      } catch (error) {
+        const safeError = toSafeError(error)
+        reply.code(statusCodeForError(safeError.code))
+        return fail(safeError.code, safeError.message, correlationId)
+      }
+    }
+  )
+
+  app.post(
+    '/v1/observability/audit-evidence/checkpoints/:checkpointId/transition',
+    async (request, reply) => {
+      const correlationId = createCorrelationId()
+      try {
+        const identity = requireIdentity(request.headers, 'audit:view_full')
+        const tenantId = resolveDataPlaneTenant(request.headers, identity)
+        const params = request.params as { checkpointId: string }
+        const checkpointId = AuditEvidenceCheckpointIdSchema.parse(
+          params.checkpointId
+        )
+        const input = AuditEvidenceCheckpointTransitionInputSchema.parse(
+          request.body
+        )
+        const checkpoint = await audit.transitionAuditEvidenceCheckpoint(
+          checkpointId,
+          input.status,
+          identity.operatorId,
+          input.expectedStatus,
+          tenantId
+        )
+        if (!checkpoint) {
+          throw new DomainError(
+            'invalid_action',
+            'Audit evidence checkpoint not found'
+          )
+        }
+        await appendPlatformAudit(audit, identity, correlationId, tenantId, {
+          event: 'audit_evidence_checkpoint_archived',
+          tenantId,
+          checkpointId: checkpoint.id,
+          eventCount: checkpoint.eventCount,
+          evidenceDigest: checkpoint.evidenceDigest,
+          status: checkpoint.status,
+          filters: checkpoint.filters
+        })
+        emitRuntimeLog({
+          event: 'observability.audit_evidence_checkpoint_archived',
+          correlationId,
+          route:
+            '/v1/observability/audit-evidence/checkpoints/:checkpointId/transition',
+          status: 'ok',
+          sessionId: checkpoint.filters.sessionId ?? null,
+          resourceId: checkpoint.id
+        })
+        return ok({ checkpoint }, correlationId)
+      } catch (error) {
+        const safeError = toSafeError(error)
+        reply.code(statusCodeForError(safeError.code))
+        emitRuntimeLog({
+          event: 'observability.audit_evidence_checkpoint_transition_failed',
+          correlationId,
+          route:
+            '/v1/observability/audit-evidence/checkpoints/:checkpointId/transition',
+          status: 'error',
+          errorCode: safeError.code
+        })
+        return fail(safeError.code, safeError.message, correlationId)
+      }
+    }
+  )
 
   app.post('/v1/admin/plugins/catalog', async (request, reply) => {
     const correlationId = createCorrelationId()
@@ -1274,6 +1579,279 @@ export function buildServer(options: BuildServerOptions = {}) {
     }
   )
 
+  app.post('/v1/admin/knowledge-sources', async (request, reply) => {
+    const correlationId = createCorrelationId()
+    try {
+      const scope = requirePlatformScope(
+        request.headers,
+        'agent:configure',
+        options.operatorIdentityResolver
+      )
+      const identity = resolveOperatorIdentity(
+        request.headers,
+        options.operatorIdentityResolver
+      )
+      const source = await platform.createKnowledgeSource(
+        scope,
+        KnowledgeSourceCreateInputSchema.parse(request.body),
+        identity.operatorId
+      )
+      await appendPlatformAudit(
+        audit,
+        identity,
+        correlationId,
+        scope.tenantId,
+        {
+          event: 'knowledge_source_created',
+          tenantId: scope.tenantId,
+          knowledgeSourceId: source.id,
+          source: source.source,
+          version: source.version,
+          status: source.status
+        }
+      )
+      return ok(source, correlationId)
+    } catch (error) {
+      const safeError = toSafeError(error)
+      reply.code(statusCodeForError(safeError.code))
+      return fail(safeError.code, safeError.message, correlationId)
+    }
+  })
+
+  app.get('/v1/admin/knowledge-sources', async (request, reply) => {
+    const correlationId = createCorrelationId()
+    try {
+      const scope = requirePlatformScope(
+        request.headers,
+        'agent:configure',
+        options.operatorIdentityResolver
+      )
+      return ok(await platform.listKnowledgeSources(scope), correlationId)
+    } catch (error) {
+      const safeError = toSafeError(error)
+      reply.code(statusCodeForError(safeError.code))
+      return fail(safeError.code, safeError.message, correlationId)
+    }
+  })
+
+  app.get('/v1/admin/knowledge-sources/:sourceId', async (request, reply) => {
+    const correlationId = createCorrelationId()
+    try {
+      const scope = requirePlatformScope(
+        request.headers,
+        'agent:configure',
+        options.operatorIdentityResolver
+      )
+      const params = z
+        .object({ sourceId: KnowledgeSourceIdSchema })
+        .strict()
+        .parse(request.params)
+      const source = await platform.getKnowledgeSource(scope, params.sourceId)
+      if (!source) {
+        throw new DomainError('invalid_action', 'Knowledge source not found')
+      }
+      return ok(source, correlationId)
+    } catch (error) {
+      const safeError = toSafeError(error)
+      reply.code(statusCodeForError(safeError.code))
+      return fail(safeError.code, safeError.message, correlationId)
+    }
+  })
+
+  app.post(
+    '/v1/admin/knowledge-sources/:sourceId/transition',
+    async (request, reply) => {
+      const correlationId = createCorrelationId()
+      try {
+        const scope = requirePlatformScope(
+          request.headers,
+          'agent:configure',
+          options.operatorIdentityResolver
+        )
+        const identity = resolveOperatorIdentity(
+          request.headers,
+          options.operatorIdentityResolver
+        )
+        const params = z
+          .object({ sourceId: KnowledgeSourceIdSchema })
+          .strict()
+          .parse(request.params)
+        const body = KnowledgeSourceTransitionInputSchema.parse(request.body)
+        const source = await platform.transitionKnowledgeSource(
+          scope,
+          params.sourceId,
+          body.target,
+          identity.operatorId,
+          body.expectedStatus
+        )
+        await appendPlatformAudit(
+          audit,
+          identity,
+          correlationId,
+          scope.tenantId,
+          {
+            event: 'knowledge_source_transitioned',
+            tenantId: scope.tenantId,
+            knowledgeSourceId: source.id,
+            source: source.source,
+            version: source.version,
+            status: source.status
+          }
+        )
+        return ok(source, correlationId)
+      } catch (error) {
+        const safeError = toSafeError(error)
+        reply.code(statusCodeForError(safeError.code))
+        return fail(safeError.code, safeError.message, correlationId)
+      }
+    }
+  )
+
+  app.post('/v1/admin/release-candidates', async (request, reply) => {
+    const correlationId = createCorrelationId()
+    try {
+      const scope = requirePlatformScope(
+        request.headers,
+        'agent:configure',
+        options.operatorIdentityResolver
+      )
+      const identity = resolveOperatorIdentity(
+        request.headers,
+        options.operatorIdentityResolver
+      )
+      const candidate = await platform.createReleaseCandidate(
+        scope,
+        ReleaseCandidateCreateInputSchema.parse(request.body),
+        identity.operatorId
+      )
+      await appendPlatformAudit(
+        audit,
+        identity,
+        correlationId,
+        scope.tenantId,
+        {
+          event: 'release_candidate_created',
+          tenantId: scope.tenantId,
+          releaseCandidateId: candidate.id,
+          agentId: candidate.agentId,
+          versionId: candidate.versionId,
+          evidenceDigest: candidate.evidenceDigest,
+          status: candidate.status,
+          gateKeys: candidate.gateResults.map((gate) => gate.key)
+        }
+      )
+      return ok(candidate, correlationId)
+    } catch (error) {
+      const safeError = toSafeError(error)
+      reply.code(statusCodeForError(safeError.code))
+      return fail(safeError.code, safeError.message, correlationId)
+    }
+  })
+
+  app.get('/v1/admin/release-candidates', async (request, reply) => {
+    const correlationId = createCorrelationId()
+    try {
+      const scope = requirePlatformScope(
+        request.headers,
+        'agent:configure',
+        options.operatorIdentityResolver
+      )
+      const query = z
+        .object({ agentId: AgentIdSchema })
+        .strict()
+        .parse(request.query)
+      return ok(
+        await platform.listReleaseCandidates(scope, query.agentId),
+        correlationId
+      )
+    } catch (error) {
+      const safeError = toSafeError(error)
+      reply.code(statusCodeForError(safeError.code))
+      return fail(safeError.code, safeError.message, correlationId)
+    }
+  })
+
+  app.get(
+    '/v1/admin/release-candidates/:candidateId',
+    async (request, reply) => {
+      const correlationId = createCorrelationId()
+      try {
+        const scope = requirePlatformScope(
+          request.headers,
+          'agent:configure',
+          options.operatorIdentityResolver
+        )
+        const params = z
+          .object({ candidateId: ReleaseCandidateIdSchema })
+          .strict()
+          .parse(request.params)
+        const candidate = await platform.getReleaseCandidate(
+          scope,
+          params.candidateId
+        )
+        if (!candidate) {
+          throw new DomainError('invalid_action', 'Release candidate not found')
+        }
+        return ok(candidate, correlationId)
+      } catch (error) {
+        const safeError = toSafeError(error)
+        reply.code(statusCodeForError(safeError.code))
+        return fail(safeError.code, safeError.message, correlationId)
+      }
+    }
+  )
+
+  app.post(
+    '/v1/admin/release-candidates/:candidateId/transition',
+    async (request, reply) => {
+      const correlationId = createCorrelationId()
+      try {
+        const scope = requirePlatformScope(
+          request.headers,
+          'agent:configure',
+          options.operatorIdentityResolver
+        )
+        const identity = resolveOperatorIdentity(
+          request.headers,
+          options.operatorIdentityResolver
+        )
+        const params = z
+          .object({ candidateId: ReleaseCandidateIdSchema })
+          .strict()
+          .parse(request.params)
+        const body = ReleaseCandidateTransitionInputSchema.parse(request.body)
+        const candidate = await platform.transitionReleaseCandidate(
+          scope,
+          params.candidateId,
+          body.target,
+          identity.operatorId,
+          body.expectedStatus
+        )
+        await appendPlatformAudit(
+          audit,
+          identity,
+          correlationId,
+          scope.tenantId,
+          {
+            event: 'release_candidate_transitioned',
+            tenantId: scope.tenantId,
+            releaseCandidateId: candidate.id,
+            agentId: candidate.agentId,
+            versionId: candidate.versionId,
+            evidenceDigest: candidate.evidenceDigest,
+            status: candidate.status,
+            gateKeys: candidate.gateResults.map((gate) => gate.key)
+          }
+        )
+        return ok(candidate, correlationId)
+      } catch (error) {
+        const safeError = toSafeError(error)
+        reply.code(statusCodeForError(safeError.code))
+        return fail(safeError.code, safeError.message, correlationId)
+      }
+    }
+  )
+
   app.post('/v1/admin/agents', async (request, reply) => {
     const correlationId = createCorrelationId()
     try {
@@ -1399,6 +1977,9 @@ export function buildServer(options: BuildServerOptions = {}) {
           throw new DomainError('invalid_action', 'Agent version not found')
         }
         const body = VersionCloneRequestSchema.parse(request.body)
+        if (body.config) {
+          assertPromptProfileClone(source.config, body.config)
+        }
         const version = await platform.createVersion(
           scope,
           agentId,
@@ -1506,6 +2087,64 @@ export function buildServer(options: BuildServerOptions = {}) {
   )
 
   app.post(
+    '/v1/admin/agents/:agentId/versions/:versionId/publish-preflight',
+    async (request, reply) => {
+      const correlationId = createCorrelationId()
+      try {
+        const scope = requirePlatformScope(
+          request.headers,
+          'agent:configure',
+          options.operatorIdentityResolver
+        )
+        const params = request.params as {
+          agentId: string
+          versionId: string
+        }
+        const agentId = AgentIdSchema.parse(params.agentId)
+        const versionId = AgentVersionIdSchema.parse(params.versionId)
+        const version = await platform.getVersion(scope, versionId)
+        if (!version || version.agentId !== agentId) {
+          throw new DomainError('invalid_action', 'Agent version not found')
+        }
+        z.object({})
+          .strict()
+          .parse(request.body ?? {})
+        const report = await runCriticalSafetyPreflight({
+          store: platform,
+          tenantId: scope.tenantId,
+          agentId,
+          versionId
+        })
+        const identity = resolveOperatorIdentity(
+          request.headers,
+          options.operatorIdentityResolver
+        )
+        await appendPlatformAudit(
+          audit,
+          identity,
+          correlationId,
+          scope.tenantId,
+          {
+            event: 'version_publish_preflight',
+            tenantId: scope.tenantId,
+            agentId,
+            versionId,
+            passed: report.passed,
+            caseCount: report.caseCount,
+            externalCall: report.externalCall,
+            failedCaseIds: report.failures.map((failure) => failure.caseId)
+          }
+        )
+        return ok(report, correlationId)
+      } catch (error) {
+        const safeError = toSafeError(error)
+        reply.code(statusCodeForError(safeError.code))
+        return fail(safeError.code, safeError.message, correlationId)
+      }
+    }
+  )
+
+  app.post(
     '/v1/admin/agents/:agentId/versions/:versionId/publish',
     async (request, reply) => {
       const correlationId = createCorrelationId()
@@ -1530,12 +2169,53 @@ export function buildServer(options: BuildServerOptions = {}) {
           options.operatorIdentityResolver
         )
         const body = z
-          .object({ expectedStatus: AgentVersionStatusSchema.optional() })
+          .object({
+            releaseCandidateId: ReleaseCandidateIdSchema,
+            expectedStatus: AgentVersionStatusSchema.optional()
+          })
           .strict()
           .parse(request.body ?? {})
+        const releaseCandidate = await platform.getReleaseCandidate(
+          scope,
+          body.releaseCandidateId
+        )
+        assertReleaseCandidatePublishAuthority({
+          candidate: releaseCandidate,
+          tenantId: scope.tenantId,
+          agentId,
+          versionId
+        })
+        const preflight = await runCriticalSafetyPreflight({
+          store: platform,
+          tenantId: scope.tenantId,
+          agentId,
+          versionId
+        })
+        if (!preflight.passed) {
+          await appendPlatformAudit(
+            audit,
+            identity,
+            correlationId,
+            scope.tenantId,
+            {
+              event: 'version_publish_preflight_failed',
+              tenantId: scope.tenantId,
+              agentId,
+              versionId,
+              caseCount: preflight.caseCount,
+              externalCall: preflight.externalCall,
+              failedCaseIds: preflight.failures.map((failure) => failure.caseId)
+            }
+          )
+          throw new DomainError(
+            'invalid_action',
+            'Critical safety preflight failed; version was not published'
+          )
+        }
         const published = await platform.publishVersion(
           scope,
           versionId,
+          body.releaseCandidateId,
           body.expectedStatus
         )
         await appendPlatformAudit(
@@ -1548,7 +2228,11 @@ export function buildServer(options: BuildServerOptions = {}) {
             tenantId: scope.tenantId,
             agentId,
             versionId: published.id,
-            version: published.version
+            version: published.version,
+            safetyPreflight: {
+              passed: preflight.passed,
+              caseCount: preflight.caseCount
+            }
           }
         )
         return ok(published, correlationId)
@@ -1577,16 +2261,59 @@ export function buildServer(options: BuildServerOptions = {}) {
       const body = z
         .object({
           versionId: AgentVersionIdSchema,
+          releaseCandidateId: ReleaseCandidateIdSchema,
           expectedStatus: AgentVersionStatusSchema.optional()
         })
         .strict()
         .parse(request.body)
       const versionId = body.versionId
+      const source = await platform.getVersion(scope, versionId)
+      if (!source || source.agentId !== agentId) {
+        throw new DomainError('invalid_action', 'Agent version not found')
+      }
+      const releaseCandidate = await platform.getReleaseCandidate(
+        scope,
+        body.releaseCandidateId
+      )
+      assertReleaseCandidatePublishAuthority({
+        candidate: releaseCandidate,
+        tenantId: scope.tenantId,
+        agentId,
+        versionId
+      })
+      const preflight = await runCriticalSafetyPreflight({
+        store: platform,
+        tenantId: scope.tenantId,
+        agentId,
+        versionId
+      })
+      if (!preflight.passed) {
+        await appendPlatformAudit(
+          audit,
+          identity,
+          correlationId,
+          scope.tenantId,
+          {
+            event: 'version_rollback_preflight_failed',
+            tenantId: scope.tenantId,
+            agentId,
+            sourceVersionId: versionId,
+            caseCount: preflight.caseCount,
+            externalCall: preflight.externalCall,
+            failedCaseIds: preflight.failures.map((failure) => failure.caseId)
+          }
+        )
+        throw new DomainError(
+          'invalid_action',
+          'Critical safety preflight failed; rollback was not published'
+        )
+      }
       const version = await platform.rollback(
         scope,
         agentId,
         versionId,
         identity.operatorId,
+        body.releaseCandidateId,
         body.expectedStatus
       )
       await appendPlatformAudit(
@@ -1600,7 +2327,11 @@ export function buildServer(options: BuildServerOptions = {}) {
           agentId,
           sourceVersionId: versionId,
           publishedVersionId: version.id,
-          version: version.version
+          version: version.version,
+          safetyPreflight: {
+            passed: preflight.passed,
+            caseCount: preflight.caseCount
+          }
         }
       )
       return ok(version, correlationId)
@@ -1712,7 +2443,7 @@ export function buildServer(options: BuildServerOptions = {}) {
         options.operatorIdentityResolver
       )
       const query = z
-        .object({ agentId: AgentIdSchema.optional() })
+        .object({ agentId: AgentIdSchema })
         .strict()
         .parse(request.query)
       return ok(
@@ -2085,8 +2816,12 @@ async function executeInboundRuntime(input: {
   messageId: string
   audit: RuntimePersistence['audit']
   conversations: RuntimePersistence['conversations']
+  sessionVersionPinning: boolean
 }) {
   let history: string[] = []
+  let session: SessionRecord | null = null
+  let parsedAgentId: AgentId | undefined
+  let pinnedVersionId: AgentVersionId | undefined
   const toolAuditEvents: PluginAuditEvent[] = []
   if (input.sessionId) {
     const timeline = await getConversationTimeline(
@@ -2094,9 +2829,9 @@ async function executeInboundRuntime(input: {
       input.tenantId,
       input.conversationId
     )
-    const session = timeline.sessions.find(
-      (candidate) => candidate.id === input.sessionId
-    )
+    session =
+      timeline.sessions.find((candidate) => candidate.id === input.sessionId) ??
+      null
     if (!session) {
       throw new DomainError('invalid_action', 'Session not found')
     }
@@ -2115,27 +2850,87 @@ async function executeInboundRuntime(input: {
           `${message.direction}: ${redactSensitiveText(message.body)}`
       )
   }
-  const agentId = await input.options.resolveAgentId({
-    tenantId: input.tenantId,
-    channel: input.channel,
-    senderRef: input.senderRef
-  })
-  if (!agentId) {
-    await input.conversations.markInboundRuntimeCompleted(
-      input.messageId,
-      input.tenantId
-    )
-    return {
-      status: 'not_configured' as const,
-      trace: null,
-      reason: 'agent_mapping_missing' as const
+  if (session) {
+    const hasAgent = session.agentId !== undefined
+    const hasVersion = session.agentVersionId !== undefined
+    if (hasAgent !== hasVersion) {
+      throw new DomainError(
+        'invalid_action',
+        'Session agent binding is incomplete'
+      )
+    }
+    if (hasAgent && hasVersion) {
+      parsedAgentId = AgentIdSchema.parse(session.agentId)
+      pinnedVersionId = AgentVersionIdSchema.parse(session.agentVersionId)
     }
   }
-  const parsedAgentId = AgentIdSchema.parse(agentId)
+  if (!parsedAgentId) {
+    const agentId = await input.options.resolveAgentId({
+      tenantId: input.tenantId,
+      channel: input.channel,
+      senderRef: input.senderRef
+    })
+    if (!agentId) {
+      await input.conversations.markInboundRuntimeCompleted(
+        input.messageId,
+        input.tenantId
+      )
+      return {
+        status: 'not_configured' as const,
+        trace: null,
+        reason: 'agent_mapping_missing' as const
+      }
+    }
+    parsedAgentId = AgentIdSchema.parse(agentId)
+    if (session && input.sessionVersionPinning) {
+      const published = await input.platform.resolvePublished(
+        { tenantId: input.tenantId },
+        parsedAgentId
+      )
+      if (!published) {
+        await input.conversations.markInboundRuntimeCompleted(
+          input.messageId,
+          input.tenantId
+        )
+        return {
+          status: 'not_configured' as const,
+          trace: null,
+          reason: 'published_version_missing' as const
+        }
+      }
+      if (!input.sessionId) {
+        throw new DomainError(
+          'invalid_action',
+          'Session id is required for runtime pinning'
+        )
+      }
+      const bound = await input.conversations.bindSessionAgentVersion(
+        input.tenantId,
+        input.sessionId,
+        parsedAgentId,
+        published.id
+      )
+      if (!bound?.agentId || !bound.agentVersionId) {
+        throw new DomainError(
+          'invalid_action',
+          'Session agent binding could not be established'
+        )
+      }
+      parsedAgentId = AgentIdSchema.parse(bound.agentId)
+      pinnedVersionId = AgentVersionIdSchema.parse(bound.agentVersionId)
+    }
+  }
+  if (!parsedAgentId) {
+    throw new DomainError(
+      'invalid_action',
+      'Agent mapping could not be resolved'
+    )
+  }
   const result = await executePublishedAgent({
     store: input.platform,
     tenantId: input.tenantId,
     agentId: parsedAgentId,
+    ...(pinnedVersionId ? { versionId: pinnedVersionId } : {}),
     message: input.message,
     history,
     ...(input.options.capabilityGateway
@@ -2161,6 +2956,7 @@ async function executeInboundRuntime(input: {
             tenantId: event.tenantId,
             agentId: event.agentId,
             versionId: event.versionId,
+            traceId: event.traceId,
             conversationId: input.conversationId,
             sessionId: input.sessionId,
             plugin: event.plugin,
@@ -2181,13 +2977,14 @@ async function executeInboundRuntime(input: {
       : {})
   })
   if (result.status === 'completed') {
+    const safeTrace = sanitizeTraceForPersistence(result.trace)
     if (input.options.completeInboundRuntime) {
       const completion = await input.options.completeInboundRuntime({
         tenantId: input.tenantId,
         conversationId: input.conversationId,
         sessionId: input.sessionId,
         inboundMessageId: input.messageId,
-        trace: result.trace,
+        trace: safeTrace,
         toolAuditEvents,
         correlationId: input.correlationId
       })
@@ -2198,7 +2995,7 @@ async function executeInboundRuntime(input: {
           reason: 'human_takeover_active' as const
         }
       }
-      return result
+      return { ...result, trace: safeTrace }
     }
     if (input.sessionId) {
       const latestTimeline = await getConversationTimeline(
@@ -2217,7 +3014,7 @@ async function executeInboundRuntime(input: {
         }
       }
     }
-    if (result.trace.handoff.requested && input.sessionId) {
+    if (safeTrace.handoff.requested && input.sessionId) {
       const session = await input.conversations.transitionTakeover(
         input.tenantId,
         input.sessionId,
@@ -2231,36 +3028,38 @@ async function executeInboundRuntime(input: {
           type: 'handoff',
           actorType: 'System',
           actorId: 'agent-runtime',
-          correlationId: result.trace.traceId,
+          correlationId: input.correlationId,
           policyVersion: 'human-takeover-v1',
           payload: {
             tenantId: input.tenantId,
             conversationId: input.conversationId,
             sessionId: input.sessionId,
+            traceId: safeTrace.traceId,
             state: session.takeoverState,
-            reason: result.trace.handoff.reason,
+            reason: safeTrace.handoff.reason,
             effect: 'human_handoff_requested'
           }
         },
         input.tenantId
       )
     }
-    if (result.trace.response.text.trim().length > 0) {
+    if (safeTrace.response.text.trim().length > 0) {
       await input.conversations.appendOutboundMessage({
         tenantId: input.tenantId,
         conversationId: input.conversationId,
-        externalMessageId: `runtime:${result.trace.traceId}`,
-        body: result.trace.response.text
+        externalMessageId: `runtime:${safeTrace.traceId}`,
+        body: safeTrace.response.text
       })
     }
     await input.platform.recordExecutionTrace(
       { tenantId: input.tenantId },
-      result.trace
+      safeTrace
     )
     await input.conversations.markInboundRuntimeCompleted(
       input.messageId,
       input.tenantId
     )
+    return { ...result, trace: safeTrace }
   }
   return result
 }
@@ -2384,17 +3183,7 @@ const TestLabRequestSchema = z
     versionId: AgentVersionIdSchema,
     message: z.string().trim().min(1).max(4000),
     history: z.array(z.string().max(4000)).max(50).default([]),
-    approvedKnowledge: z
-      .object({
-        version: z.string().trim().min(1).max(120),
-        answer: z.string().trim().min(1).max(4000),
-        source: z
-          .string()
-          .trim()
-          .regex(/^controlled:\/\//)
-      })
-      .strict()
-      .optional()
+    approvedKnowledge: ApprovedKnowledgeForTestSchema.optional()
   })
   .strict()
 
@@ -2429,7 +3218,12 @@ const CapabilityApprovalIssueRequestSchema = z
   .object({
     agentId: AgentIdSchema,
     versionId: AgentVersionIdSchema,
-    toolName: z.literal(CONTROLLED_SCHEDULING_TOOL),
+    toolName: z
+      .string()
+      .trim()
+      .min(1)
+      .max(120)
+      .regex(/^[A-Za-z0-9._:-]+$/),
     actorId: z
       .string()
       .trim()
@@ -2473,17 +3267,7 @@ const CapabilityApprovalExecutionRequestSchema = z
   .object({
     message: z.string().trim().min(1).max(4000),
     history: z.array(z.string().max(4000)).max(50).default([]),
-    approvedKnowledge: z
-      .object({
-        version: z.string().trim().min(1).max(120),
-        answer: z.string().trim().min(1).max(4000),
-        source: z
-          .string()
-          .trim()
-          .regex(/^controlled:\/\//)
-      })
-      .strict()
-      .optional()
+    approvedKnowledge: ApprovedKnowledgeForTestSchema.optional()
   })
   .strict()
 
@@ -2571,6 +3355,10 @@ function statusCodeForError(code: string): number {
   if (code === 'forbidden') return 403
   if (code === 'conflict') return 409
   if (code === 'rate_limited') return 429
+  if (code === 'payload_too_large') return 413
+  if (code === 'unsupported_media_type') return 415
+  if (code === 'not_found') return 404
+  if (code === 'request_uri_too_long') return 414
   if (code === 'internal_error') return 500
   return 400
 }
@@ -2593,7 +3381,10 @@ const tenantIsolationTables = [
   'platform_capability_approvals',
   'platform_test_suites',
   'platform_test_suite_runs',
-  'platform_plugin_catalog'
+  'platform_plugin_catalog',
+  'platform_knowledge_sources',
+  'platform_release_candidates',
+  'audit_evidence_checkpoints'
 ] as const
 
 const webhookReplayTables = ['webhook_replay_events'] as const
@@ -2610,7 +3401,12 @@ const tenantIsolationMigrationVersions = [
   '0001_tenant_isolation',
   '0002_capability_approvals',
   '0003_test_suite_catalog',
-  '0004_plugin_manifest_catalog'
+  '0004_plugin_manifest_catalog',
+  '0005_knowledge_source_catalog',
+  '0006_release_candidate_evidence',
+  '0007_audit_evidence_checkpoint',
+  '0008_session_agent_version_pin',
+  '0009_release_candidate_validator_integrity'
 ] as const
 
 const tenantIsolationRequiredConstraints = [
@@ -2625,6 +3421,9 @@ const tenantIsolationRequiredConstraints = [
   'outbox_events_tenant_id_not_null',
   'messages_tenant_conversation_fk',
   'sessions_tenant_conversation_fk',
+  'sessions_agent_binding_pair_check',
+  'sessions_agent_binding_agent_fk',
+  'sessions_agent_binding_version_fk',
   'agent_runs_tenant_session_fk',
   'tool_calls_tenant_run_fk',
   'approval_requests_tenant_session_fk',
@@ -2642,7 +3441,27 @@ const tenantIsolationRequiredConstraints = [
   'platform_plugin_catalog_pkey',
   'platform_plugin_catalog_tenant_name_version_key',
   'platform_plugin_catalog_status_check',
-  'platform_plugin_catalog_manifest_identity_check'
+  'platform_plugin_catalog_manifest_identity_check',
+  'platform_knowledge_sources_pkey',
+  'platform_knowledge_sources_tenant_identity_key',
+  'platform_knowledge_sources_status_check',
+  'platform_knowledge_sources_secret_metadata_check',
+  'platform_release_candidates_pkey',
+  'platform_release_candidates_identity_key',
+  'platform_release_candidates_status_check',
+  'platform_release_candidates_gates_check',
+  'platform_release_candidates_digest_check',
+  'platform_release_candidates_validation_actor_check',
+  'audit_evidence_checkpoints_pkey',
+  'audit_evidence_checkpoints_identity_key',
+  'audit_evidence_checkpoints_filters_check',
+  'audit_evidence_checkpoints_event_ids_check',
+  'audit_evidence_checkpoints_event_count_check',
+  'audit_evidence_checkpoints_count_matches_ids_check',
+  'audit_evidence_checkpoints_digest_check',
+  'audit_evidence_checkpoints_status_check',
+  'audit_evidence_checkpoints_created_by_check',
+  'audit_evidence_checkpoints_updated_by_check'
 ] as const
 
 const tenantIsolationRequiredIndexes = [
@@ -2651,6 +3470,7 @@ const tenantIsolationRequiredIndexes = [
   'idx_messages_tenant_conversation',
   'idx_messages_runtime_status',
   'idx_sessions_tenant_conversation',
+  'idx_sessions_tenant_agent_version',
   'idx_agent_runs_tenant_session',
   'idx_tool_calls_tenant_run',
   'idx_approval_requests_tenant_session',
@@ -2665,7 +3485,12 @@ const tenantIsolationRequiredIndexes = [
   'idx_platform_capability_approvals_tenant_actor',
   'idx_platform_test_suites_tenant_agent',
   'idx_platform_test_suite_runs_tenant_created',
-  'idx_platform_plugin_catalog_tenant_status'
+  'idx_platform_plugin_catalog_tenant_status',
+  'idx_platform_knowledge_sources_tenant_status',
+  'idx_platform_release_candidates_tenant_status',
+  'idx_platform_release_candidates_tenant_agent',
+  'idx_audit_evidence_checkpoints_tenant_status',
+  'idx_audit_evidence_checkpoints_tenant_created'
 ] as const
 
 export async function assertTenantIsolationMigrationState(
@@ -2793,7 +3618,15 @@ export async function assertTenantIsolationSchema(
      WHERE table_schema = current_schema()
        AND table_name = ANY($1::text[])
        AND column_name = ANY($2::text[])`,
-    [tenantIsolationTables, ['tenant_id', 'tenant_isolation_quarantined']]
+    [
+      tenantIsolationTables,
+      [
+        'tenant_id',
+        'tenant_isolation_quarantined',
+        'agent_id',
+        'agent_version_id'
+      ]
+    ]
   )
   const columnsByTable = new Map<string, Set<string>>()
   for (const column of columns.rows) {
@@ -2812,6 +3645,13 @@ export async function assertTenantIsolationSchema(
     throw new Error(
       `PostgreSQL tenant isolation columns are incomplete: ${missingColumns.join(', ')}`
     )
+  }
+  const sessionColumns = columnsByTable.get('sessions')
+  if (
+    !sessionColumns?.has('agent_id') ||
+    !sessionColumns.has('agent_version_id')
+  ) {
+    throw new Error('PostgreSQL session version pinning columns are incomplete')
   }
 
   const constraints = await client.query<{ conname: string }>(
@@ -3264,6 +4104,8 @@ async function assertRuntimeRoleIsNotRlsBypass(
 }
 
 interface RuntimePersistence {
+  /** Legacy direct-client fixtures do not have the tenant-scoped pin columns. */
+  sessionVersionPinning: boolean
   conversations:
     | ConversationRepository
     | PostgresRuntimeRepository
@@ -3302,6 +4144,33 @@ interface RuntimePersistence {
     summarizeEvidence:
       | AuditRepository['summarizeEvidence']
       | PostgresRuntimeRepository['summarizeAuditEvidence']
+    createAuditEvidenceCheckpoint: (
+      input: AuditEvidenceCheckpointCreateInput,
+      createdBy: string,
+      tenantId: TenantId
+    ) => AuditEvidenceCheckpointRecord | Promise<AuditEvidenceCheckpointRecord>
+    getAuditEvidenceCheckpoint: (
+      id: string,
+      tenantId: TenantId
+    ) =>
+      | AuditEvidenceCheckpointRecord
+      | null
+      | Promise<AuditEvidenceCheckpointRecord | null>
+    listAuditEvidenceCheckpoints: (
+      tenantId: TenantId
+    ) =>
+      | AuditEvidenceCheckpointRecord[]
+      | Promise<AuditEvidenceCheckpointRecord[]>
+    transitionAuditEvidenceCheckpoint: (
+      id: string,
+      status: 'SEALED' | 'ARCHIVED',
+      updatedBy: string,
+      expectedStatus: 'SEALED' | 'ARCHIVED',
+      tenantId: TenantId
+    ) =>
+      | AuditEvidenceCheckpointRecord
+      | null
+      | Promise<AuditEvidenceCheckpointRecord | null>
   }
 }
 
@@ -3352,18 +4221,14 @@ function parsePagination(
 ): { limit: number; offset: number } | null {
   const params = query as { limit?: unknown; offset?: unknown }
   const limit = params.limit === undefined ? 25 : Number(params.limit)
-  const offset = params.offset === undefined ? 0 : Number(params.offset)
+  const rawOffset = params.offset === undefined ? 0 : params.offset
+  const offsetFailure = classifyPaginationOffset(rawOffset)
 
-  if (
-    !Number.isInteger(limit) ||
-    !Number.isInteger(offset) ||
-    limit < 1 ||
-    limit > 100 ||
-    offset < 0
-  ) {
+  if (!Number.isInteger(limit) || limit < 1 || limit > 100 || offsetFailure) {
     return null
   }
 
+  const offset = Number(rawOffset)
   return { limit, offset }
 }
 
@@ -3400,7 +4265,7 @@ function parseAuditEvidenceQuery(query: unknown): {
   if (!pagination) {
     throw new DomainError(
       'invalid_pagination',
-      'limit must be between 1 and 100 and offset must be zero or greater'
+      `limit must be between 1 and 100 and ${PAGINATION_OFFSET_ERROR_MESSAGE}`
     )
   }
   const params = query as Record<string, unknown>
@@ -3425,7 +4290,10 @@ function parseAuditEvidenceQuery(query: unknown): {
 
 function parseOptionalAuditFilter(value: unknown): string | undefined {
   if (value === undefined) return undefined
-  if (Array.isArray(value)) return parseOptionalAuditFilter(value[0])
+  const duplicateFailure = classifyAuditFilterValue(value)
+  if (duplicateFailure) {
+    throw new DomainError(duplicateFailure.code, duplicateFailure.message)
+  }
   if (typeof value !== 'string') {
     throw new DomainError(
       'validation_failed',
@@ -3455,6 +4323,7 @@ function createPersistence(
         ? new PostgresRuntimeRepository(config.client)
         : new TenantScopedPostgresRuntimeRepository(config.pool)
     return {
+      sessionVersionPinning: config.kind === 'postgres-pool',
       conversations: postgres,
       tasks: {
         create: (input, tenantId) => postgres.createTask(input, tenantId),
@@ -3480,13 +4349,37 @@ function createPersistence(
         summarizeEvidence: (
           filters: AuditEvidenceFilters,
           tenantId: TenantId
-        ) => postgres.summarizeAuditEvidence(filters, tenantId)
+        ) => postgres.summarizeAuditEvidence(filters, tenantId),
+        createAuditEvidenceCheckpoint: (
+          input: AuditEvidenceCheckpointCreateInput,
+          createdBy: string,
+          tenantId: TenantId
+        ) => postgres.createAuditEvidenceCheckpoint(input, createdBy, tenantId),
+        getAuditEvidenceCheckpoint: (id: string, tenantId: TenantId) =>
+          postgres.getAuditEvidenceCheckpoint(id, tenantId),
+        listAuditEvidenceCheckpoints: (tenantId: TenantId) =>
+          postgres.listAuditEvidenceCheckpoints(tenantId),
+        transitionAuditEvidenceCheckpoint: (
+          id: string,
+          status: 'SEALED' | 'ARCHIVED',
+          updatedBy: string,
+          expectedStatus: 'SEALED' | 'ARCHIVED',
+          tenantId: TenantId
+        ) =>
+          postgres.transitionAuditEvidenceCheckpoint(
+            id,
+            status,
+            updatedBy,
+            expectedStatus,
+            tenantId
+          )
       }
     }
   }
 
   const db = new InMemoryDatabase()
   return {
+    sessionVersionPinning: true,
     conversations: new ConversationRepository(db),
     tasks: new TaskRepository(db),
     approvals: new ApprovalRepository(db),
@@ -3496,7 +4389,8 @@ function createPersistence(
 
 function withDefaultCapabilityGateway(
   agentRuntime: AgentRuntimeOptions | undefined,
-  approvalAuthority: CapabilityApprovalAuthority
+  approvalAuthority: CapabilityApprovalAuthority,
+  actorAuthorizer: CapabilityActorAuthorizer
 ): AgentRuntimeOptions | undefined {
   if (!agentRuntime || agentRuntime.capabilityGateway) {
     return agentRuntime
@@ -3504,7 +4398,10 @@ function withDefaultCapabilityGateway(
 
   return {
     ...agentRuntime,
-    capabilityGateway: createControlledCapabilityGateway({ approvalAuthority })
+    capabilityGateway: createControlledCapabilityGateway({
+      approvalAuthority,
+      actorAuthorizer
+    })
   }
 }
 
@@ -3559,6 +4456,7 @@ export async function buildServerFromEnv(
     )
   }
   if (persistenceMode === 'memory') {
+    const httpSecurity = parseHttpSecurityEnv(env, buildOptions.httpSecurity)
     const configuredWebhookVerifier = createConfiguredWebhookVerifier(
       env,
       buildOptions.webhookVerifier,
@@ -3576,6 +4474,7 @@ export async function buildServerFromEnv(
       ...(configuredWebhookVerifier
         ? { webhookVerifier: configuredWebhookVerifier }
         : {}),
+      httpSecurity,
       persistence: { kind: 'memory' }
     })
     if (env.NODE_ENV === 'development') {
@@ -3627,6 +4526,10 @@ export async function buildServerFromEnv(
       'Production requires an injected operator identity resolver'
     )
   }
+  const configuredHttpSecurity = parseHttpSecurityEnv(
+    env,
+    buildOptions.httpSecurity
+  )
 
   const schemaName = env.POSTGRES_SCHEMA?.trim() || undefined
   assertSafeRuntimeSchemaName(schemaName)
@@ -3751,6 +4654,7 @@ export async function buildServerFromEnv(
     ...(env.NODE_ENV === 'production'
       ? { requireAuthenticatedMutations: true }
       : {}),
+    httpSecurity: configuredHttpSecurity,
     persistence: persistenceConfig
   })
   app.addHook('onClose', async () => {

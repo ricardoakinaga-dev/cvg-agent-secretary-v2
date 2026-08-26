@@ -13,6 +13,7 @@ const tenantId = 'tenant_00000000-0000-4000-8000-000000000141' as const
 const agentId = 'agent_00000000-0000-4000-8000-000000000141' as const
 const versionId = 'agent_version_00000000-0000-4000-8000-000000000141' as const
 const approvalId = 'approval_00000000-0000-4000-8000-000000000141'
+const traceId = 'trace_00000000-0000-4000-8000-000000000141'
 
 type ApprovalRow = {
   id: string
@@ -78,6 +79,7 @@ class FakeApprovalClient implements PostgresTransactionClient {
   duplicate = false
   consumeMissing = false
   readonly queries: string[] = []
+  readonly auditValues: unknown[][] = []
 
   release(): void {}
 
@@ -86,6 +88,9 @@ class FakeApprovalClient implements PostgresTransactionClient {
     values?: unknown[]
   ): Promise<QueryResult<T>> {
     this.queries.push(text)
+    if (text.includes('INSERT INTO audit_events')) {
+      this.auditValues.push([...(values ?? [])])
+    }
     if (text === 'BEGIN' || text === 'COMMIT' || text === 'ROLLBACK') {
       return result([]) as unknown as QueryResult<T>
     }
@@ -171,8 +176,9 @@ describe('PostgresCapabilityApprovalRepository', () => {
     const consumed = await repository.verifyAndConsume(
       verifyInput(issued.id, {
         consumptionAudit: {
-          correlationId: 'corr_approval_repository_fixture',
-          policyVersion: 'approval-repository-test-v1'
+          correlationId: 'corr_00000000-0000-4000-8000-000000000142',
+          policyVersion: 'approval-repository-test-v1',
+          traceId
         }
       })
     )
@@ -193,6 +199,10 @@ describe('PostgresCapabilityApprovalRepository', () => {
     )
     expect(auditIndex).toBeGreaterThanOrEqual(0)
     expect(commitIndex).toBeGreaterThan(auditIndex)
+    const persistedAuditPayload = JSON.parse(
+      client.auditValues[0]?.[4] as string
+    ) as { traceId?: string }
+    expect(persistedAuditPayload.traceId).toBe(traceId)
   })
 
   it('does not emit consumption evidence when the guarded transition wins no row', async () => {
@@ -209,7 +219,7 @@ describe('PostgresCapabilityApprovalRepository', () => {
       repository.verifyAndConsume(
         verifyInput(issued.id, {
           consumptionAudit: {
-            correlationId: 'corr_missing_transition',
+            correlationId: 'corr_00000000-0000-4000-8000-000000000143',
             policyVersion: 'approval-repository-test-v1'
           }
         })
@@ -265,6 +275,17 @@ describe('PostgresCapabilityApprovalRepository', () => {
           consumptionAudit: {
             correlationId: ' ',
             policyVersion: 'approval-repository-test-v1'
+          }
+        })
+      )
+    ).resolves.toBeNull()
+    await expect(
+      repository.verifyAndConsume(
+        verifyInput(substitution.id, {
+          consumptionAudit: {
+            correlationId: 'corr_00000000-0000-4000-8000-000000000144',
+            policyVersion: 'approval-repository-test-v1',
+            traceId: 'trace-invalid' as never
           }
         })
       )

@@ -447,10 +447,20 @@ describe('tenant-scoped PostgreSQL boundary', () => {
       platform.transitionVersion({ tenantId }, versionId, 'TESTING')
     ).rejects.toThrow()
     await expect(
-      platform.publishVersion({ tenantId }, versionId)
+      platform.publishVersion(
+        { tenantId },
+        versionId,
+        'release_candidate_00000000-0000-4000-8000-000000000399'
+      )
     ).rejects.toThrow()
     await expect(
-      platform.rollback({ tenantId }, agentId, versionId, 'fixture')
+      platform.rollback(
+        { tenantId },
+        agentId,
+        versionId,
+        'fixture',
+        'release_candidate_00000000-0000-4000-8000-000000000399'
+      )
     ).rejects.toThrow()
     await expect(
       platform.resolvePublished({ tenantId }, agentId)
@@ -566,7 +576,7 @@ describe('tenant-scoped PostgreSQL boundary', () => {
         expect(roleFlags.rows[0]?.rolbypassrls).toBe(false)
         await admin.query(`GRANT USAGE ON SCHEMA ${schemaName} TO ${roleName}`)
         await admin.query(
-          `GRANT SELECT, INSERT, UPDATE, DELETE ON ${schemaName}.conversations, ${schemaName}.messages, ${schemaName}.sessions, ${schemaName}.agent_runs, ${schemaName}.tool_calls, ${schemaName}.approval_requests, ${schemaName}.tasks, ${schemaName}.audit_events, ${schemaName}.idempotency, ${schemaName}.outbox_events, ${schemaName}.platform_agents, ${schemaName}.platform_agent_versions, ${schemaName}.platform_test_runs, ${schemaName}.platform_execution_traces, ${schemaName}.platform_capability_approvals, ${schemaName}.platform_test_suites, ${schemaName}.platform_test_suite_runs, ${schemaName}.platform_plugin_catalog TO ${roleName}`
+          `GRANT SELECT, INSERT, UPDATE, DELETE ON ${schemaName}.conversations, ${schemaName}.messages, ${schemaName}.sessions, ${schemaName}.agent_runs, ${schemaName}.tool_calls, ${schemaName}.approval_requests, ${schemaName}.tasks, ${schemaName}.audit_events, ${schemaName}.idempotency, ${schemaName}.outbox_events, ${schemaName}.platform_agents, ${schemaName}.platform_agent_versions, ${schemaName}.platform_test_runs, ${schemaName}.platform_execution_traces, ${schemaName}.platform_capability_approvals, ${schemaName}.platform_test_suites, ${schemaName}.platform_test_suite_runs, ${schemaName}.platform_plugin_catalog, ${schemaName}.platform_knowledge_sources, ${schemaName}.platform_release_candidates, ${schemaName}.audit_evidence_checkpoints TO ${roleName}`
         )
         await admin.query(
           `GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA ${schemaName} TO ${roleName}`

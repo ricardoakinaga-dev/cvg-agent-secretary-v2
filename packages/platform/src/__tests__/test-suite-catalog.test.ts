@@ -224,5 +224,64 @@ describe('persistent controlled Test Lab suite catalog', () => {
         }
       )
     ).rejects.toMatchObject({ code: 'invalid_action' })
+
+    const sourceTrace = run.variants[0]!.results[0]!.trace
+    const pollutedTrace = {
+      ...sourceTrace,
+      secret: 'must-not-survive',
+      input: { ...sourceTrace.input, rawPayload: 'must-not-survive' }
+    } as unknown as typeof sourceTrace
+    const canonicalRun = await store.recordTestSuiteRun({ tenantId }, {
+      ...run,
+      secret: 'must-not-survive',
+      id: createTestSuiteRunId(),
+      variants: [
+        {
+          ...run.variants[0]!,
+          secret: 'must-not-survive',
+          results: [
+            {
+              ...run.variants[0]!.results[0]!,
+              secret: 'must-not-survive',
+              trace: pollutedTrace
+            }
+          ]
+        }
+      ]
+    } as unknown as TestSuiteRunRecord)
+    expect(canonicalRun).not.toHaveProperty('secret')
+    expect(canonicalRun.variants[0]).not.toHaveProperty('secret')
+    expect(canonicalRun.variants[0]!.results[0]!.trace).not.toHaveProperty(
+      'secret'
+    )
+    expect(canonicalRun.variants[0]!.results[0]).not.toHaveProperty('secret')
+    expect(
+      canonicalRun.variants[0]!.results[0]!.trace.input
+    ).not.toHaveProperty('rawPayload')
+
+    const externalTrace = {
+      ...sourceTrace,
+      provider: { ...sourceTrace.provider, externalCall: true }
+    } as unknown as typeof sourceTrace
+    await expect(
+      store.recordTestSuiteRun(
+        { tenantId },
+        {
+          ...run,
+          id: createTestSuiteRunId(),
+          variants: [
+            {
+              ...run.variants[0]!,
+              results: [
+                {
+                  ...run.variants[0]!.results[0]!,
+                  trace: externalTrace
+                }
+              ]
+            }
+          ]
+        }
+      )
+    ).rejects.toMatchObject({ code: 'validation_failed' })
   })
 })

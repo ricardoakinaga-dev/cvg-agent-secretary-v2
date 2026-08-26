@@ -1,4 +1,8 @@
-import { AgentConfigSchema, InMemoryControlPlaneStore } from '@cvg/platform'
+import {
+  AgentConfigSchema,
+  createValidatedControlledReleaseCandidate,
+  InMemoryControlPlaneStore
+} from '@cvg/platform'
 import { describe, expect, it } from 'vitest'
 import { buildServer } from '../server.ts'
 
@@ -44,6 +48,7 @@ function schedulingConfig() {
     plugins: [
       {
         plugin: 'scheduling.controlled',
+        version: '1.0.0',
         enabled: true,
         allowedTools: ['find_available_slots'],
         config: {}
@@ -83,7 +88,18 @@ async function createPublishedAgent(store: InMemoryControlPlaneStore) {
     testing.id,
     'APPROVED'
   )
-  await store.publishVersion({ tenantId: tenantA }, approved.id)
+  const releaseCandidate = await createValidatedControlledReleaseCandidate(
+    store,
+    tenantA,
+    agent.id,
+    approved.id,
+    'admin.capability'
+  )
+  await store.publishVersion(
+    { tenantId: tenantA },
+    approved.id,
+    releaseCandidate.id
+  )
   return { agent, version: approved }
 }
 
@@ -199,5 +215,80 @@ describe('capability approval API', () => {
     expect(crossTenant.statusCode).toBe(400)
     expect(revoked.statusCode).toBe(200)
     expect(afterRevoke.statusCode).toBe(400)
+  })
+
+  it('rejects invalid approved knowledge before consuming a capability approval', async () => {
+    const platform = new InMemoryControlPlaneStore()
+    const { agent, version } = await createPublishedAgent(platform)
+    const app = buildServer({ platform })
+    const message = 'Quero agendar uma consulta'
+    const issued = await app.inject({
+      method: 'POST',
+      url: '/v1/admin/capability-approvals',
+      headers: supervisorHeaders(tenantA),
+      payload: {
+        agentId: agent.id,
+        versionId: version.id,
+        toolName: 'find_available_slots',
+        actorId: 'operator.capability',
+        input: { message },
+        expiresAt: new Date(Date.now() + 5 * 60 * 1000).toISOString()
+      }
+    })
+    const approval = (issued.json() as Envelope<{ id: string }>).data
+
+    const rejected = await app.inject({
+      method: 'POST',
+      url: `/v1/admin/capability-approvals/${approval?.id}/execute`,
+      headers: operatorHeaders(tenantA),
+      payload: {
+        message,
+        history: [],
+        approvedKnowledge: {
+          source: `controlled://${'x'.repeat(201)}`,
+          version: 'v1',
+          answer: 'Resposta controlada.'
+        }
+      }
+    })
+    const stored = await app.inject({
+      method: 'GET',
+      url: `/v1/admin/capability-approvals/${approval?.id}`,
+      headers: supervisorHeaders(tenantA)
+    })
+    await app.close()
+
+    expect(rejected.statusCode).toBe(400)
+    expect(rejected.json()).toMatchObject({
+      success: false,
+      error: { code: 'validation_failed' }
+    })
+    expect((stored.json() as Envelope<{ status: string }>).data?.status).toBe(
+      'issued'
+    )
+  })
+
+  it('rejects catalog-only tool metadata before issuing an approval', async () => {
+    const platform = new InMemoryControlPlaneStore()
+    const { agent, version } = await createPublishedAgent(platform)
+    const app = buildServer({ platform })
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/v1/admin/capability-approvals',
+      headers: supervisorHeaders(tenantA),
+      payload: {
+        agentId: agent.id,
+        versionId: version.id,
+        toolName: 'catalog_only_tool',
+        actorId: 'operator.capability',
+        input: { message: 'Quero consultar horários fictícios' },
+        expiresAt: new Date(Date.now() + 5 * 60 * 1000).toISOString()
+      }
+    })
+    await app.close()
+
+    expect(response.statusCode).toBe(400)
+    expect((response.json() as Envelope<unknown>).data).toBeNull()
   })
 })

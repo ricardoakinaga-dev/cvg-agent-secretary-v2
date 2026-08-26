@@ -13,10 +13,12 @@ import {
 import {
   AgentIdSchema,
   AgentVersionIdSchema,
+  TraceIdSchema,
   TenantIdSchema,
   type AgentId,
   type AgentVersionId,
-  type TenantId
+  type TenantId,
+  type TraceId
 } from './ids.ts'
 import type { RegisteredPlugin } from './plugin-gateway.ts'
 
@@ -28,6 +30,8 @@ export const PLATFORM_EVENT_NAMES = [
   'agent.resolved',
   'policy.input.before',
   'policy.input.after',
+  'policy.output.before',
+  'policy.output.after',
   'intent.before',
   'intent.after',
   'knowledge.before',
@@ -62,6 +66,7 @@ const platformEventNameSet = new Set<string>(PLATFORM_EVENT_NAMES)
 
 export interface PlatformEventEnvelope {
   readonly id: CorrelationId
+  readonly traceId?: TraceId
   readonly name: PlatformEventName
   readonly tenantId: TenantId
   readonly agentId?: AgentId
@@ -87,6 +92,7 @@ export type PluginHookHandler = (
 export interface PlatformEventInput {
   name: PlatformEventName
   tenantId: TenantId
+  traceId?: TraceId
   agentId?: AgentId
   versionId?: AgentVersionId
   executionMode?: AgentExecutionMode
@@ -108,6 +114,7 @@ export interface PlatformEventResult {
 export interface PlatformHookAuditEvent {
   type: 'plugin_hook'
   correlationId: CorrelationId
+  traceId?: TraceId
   tenantId: TenantId
   plugin: string
   version: string
@@ -234,6 +241,7 @@ export class PlatformEventBus {
     assertPlatformEventName(input.name)
     assertTenantId(input.tenantId)
     assertOptionalScopeIds(input)
+    assertOptionalTraceId(input.traceId)
     if (
       input.executionMode !== undefined &&
       !AgentExecutionModeSchema.safeParse(input.executionMode).success
@@ -245,6 +253,7 @@ export class PlatformEventBus {
     const payload = asPayloadRecord(sanitized.payload)
     const event = deepFreeze({
       id: createCorrelationId(),
+      ...(input.traceId !== undefined ? { traceId: input.traceId } : {}),
       name: input.name,
       tenantId: input.tenantId,
       ...(input.agentId ? { agentId: input.agentId } : {}),
@@ -314,6 +323,9 @@ export class PlatformEventBus {
     const audit = deepFreeze({
       type: 'plugin_hook' as const,
       correlationId: input.event.id,
+      ...(input.event.traceId !== undefined
+        ? { traceId: input.event.traceId }
+        : {}),
       tenantId: input.subscription.tenantId,
       plugin: input.subscription.plugin,
       version: input.subscription.version,
@@ -356,6 +368,12 @@ function assertOptionalScopeIds(input: PlatformEventInput): void {
     !AgentVersionIdSchema.safeParse(input.versionId).success
   ) {
     throw new DomainError('validation_failed', 'Agent version scope is invalid')
+  }
+}
+
+function assertOptionalTraceId(value: TraceId | undefined): void {
+  if (value !== undefined && !TraceIdSchema.safeParse(value).success) {
+    throw new DomainError('validation_failed', 'Execution trace ID is invalid')
   }
 }
 

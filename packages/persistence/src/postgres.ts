@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { createHash } from 'node:crypto'
 import {
+  CorrelationIdSchema,
   createCorrelationId,
   createDomainId,
   DomainError,
@@ -12,7 +13,13 @@ import {
   type TaskStatus
 } from '@cvg/shared'
 import {
+  AgentIdSchema,
+  AgentVersionIdSchema,
   TenantIdSchema,
+  sanitizeTraceForPersistence,
+  TraceIdSchema,
+  type AgentId,
+  type AgentVersionId,
   type PluginAuditEvent,
   type TestRunTrace,
   transitionHumanTakeover,
@@ -21,7 +28,24 @@ import {
   type TenantId
 } from '@cvg/platform'
 import type { QueryResult, QueryResultRow } from 'pg'
-import { summarizeAuditEvents } from './repositories/audit-repository.ts'
+import {
+  auditEventMatches,
+  summarizeAuditEvents
+} from './repositories/audit-repository.ts'
+import {
+  AuditEvidenceCheckpointActorIdSchema,
+  AuditEvidenceCheckpointCreateInputSchema,
+  AuditEvidenceCheckpointFiltersSchema,
+  AuditEvidenceCheckpointIdSchema,
+  AuditEvidenceCheckpointStatusSchema,
+  cloneAuditEvidenceCheckpoint,
+  computeAuditEvidenceCheckpointDigest,
+  createAuditEvidenceCheckpointId,
+  normalizeAuditEvidenceCheckpointFilters,
+  type AuditEvidenceCheckpointCreateInput,
+  type AuditEvidenceCheckpointRecord,
+  type AuditEvidenceCheckpointStatus
+} from './audit-evidence-checkpoint.ts'
 import type {
   ApprovalRequestRecord,
   AuditEventRecord,
@@ -58,7 +82,12 @@ const defaultPostgresMigrations = [
   '0001_tenant_isolation',
   '0002_capability_approvals',
   '0003_test_suite_catalog',
-  '0004_plugin_manifest_catalog'
+  '0004_plugin_manifest_catalog',
+  '0005_knowledge_source_catalog',
+  '0006_release_candidate_evidence',
+  '0007_audit_evidence_checkpoint',
+  '0008_session_agent_version_pin',
+  '0009_release_candidate_validator_integrity'
 ]
 
 export interface PostgresQueryable {
@@ -594,6 +623,9 @@ export class PostgresRuntimeRepository {
     let conversation: ConversationRecord
     let session: SessionRecord
     let message: MessageRecord
+    const sessionAgentColumns = this.tenantIsolation
+      ? 'sessions.agent_id AS session_agent_id, sessions.agent_version_id AS session_agent_version_id'
+      : 'NULL::text AS session_agent_id, NULL::text AS session_agent_version_id'
 
     await this.client.query('BEGIN')
     try {
@@ -611,6 +643,8 @@ export class PostgresRuntimeRepository {
           session_id: string
           session_status: SessionRecord['status']
           session_takeover_state: HumanTakeoverState
+          session_agent_id: string | null
+          session_agent_version_id: string | null
           session_created_at: Date
           session_updated_at: Date
         }>(
@@ -626,6 +660,7 @@ export class PostgresRuntimeRepository {
                   sessions.id AS session_id,
                   sessions.status AS session_status,
                   sessions.takeover_state AS session_takeover_state,
+                  ${sessionAgentColumns},
                   sessions.created_at AS session_created_at,
                   sessions.updated_at AS session_updated_at
            FROM conversations
@@ -672,6 +707,16 @@ export class PostgresRuntimeRepository {
           conversationId: row.conversation_id,
           status: row.session_status,
           takeoverState: row.session_takeover_state,
+          ...(row.session_agent_id
+            ? { agentId: AgentIdSchema.parse(row.session_agent_id) }
+            : {}),
+          ...(row.session_agent_version_id
+            ? {
+                agentVersionId: AgentVersionIdSchema.parse(
+                  row.session_agent_version_id
+                )
+              }
+            : {}),
           createdAt: row.session_created_at,
           updatedAt: row.session_updated_at
         }
@@ -796,6 +841,101 @@ export class PostgresRuntimeRepository {
     return { conversation, session, message }
   }
 
+  async bindSessionAgentVersion(
+    rawTenantId: TenantId,
+    sessionId: string,
+    rawAgentId: AgentId,
+    rawAgentVersionId: AgentVersionId
+  ): Promise<SessionRecord | null> {
+    if (!this.tenantIsolation) {
+      throw new DomainError(
+        'invalid_action',
+        'Session agent pinning requires tenant-scoped persistence'
+      )
+    }
+    const tenantId = TenantIdSchema.parse(rawTenantId)
+    const agentId = AgentIdSchema.parse(rawAgentId)
+    const agentVersionId = AgentVersionIdSchema.parse(rawAgentVersionId)
+    await this.client.query('BEGIN')
+    try {
+      const result = await this.client.query<{
+        id: string
+        conversation_id: string
+        status: SessionRecord['status']
+        takeover_state: HumanTakeoverState
+        agent_id: string | null
+        agent_version_id: string | null
+        created_at: Date
+        updated_at: Date
+      }>(
+        `SELECT sessions.id, sessions.conversation_id, sessions.status,
+                sessions.takeover_state, sessions.agent_id,
+                sessions.agent_version_id, sessions.created_at, sessions.updated_at
+         FROM sessions
+         INNER JOIN conversations ON conversations.id = sessions.conversation_id
+         WHERE sessions.id = $1 AND conversations.tenant_id = $2
+         FOR UPDATE`,
+        [sessionId, tenantId]
+      )
+      const row = result.rows[0]
+      if (!row) {
+        await this.client.query('COMMIT')
+        return null
+      }
+      const hasAgent = row.agent_id !== null
+      const hasVersion = row.agent_version_id !== null
+      if (hasAgent !== hasVersion) {
+        throw new DomainError(
+          'invalid_action',
+          'Session agent binding is incomplete'
+        )
+      }
+      if (hasAgent && hasVersion) {
+        if (
+          row.agent_id !== agentId ||
+          row.agent_version_id !== agentVersionId
+        ) {
+          throw new DomainError(
+            'conflict',
+            'Session agent binding cannot be replaced'
+          )
+        }
+        await this.client.query('COMMIT')
+        return {
+          id: row.id,
+          conversationId: row.conversation_id,
+          status: row.status,
+          takeoverState: row.takeover_state,
+          agentId: AgentIdSchema.parse(row.agent_id),
+          agentVersionId: AgentVersionIdSchema.parse(row.agent_version_id),
+          createdAt: row.created_at,
+          updatedAt: row.updated_at
+        }
+      }
+      const updatedAt = new Date()
+      await this.client.query(
+        `UPDATE sessions
+         SET agent_id = $3, agent_version_id = $4, updated_at = $5
+         WHERE id = $1 AND tenant_id = $2`,
+        [row.id, tenantId, agentId, agentVersionId, updatedAt]
+      )
+      await this.client.query('COMMIT')
+      return {
+        id: row.id,
+        conversationId: row.conversation_id,
+        status: row.status,
+        takeoverState: row.takeover_state,
+        agentId,
+        agentVersionId,
+        createdAt: row.created_at,
+        updatedAt
+      }
+    } catch (error) {
+      await this.client.query('ROLLBACK')
+      throw error
+    }
+  }
+
   async appendOutboundMessage(input: {
     tenantId: TenantId
     conversationId: string
@@ -914,17 +1054,23 @@ export class PostgresRuntimeRepository {
     event: HumanTakeoverEvent
   ): Promise<SessionRecord | null> {
     const tenantId = TenantIdSchema.parse(rawTenantId)
+    const sessionAgentColumns = this.tenantIsolation
+      ? 'sessions.agent_id, sessions.agent_version_id'
+      : 'NULL::text AS agent_id, NULL::text AS agent_version_id'
     const result = await this.client.query<{
       id: string
       conversation_id: string
       status: SessionRecord['status']
       takeover_state: HumanTakeoverState
+      agent_id: string | null
+      agent_version_id: string | null
       conversation_status: ConversationRecord['status']
       created_at: Date
       updated_at: Date
     }>(
       `SELECT sessions.id, sessions.conversation_id, sessions.status,
                 sessions.takeover_state, conversations.status AS conversation_status,
+                ${sessionAgentColumns},
                 sessions.created_at, sessions.updated_at
          FROM sessions
          INNER JOIN conversations ON conversations.id = sessions.conversation_id
@@ -946,6 +1092,10 @@ export class PostgresRuntimeRepository {
       conversationId: row.conversation_id,
       status: row.status,
       takeoverState: transitionHumanTakeover(row.takeover_state, event),
+      ...(row.agent_id ? { agentId: AgentIdSchema.parse(row.agent_id) } : {}),
+      ...(row.agent_version_id
+        ? { agentVersionId: AgentVersionIdSchema.parse(row.agent_version_id) }
+        : {}),
       createdAt: row.created_at,
       updatedAt: new Date()
     }
@@ -972,6 +1122,9 @@ export class PostgresRuntimeRepository {
     }
   ): Promise<{ status: 'completed' | 'paused' }> {
     const tenantId = TenantIdSchema.parse(input.tenantId)
+    const trace = sanitizeTraceForPersistence(input.trace)
+    assertInboundRuntimeCorrelation(input.correlationId)
+    assertInboundToolAuditParents(trace, input.toolAuditEvents)
     await this.client.query('BEGIN')
     try {
       const inbound = this.tenantIsolation
@@ -1018,7 +1171,7 @@ export class PostgresRuntimeRepository {
         }
       }
 
-      if (input.trace.handoff.requested && input.sessionId) {
+      if (trace.handoff.requested && input.sessionId) {
         const handoff = await this.transitionTakeoverInTransaction(
           tenantId,
           input.sessionId,
@@ -1032,26 +1185,27 @@ export class PostgresRuntimeRepository {
           type: 'handoff',
           actorType: 'System',
           actorId: 'agent-runtime',
-          correlationId: input.trace.traceId,
+          correlationId: input.correlationId,
           policyVersion: 'human-takeover-v1',
           tenantId,
           payload: {
             tenantId,
             conversationId: input.conversationId,
             sessionId: input.sessionId,
+            traceId: trace.traceId,
             state: handoff.takeoverState,
-            reason: input.trace.handoff.reason,
+            reason: trace.handoff.reason,
             effect: 'human_handoff_requested'
           }
         })
       }
 
-      if (input.trace.response.text.trim().length > 0) {
+      if (trace.response.text.trim().length > 0) {
         await this.appendOutboundMessage({
           tenantId,
           conversationId: input.conversationId,
-          externalMessageId: `runtime:${input.trace.traceId}`,
-          body: input.trace.response.text
+          externalMessageId: `runtime:${trace.traceId}`,
+          body: trace.response.text
         })
       }
       for (const event of input.toolAuditEvents) {
@@ -1066,6 +1220,7 @@ export class PostgresRuntimeRepository {
             tenantId,
             agentId: event.agentId,
             versionId: event.versionId,
+            traceId: event.traceId,
             conversationId: input.conversationId,
             sessionId: input.sessionId,
             plugin: event.plugin,
@@ -1075,7 +1230,7 @@ export class PostgresRuntimeRepository {
           }
         })
       }
-      await controlPlane.recordExecutionTrace({ tenantId }, input.trace)
+      await controlPlane.recordExecutionTrace({ tenantId }, trace)
       const markedCompleted = await this.markInboundRuntimeCompleted(
         input.inboundMessageId,
         tenantId
@@ -1099,8 +1254,8 @@ export class PostgresRuntimeRepository {
           accepted: true,
           tenantId,
           runtimeStatus: 'completed',
-          traceId: input.trace.traceId,
-          externalCall: input.trace.provider.externalCall
+          traceId: trace.traceId,
+          externalCall: trace.provider.externalCall
         }
       })
       await this.client.query('COMMIT')
@@ -1268,10 +1423,206 @@ export class PostgresRuntimeRepository {
     )
   }
 
+  async listAuditEventsByIds(
+    rawIds: string[],
+    rawTenantId?: TenantId
+  ): Promise<AuditEventRecord[]> {
+    const tenantId = rawTenantId ? TenantIdSchema.parse(rawTenantId) : undefined
+    const tenantColumn = this.tenantIsolation ? ', tenant_id' : ''
+    const values: unknown[] = [rawIds]
+    const tenantClause = tenantId
+      ? this.tenantIsolation
+        ? (() => {
+            values.push(tenantId)
+            return `AND audit_events.tenant_id = $${values.length}`
+          })()
+        : (() => {
+            values.push(tenantId)
+            return `AND audit_events.payload->>'tenantId' = $${values.length}`
+          })()
+      : ''
+    const result = await this.client.query<AuditEventRow>(
+      `SELECT id${tenantColumn}, type, actor_type, actor_id, correlation_id, policy_version, payload, created_at
+       FROM audit_events
+       WHERE id = ANY($1::text[])
+       ${tenantClause}
+       ORDER BY created_at ASC`,
+      values
+    )
+    return result.rows.map((row) => this.mapAuditEvent(row))
+  }
+
+  async createAuditEvidenceCheckpoint(
+    rawInput: AuditEvidenceCheckpointCreateInput,
+    rawCreatedBy: string,
+    rawTenantId?: TenantId
+  ): Promise<AuditEvidenceCheckpointRecord> {
+    const tenantId = requireCheckpointTenant(rawTenantId)
+    const input = AuditEvidenceCheckpointCreateInputSchema.parse(rawInput)
+    const createdBy = AuditEvidenceCheckpointActorIdSchema.parse(rawCreatedBy)
+    await this.client.query('BEGIN')
+    try {
+      const events = await this.listAuditEventsByIds(input.eventIds, tenantId)
+      assertCheckpointEvents(input, events, input.eventIds)
+      const evidenceDigest = computeAuditEvidenceCheckpointDigest(
+        tenantId,
+        input,
+        events
+      )
+      const now = new Date()
+      const checkpoint: AuditEvidenceCheckpointRecord = {
+        tenantId,
+        id: createAuditEvidenceCheckpointId(),
+        filters: { ...(input.filters ?? {}) },
+        eventIds: [...input.eventIds].sort(),
+        eventCount: input.eventIds.length,
+        evidenceDigest,
+        status: 'SEALED',
+        createdBy,
+        updatedBy: createdBy,
+        createdAt: now,
+        updatedAt: now
+      }
+      try {
+        await this.client.query(
+          `INSERT INTO audit_evidence_checkpoints
+             (tenant_id, id, filters, event_ids, event_count, evidence_digest, status, created_by, updated_by, created_at, updated_at)
+           VALUES ($1, $2, $3::jsonb, $4::jsonb, $5, $6, $7, $8, $9, $10, $11)`,
+          [
+            checkpoint.tenantId,
+            checkpoint.id,
+            JSON.stringify(checkpoint.filters),
+            JSON.stringify(checkpoint.eventIds),
+            checkpoint.eventCount,
+            checkpoint.evidenceDigest,
+            checkpoint.status,
+            checkpoint.createdBy,
+            checkpoint.updatedBy,
+            checkpoint.createdAt,
+            checkpoint.updatedAt
+          ]
+        )
+      } catch (error) {
+        if (isUniqueViolation(error)) {
+          throw new DomainError(
+            'conflict',
+            'Audit evidence checkpoint already exists'
+          )
+        }
+        throw error
+      }
+      await this.client.query('COMMIT')
+      return cloneAuditEvidenceCheckpoint(checkpoint)
+    } catch (error) {
+      await this.client.query('ROLLBACK')
+      throw error
+    }
+  }
+
+  async getAuditEvidenceCheckpoint(
+    rawId: string,
+    rawTenantId?: TenantId
+  ): Promise<AuditEvidenceCheckpointRecord | null> {
+    const tenantId = requireCheckpointTenant(rawTenantId)
+    const id = AuditEvidenceCheckpointIdSchema.parse(rawId)
+    const result = await this.client.query<AuditEvidenceCheckpointRow>(
+      `SELECT tenant_id, id, filters, event_ids, event_count, evidence_digest, status,
+              created_by, updated_by, created_at, updated_at
+       FROM audit_evidence_checkpoints
+       WHERE tenant_id = $1 AND id = $2`,
+      [tenantId, id]
+    )
+    const row = result.rows[0]
+    return row ? mapAuditEvidenceCheckpoint(row) : null
+  }
+
+  async listAuditEvidenceCheckpoints(
+    rawTenantId?: TenantId
+  ): Promise<AuditEvidenceCheckpointRecord[]> {
+    const tenantId = requireCheckpointTenant(rawTenantId)
+    const result = await this.client.query<AuditEvidenceCheckpointRow>(
+      `SELECT tenant_id, id, filters, event_ids, event_count, evidence_digest, status,
+              created_by, updated_by, created_at, updated_at
+       FROM audit_evidence_checkpoints
+       WHERE tenant_id = $1
+       ORDER BY created_at DESC`,
+      [tenantId]
+    )
+    return result.rows.map(mapAuditEvidenceCheckpoint)
+  }
+
+  async transitionAuditEvidenceCheckpoint(
+    rawId: string,
+    rawStatus: AuditEvidenceCheckpointStatus,
+    rawUpdatedBy: string,
+    rawExpectedStatus: AuditEvidenceCheckpointStatus,
+    rawTenantId?: TenantId
+  ): Promise<AuditEvidenceCheckpointRecord | null> {
+    const tenantId = requireCheckpointTenant(rawTenantId)
+    const id = AuditEvidenceCheckpointIdSchema.parse(rawId)
+    const status = AuditEvidenceCheckpointStatusSchema.parse(rawStatus)
+    const expectedStatus =
+      AuditEvidenceCheckpointStatusSchema.parse(rawExpectedStatus)
+    const updatedBy = AuditEvidenceCheckpointActorIdSchema.parse(rawUpdatedBy)
+    if (status !== 'ARCHIVED' || expectedStatus !== 'SEALED') {
+      throw new DomainError(
+        'invalid_action',
+        'Audit evidence checkpoint transition is not allowed'
+      )
+    }
+    await this.client.query('BEGIN')
+    try {
+      const current = await this.client.query<AuditEvidenceCheckpointRow>(
+        `SELECT tenant_id, id, filters, event_ids, event_count, evidence_digest, status,
+                created_by, updated_by, created_at, updated_at
+         FROM audit_evidence_checkpoints
+         WHERE tenant_id = $1 AND id = $2
+         FOR UPDATE`,
+        [tenantId, id]
+      )
+      const row = current.rows[0]
+      if (!row) {
+        await this.client.query('COMMIT')
+        return null
+      }
+      const checkpoint = mapAuditEvidenceCheckpoint(row)
+      if (checkpoint.status !== expectedStatus) {
+        throw new DomainError(
+          'conflict',
+          `Audit evidence checkpoint status is ${checkpoint.status}, expected ${expectedStatus}`
+        )
+      }
+      const updatedAt = new Date()
+      const updated = await this.client.query<AuditEvidenceCheckpointRow>(
+        `UPDATE audit_evidence_checkpoints
+         SET status = $3, updated_by = $4, updated_at = $5
+         WHERE tenant_id = $1 AND id = $2 AND status = $6
+         RETURNING tenant_id, id, filters, event_ids, event_count, evidence_digest, status,
+                   created_by, updated_by, created_at, updated_at`,
+        [tenantId, id, status, updatedBy, updatedAt, expectedStatus]
+      )
+      const result = updated.rows[0]
+      if (!result) {
+        throw new DomainError(
+          'conflict',
+          'Audit evidence checkpoint transition lost its compare-and-swap'
+        )
+      }
+      await this.client.query('COMMIT')
+      return mapAuditEvidenceCheckpoint(result)
+    } catch (error) {
+      await this.client.query('ROLLBACK')
+      throw error
+    }
+  }
+
   async timeline(
     tenantId: TenantId,
     conversationId: string
   ): Promise<{ messages: MessageRecord[]; sessions: SessionRecord[] }> {
+    const sessionAgentColumns = this.tenantIsolation
+      ? 'sessions.agent_id, sessions.agent_version_id'
+      : 'NULL::text AS agent_id, NULL::text AS agent_version_id'
     const messages = await this.client.query<{
       id: string
       conversation_id: string
@@ -1292,10 +1643,13 @@ export class PostgresRuntimeRepository {
       conversation_id: string
       status: SessionRecord['status']
       takeover_state: HumanTakeoverState
+      agent_id: string | null
+      agent_version_id: string | null
       created_at: Date
       updated_at: Date
     }>(
-      `SELECT sessions.id, sessions.conversation_id, sessions.status, sessions.takeover_state, sessions.created_at, sessions.updated_at
+      `SELECT sessions.id, sessions.conversation_id, sessions.status, sessions.takeover_state,
+              ${sessionAgentColumns}, sessions.created_at, sessions.updated_at
        FROM sessions
        INNER JOIN conversations ON conversations.id = sessions.conversation_id
        WHERE sessions.conversation_id = $1 AND conversations.tenant_id = $2
@@ -1317,6 +1671,10 @@ export class PostgresRuntimeRepository {
         conversationId: row.conversation_id,
         status: row.status,
         takeoverState: row.takeover_state,
+        ...(row.agent_id ? { agentId: AgentIdSchema.parse(row.agent_id) } : {}),
+        ...(row.agent_version_id
+          ? { agentVersionId: AgentVersionIdSchema.parse(row.agent_version_id) }
+          : {}),
         createdAt: row.created_at,
         updatedAt: row.updated_at
       }))
@@ -1823,6 +2181,69 @@ interface AuditEventRow {
   created_at: Date
 }
 
+interface AuditEvidenceCheckpointRow {
+  tenant_id: TenantId
+  id: string
+  filters: unknown
+  event_ids: unknown
+  event_count: number
+  evidence_digest: string
+  status: AuditEvidenceCheckpointStatus
+  created_by: string
+  updated_by: string
+  created_at: Date
+  updated_at: Date
+}
+
+function requireCheckpointTenant(rawTenantId?: TenantId): TenantId {
+  const parsed = TenantIdSchema.safeParse(rawTenantId)
+  if (!parsed.success) {
+    throw new DomainError('unauthorized', 'Tenant scope is required')
+  }
+  return parsed.data
+}
+
+function assertCheckpointEvents(
+  input: AuditEvidenceCheckpointCreateInput,
+  events: AuditEventRecord[],
+  requestedIds: string[]
+): void {
+  if (events.length !== requestedIds.length) {
+    throw new DomainError(
+      'invalid_action',
+      'All audit evidence events must exist in the tenant scope'
+    )
+  }
+  const filters = normalizeAuditEvidenceCheckpointFilters(input.filters ?? {})
+  if (events.some((event) => !auditEventMatches(event, filters))) {
+    throw new DomainError(
+      'invalid_action',
+      'All audit evidence events must match the checkpoint filters'
+    )
+  }
+}
+
+function mapAuditEvidenceCheckpoint(
+  row: AuditEvidenceCheckpointRow
+): AuditEvidenceCheckpointRecord {
+  const parsedFilters = AuditEvidenceCheckpointFiltersSchema.parse(row.filters)
+  const parsedEventIds =
+    AuditEvidenceCheckpointCreateInputSchema.shape.eventIds.parse(row.event_ids)
+  return {
+    tenantId: TenantIdSchema.parse(row.tenant_id),
+    id: AuditEvidenceCheckpointIdSchema.parse(row.id),
+    filters: { ...parsedFilters },
+    eventIds: [...parsedEventIds],
+    eventCount: row.event_count,
+    evidenceDigest: row.evidence_digest,
+    status: AuditEvidenceCheckpointStatusSchema.parse(row.status),
+    createdBy: AuditEvidenceCheckpointActorIdSchema.parse(row.created_by),
+    updatedBy: AuditEvidenceCheckpointActorIdSchema.parse(row.updated_by),
+    createdAt: new Date(row.created_at),
+    updatedAt: new Date(row.updated_at)
+  }
+}
+
 function buildAuditWhereClause(
   filters: AuditEvidenceFilters,
   tenantId?: TenantId,
@@ -1871,6 +2292,65 @@ function buildAuditWhereClause(
   return {
     sql: clauses.length > 0 ? `WHERE ${clauses.join(' AND ')}` : '',
     values
+  }
+}
+
+function assertInboundRuntimeCorrelation(correlationId: unknown): void {
+  if (!CorrelationIdSchema.safeParse(correlationId).success) {
+    throw new DomainError(
+      'validation_failed',
+      'Inbound runtime correlation ID is invalid'
+    )
+  }
+}
+
+function assertInboundToolAuditParents(
+  trace: TestRunTrace,
+  rawEvents: unknown
+): asserts rawEvents is PluginAuditEvent[] {
+  if (!Array.isArray(rawEvents)) {
+    throw new DomainError(
+      'validation_failed',
+      'Inbound runtime tool audit events are invalid'
+    )
+  }
+
+  for (const rawEvent of rawEvents) {
+    try {
+      if (
+        typeof rawEvent !== 'object' ||
+        rawEvent === null ||
+        Array.isArray(rawEvent)
+      ) {
+        throw new DomainError(
+          'validation_failed',
+          'Inbound runtime tool audit event is invalid'
+        )
+      }
+      const event = rawEvent as Record<string, unknown>
+      if (
+        !CorrelationIdSchema.safeParse(event.correlationId).success ||
+        !TraceIdSchema.safeParse(event.traceId).success ||
+        event.traceId !== trace.traceId ||
+        !TenantIdSchema.safeParse(event.tenantId).success ||
+        event.tenantId !== trace.tenantId ||
+        !AgentIdSchema.safeParse(event.agentId).success ||
+        event.agentId !== trace.agentId ||
+        !AgentVersionIdSchema.safeParse(event.versionId).success ||
+        event.versionId !== trace.versionId
+      ) {
+        throw new DomainError(
+          'validation_failed',
+          'Inbound runtime tool audit trace parent is invalid'
+        )
+      }
+    } catch (error) {
+      if (error instanceof DomainError) throw error
+      throw new DomainError(
+        'validation_failed',
+        'Inbound runtime tool audit event is invalid'
+      )
+    }
   }
 }
 

@@ -1,10 +1,71 @@
 # 0306 — Phase and Sprint Plan
 
+## PLAT-S47 — fechamento controlado em AUDIT
+
+- sprint: `PLAT-S47`
+- task: `PLAT-S47-001_CONTROLLED_MULTI_AGENT_CREATION_MODE`
+- status: `COMPLETED_CONTROLLED`
+- stage: `AUDIT`
+- owner: `platform/control-center`
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- escopo: modo `Novo agente`, reset bounded do editor e jornada UI/API Agent
+  A/B no mesmo tenant/sessão, preservando clone de versão existente
+- evidência: `docs/04_audit/0537_plat-s47_controlled_multi_agent_creation_evidence.md`
+- resultado: RED inicial reproduziu o dead-end; GREEN fechou A/B, clone,
+  isolamento assíncrono entre agentes/tenants e preservação dos catálogos
+  tenant-wide; auditoria corretiva também fechou agent scope, redaction e
+  payload legado; gates integrados PASS; produção real continua NO-GO
+
+### Atualização de auditoria PLAT-S47 — 2026-08-26
+
+Regressão integral: 127 arquivos PASS/2 skipped e 534 testes PASS/19 skipped;
+coverage 84,86/80,12/84,97/85,97; PostgreSQL 8/72; E2E 4/4; readiness 4/4;
+worker smoke; build 158 módulos; audit 0; typecheck, lint, format e diff check
+PASS. A crítica independente compatível final retornou `PASS_CONTROLLED`, sem
+P0/P1/P2/P3; produção real segue `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+## PLAT-S46 — registro e fechamento controlado
+
+- sprint: `PLAT-S46`
+- task: `PLAT-S46-001_CONTROLLED_EXECUTION_TRACE_CORRELATION_BOUNDARY`
+- status: `COMPLETED_CONTROLLED`
+- stage: `AUDIT`
+- owner: `platform/observability/agent-core`
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- escopo: uma identidade `traceId` criada/validada antes do primeiro evento e
+  propagada para event bus, hooks, gateway, tool audit, Test Lab, runtime e
+  sinks; IDs locais permanecem distintos
+- evidência: `docs/04_audit/0536_plat-s46_controlled_execution_trace_correlation_boundary_evidence.md`
+- próximo passo: nova discovery/SPEC controlada; produção real continua NO-GO
+
+### Fechamento controlado PLAT-S46 — 2026-08-26T11:22:54-03:00
+
+RED: 4 arquivos/33 testes, 8 falhas esperadas; GREEN: 6 arquivos/25 testes
+pass. Regressão 126 arquivos/523 testes pass, 2 arquivos/19 testes skipped;
+coverage 85,07/80,06/85,95/86,10; PostgreSQL 8/72; readiness 4/4; worker
+smoke; E2E 4/4; build 70 módulos; audit 0; typecheck, lint, format e diff
+check PASS. Revisão independente compatível read-only `PASS` sem P0/P1/P2.
+
 ## Objetivo
 
 Dividir a construcao em phases e sprints deterministicas. Cada sprint tem escopo fechado, entregaveis, arquivos, testes e comandos. A versao operacional completa esta em `0306_phase_sprint_plan.json`.
 
 Os detalhes atomicos de cada task estao em `0308_task_catalog.json`. Se uma task aparecer no plano de phases e nao aparecer no catalogo, a execucao deve bloquear.
+
+## Lane controlada atual — PLAT-S45
+
+`PLAT-S45-001_CONTROLLED_TOOL_INVOCATION_BOUNDARY` foi fechada em `AUDIT`
+como `COMPLETED_CONTROLLED`, com validators server-side de input/output,
+authorizer efetivo, approval durável/single-use, bounds de actor/input/config e
+projeção redigida de resultado. A revisão independente compatível read-only
+retornou `PASS sem P0/P1`. Evidência:
+`docs/04_audit/0535_plat-s45_controlled_tool_invocation_boundary_evidence.md`.
+
+Gates: focused 6/41; regressão 125 arquivos/512 testes pass com 2/19 skipped;
+coverage 85,01/80,14/85,82/86,03; PostgreSQL 6/53 com 2/19 skipped; E2E 4/4;
+readiness 4/4; build 70 módulos; audit 0; typecheck, lint, format e diff check PASS.
+As lanes S42, S43 e S44 permanecem fechadas como `COMPLETED_CONTROLLED`;
+produção real continua bloqueada por decisão humana e infraestrutura.
 
 ## Ordem fechada de phases
 

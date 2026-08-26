@@ -91,6 +91,7 @@ describe('controlled CVG Secretary preset', () => {
         plugins: [
           {
             plugin: 'scheduling.controlled',
+            version: '1.0.0',
             enabled: true,
             allowedTools: ['find_available_slots'],
             config: {}

@@ -2,6 +2,10 @@ import { DomainError, redactSensitiveText } from '@cvg/shared'
 import {
   AgentConfigSchema,
   AgentCreateInputSchema,
+  KnowledgeSourceCreateInputSchema,
+  KnowledgeSourceStatusSchema,
+  ReleaseCandidateCreateInputSchema,
+  ReleaseCandidateStatusSchema,
   PluginCatalogCreateInputSchema,
   PluginCatalogStatusSchema,
   TestLabCaseSchema,
@@ -13,6 +17,12 @@ import {
   type AgentRecord,
   type AgentVersionRecord,
   type AgentVersionStatus,
+  type KnowledgeSourceCreateInput,
+  type KnowledgeSourceRecord,
+  type KnowledgeSourceStatus,
+  type ReleaseCandidateCreateInput,
+  type ReleaseCandidateRecord,
+  type ReleaseCandidateStatus,
   type PluginCatalogCreateInput,
   type PluginCatalogRecord,
   type PluginCatalogStatus,
@@ -25,15 +35,33 @@ import {
   type TestSuiteRecord,
   type TestSuiteRunRecord
 } from './contracts.ts'
+import { assertPromptProfileIntegrity } from './prompt-profile.ts'
+import {
+  assertReleaseCandidateEvidenceIntegrity,
+  assertReleaseCandidateIndependentValidator,
+  assertReleaseCandidatePublishAuthority,
+  computeReleaseCandidateEvidenceDigest
+} from './release-candidate.ts'
+import {
+  sanitizeTestSuiteRunTraces,
+  sanitizeTraceForPersistence
+} from './trace-governance.ts'
 import {
   createAgentId,
   createAgentVersionId,
+  createKnowledgeSourceId,
+  createReleaseCandidateId,
   createPluginCatalogId,
   createTestSuiteId,
+  AgentIdSchema,
+  KnowledgeSourceIdSchema,
+  ReleaseCandidateIdSchema,
   PluginCatalogIdSchema,
   TestSuiteRunIdSchema,
   type AgentId,
   type AgentVersionId,
+  type KnowledgeSourceId,
+  type ReleaseCandidateId,
   type TestSuiteId,
   type PluginCatalogId
 } from './ids.ts'
@@ -65,6 +93,7 @@ export interface ControlPlaneStore {
   publishVersion(
     scope: TenantScope,
     versionId: AgentVersionId,
+    releaseCandidateId: ReleaseCandidateId,
     expectedStatus?: AgentVersionStatus
   ): Promise<AgentVersionRecord>
   rollback(
@@ -72,12 +101,50 @@ export interface ControlPlaneStore {
     agentId: AgentId,
     versionId: AgentVersionId,
     createdBy: string,
+    releaseCandidateId: ReleaseCandidateId,
     expectedStatus?: AgentVersionStatus
   ): Promise<AgentVersionRecord>
   resolvePublished(
     scope: TenantScope,
     agentId: AgentId
   ): Promise<AgentVersionRecord | null>
+  createKnowledgeSource(
+    scope: TenantScope,
+    input: KnowledgeSourceCreateInput,
+    createdBy: string
+  ): Promise<KnowledgeSourceRecord>
+  getKnowledgeSource(
+    scope: TenantScope,
+    sourceId: KnowledgeSourceId
+  ): Promise<KnowledgeSourceRecord | null>
+  listKnowledgeSources(scope: TenantScope): Promise<KnowledgeSourceRecord[]>
+  transitionKnowledgeSource(
+    scope: TenantScope,
+    sourceId: KnowledgeSourceId,
+    target: KnowledgeSourceStatus,
+    actorId: string,
+    expectedStatus?: KnowledgeSourceStatus
+  ): Promise<KnowledgeSourceRecord>
+  createReleaseCandidate(
+    scope: TenantScope,
+    input: ReleaseCandidateCreateInput,
+    createdBy: string
+  ): Promise<ReleaseCandidateRecord>
+  getReleaseCandidate(
+    scope: TenantScope,
+    candidateId: ReleaseCandidateId
+  ): Promise<ReleaseCandidateRecord | null>
+  listReleaseCandidates(
+    scope: TenantScope,
+    agentId?: AgentId
+  ): Promise<ReleaseCandidateRecord[]>
+  transitionReleaseCandidate(
+    scope: TenantScope,
+    candidateId: ReleaseCandidateId,
+    target: ReleaseCandidateStatus,
+    actorId: string,
+    expectedStatus?: ReleaseCandidateStatus
+  ): Promise<ReleaseCandidateRecord>
   createPluginCatalogEntry(
     scope: TenantScope,
     input: PluginCatalogCreateInput,
@@ -151,6 +218,8 @@ export class InMemoryControlPlaneStore implements ControlPlaneStore {
   private testSuites: TestSuiteRecord[] = []
   private testSuiteRuns: TestSuiteRunRecord[] = []
   private pluginCatalog: PluginCatalogRecord[] = []
+  private knowledgeSources: KnowledgeSourceRecord[] = []
+  private releaseCandidates: ReleaseCandidateRecord[] = []
 
   async createAgent(
     rawScope: TenantScope,
@@ -210,6 +279,7 @@ export class InMemoryControlPlaneStore implements ControlPlaneStore {
     const scope = parseScope(rawScope)
     const agent = this.requireAgent(scope, agentId)
     const config = AgentConfigSchema.parse(rawConfig)
+    assertPromptProfileIntegrity(config)
     const versionNumber =
       Math.max(
         0,
@@ -285,9 +355,25 @@ export class InMemoryControlPlaneStore implements ControlPlaneStore {
   async publishVersion(
     rawScope: TenantScope,
     versionId: AgentVersionId,
+    rawReleaseCandidateId: ReleaseCandidateId,
     expectedStatus?: AgentVersionStatus
   ): Promise<AgentVersionRecord> {
     const scope = parseScope(rawScope)
+    const current = this.requireVersion(scope, versionId)
+    this.requireReleaseCandidateAuthority(
+      scope,
+      rawReleaseCandidateId,
+      current.agentId,
+      current.id
+    )
+    return this.publishApprovedVersion(scope, versionId, expectedStatus)
+  }
+
+  private async publishApprovedVersion(
+    scope: TenantScope,
+    versionId: AgentVersionId,
+    expectedStatus?: AgentVersionStatus
+  ): Promise<AgentVersionRecord> {
     const current = this.requireVersion(scope, versionId)
     assertExpectedStatus(current.status, expectedStatus)
     if (current.status !== 'APPROVED') {
@@ -327,10 +413,17 @@ export class InMemoryControlPlaneStore implements ControlPlaneStore {
     agentId: AgentId,
     versionId: AgentVersionId,
     createdBy: string,
+    rawReleaseCandidateId: ReleaseCandidateId,
     expectedStatus?: AgentVersionStatus
   ): Promise<AgentVersionRecord> {
     const scope = parseScope(rawScope)
     const target = this.requireVersion(scope, versionId)
+    this.requireReleaseCandidateAuthority(
+      scope,
+      rawReleaseCandidateId,
+      agentId,
+      target.id
+    )
     assertExpectedStatus(target.status, expectedStatus)
     if (target.agentId !== agentId) {
       throw new DomainError(
@@ -352,7 +445,7 @@ export class InMemoryControlPlaneStore implements ControlPlaneStore {
     )
     const testing = await this.transitionVersion(scope, draft.id, 'TESTING')
     const approved = await this.transitionVersion(scope, testing.id, 'APPROVED')
-    return this.publishVersion(scope, approved.id)
+    return this.publishApprovedVersion(scope, approved.id)
   }
 
   async resolvePublished(
@@ -369,6 +462,241 @@ export class InMemoryControlPlaneStore implements ControlPlaneStore {
         candidate.status === 'PUBLISHED'
     )
     return version ? cloneVersion(version) : null
+  }
+
+  async createKnowledgeSource(
+    rawScope: TenantScope,
+    rawInput: KnowledgeSourceCreateInput,
+    createdBy: string
+  ): Promise<KnowledgeSourceRecord> {
+    const scope = parseScope(rawScope)
+    const input = KnowledgeSourceCreateInputSchema.parse(rawInput)
+    if (
+      this.knowledgeSources.some(
+        (entry) =>
+          entry.tenantId === scope.tenantId &&
+          entry.source === input.source &&
+          entry.version === input.version
+      )
+    ) {
+      throw new DomainError(
+        'invalid_action',
+        'Knowledge source/version already exists'
+      )
+    }
+    const now = new Date()
+    const entry: KnowledgeSourceRecord = {
+      tenantId: scope.tenantId,
+      id: createKnowledgeSourceId(),
+      source: input.source,
+      version: input.version,
+      label: input.label,
+      description: input.description,
+      status: 'DRAFT',
+      createdBy: validateActor(createdBy),
+      approvedBy: null,
+      createdAt: now,
+      updatedAt: now
+    }
+    this.knowledgeSources = [...this.knowledgeSources, entry]
+    return cloneKnowledgeSourceRecord(entry)
+  }
+
+  async getKnowledgeSource(
+    rawScope: TenantScope,
+    rawSourceId: KnowledgeSourceId
+  ): Promise<KnowledgeSourceRecord | null> {
+    const scope = parseScope(rawScope)
+    const sourceId = KnowledgeSourceIdSchema.parse(rawSourceId)
+    const entry = this.knowledgeSources.find(
+      (candidate) =>
+        candidate.tenantId === scope.tenantId && candidate.id === sourceId
+    )
+    return entry ? cloneKnowledgeSourceRecord(entry) : null
+  }
+
+  async listKnowledgeSources(
+    rawScope: TenantScope
+  ): Promise<KnowledgeSourceRecord[]> {
+    const scope = parseScope(rawScope)
+    return this.knowledgeSources
+      .filter((entry) => entry.tenantId === scope.tenantId)
+      .sort(
+        (left, right) =>
+          right.updatedAt.getTime() - left.updatedAt.getTime() ||
+          right.id.localeCompare(left.id)
+      )
+      .map(cloneKnowledgeSourceRecord)
+  }
+
+  async transitionKnowledgeSource(
+    rawScope: TenantScope,
+    rawSourceId: KnowledgeSourceId,
+    rawTarget: KnowledgeSourceStatus,
+    actorId: string,
+    rawExpectedStatus?: KnowledgeSourceStatus
+  ): Promise<KnowledgeSourceRecord> {
+    const scope = parseScope(rawScope)
+    const sourceId = KnowledgeSourceIdSchema.parse(rawSourceId)
+    const target = KnowledgeSourceStatusSchema.parse(rawTarget)
+    const expectedStatus = rawExpectedStatus
+      ? KnowledgeSourceStatusSchema.parse(rawExpectedStatus)
+      : undefined
+    const current = this.knowledgeSources.find(
+      (candidate) =>
+        candidate.tenantId === scope.tenantId && candidate.id === sourceId
+    )
+    if (!current) {
+      throw new DomainError('invalid_action', 'Knowledge source not found')
+    }
+    assertKnowledgeSourceExpectedStatus(current.status, expectedStatus)
+    if (!canTransitionKnowledgeSource(current.status, target)) {
+      throw new DomainError(
+        'invalid_action',
+        `Knowledge source cannot transition from ${current.status} to ${target}`
+      )
+    }
+    const actor = validateActor(actorId)
+    const updated: KnowledgeSourceRecord = {
+      ...current,
+      status: target,
+      approvedBy: target === 'APPROVED' ? actor : current.approvedBy,
+      updatedAt: new Date()
+    }
+    this.knowledgeSources = this.knowledgeSources.map((entry) =>
+      entry.tenantId === scope.tenantId && entry.id === sourceId
+        ? updated
+        : entry
+    )
+    return cloneKnowledgeSourceRecord(updated)
+  }
+
+  async createReleaseCandidate(
+    rawScope: TenantScope,
+    rawInput: ReleaseCandidateCreateInput,
+    createdBy: string
+  ): Promise<ReleaseCandidateRecord> {
+    const scope = parseScope(rawScope)
+    const input = ReleaseCandidateCreateInputSchema.parse(rawInput)
+    this.requireVersionForAgent(scope, input.agentId, input.versionId)
+    const gateResults = input.gateResults.map((gate) => ({ ...gate }))
+    const evidenceDigest = computeReleaseCandidateEvidenceDigest({
+      tenantId: scope.tenantId,
+      agentId: input.agentId,
+      versionId: input.versionId,
+      gateResults
+    })
+    if (
+      this.releaseCandidates.some(
+        (candidate) =>
+          candidate.tenantId === scope.tenantId &&
+          candidate.agentId === input.agentId &&
+          candidate.versionId === input.versionId &&
+          candidate.evidenceDigest === evidenceDigest
+      )
+    ) {
+      throw new DomainError(
+        'invalid_action',
+        'Release candidate evidence already exists'
+      )
+    }
+    const now = new Date()
+    const candidate: ReleaseCandidateRecord = {
+      tenantId: scope.tenantId,
+      id: createReleaseCandidateId(),
+      agentId: input.agentId,
+      versionId: input.versionId,
+      evidenceDigest,
+      gateResults,
+      status: 'DRAFT',
+      createdBy: validateActor(createdBy),
+      validatedBy: null,
+      createdAt: now,
+      updatedAt: now,
+      validatedAt: null
+    }
+    this.releaseCandidates = [...this.releaseCandidates, candidate]
+    return cloneReleaseCandidateRecord(candidate)
+  }
+
+  async getReleaseCandidate(
+    rawScope: TenantScope,
+    rawCandidateId: ReleaseCandidateId
+  ): Promise<ReleaseCandidateRecord | null> {
+    const scope = parseScope(rawScope)
+    const candidateId = ReleaseCandidateIdSchema.parse(rawCandidateId)
+    const candidate = this.releaseCandidates.find(
+      (entry) => entry.tenantId === scope.tenantId && entry.id === candidateId
+    )
+    return candidate ? cloneReleaseCandidateRecord(candidate) : null
+  }
+
+  async listReleaseCandidates(
+    rawScope: TenantScope,
+    rawAgentId?: AgentId
+  ): Promise<ReleaseCandidateRecord[]> {
+    const scope = parseScope(rawScope)
+    const agentId = rawAgentId ? AgentIdSchema.parse(rawAgentId) : undefined
+    return this.releaseCandidates
+      .filter(
+        (candidate) =>
+          candidate.tenantId === scope.tenantId &&
+          (agentId === undefined || candidate.agentId === agentId)
+      )
+      .sort(
+        (left, right) =>
+          right.updatedAt.getTime() - left.updatedAt.getTime() ||
+          right.id.localeCompare(left.id)
+      )
+      .map(cloneReleaseCandidateRecord)
+  }
+
+  async transitionReleaseCandidate(
+    rawScope: TenantScope,
+    rawCandidateId: ReleaseCandidateId,
+    rawTarget: ReleaseCandidateStatus,
+    actorId: string,
+    rawExpectedStatus?: ReleaseCandidateStatus
+  ): Promise<ReleaseCandidateRecord> {
+    const scope = parseScope(rawScope)
+    const candidateId = ReleaseCandidateIdSchema.parse(rawCandidateId)
+    const target = ReleaseCandidateStatusSchema.parse(rawTarget)
+    const expectedStatus = rawExpectedStatus
+      ? ReleaseCandidateStatusSchema.parse(rawExpectedStatus)
+      : undefined
+    const current = this.releaseCandidates.find(
+      (candidate) =>
+        candidate.tenantId === scope.tenantId && candidate.id === candidateId
+    )
+    if (!current) {
+      throw new DomainError('invalid_action', 'Release candidate not found')
+    }
+    assertReleaseCandidateExpectedStatus(current.status, expectedStatus)
+    if (!canTransitionReleaseCandidate(current.status, target)) {
+      throw new DomainError(
+        'invalid_action',
+        `Release candidate cannot transition from ${current.status} to ${target}`
+      )
+    }
+    const actor = target === 'VALIDATED' ? validateActor(actorId) : null
+    if (target === 'VALIDATED') {
+      assertReleaseCandidateIndependentValidator(current, actor!)
+      assertReleaseCandidateEvidenceIntegrity(current)
+    }
+    const now = new Date()
+    const updated: ReleaseCandidateRecord = {
+      ...current,
+      status: target,
+      validatedBy: target === 'VALIDATED' ? actor : current.validatedBy,
+      validatedAt: target === 'VALIDATED' ? now : current.validatedAt,
+      updatedAt: now
+    }
+    this.releaseCandidates = this.releaseCandidates.map((candidate) =>
+      candidate.tenantId === scope.tenantId && candidate.id === candidateId
+        ? updated
+        : candidate
+    )
+    return cloneReleaseCandidateRecord(updated)
   }
 
   async createPluginCatalogEntry(
@@ -513,11 +841,12 @@ export class InMemoryControlPlaneStore implements ControlPlaneStore {
     trace: TestRunTrace
   ): Promise<TestRunTrace> {
     const scope = parseScope(rawScope)
-    if (trace.tenantId !== scope.tenantId) {
+    const sanitizedTrace = sanitizeTraceForPersistence(trace)
+    if (sanitizedTrace.tenantId !== scope.tenantId) {
       throw new DomainError('forbidden', 'Trace tenant does not match scope')
     }
-    this.assertTraceReferences(scope, trace)
-    const stored = cloneTrace(trace)
+    this.assertTraceReferences(scope, sanitizedTrace)
+    const stored = cloneTrace(sanitizedTrace)
     this.testRuns = [...this.testRuns, stored]
     return cloneTrace(stored)
   }
@@ -539,11 +868,12 @@ export class InMemoryControlPlaneStore implements ControlPlaneStore {
     trace: TestRunTrace
   ): Promise<TestRunTrace> {
     const scope = parseScope(rawScope)
-    if (trace.tenantId !== scope.tenantId) {
+    const sanitizedTrace = sanitizeTraceForPersistence(trace)
+    if (sanitizedTrace.tenantId !== scope.tenantId) {
       throw new DomainError('forbidden', 'Trace tenant does not match scope')
     }
-    this.assertTraceReferences(scope, trace)
-    const stored = cloneTrace(trace)
+    this.assertTraceReferences(scope, sanitizedTrace)
+    const stored = cloneTrace(sanitizedTrace)
     this.executionTraces = [...this.executionTraces, stored]
     return cloneTrace(stored)
   }
@@ -670,7 +1000,7 @@ export class InMemoryControlPlaneStore implements ControlPlaneStore {
     rawRun: TestSuiteRunRecord
   ): Promise<TestSuiteRunRecord> {
     const scope = parseScope(rawScope)
-    const run = cloneTestSuiteRun(rawRun)
+    const run = cloneTestSuiteRun(sanitizeTestSuiteRunTraces(rawRun))
     TestSuiteRunIdSchema.parse(run.id)
     if (run.tenantId !== scope.tenantId) {
       throw new DomainError(
@@ -777,6 +1107,24 @@ export class InMemoryControlPlaneStore implements ControlPlaneStore {
     return version
   }
 
+  private requireReleaseCandidateAuthority(
+    scope: TenantScope,
+    rawCandidateId: ReleaseCandidateId,
+    agentId: AgentId,
+    versionId: AgentVersionId
+  ): ReleaseCandidateRecord {
+    const candidateId = parseRequiredReleaseCandidateId(rawCandidateId)
+    const candidate = this.releaseCandidates.find(
+      (entry) => entry.tenantId === scope.tenantId && entry.id === candidateId
+    )
+    return assertReleaseCandidatePublishAuthority({
+      candidate: candidate ? cloneReleaseCandidateRecord(candidate) : null,
+      tenantId: scope.tenantId,
+      agentId,
+      versionId
+    })
+  }
+
   private requireTestSuite(
     scope: TenantScope,
     suiteId: TestSuiteId
@@ -803,6 +1151,19 @@ export class InMemoryControlPlaneStore implements ControlPlaneStore {
 
 function parseScope(scope: TenantScope): TenantScope {
   return TenantScopeSchema.parse(scope)
+}
+
+function parseRequiredReleaseCandidateId(
+  rawCandidateId: ReleaseCandidateId
+): ReleaseCandidateId {
+  const parsed = ReleaseCandidateIdSchema.safeParse(rawCandidateId)
+  if (!parsed.success) {
+    throw new DomainError(
+      'invalid_action',
+      'Validated release candidate evidence is required'
+    )
+  }
+  return parsed.data
 }
 
 function normalizeTraceLimit(limit: number): number {
@@ -853,6 +1214,56 @@ function assertPluginCatalogExpectedStatus(
       `Plugin catalog entry changed: expected ${expected}, observed ${actual}`
     )
   }
+}
+
+function assertKnowledgeSourceExpectedStatus(
+  actual: KnowledgeSourceStatus,
+  expected?: KnowledgeSourceStatus
+): void {
+  if (expected !== undefined && actual !== expected) {
+    throw new DomainError(
+      'conflict',
+      `Knowledge source changed: expected ${expected}, observed ${actual}`
+    )
+  }
+}
+
+function assertReleaseCandidateExpectedStatus(
+  actual: ReleaseCandidateStatus,
+  expected?: ReleaseCandidateStatus
+): void {
+  if (expected !== undefined && actual !== expected) {
+    throw new DomainError(
+      'conflict',
+      `Release candidate changed: expected ${expected}, observed ${actual}`
+    )
+  }
+}
+
+function canTransitionReleaseCandidate(
+  from: ReleaseCandidateStatus,
+  to: ReleaseCandidateStatus
+): boolean {
+  const transitions: Record<ReleaseCandidateStatus, ReleaseCandidateStatus[]> =
+    {
+      DRAFT: ['VALIDATED', 'REJECTED', 'ARCHIVED'],
+      VALIDATED: ['ARCHIVED'],
+      REJECTED: ['ARCHIVED'],
+      ARCHIVED: []
+    }
+  return transitions[from].includes(to)
+}
+
+function canTransitionKnowledgeSource(
+  from: KnowledgeSourceStatus,
+  to: KnowledgeSourceStatus
+): boolean {
+  const transitions: Record<KnowledgeSourceStatus, KnowledgeSourceStatus[]> = {
+    DRAFT: ['APPROVED', 'ARCHIVED'],
+    APPROVED: ['ARCHIVED'],
+    ARCHIVED: []
+  }
+  return transitions[from].includes(to)
 }
 
 function canTransitionPluginCatalog(
@@ -924,9 +1335,19 @@ function cloneTrace(trace: TestRunTrace): TestRunTrace {
       : {}),
     handoff: { ...trace.handoff },
     response: {
-      ...trace.response,
-      text: redactSensitiveText(trace.response.text)
+      text: redactSensitiveText(trace.response.text),
+      mode: trace.response.mode
     },
+    ...(trace.outputPolicy
+      ? {
+          outputPolicy: {
+            decision: trace.outputPolicy.decision,
+            reason: trace.outputPolicy.reason,
+            mode: trace.outputPolicy.mode,
+            redacted: trace.outputPolicy.redacted
+          }
+        }
+      : {}),
     provider: { ...trace.provider },
     ...(trace.prompt
       ? { prompt: { ...trace.prompt, blockIds: [...trace.prompt.blockIds] } }
@@ -991,5 +1412,27 @@ function clonePluginCatalogRecord(
     manifest: structuredClone(entry.manifest),
     createdAt: new Date(entry.createdAt),
     updatedAt: new Date(entry.updatedAt)
+  }
+}
+
+function cloneKnowledgeSourceRecord(
+  entry: KnowledgeSourceRecord
+): KnowledgeSourceRecord {
+  return {
+    ...entry,
+    createdAt: new Date(entry.createdAt),
+    updatedAt: new Date(entry.updatedAt)
+  }
+}
+
+function cloneReleaseCandidateRecord(
+  candidate: ReleaseCandidateRecord
+): ReleaseCandidateRecord {
+  return {
+    ...candidate,
+    gateResults: candidate.gateResults.map((gate) => ({ ...gate })),
+    createdAt: new Date(candidate.createdAt),
+    updatedAt: new Date(candidate.updatedAt),
+    validatedAt: candidate.validatedAt ? new Date(candidate.validatedAt) : null
   }
 }

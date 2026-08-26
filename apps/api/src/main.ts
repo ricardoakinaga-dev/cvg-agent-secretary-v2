@@ -1,4 +1,5 @@
 import { buildServerFromEnv } from './server.ts'
+import { serializeStartupFailure } from './startup-failure.ts'
 import { parseEnv } from '@cvg/shared'
 
 async function start() {
@@ -9,6 +10,6 @@ async function start() {
 }
 
 start().catch((error) => {
-  console.error(error)
+  console.error(serializeStartupFailure(error))
   process.exit(1)
 })

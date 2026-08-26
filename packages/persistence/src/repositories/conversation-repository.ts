@@ -6,8 +6,12 @@ import {
   type Channel
 } from '@cvg/shared'
 import {
+  AgentIdSchema,
+  AgentVersionIdSchema,
   TenantIdSchema,
   transitionHumanTakeover,
+  type AgentId,
+  type AgentVersionId,
   type HumanTakeoverEvent,
   type TenantId
 } from '@cvg/platform'
@@ -141,6 +145,57 @@ export class ConversationRepository {
     this.db.state.sessions = [...this.db.state.sessions, session]
     this.db.state.messages = [...this.db.state.messages, message]
     return { conversation, session, message }
+  }
+
+  bindSessionAgentVersion(
+    rawTenantId: TenantId,
+    sessionId: string,
+    rawAgentId: AgentId,
+    rawAgentVersionId: AgentVersionId
+  ): SessionRecord | null {
+    const tenantId = TenantIdSchema.parse(rawTenantId)
+    const agentId = AgentIdSchema.parse(rawAgentId)
+    const agentVersionId = AgentVersionIdSchema.parse(rawAgentVersionId)
+    const existing = this.db.state.sessions.find((candidate) => {
+      if (candidate.id !== sessionId) return false
+      const conversation = this.db.state.conversations.find(
+        (item) => item.id === candidate.conversationId
+      )
+      return conversation?.tenantId === tenantId
+    })
+    if (!existing) {
+      throw new DomainError('invalid_action', 'Session not found')
+    }
+    const hasAgent = existing.agentId !== undefined
+    const hasVersion = existing.agentVersionId !== undefined
+    if (hasAgent !== hasVersion) {
+      throw new DomainError(
+        'invalid_action',
+        'Session agent binding is incomplete'
+      )
+    }
+    if (hasAgent && hasVersion) {
+      if (
+        existing.agentId !== agentId ||
+        existing.agentVersionId !== agentVersionId
+      ) {
+        throw new DomainError(
+          'conflict',
+          'Session agent binding cannot be replaced'
+        )
+      }
+      return { ...existing }
+    }
+    const updated: SessionRecord = {
+      ...existing,
+      agentId,
+      agentVersionId,
+      updatedAt: new Date()
+    }
+    this.db.state.sessions = this.db.state.sessions.map((candidate) =>
+      candidate.id === updated.id ? updated : candidate
+    )
+    return { ...updated }
   }
 
   appendOutboundMessage(input: {

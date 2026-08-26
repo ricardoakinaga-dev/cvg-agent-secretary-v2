@@ -4,15 +4,22 @@ import type {
   AgentConfig,
   AgentVersionRecord,
   AgentExecutionMode,
-  TestRunTrace
+  HandoffPriority,
+  TestRunTrace,
+  TraceSpanName,
+  ApprovedKnowledgeForTest
 } from './contracts.ts'
-import { createTraceId, type AgentId, type TenantId } from './ids.ts'
-import type { HumanTakeoverState } from './handoff.ts'
-import { createDryRunModelProvider } from './model-provider.ts'
+import { ApprovedKnowledgeForTestSchema } from './contracts.ts'
 import {
-  CONTROLLED_SCHEDULING_TOOL,
-  createControlledCapabilityGateway
-} from './controlled-plugins.ts'
+  createTraceId,
+  TraceIdSchema,
+  type AgentId,
+  type TenantId,
+  type TraceId
+} from './ids.ts'
+import type { HumanTakeoverState } from './handoff.ts'
+import { resolveControlledModelProvider } from './model-provider.ts'
+import { createControlledCapabilityGateway } from './controlled-plugins.ts'
 import type {
   CapabilityApproval,
   CapabilityApprovalResolver,
@@ -21,19 +28,19 @@ import type {
 } from './plugin-gateway.ts'
 import type { PlatformEventBus, PlatformEventName } from './event-bus.ts'
 import { composePrompt } from './prompt-composer.ts'
+import { createPromptProfileSnapshot } from './prompt-profile.ts'
 import { evaluatePlatformPolicy } from './policy-evaluator.ts'
-
-export interface ApprovedKnowledgeForTest {
-  version: string
-  answer: string
-  source: string
-}
+import {
+  CONTROLLED_SAFE_OUTPUTS,
+  enforceControlledOutput
+} from './output-policy.ts'
 
 export interface TestLabInput {
   store: ControlPlaneStore
   tenantId: TenantId
   agentId: AgentId
   versionId: AgentVersionRecord['id']
+  traceId?: TraceId
   message: string
   history: string[]
   approvedKnowledge?: ApprovedKnowledgeForTest
@@ -45,6 +52,93 @@ export interface TestLabInput {
   onToolAudit?: (event: PluginAuditEvent) => void | Promise<void>
   eventBus?: PlatformEventBus
   context?: { conversationId?: string; sessionId?: string }
+  monotonicClock?: () => number
+}
+
+export interface ControlledTraceTiming {
+  measure<T>(name: TraceSpanName, operation: () => T): T
+  measureAsync<T>(
+    name: TraceSpanName,
+    operation: () => T | PromiseLike<T>
+  ): Promise<T>
+  snapshot(): Partial<Record<TraceSpanName, number>>
+}
+
+const TRACE_STAGE_MAX_DURATION_MS = 86_400_000
+
+export function createControlledTraceTiming(
+  clock: () => number = () => globalThis.performance.now()
+): ControlledTraceTiming {
+  if (typeof clock !== 'function') {
+    throw new DomainError(
+      'validation_failed',
+      'Trace timing clock must be callable'
+    )
+  }
+
+  let lastClockValue = Number.NEGATIVE_INFINITY
+  let durations: Partial<Record<TraceSpanName, number>> = {}
+
+  const readClock = (): number => {
+    const value = clock()
+    if (!Number.isFinite(value) || value < lastClockValue) {
+      throw new DomainError(
+        'validation_failed',
+        'Trace timing clock must be finite and monotonic'
+      )
+    }
+    lastClockValue = value
+    return value
+  }
+
+  const record = (name: TraceSpanName, durationMs: number): void => {
+    if (
+      !Number.isFinite(durationMs) ||
+      durationMs < 0 ||
+      durationMs > TRACE_STAGE_MAX_DURATION_MS
+    ) {
+      throw new DomainError(
+        'validation_failed',
+        'Trace stage duration is outside the controlled bound'
+      )
+    }
+    const totalDurationMs = (durations[name] ?? 0) + durationMs
+    if (
+      !Number.isFinite(totalDurationMs) ||
+      totalDurationMs > TRACE_STAGE_MAX_DURATION_MS
+    ) {
+      throw new DomainError(
+        'validation_failed',
+        'Trace stage duration total is outside the controlled bound'
+      )
+    }
+    durations = { ...durations, [name]: totalDurationMs }
+  }
+
+  return {
+    measure<T>(name: TraceSpanName, operation: () => T): T {
+      const startedAt = readClock()
+      try {
+        return operation()
+      } finally {
+        record(name, readClock() - startedAt)
+      }
+    },
+    async measureAsync<T>(
+      name: TraceSpanName,
+      operation: () => T | PromiseLike<T>
+    ): Promise<T> {
+      const startedAt = readClock()
+      try {
+        return await operation()
+      } finally {
+        record(name, readClock() - startedAt)
+      }
+    },
+    snapshot(): Partial<Record<TraceSpanName, number>> {
+      return { ...durations }
+    }
+  }
 }
 
 export interface AgentExecutionActor {
@@ -71,157 +165,236 @@ export async function runTestLab(input: TestLabInput): Promise<TestRunTrace> {
 export async function executeConfiguredAgent(
   input: ControlledAgentExecutionInput
 ): Promise<TestRunTrace> {
+  const traceId = resolveExecutionTraceId(input.traceId)
+  const executionInput: ControlledAgentExecutionInput = { ...input, traceId }
+  const timing = createControlledTraceTiming(input.monotonicClock)
   const startedAt = new Date()
-  const version = await input.store.getVersion(
-    { tenantId: input.tenantId },
-    input.versionId
+  const version = await timing.measureAsync('context', () =>
+    input.store.getVersion({ tenantId: input.tenantId }, input.versionId)
   )
   if (!version || version.agentId !== input.agentId) {
     throw new DomainError('invalid_action', 'Agent version is not available')
   }
-  const message = validateMessage(input.message)
-  const history = input.history.map(validateHistoryItem).map(redactTestMessage)
-  validateApprovedKnowledge(input.approvedKnowledge)
+  const normalizedInput = timing.measure('normalize', () => ({
+    message: validateMessage(input.message),
+    history: input.history.map(validateHistoryItem).map(redactTestMessage)
+  }))
+  const message = normalizedInput.message
+  const history = normalizedInput.history
+  const approvedKnowledge = timing.measure('knowledge', () =>
+    validateApprovedKnowledge(input.approvedKnowledge)
+  )
   const config = version.config
-  await emitPlatformEvent(input, 'message.received', {
+  const modelProvider = resolveControlledModelProvider(config.model)
+  const promptProfile = createPromptProfileSnapshot(version)
+  await emitPlatformEvent(executionInput, 'message.received', {
     messageLength: message.length,
     historySize: input.history.length
   })
-  await emitPlatformEvent(input, 'message.normalized', {
+  await emitPlatformEvent(executionInput, 'message.normalized', {
     messageLength: message.length,
     historySize: history.length
   })
-  await emitPlatformEvent(input, 'conversation.loaded', {
+  await emitPlatformEvent(executionInput, 'conversation.loaded', {
     historySize: history.length
   })
-  await emitPlatformEvent(input, 'context.loaded', {
+  await emitPlatformEvent(executionInput, 'context.loaded', {
     hasConversationId: Boolean(input.context?.conversationId),
     hasSessionId: Boolean(input.context?.sessionId)
   })
-  await emitPlatformEvent(input, 'agent.resolved', {
+  await emitPlatformEvent(executionInput, 'agent.resolved', {
     version: version.version,
     status: version.status
   })
-  await emitPlatformEvent(input, 'prompt.before', {
+  await emitPlatformEvent(executionInput, 'prompt.before', {
     blockCount: config.promptBlocks.length
   })
-  const prompt = composePrompt(config)
-  await emitPlatformEvent(input, 'prompt.after', {
+  const prompt = timing.measure('prompt', () => composePrompt(config))
+  await emitPlatformEvent(executionInput, 'prompt.after', {
     blockIds: prompt.blockIds,
     textLength: prompt.text.length
   })
 
-  await emitPlatformEvent(input, 'intent.before', {
+  await emitPlatformEvent(executionInput, 'intent.before', {
     messageLength: message.length
   })
-  const intent = classifyForDryRun(message)
-  await emitPlatformEvent(input, 'intent.after', intent)
-  const action = actionForMessage(message, intent.name)
-  await emitPlatformEvent(input, 'policy.input.before', {
+  const intent = timing.measure('intent', () => classifyForDryRun(message))
+  await emitPlatformEvent(executionInput, 'intent.after', intent)
+  const { action, policy } = timing.measure('policy', () => {
+    const nextAction = actionForMessage(message, intent.name)
+    const nextPolicy = evaluatePlatformPolicy({
+      action: nextAction,
+      confidence: intent.confidence,
+      config,
+      clarificationCount: history.length,
+      riskLevel: riskForIntent(intent.name).level
+    })
+    return { action: nextAction, policy: nextPolicy }
+  })
+  await emitPlatformEvent(executionInput, 'policy.input.before', {
     action,
     confidence: intent.confidence,
     clarificationCount: history.length
   })
-  const policy = evaluatePlatformPolicy({
-    action,
-    confidence: intent.confidence,
-    config,
-    clarificationCount: history.length,
-    riskLevel: riskForIntent(intent.name).level
-  })
-  await emitPlatformEvent(input, 'policy.input.after', {
+  await emitPlatformEvent(executionInput, 'policy.input.after', {
     decision: policy.decision,
     layer: policy.layer,
     reason: policy.reason
   })
   if (policy.decision === 'blocked') {
-    await emitPlatformEvent(input, 'security.blocked', {
+    await emitPlatformEvent(executionInput, 'security.blocked', {
       action,
       reason: policy.reason
     })
   }
   const risk = riskForIntent(intent.name, policy)
-  await emitPlatformEvent(input, 'knowledge.before', {
+  await emitPlatformEvent(executionInput, 'knowledge.before', {
     intent: intent.name,
     configuredBindings: config.knowledge.length
   })
-  const knowledge = resolveKnowledge(
-    intent.name,
-    input.approvedKnowledge,
-    config.knowledge
+  const knowledge = timing.measure('knowledge', () =>
+    resolveKnowledge(intent.name, approvedKnowledge, config.knowledge)
   )
-  await emitPlatformEvent(input, 'knowledge.after', knowledge.trace)
+  await emitPlatformEvent(executionInput, 'knowledge.after', knowledge.trace)
   const handoffRequested =
     policy.decision === 'handoff' ||
     policy.decision === 'requires_approval' ||
     intent.name === 'medication_advice' ||
     knowledge.trace.status === 'approved_source_missing' ||
     knowledge.trace.status === 'handoff'
-  const handoffState: HumanTakeoverState = handoffRequested
-    ? 'HANDOFF_REQUESTED'
-    : 'BOT_ACTIVE'
-  if (handoffRequested) {
-    await emitPlatformEvent(input, 'handoff.requested', {
-      reason:
-        policy.decision === 'handoff' || policy.decision === 'requires_approval'
-          ? policy.reason
-          : intent.name === 'medication_advice'
-            ? 'veterinary_evaluation_required'
-            : 'approved_source_missing'
+  const handoffReason = handoffRequested
+    ? policy.decision === 'handoff' || policy.decision === 'requires_approval'
+      ? policy.reason
+      : intent.name === 'medication_advice'
+        ? 'veterinary_evaluation_required'
+        : 'approved_source_missing'
+    : null
+  const response = timing.measure('response', () =>
+    buildResponse({
+      config,
+      intent: intent.name,
+      policyDecision: policy.decision,
+      knowledge: knowledge.trace,
+      knowledgeAnswer: knowledge.answer,
+      handoffRequested
     })
-  }
-  const response = buildResponse({
-    config,
-    intent: intent.name,
-    policyDecision: policy.decision,
-    knowledge: knowledge.trace,
-    knowledgeAnswer: knowledge.answer,
-    handoffRequested
-  })
-  await emitPlatformEvent(input, 'response.before', {
+  )
+  await emitPlatformEvent(executionInput, 'response.before', {
     mode: response.mode
   })
   const promptWithHistory = history.length
     ? `${prompt.text}\n\nConversation history:\n${history.join('\n')}`
     : prompt.text
-  await emitPlatformEvent(input, 'model.before', {
-    provider: config.model.provider,
+  await emitPlatformEvent(executionInput, 'model.before', {
+    provider: modelProvider.name,
     model: config.model.model,
     promptLength: promptWithHistory.length
   })
-  let completion: Awaited<
-    ReturnType<ReturnType<typeof createDryRunModelProvider>['complete']>
-  >
+  let rawCompletion: unknown
   try {
-    completion = await createDryRunModelProvider(config.model).complete({
-      prompt: promptWithHistory,
-      fallbackText: response.text
-    })
+    rawCompletion = await timing.measureAsync('model', () =>
+      modelProvider.complete({
+        prompt: promptWithHistory,
+        fallbackText: response.text
+      })
+    )
   } catch (error) {
-    await emitPlatformEvent(input, 'model.error', {
-      provider: config.model.provider,
+    await emitPlatformEvent(executionInput, 'model.error', {
+      provider: modelProvider.name,
       model: config.model.model,
       reason: 'model_execution_failed'
     })
     throw error
   }
-  await emitPlatformEvent(input, 'model.after', {
-    provider: completion.provider,
-    model: completion.model,
-    externalCall: completion.externalCall,
-    responseLength: completion.text.length
+  const completionText = readCompletionText(rawCompletion)
+  await emitPlatformEvent(executionInput, 'model.after', {
+    provider: modelProvider.name,
+    model: config.model.model,
+    externalCall: false,
+    responseLength:
+      typeof completionText === 'string' ? completionText.length : 0
+  })
+  await emitPlatformEvent(executionInput, 'policy.output.before', {
+    mode: response.mode,
+    riskLevel: risk.level,
+    responseLength:
+      typeof completionText === 'string' ? completionText.length : 0
+  })
+  const output = timing.measure('response', () =>
+    enforceControlledOutput({
+      text: completionText,
+      mode: response.mode,
+      riskLevel: risk.level
+    })
+  )
+  await emitPlatformEvent(executionInput, 'policy.output.after', {
+    decision: output.decision,
+    reason: output.reason,
+    mode: output.mode,
+    redacted: output.redacted,
+    responseLength: output.text.length
   })
   const completedResponse = {
     ...response,
-    text: redactTestMessage(completion.text)
+    mode: output.mode,
+    text: output.text
   }
-  const tools = await executePlannedTools({
-    input,
-    config,
-    intent: intent.name,
-    policy
+  const handoff = timing.measure('handoff', () => {
+    const outputCausedHandoff =
+      !handoffRequested && completedResponse.mode === 'handoff'
+    const finalHandoffRequested = handoffRequested || outputCausedHandoff
+    const outputRejectedHandoff =
+      output.decision === 'rewritten' && completedResponse.mode === 'handoff'
+    const finalHandoffReason = outputRejectedHandoff
+      ? output.reason
+      : handoffRequested
+        ? handoffReason
+        : outputCausedHandoff
+          ? output.reason
+          : null
+    const finalHandoffDestination = finalHandoffRequested
+      ? config.handoff.lowConfidenceDestination
+      : undefined
+    const finalHandoffPriority = finalHandoffRequested
+      ? resolveHandoffPriority(config.handoff.priority, risk.level)
+      : undefined
+    const finalHandoffState: HumanTakeoverState = finalHandoffRequested
+      ? 'HANDOFF_REQUESTED'
+      : 'BOT_ACTIVE'
+    return {
+      finalHandoffRequested,
+      finalHandoffReason,
+      finalHandoffDestination,
+      finalHandoffPriority,
+      finalHandoffState
+    }
   })
-  await emitPlatformEvent(input, 'response.after', {
+  const {
+    finalHandoffRequested,
+    finalHandoffReason,
+    finalHandoffDestination,
+    finalHandoffPriority,
+    finalHandoffState
+  } = handoff
+  if (finalHandoffRequested) {
+    await emitPlatformEvent(executionInput, 'handoff.requested', {
+      reason: finalHandoffReason,
+      destination: finalHandoffDestination,
+      priority: finalHandoffPriority
+    })
+  }
+  const tools = await timing.measureAsync('tool', () =>
+    output.decision === 'rewritten'
+      ? []
+      : executePlannedTools({
+          input: executionInput,
+          config,
+          intent: intent.name,
+          policy,
+          traceId
+        })
+  )
+  await emitPlatformEvent(executionInput, 'response.after', {
     mode: completedResponse.mode,
     responseLength: completedResponse.text.length
   })
@@ -229,7 +402,7 @@ export async function executeConfiguredAgent(
   const promptTokens = estimateTokenCount(promptWithHistory)
   const completionTokens = estimateTokenCount(completedResponse.text)
   const trace: TestRunTrace = {
-    traceId: createTraceId(),
+    traceId,
     tenantId: input.tenantId,
     agentId: input.agentId,
     versionId: input.versionId,
@@ -245,26 +418,31 @@ export async function executeConfiguredAgent(
       output: tool.status === 'succeeded' ? { redacted: true } : null
     })),
     handoff: {
-      requested: handoffRequested,
-      reason: handoffRequested
-        ? policy.decision === 'handoff' ||
-          policy.decision === 'requires_approval'
-          ? policy.reason
-          : intent.name === 'medication_advice'
-            ? 'veterinary_evaluation_required'
-            : 'approved_source_missing'
-        : null,
-      state: handoffState
+      requested: finalHandoffRequested,
+      reason: finalHandoffReason,
+      state: finalHandoffState,
+      ...(finalHandoffDestination
+        ? { destination: finalHandoffDestination }
+        : {}),
+      ...(finalHandoffPriority ? { priority: finalHandoffPriority } : {})
     },
     response: completedResponse,
+    outputPolicy: {
+      decision: output.decision,
+      reason: output.reason,
+      mode: output.mode,
+      redacted: output.redacted
+    },
     provider: {
-      provider: completion.provider,
-      model: completion.model,
-      externalCall: completion.externalCall
+      provider: modelProvider.name,
+      model: config.model.model,
+      externalCall: false
     },
     prompt: {
-      version: `${version.id}:v${version.version}`,
-      blockIds: prompt.blockIds
+      version: promptProfile.version,
+      status: promptProfile.status,
+      checksum: promptProfile.checksum,
+      blockIds: promptProfile.blockIds
     },
     configVersion: `${version.id}:v${version.version}`,
     executionMode: input.executionMode,
@@ -282,7 +460,9 @@ export async function executeConfiguredAgent(
       policy,
       knowledge: knowledge.trace,
       tools,
-      handoffRequested
+      handoffRequested: finalHandoffRequested,
+      durations: timing.snapshot(),
+      latencyMs: Math.max(0, completedAt.getTime() - startedAt.getTime())
     }),
     ...(input.context?.conversationId
       ? { conversationId: input.context.conversationId }
@@ -290,10 +470,10 @@ export async function executeConfiguredAgent(
     ...(input.context?.sessionId ? { sessionId: input.context.sessionId } : {}),
     createdAt: completedAt
   }
-  await emitPlatformEvent(input, 'conversation.completed', {
+  await emitPlatformEvent(executionInput, 'conversation.completed', {
     status: trace.status,
     policyDecision: policy.decision,
-    handoffRequested,
+    handoffRequested: finalHandoffRequested,
     externalCall: trace.provider.externalCall
   })
   return trace
@@ -313,6 +493,14 @@ function validateMessage(rawMessage: string): string {
   return message
 }
 
+function resolveHandoffPriority(
+  configuredPriority: HandoffPriority | undefined,
+  riskLevel: NonNullable<TestRunTrace['risk']>['level']
+): HandoffPriority {
+  if (riskLevel === 'high' || riskLevel === 'critical') return 'high'
+  return configuredPriority ?? 'medium'
+}
+
 function validateHistoryItem(rawItem: string): string {
   if (typeof rawItem !== 'string' || rawItem.length > 4000) {
     throw new DomainError('validation_failed', 'Test history item is invalid')
@@ -320,20 +508,29 @@ function validateHistoryItem(rawItem: string): string {
   return rawItem
 }
 
+function readCompletionText(completion: unknown): unknown {
+  if (
+    typeof completion !== 'object' ||
+    completion === null ||
+    Array.isArray(completion)
+  ) {
+    return undefined
+  }
+  return (completion as { text?: unknown }).text
+}
+
 function validateApprovedKnowledge(
   approvedKnowledge: ApprovedKnowledgeForTest | undefined
-): void {
-  if (!approvedKnowledge) return
-  if (
-    !/^controlled:\/\//.test(approvedKnowledge.source) ||
-    approvedKnowledge.version.trim().length === 0 ||
-    approvedKnowledge.answer.trim().length === 0
-  ) {
+): ApprovedKnowledgeForTest | undefined {
+  if (approvedKnowledge === undefined) return undefined
+  const parsed = ApprovedKnowledgeForTestSchema.safeParse(approvedKnowledge)
+  if (!parsed.success) {
     throw new DomainError(
       'validation_failed',
-      'Approved knowledge must reference a controlled source'
+      'Approved knowledge payload is invalid'
     )
   }
+  return parsed.data
 }
 
 function classifyForDryRun(message: string): {
@@ -362,11 +559,17 @@ function classifyForDryRun(message: string): {
 
 function actionForMessage(message: string, intent: string): string {
   const text = message.toLowerCase()
+  if (/send_external|enviar.*extern|canal real|provider real/.test(text)) {
+    return 'send_external'
+  }
   if (/confirmar|confirm/.test(text) && intent === 'scheduling') {
     return 'confirm_appointment'
   }
   if (/cancelar|cancel/.test(text) && intent === 'scheduling') {
     return 'cancel_appointment'
+  }
+  if (/reagendar|remarcar|reschedule/.test(text) && intent === 'scheduling') {
+    return 'reschedule_appointment'
   }
   return intent === 'unknown' ? 'respond' : intent
 }
@@ -410,25 +613,33 @@ function buildResponse(input: {
   if (input.intent === 'medication_advice') {
     return {
       mode: 'handoff',
-      text: 'Não posso orientar o uso de medicamentos. Procure um médico-veterinário para avaliação.'
+      text: CONTROLLED_SAFE_OUTPUTS.medicationRefusal
     }
   }
   if (input.policyDecision === 'blocked') {
     return {
       mode: 'blocked',
-      text: 'Essa ação permanece bloqueada pelas políticas de segurança.'
+      text: CONTROLLED_SAFE_OUTPUTS.blocked
     }
   }
   if (input.policyDecision === 'clarify') {
     return {
       mode: 'clarify',
-      text: 'Pode esclarecer um pouco mais sua solicitação?'
+      text:
+        input.config.responseTemplates.low_confidence ??
+        CONTROLLED_SAFE_OUTPUTS.clarify
     }
   }
   if (input.handoffRequested) {
     return {
       mode: 'handoff',
-      text: 'Vou encaminhar sua solicitação para a equipe responsável.'
+      text:
+        (input.intent === 'scheduling' &&
+          input.config.responseTemplates.scheduling_without_evidence) ||
+        (input.knowledge.status === 'approved_source_missing' &&
+          input.config.responseTemplates.no_knowledge) ||
+        input.config.responseTemplates.handoff ||
+        CONTROLLED_SAFE_OUTPUTS.handoff
     }
   }
   if (input.knowledge.status === 'answered') {
@@ -442,7 +653,12 @@ function buildResponse(input: {
   }
   return {
     mode: 'answer',
-    text: input.config.responseTemplates[input.intent] ?? input.config.greeting
+    text:
+      input.config.responseTemplates[input.intent] ??
+      (input.knowledge.status === 'approved_source_missing'
+        ? input.config.responseTemplates.no_knowledge
+        : undefined) ??
+      input.config.greeting
   }
 }
 
@@ -474,38 +690,101 @@ function createTraceSpans(input: {
   knowledge: TestRunTrace['knowledge']
   tools: TestRunTrace['tools']
   handoffRequested: boolean
+  durations: Partial<Record<TraceSpanName, number>>
+  latencyMs: number
 }): NonNullable<TestRunTrace['spans']> {
+  const durations = fitTraceDurations(input.durations, input.latencyMs)
+  const durationFor = (
+    name: TraceSpanName,
+    status: 'completed' | 'blocked' | 'skipped'
+  ): number => (status === 'skipped' ? 0 : (durations[name] ?? 0))
   const toolStatus = input.tools.length
     ? input.tools.some((tool) => tool.status === 'blocked')
       ? 'blocked'
       : 'completed'
     : 'skipped'
   return [
-    { name: 'normalize', status: 'completed', durationMs: 0 },
-    { name: 'context', status: 'completed', durationMs: 0 },
-    { name: 'intent', status: 'completed', durationMs: 0 },
+    {
+      name: 'normalize',
+      status: 'completed',
+      durationMs: durationFor('normalize', 'completed')
+    },
+    {
+      name: 'context',
+      status: 'completed',
+      durationMs: durationFor('context', 'completed')
+    },
+    {
+      name: 'intent',
+      status: 'completed',
+      durationMs: durationFor('intent', 'completed')
+    },
     {
       name: 'policy',
       status: input.policy.decision === 'blocked' ? 'blocked' : 'completed',
-      durationMs: 0
+      durationMs: durationFor(
+        'policy',
+        input.policy.decision === 'blocked' ? 'blocked' : 'completed'
+      )
     },
     {
       name: 'knowledge',
       status:
         input.knowledge.status === 'not_requested' ? 'skipped' : 'completed',
-      durationMs: 0
+      durationMs: durationFor(
+        'knowledge',
+        input.knowledge.status === 'not_requested' ? 'skipped' : 'completed'
+      )
     },
-    { name: 'prompt', status: 'completed', durationMs: 0 },
-    { name: 'model', status: 'completed', durationMs: 0 },
-    { name: 'tool', status: toolStatus, durationMs: 0 },
-    { name: 'response', status: 'completed', durationMs: 0 },
+    {
+      name: 'prompt',
+      status: 'completed',
+      durationMs: durationFor('prompt', 'completed')
+    },
+    {
+      name: 'model',
+      status: 'completed',
+      durationMs: durationFor('model', 'completed')
+    },
+    {
+      name: 'tool',
+      status: toolStatus,
+      durationMs: durationFor('tool', toolStatus)
+    },
+    {
+      name: 'response',
+      status: 'completed',
+      durationMs: durationFor('response', 'completed')
+    },
     {
       name: 'handoff',
       status: input.handoffRequested ? 'completed' : 'skipped',
-      durationMs: 0
+      durationMs: durationFor(
+        'handoff',
+        input.handoffRequested ? 'completed' : 'skipped'
+      )
     },
     { name: 'delivery', status: 'skipped', durationMs: 0 }
   ]
+}
+
+function fitTraceDurations(
+  durations: Partial<Record<TraceSpanName, number>>,
+  latencyMs: number
+): Partial<Record<TraceSpanName, number>> {
+  const names = Object.keys(durations) as TraceSpanName[]
+  const totalDurationMs = names.reduce(
+    (total, name) => total + (durations[name] ?? 0),
+    0
+  )
+  if (totalDurationMs <= latencyMs) return { ...durations }
+  if (latencyMs <= 0 || totalDurationMs <= 0) {
+    return Object.fromEntries(names.map((name) => [name, 0]))
+  }
+  const scale = latencyMs / totalDurationMs
+  return Object.fromEntries(
+    names.map((name) => [name, (durations[name] ?? 0) * scale])
+  )
 }
 
 async function executePlannedTools(input: {
@@ -513,17 +792,13 @@ async function executePlannedTools(input: {
   config: AgentConfig
   intent: string
   policy: ReturnType<typeof evaluatePlatformPolicy>
+  traceId: TraceId
 }): Promise<TestRunTrace['tools']> {
-  const toolNames =
-    input.intent === 'scheduling'
-      ? input.config.plugins
-          .filter(
-            (binding) =>
-              binding.enabled &&
-              binding.allowedTools.includes(CONTROLLED_SCHEDULING_TOOL)
-          )
-          .flatMap(() => [CONTROLLED_SCHEDULING_TOOL])
-      : []
+  const toolNames = input.input.capabilityGateway
+    ? input.input.capabilityGateway
+        .planTools(input.config, input.intent)
+        .map((tool) => tool.toolName)
+    : []
   if (toolNames.length === 0) return []
 
   return Promise.all(
@@ -561,6 +836,7 @@ async function executePlannedTools(input: {
           actor: input.input.actor,
           policy: input.policy,
           dryRun: input.input.executionMode === 'TEST_LAB',
+          traceId: input.traceId,
           ...(approval ? { approval } : {}),
           ...(input.input.requireCapabilityApproval
             ? { requireApproval: true }
@@ -581,6 +857,15 @@ async function executePlannedTools(input: {
       }
     })
   )
+}
+
+function resolveExecutionTraceId(rawTraceId: unknown): TraceId {
+  if (rawTraceId === undefined) return createTraceId()
+  const parsed = TraceIdSchema.safeParse(rawTraceId)
+  if (!parsed.success) {
+    throw new DomainError('validation_failed', 'Execution trace ID is invalid')
+  }
+  return parsed.data
 }
 
 const controlledRuntimeActor: AgentExecutionActor = {
@@ -606,6 +891,7 @@ async function emitPlatformEvent(
       agentId: input.agentId,
       versionId: input.versionId,
       executionMode: input.executionMode,
+      ...(input.traceId !== undefined ? { traceId: input.traceId } : {}),
       payload
     })
   } catch {

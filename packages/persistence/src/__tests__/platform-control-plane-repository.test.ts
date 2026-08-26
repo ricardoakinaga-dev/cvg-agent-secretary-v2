@@ -2,10 +2,13 @@ import type { QueryResult, QueryResultRow } from 'pg'
 import { describe, expect, it } from 'vitest'
 import {
   AgentConfigSchema,
+  createValidatedControlledReleaseCandidate,
   createTestSuiteRunId,
   createTraceId,
   type AgentConfig,
   type AgentVersionStatus,
+  type KnowledgeSourceStatus,
+  type ReleaseCandidateStatus,
   type TestRunTrace,
   type TestSuiteRunRecord
 } from '@cvg/platform'
@@ -113,6 +116,104 @@ describe('Postgres control plane repository', () => {
       )
     ).toBe(true)
     expect(queries.some((query) => query.text.includes('$5::jsonb'))).toBe(true)
+
+    const insertCount = queries.filter((query) =>
+      query.text.includes('INSERT INTO platform_test_runs')
+    ).length
+    await expect(
+      repository.recordTestRun({ tenantId }, {
+        ...trace,
+        provider: { ...trace.provider, externalCall: true }
+      } as unknown as TestRunTrace)
+    ).rejects.toMatchObject({ code: 'validation_failed' })
+    expect(
+      queries.filter((query) =>
+        query.text.includes('INSERT INTO platform_test_runs')
+      )
+    ).toHaveLength(insertCount)
+  })
+
+  it('fails closed when a PostgreSQL trace row is corrupt', async () => {
+    const trace: TestRunTrace = {
+      traceId: createTraceId(),
+      tenantId,
+      agentId,
+      versionId,
+      input: { message: 'fixture', historySize: 0 },
+      intent: { name: 'unknown', confidence: 0.2 },
+      policy: [],
+      knowledge: { status: 'not_requested' },
+      tools: [],
+      handoff: { requested: false, reason: null, state: 'BOT_ACTIVE' },
+      response: { text: 'Resposta segura.', mode: 'answer' },
+      provider: {
+        provider: 'fake',
+        model: 'deterministic-v1',
+        externalCall: true
+      } as never,
+      configVersion: 'fixture-v1',
+      executionMode: 'TEST_LAB',
+      createdAt: new Date()
+    }
+    const client = {
+      async query<T extends QueryResultRow = QueryResultRow>(text: string) {
+        if (text.includes('FROM platform_test_runs')) {
+          return resultRows<T>([{ trace }])
+        }
+        return resultRows<T>([])
+      }
+    } satisfies PostgresQueryable
+    const repository = new PostgresControlPlaneRepository(client)
+
+    await expect(repository.listTestRuns({ tenantId })).rejects.toMatchObject({
+      code: 'validation_failed'
+    })
+  })
+
+  it('fails closed when trace JSON disagrees with persisted row references', async () => {
+    const trace: TestRunTrace = {
+      traceId: createTraceId(),
+      tenantId,
+      agentId,
+      versionId,
+      input: { message: 'fixture', historySize: 0 },
+      intent: { name: 'unknown', confidence: 0.2 },
+      policy: [],
+      knowledge: { status: 'not_requested' },
+      tools: [],
+      handoff: { requested: false, reason: null, state: 'BOT_ACTIVE' },
+      response: { text: 'Resposta segura.', mode: 'answer' },
+      provider: {
+        provider: 'fake',
+        model: 'deterministic-v1',
+        externalCall: false
+      },
+      configVersion: 'fixture-v1',
+      executionMode: 'TEST_LAB',
+      createdAt: new Date('2026-08-23T10:00:00.000Z')
+    }
+    const client = {
+      async query<T extends QueryResultRow = QueryResultRow>(text: string) {
+        if (text.includes('FROM platform_test_runs')) {
+          return resultRows<T>([
+            {
+              tenant_id: tenantId,
+              trace_id: trace.traceId,
+              agent_id: 'agent_00000000-0000-4000-8000-000000000032',
+              version_id: trace.versionId,
+              trace,
+              created_at: trace.createdAt
+            }
+          ])
+        }
+        return resultRows<T>([])
+      }
+    } satisfies PostgresQueryable
+    const repository = new PostgresControlPlaneRepository(client)
+
+    await expect(repository.listTestRuns({ tenantId })).rejects.toMatchObject({
+      code: 'validation_failed'
+    })
   })
 
   it('persists the complete immutable agent/version lifecycle', async () => {
@@ -138,6 +239,18 @@ describe('Postgres control plane repository', () => {
       'admin.lifecycle'
     )
     expect(draft.status).toBe('DRAFT')
+    const invalidTemplateKey = AgentConfigSchema.parse({
+      ...createConfig(),
+      responseTemplates: { 'invalid key': 'Texto controlado.' }
+    })
+    await expect(
+      repository.createVersion(
+        scope,
+        agent.id,
+        invalidTemplateKey,
+        'admin.lifecycle'
+      )
+    ).rejects.toMatchObject({ code: 'validation_failed' })
     const agentLockIndex = client.queries.findIndex(
       (query) =>
         query.includes('FROM platform_agents') && query.includes('FOR UPDATE')
@@ -172,7 +285,18 @@ describe('Postgres control plane repository', () => {
       testing.id,
       'APPROVED'
     )
-    const published = await repository.publishVersion(scope, approved.id)
+    const releaseCandidate = await createValidatedControlledReleaseCandidate(
+      repository,
+      tenantId,
+      agent.id,
+      approved.id,
+      'admin.lifecycle'
+    )
+    const published = await repository.publishVersion(
+      scope,
+      approved.id,
+      releaseCandidate.id
+    )
     expect(published.status).toBe('PUBLISHED')
     expect(
       client.queries.some(
@@ -191,7 +315,8 @@ describe('Postgres control plane repository', () => {
       scope,
       agent.id,
       published.id,
-      'admin.lifecycle'
+      'admin.lifecycle',
+      releaseCandidate.id
     )
     const transactionsAfterRollback = client.queries.filter(
       (query) => query === 'BEGIN'
@@ -200,6 +325,91 @@ describe('Postgres control plane repository', () => {
     expect(rollback.status).toBe('PUBLISHED')
     expect(rollback.id).not.toBe(published.id)
     expect((await repository.listVersions(scope, agent.id)).length).toBe(2)
+  })
+
+  it('persists tenant-scoped knowledge metadata with guarded lifecycle', async () => {
+    const client = new StatefulPlatformClient()
+    const repository = new PostgresControlPlaneRepository(client)
+    const scope = { tenantId }
+    const draft = await repository.createKnowledgeSource(
+      scope,
+      {
+        source: 'controlled://institutional-hours',
+        version: 'v1',
+        label: 'Horários fictícios',
+        description: 'Metadata controlada sem conteúdo documental.'
+      },
+      'admin.knowledge'
+    )
+    expect(draft).toMatchObject({
+      status: 'DRAFT',
+      approvedBy: null,
+      source: 'controlled://institutional-hours'
+    })
+    await expect(
+      repository.createKnowledgeSource(
+        scope,
+        {
+          source: 'controlled://institutional-hours',
+          version: 'v1',
+          label: 'Duplicada',
+          description: ''
+        },
+        'admin.knowledge'
+      )
+    ).rejects.toMatchObject({ code: 'invalid_action' })
+    await expect(repository.listKnowledgeSources(scope)).resolves.toEqual([
+      expect.objectContaining({ id: draft.id })
+    ])
+    await expect(
+      repository.listKnowledgeSources({
+        tenantId: 'tenant_00000000-0000-4000-8000-000000000099'
+      })
+    ).resolves.toEqual([])
+
+    const approved = await repository.transitionKnowledgeSource(
+      scope,
+      draft.id,
+      'APPROVED',
+      'approver.knowledge',
+      'DRAFT'
+    )
+    expect(approved).toMatchObject({
+      status: 'APPROVED',
+      approvedBy: 'approver.knowledge'
+    })
+    await expect(
+      repository.transitionKnowledgeSource(
+        scope,
+        draft.id,
+        'ARCHIVED',
+        'admin.knowledge',
+        'DRAFT'
+      )
+    ).rejects.toMatchObject({ code: 'conflict' })
+    const archived = await repository.transitionKnowledgeSource(
+      scope,
+      draft.id,
+      'ARCHIVED',
+      'admin.knowledge',
+      'APPROVED'
+    )
+    expect(archived.status).toBe('ARCHIVED')
+    await expect(
+      repository.transitionKnowledgeSource(
+        scope,
+        draft.id,
+        'APPROVED',
+        'admin.knowledge',
+        'ARCHIVED'
+      )
+    ).rejects.toMatchObject({ code: 'invalid_action' })
+    await expect(
+      repository.getKnowledgeSource(scope, draft.id)
+    ).resolves.toMatchObject({
+      status: 'ARCHIVED',
+      label: 'Horários fictícios'
+    })
   })
 
   it('rejects a stale status precondition inside the repository transaction', async () => {
@@ -245,7 +455,13 @@ describe('Postgres control plane repository', () => {
       )
     ).rejects.toMatchObject({ code: 'invalid_action' })
     await expect(
-      repository.rollback(scope, agentId, versionId, 'admin.lifecycle')
+      repository.rollback(
+        scope,
+        agentId,
+        versionId,
+        'admin.lifecycle',
+        'release_candidate_00000000-0000-4000-8000-000000000399'
+      )
     ).rejects.toMatchObject({ code: 'invalid_action' })
 
     const trace: TestRunTrace = {
@@ -260,7 +476,11 @@ describe('Postgres control plane repository', () => {
       tools: [],
       handoff: { requested: false, reason: null, state: 'BOT_ACTIVE' },
       response: { text: 'blocked', mode: 'blocked' },
-      provider: { provider: 'fake', model: 'dry-run', externalCall: false },
+      provider: {
+        provider: 'fake',
+        model: 'deterministic-v1',
+        externalCall: false
+      },
       configVersion: 'version',
       executionMode: 'TEST_LAB',
       createdAt: new Date()
@@ -351,7 +571,11 @@ describe('Postgres control plane repository', () => {
       tools: [],
       handoff: { requested: false, reason: null, state: 'BOT_ACTIVE' },
       response: { text: 'Telefone +5511777777777', mode: 'clarify' },
-      provider: { provider: 'fake', model: 'dry-run', externalCall: false },
+      provider: {
+        provider: 'fake',
+        model: 'deterministic-v1',
+        externalCall: false
+      },
       configVersion: 'suite-repository',
       executionMode: 'TEST_LAB',
       createdAt: new Date()
@@ -387,6 +611,31 @@ describe('Postgres control plane repository', () => {
         variants: [{ label: 'A', results: [{ caseId: 'redacted-case' }] }]
       }
     ])
+
+    const externalTrace = {
+      ...trace,
+      provider: { ...trace.provider, externalCall: true }
+    } as unknown as TestRunTrace
+    await expect(
+      repository.recordTestSuiteRun(scope, {
+        ...run,
+        id: createTestSuiteRunId(),
+        variants: [
+          {
+            ...run.variants[0]!,
+            results: [
+              {
+                ...run.variants[0]!.results[0]!,
+                trace: externalTrace
+              }
+            ]
+          }
+        ]
+      })
+    ).rejects.toMatchObject({ code: 'validation_failed' })
+    await expect(
+      repository.listTestSuiteRuns(scope, clone.id)
+    ).resolves.toHaveLength(1)
   })
 
   it('rejects suite collisions, invalid scope, and invalid run variants', async () => {
@@ -576,6 +825,35 @@ interface StatefulRunRow {
   created_at: Date
 }
 
+interface StatefulKnowledgeSourceRow {
+  tenant_id: string
+  id: string
+  source: string
+  version: string
+  label: string
+  description: string
+  status: KnowledgeSourceStatus
+  created_by: string
+  approved_by: string | null
+  created_at: Date
+  updated_at: Date
+}
+
+interface StatefulReleaseCandidateRow {
+  tenant_id: string
+  id: string
+  agent_id: string
+  version_id: string
+  evidence_digest: string
+  gate_results: unknown
+  status: ReleaseCandidateStatus
+  created_by: string
+  validated_by: string | null
+  created_at: Date
+  updated_at: Date
+  validated_at: Date | null
+}
+
 class StatefulPlatformClient implements PostgresQueryable {
   readonly queries: string[] = []
   private readonly agents: StatefulAgentRow[] = []
@@ -583,6 +861,8 @@ class StatefulPlatformClient implements PostgresQueryable {
   private readonly traces: TestRunTrace[] = []
   private readonly suites: StatefulSuiteRow[] = []
   private readonly runs: StatefulRunRow[] = []
+  private readonly knowledgeSources: StatefulKnowledgeSourceRow[] = []
+  private readonly releaseCandidates: StatefulReleaseCandidateRow[] = []
 
   async query<T extends QueryResultRow = QueryResultRow>(
     text: string,
@@ -657,6 +937,41 @@ class StatefulPlatformClient implements PostgresQueryable {
       return resultRows<T>([])
     }
 
+    if (text.includes('INSERT INTO platform_knowledge_sources')) {
+      this.knowledgeSources.push({
+        tenant_id: String(values[0]),
+        id: String(values[1]),
+        source: String(values[2]),
+        version: String(values[3]),
+        label: String(values[4]),
+        description: String(values[5]),
+        status: values[6] as KnowledgeSourceStatus,
+        created_by: String(values[7]),
+        approved_by: (values[8] as string | null) ?? null,
+        created_at: values[9] as Date,
+        updated_at: values[10] as Date
+      })
+      return resultRows<T>([])
+    }
+
+    if (text.includes('INSERT INTO platform_release_candidates')) {
+      this.releaseCandidates.push({
+        tenant_id: String(values[0]),
+        id: String(values[1]),
+        agent_id: String(values[2]),
+        version_id: String(values[3]),
+        evidence_digest: String(values[4]),
+        gate_results: JSON.parse(String(values[5])),
+        status: values[6] as ReleaseCandidateStatus,
+        created_by: String(values[7]),
+        validated_by: (values[8] as string | null) ?? null,
+        created_at: values[9] as Date,
+        updated_at: values[10] as Date,
+        validated_at: (values[11] as Date | null) ?? null
+      })
+      return resultRows<T>([])
+    }
+
     if (
       text.includes('SELECT version') &&
       text.includes('FROM platform_test_suites')
@@ -702,6 +1017,41 @@ class StatefulPlatformClient implements PostgresQueryable {
       return resultRows<T>(rows)
     }
 
+    if (text.includes('FROM platform_knowledge_sources')) {
+      const rows = this.knowledgeSources.filter((source) => {
+        if (source.tenant_id !== String(values[0])) return false
+        if (text.includes('AND id = $2')) return source.id === String(values[1])
+        return true
+      })
+      return resultRows<T>(rows)
+    }
+
+    if (text.includes('FROM platform_release_candidates')) {
+      const rows = this.releaseCandidates.filter((candidate) => {
+        if (candidate.tenant_id !== String(values[0])) return false
+        if (text.includes('AND id = $2')) {
+          return candidate.id === String(values[1])
+        }
+        return values[1] === null || candidate.agent_id === String(values[1])
+      })
+      return resultRows<T>(rows)
+    }
+
+    if (text.includes('UPDATE platform_release_candidates')) {
+      const candidate = this.releaseCandidates.find(
+        (entry) =>
+          entry.tenant_id === String(values[0]) &&
+          entry.id === String(values[1]) &&
+          entry.status === (values[6] as ReleaseCandidateStatus)
+      )
+      if (!candidate) return resultRows<T>([])
+      candidate.status = values[2] as ReleaseCandidateStatus
+      candidate.validated_by = (values[3] as string | null) ?? null
+      candidate.validated_at = (values[4] as Date | null) ?? null
+      candidate.updated_at = values[5] as Date
+      return resultRows<T>([candidate])
+    }
+
     if (text.includes('SELECT version')) {
       const latest = this.versions
         .filter(
@@ -739,6 +1089,20 @@ class StatefulPlatformClient implements PostgresQueryable {
             )
             .sort((left, right) => right.version - left.version)
       return resultRows<T>(rows)
+    }
+
+    if (text.includes('UPDATE platform_knowledge_sources')) {
+      const source = this.knowledgeSources.find(
+        (candidate) =>
+          candidate.tenant_id === String(values[0]) &&
+          candidate.id === String(values[1]) &&
+          candidate.status === (values[5] as KnowledgeSourceStatus)
+      )
+      if (!source) return resultRows<T>([])
+      source.status = values[2] as KnowledgeSourceStatus
+      source.approved_by = (values[3] as string | null) ?? null
+      source.updated_at = values[4] as Date
+      return resultRows<T>([source])
     }
 
     if (text.includes('SET status = $3')) {

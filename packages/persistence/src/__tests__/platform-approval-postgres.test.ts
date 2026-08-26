@@ -149,7 +149,7 @@ describe('PostgreSQL capability approval authority', () => {
           repository.verifyAndConsume(
             verificationInput(issued.id, {
               consumptionAudit: {
-                correlationId: 'corr_approval_atomic_fixture',
+                correlationId: 'corr_00000000-0000-4000-8000-000000000134',
                 policyVersion: 'approval-pg-test-v1'
               }
             })
@@ -157,7 +157,7 @@ describe('PostgreSQL capability approval authority', () => {
           secondRepository.verifyAndConsume(
             verificationInput(issued.id, {
               consumptionAudit: {
-                correlationId: 'corr_approval_atomic_fixture',
+                correlationId: 'corr_00000000-0000-4000-8000-000000000135',
                 policyVersion: 'approval-pg-test-v1'
               }
             })

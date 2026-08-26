@@ -1,9 +1,9 @@
 {
   "version": "1.0.0",
   "project": "cvg-agent-secretary-v2",
-  "current_status": "CONTROLLED_CONSTRUCTION_COMPLETE",
-  "current_phase": "CONTROLLED_CONSTRUCTION",
-  "current_sprint": "PLAT-S04_DURABLE_APPROVAL_WEBHOOK_RUNTIME_SECURITY",
+  "current_status": "READY_FOR_NEXT_STEP",
+  "current_phase": "AUDIT",
+  "current_sprint": "PLAT-S47_CONTROLLED_MULTI_AGENT_CREATION_MODE",
   "human_decision_required": false,
   "decision_required": null,
   "decision_record": "docs/03_build/tracking/enterprise_decisions.json",
@@ -41,8 +41,38 @@
     "docs/03_build/0308_task_catalog.json"
   ],
   "last_verification": {
-    "command": "npm test && npm run test:coverage && TEST_DATABASE_URL=<fixture>@127.0.0.1:55437/cvg_his_v2_test npm run test:postgres && npm run format:check && npm run typecheck && npm run lint && npm run build && npm run audit:security && npm run readiness && npm run test:e2e",
-    "status": "PASS",
-    "notes": "PLAT-S04-001..003 COMPLETED_CONTROLLED: tenant isolation/preflight, durable approval single-consume with approval_decision evidence, checked-out atomic runtime finalization, pending/completed retry, raw-body HMAC, replay purge/stale-lease recovery, production agent/operator bootstrap fail-closed and real PostgreSQL replay integration passed; no real data, provider, channel or production activation is authorized."
+    "command": "npm test; npm run test:coverage; npm run readiness; npm run test:worker:startup; TEST_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5433/cvg_his_v2_test npm run test:postgres; npm run test:e2e; npm run build; npm run audit:security; npm run format:check; npm run typecheck; npm run lint; git diff --check",
+    "status": "PASS_CONTROLLED",
+    "notes": "PLAT-S47 auditoria corretiva controlada: npm test 127 arquivos pass/2 skips, 534 testes pass/19 skips; coverage 84.86/80.12/84.97/85.97; readiness 4/4; worker startup smoke; E2E 4/4; PostgreSQL controlado 8 arquivos/72 testes pass; build 158 módulos; npm audit encontrou 0 vulnerabilidades; typecheck, lint, format e diff check PASS; crítica independente compatível final PASS_CONTROLLED sem P0/P1/P2/P3."
+  },
+  "latest_verification": {
+    "command": "npm test; npm run test:coverage; npm run readiness; npm run test:worker:startup; TEST_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5433/cvg_his_v2_test npm run test:postgres; npm run test:e2e; npm run build; npm run audit:security; npm run format:check; npm run typecheck; npm run lint; git diff --check",
+    "status": "PASS_CONTROLLED",
+    "notes": "PLAT-S47 auditoria corretiva controlada: Trace Viewer sem agente agora fica vazio e filtrado; agentId é obrigatório nas leituras de suites/ledger; redaction e shape legado são defensivos; view scopes são monotônicos. npm test 127 arquivos pass/2 skips, 534 testes pass/19 skips; coverage 84.86/80.12/84.97/85.97; readiness 4/4; worker smoke; E2E 4/4; PostgreSQL 8/72; build 158 módulos; audit 0; typecheck, lint, format e diff check PASS; crítica independente compatível final PASS_CONTROLLED sem P0/P1/P2/P3."
+  },
+  "current_task": "PLAT-S47-001_CONTROLLED_MULTI_AGENT_CREATION_MODE",
+  "current_task_status": "COMPLETED_CONTROLLED",
+  "current_evidence": "docs/04_audit/0537_plat-s47_controlled_multi_agent_creation_evidence.md",
+  "current_task_registration": {
+    "status": "COMPLETED_CONTROLLED",
+    "gate": "SPEC_APPROVED_CONTROLLED_BUILD",
+    "contract": "Add explicit Control Center create-agent mode, reset only selected-agent derived state, and prove same-session Agent A/B creation with independent snapshots through the existing tenant-aware kernel",
+    "limits": "controlled Control Center creation mode only; no kernel/schema change, real provider/channel, network call, RAG, broker, egress, deploy, real data or side effect",
+    "next": "start a new controlled DISCOVERY -> PRD -> SPEC lane and preserve the controlled NO-GO production boundary"
+  },
+  "last_red": {
+    "command": "npx vitest run apps/web/src/features/platform/platform.test.tsx --no-file-parallelism --maxWorkers=2",
+    "status": "RED_OBSERVED",
+    "notes": "Auditoria corretiva RED: 1 teste falhou como esperado porque spans: {} atravessou a boundary do painel e causou TypeError; nenhum efeito externo ocorreu."
+  },
+  "last_green": {
+    "command": "npx vitest run apps/web/src/features/platform/handoff-policy-control-center.test.tsx apps/web/src/features/platform/knowledge-source-catalog.test.tsx apps/web/src/features/platform/multi-agent-creation.test.tsx apps/web/src/features/platform/platform.test.tsx apps/web/src/features/platform/prompt-profile-control-center.test.tsx apps/web/src/features/platform/prompt-profile.test.ts apps/web/src/features/platform/release-candidate-ledger.test.tsx --no-file-parallelism --maxWorkers=2; npm test; npx vitest run --coverage --no-file-parallelism --maxWorkers=1; npm run readiness; npm run test:worker:startup; TEST_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5433/cvg_his_v2_test npm run test:postgres; npm run test:e2e; npm run build; npm run audit:security; npm run format:check; npm run typecheck; npm run lint; git diff --check",
+    "status": "PASS_CONTROLLED",
+    "notes": "S47 auditoria corretiva GREEN: focused combinado platform/client 4 arquivos/18 testes PASS; regressão integral 127 arquivos/534 testes pass, 2 arquivos/19 testes skipped; coverage 84.86/80.12/84.97/85.97; readiness 4/4; worker smoke; PostgreSQL 8/72; E2E 4/4; build 158 módulos; audit 0; typecheck/lint/format/diff PASS."
+  },
+  "last_review": {
+    "status": "PASS_CONTROLLED",
+    "severity": "NONE",
+    "notes": "A revisão especializada fixa falhou por incompatibilidade do modelo com a conta e não foi tratada como aprovação. A crítica independente compatível final retornou PASS_CONTROLLED sem P0/P1/P2/P3 após verificar agent scope HTTP/UI, filtragem e tolerância do Trace Viewer, redaction recursiva, UUID browser-safe e callbacks A→B→A. Nenhum arquivo foi alterado pelo revisor."
   }
 }

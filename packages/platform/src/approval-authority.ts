@@ -1,12 +1,18 @@
 import { createHash, randomUUID } from 'node:crypto'
-import { createDomainId } from '@cvg/shared'
+import {
+  CorrelationIdSchema,
+  createDomainId,
+  type CorrelationId
+} from '@cvg/shared'
 import {
   AgentIdSchema,
   AgentVersionIdSchema,
+  TraceIdSchema,
   TenantIdSchema,
   type AgentId,
   type AgentVersionId,
-  type TenantId
+  type TenantId,
+  type TraceId
 } from './ids.ts'
 
 export type CapabilityApprovalStatus =
@@ -36,8 +42,9 @@ export interface CapabilityApprovalIssueInput extends CapabilityInputBinding {
  * in the same transaction as the single-use state transition.
  */
 export interface CapabilityApprovalConsumptionAudit {
-  correlationId: string
+  correlationId: CorrelationId
   policyVersion: string
+  traceId?: TraceId
 }
 
 export interface CapabilityApprovalVerificationInput extends CapabilityInputBinding {
@@ -162,6 +169,7 @@ export class InMemoryCapabilityApprovalAuthority implements CapabilityApprovalAu
   async verifyAndConsume(
     input: CapabilityApprovalVerificationInput
   ): Promise<CapabilityApprovalRecord | null> {
+    if (!isValidConsumptionAudit(input.consumptionAudit)) return null
     const current = this.records.get(input.approvalId)
     if (!current || current.status !== 'issued') return null
     const now = copyDate(this.now(), 'Approval verification time')
@@ -228,6 +236,19 @@ export class InMemoryCapabilityApprovalAuthority implements CapabilityApprovalAu
     const record = this.records.get(approvalId)
     return record && record.tenantId === tenantId ? cloneRecord(record) : null
   }
+}
+
+function isValidConsumptionAudit(
+  audit: CapabilityApprovalVerificationInput['consumptionAudit']
+): boolean {
+  return (
+    audit === undefined ||
+    (CorrelationIdSchema.safeParse(audit.correlationId).success &&
+      (audit.traceId === undefined ||
+        TraceIdSchema.safeParse(audit.traceId).success) &&
+      typeof audit.policyVersion === 'string' &&
+      audit.policyVersion.trim().length > 0)
+  )
 }
 
 function canonicalize(value: unknown, seen: Set<object>): string {

@@ -23,7 +23,7 @@ export default defineConfig({
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: [
     {
-      command: `NODE_ENV=test PORT=${apiPort} npm run dev:api`,
+      command: `NODE_ENV=test API_ALLOWED_ORIGINS=http://127.0.0.1:4173 PORT=${apiPort} npm run dev:api`,
       url: `http://127.0.0.1:${apiPort}/health`,
       reuseExistingServer: !process.env.CI,
       timeout: 120000

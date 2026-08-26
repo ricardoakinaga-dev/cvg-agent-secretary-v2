@@ -5,6 +5,14 @@ const EnvBooleanSchema = z
   .default(false)
   .transform((value) => value === true || value === 'true')
 
+const EnvTrustedProxyHopsSchema = z
+  .preprocess(
+    (value) => (value === undefined ? '0' : value),
+    z.union([z.number().int(), z.string().regex(/^\d+$/)])
+  )
+  .transform((value) => Number(value))
+  .pipe(z.number().int().min(0).max(4))
+
 export const EnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']),
   API_PERSISTENCE_MODE: z.enum(['memory', 'postgres']).default('memory'),
@@ -13,6 +21,9 @@ export const EnvSchema = z.object({
   INBOUND_TENANT_ID: z.string().optional(),
   INBOUND_AGENT_ID: z.string().optional(),
   WEBHOOK_SIGNING_SECRET: z.string().min(1).optional(),
+  API_ALLOWED_ORIGINS: z.string().optional(),
+  API_REQUIRE_HTTPS: EnvBooleanSchema,
+  API_TRUSTED_PROXY_HOPS: EnvTrustedProxyHopsSchema,
   POSTGRES_AUTO_MIGRATE: EnvBooleanSchema,
   POSTGRES_RLS_ENFORCEMENT: EnvBooleanSchema,
   POSTGRES_SCHEMA: z
@@ -67,6 +78,14 @@ export function parseEnv(input: NodeJS.ProcessEnv): AppEnv {
     throw new Error(
       'A trusted INBOUND_AGENT_ID is required by the production bootstrap'
     )
+  }
+  if (env.NODE_ENV === 'production' && !env.API_ALLOWED_ORIGINS?.trim()) {
+    throw new Error(
+      'A production API_ALLOWED_ORIGINS allowlist must be configured'
+    )
+  }
+  if (env.NODE_ENV === 'production' && !env.API_REQUIRE_HTTPS) {
+    throw new Error('Production requires API_REQUIRE_HTTPS=true')
   }
   return env
 }

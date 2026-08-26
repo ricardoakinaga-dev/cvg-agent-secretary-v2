@@ -22,6 +22,7 @@ import {
 } from '@cvg/persistence'
 import {
   AgentConfigSchema,
+  createValidatedControlledReleaseCandidate,
   InMemoryControlPlaneStore,
   createTraceId,
   type AgentId,
@@ -172,7 +173,14 @@ async function createPostgresHandoffAgent(
     testing.id,
     'APPROVED'
   )
-  await platform.publishVersion({ tenantId }, approved.id)
+  const releaseCandidate = await createValidatedControlledReleaseCandidate(
+    platform,
+    tenantId,
+    agent.id,
+    approved.id,
+    'postgres.test'
+  )
+  await platform.publishVersion({ tenantId }, approved.id, releaseCandidate.id)
   return agent
 }
 
@@ -197,7 +205,12 @@ describe('api PostgreSQL persistence mode', () => {
       '0001_tenant_isolation',
       '0002_capability_approvals',
       '0003_test_suite_catalog',
-      '0004_plugin_manifest_catalog'
+      '0004_plugin_manifest_catalog',
+      '0005_knowledge_source_catalog',
+      '0006_release_candidate_evidence',
+      '0007_audit_evidence_checkpoint',
+      '0008_session_agent_version_pin',
+      '0009_release_candidate_validator_integrity'
     ] as const
     const rows: Array<{
       version: string
@@ -237,7 +250,12 @@ describe('api PostgreSQL persistence mode', () => {
       '0001_tenant_isolation',
       '0002_capability_approvals',
       '0003_test_suite_catalog',
-      '0004_plugin_manifest_catalog'
+      '0004_plugin_manifest_catalog',
+      '0005_knowledge_source_catalog',
+      '0006_release_candidate_evidence',
+      '0007_audit_evidence_checkpoint',
+      '0008_session_agent_version_pin',
+      '0009_release_candidate_validator_integrity'
     ] as const
     const rows = await Promise.all(
       versions.map(async (version, index) => ({
@@ -573,7 +591,13 @@ describe('api PostgreSQL persistence mode', () => {
           return queryResult(
             names.flatMap((table_name) => [
               { table_name, column_name: 'tenant_id' },
-              { table_name, column_name: 'tenant_isolation_quarantined' }
+              { table_name, column_name: 'tenant_isolation_quarantined' },
+              ...(table_name === 'sessions'
+                ? [
+                    { table_name, column_name: 'agent_id' },
+                    { table_name, column_name: 'agent_version_id' }
+                  ]
+                : [])
             ])
           ) as unknown as QueryResult<T>
         }
@@ -755,7 +779,10 @@ describe('api PostgreSQL persistence mode', () => {
           NODE_ENV: 'production',
           API_PERSISTENCE_MODE: 'postgres',
           DATABASE_URL: 'postgres://fixture.invalid/cvg',
-          POSTGRES_RLS_ENFORCEMENT: 'true'
+          POSTGRES_RLS_ENFORCEMENT: 'true',
+          API_ALLOWED_ORIGINS: 'https://console.example.test',
+          API_REQUIRE_HTTPS: 'true',
+          API_TRUSTED_PROXY_HOPS: '0'
         },
         { webhookVerifier: () => true }
       )
@@ -769,7 +796,10 @@ describe('api PostgreSQL persistence mode', () => {
         API_PERSISTENCE_MODE: 'postgres',
         DATABASE_URL: 'postgres://fixture.invalid/cvg',
         INBOUND_TENANT_ID: postgresTenantA,
-        POSTGRES_RLS_ENFORCEMENT: 'true'
+        POSTGRES_RLS_ENFORCEMENT: 'true',
+        API_ALLOWED_ORIGINS: 'https://console.example.test',
+        API_REQUIRE_HTTPS: 'true',
+        API_TRUSTED_PROXY_HOPS: '0'
       })
     ).rejects.toThrow(/INBOUND_AGENT_ID/)
 
@@ -952,6 +982,107 @@ describe('api PostgreSQL persistence mode', () => {
           )
         ).resolves.toMatchObject({ rows: [{ count: '1' }] })
 
+        const unsafeInbound = await runtime.createWithSession({
+          tenantId,
+          channel: 'whatsapp',
+          senderRef: 'fixture-atomic-sender',
+          externalMessageId: 'atomic-inbound-unsafe',
+          body: 'Mensagem insegura',
+          conversationId: created.conversation.id,
+          sessionId: created.session.id
+        })
+        const unsafeTrace = {
+          ...atomicTrace(
+            tenantId,
+            agent.id as AgentId,
+            version.id as AgentVersionId,
+            created.conversation.id,
+            created.session.id
+          ),
+          response: {
+            text: 'Diagnóstico: gastrite.',
+            mode: 'answer' as const
+          }
+        }
+        await expect(
+          runtime.completeInboundRuntime({
+            tenantId,
+            conversationId: created.conversation.id,
+            sessionId: created.session.id,
+            inboundMessageId: unsafeInbound.message.id,
+            trace: unsafeTrace,
+            toolAuditEvents: [],
+            correlationId: createCorrelationId()
+          })
+        ).rejects.toMatchObject({ code: 'validation_failed' })
+        await expect(
+          client.query<{ count: string }>(
+            `SELECT count(*)::text
+             FROM messages
+             WHERE external_message_id = $1`,
+            [`runtime:${unsafeTrace.traceId}`]
+          )
+        ).resolves.toMatchObject({ rows: [{ count: '0' }] })
+        await expect(
+          client.query<{ runtime_status: string }>(
+            `SELECT runtime_status
+             FROM messages
+             WHERE id = $1`,
+            [unsafeInbound.message.id]
+          )
+        ).resolves.toMatchObject({ rows: [{ runtime_status: 'pending' }] })
+
+        const invalidProviderInbound = await runtime.createWithSession({
+          tenantId,
+          channel: 'whatsapp',
+          senderRef: 'fixture-atomic-sender',
+          externalMessageId: 'atomic-inbound-invalid-provider',
+          body: 'Mensagem com provider inválido',
+          conversationId: created.conversation.id,
+          sessionId: created.session.id
+        })
+        const invalidProviderTrace = {
+          ...atomicTrace(
+            tenantId,
+            agent.id as AgentId,
+            version.id as AgentVersionId,
+            created.conversation.id,
+            created.session.id
+          ),
+          provider: {
+            provider: 'fake',
+            model: 'deterministic-v1',
+            externalCall: true
+          }
+        } as unknown as TestRunTrace
+        await expect(
+          runtime.completeInboundRuntime({
+            tenantId,
+            conversationId: created.conversation.id,
+            sessionId: created.session.id,
+            inboundMessageId: invalidProviderInbound.message.id,
+            trace: invalidProviderTrace,
+            toolAuditEvents: [],
+            correlationId: createCorrelationId()
+          })
+        ).rejects.toMatchObject({ code: 'validation_failed' })
+        await expect(
+          client.query<{ count: string }>(
+            `SELECT count(*)::text
+             FROM messages
+             WHERE external_message_id = $1`,
+            [`runtime:${invalidProviderTrace.traceId}`]
+          )
+        ).resolves.toMatchObject({ rows: [{ count: '0' }] })
+        await expect(
+          client.query<{ runtime_status: string }>(
+            `SELECT runtime_status
+             FROM messages
+             WHERE id = $1`,
+            [invalidProviderInbound.message.id]
+          )
+        ).resolves.toMatchObject({ rows: [{ runtime_status: 'pending' }] })
+
         const rollbackInbound = await runtime.createWithSession({
           tenantId,
           channel: 'whatsapp',
@@ -1013,7 +1144,10 @@ describe('api PostgreSQL persistence mode', () => {
             DATABASE_URL: testDatabaseUrl,
             INBOUND_TENANT_ID: postgresTenantA,
             INBOUND_AGENT_ID: postgresInboundAgent,
-            POSTGRES_RLS_ENFORCEMENT: 'true'
+            POSTGRES_RLS_ENFORCEMENT: 'true',
+            API_ALLOWED_ORIGINS: 'https://console.example.test',
+            API_REQUIRE_HTTPS: 'true',
+            API_TRUSTED_PROXY_HOPS: '0'
           },
           {
             webhookVerifier: () => true,
@@ -1059,6 +1193,9 @@ describe('api PostgreSQL persistence mode', () => {
         'platform_test_suites',
         'platform_test_suite_runs',
         'platform_plugin_catalog',
+        'platform_knowledge_sources',
+        'platform_release_candidates',
+        'audit_evidence_checkpoints',
         'webhook_replay_events'
       ]
 
@@ -1105,6 +1242,9 @@ describe('api PostgreSQL persistence mode', () => {
             INBOUND_AGENT_ID: postgresInboundAgent,
             POSTGRES_AUTO_MIGRATE: 'true',
             POSTGRES_RLS_ENFORCEMENT: 'true',
+            API_ALLOWED_ORIGINS: 'https://console.example.test',
+            API_REQUIRE_HTTPS: 'true',
+            API_TRUSTED_PROXY_HOPS: '1',
             POSTGRES_SCHEMA: schemaName
           },
           {
@@ -1112,7 +1252,11 @@ describe('api PostgreSQL persistence mode', () => {
             operatorIdentityResolver: trustedProductionIdentity
           }
         )
-        const health = await app.inject({ method: 'GET', url: '/health' })
+        const health = await app.inject({
+          method: 'GET',
+          url: '/health',
+          headers: { 'x-forwarded-proto': 'https' }
+        })
         expect(health.statusCode).toBe(200)
       } finally {
         await app?.close()

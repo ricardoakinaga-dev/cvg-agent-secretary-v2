@@ -421,6 +421,95 @@
       "entry_gate": "PLAT-S03 controlled gate complete; no real provider/channel activation",
       "exit_gate": "Durable approval replay/expiry/revocation/input-hash tests, allowlist-only dry-run adapter, tenant-scoped runtime wiring, pending/completed retry, atomic finalization and controlled raw-body HMAC/replay tests pass",
       "tasks": ["PLAT-S04-001", "PLAT-S04-002", "PLAT-S04-003"]
+    },
+    {
+      "id": "PLAT-S40",
+      "name": "Controlled model provider identity boundary",
+      "status": "COMPLETED_CONTROLLED",
+      "goal": "Resolve only the compiled fake/deterministic-v1 model identity in controlled execution and fail closed for unsupported references.",
+      "entry_gate": "PLAT-S39 controlled gate complete and SPEC_APPROVED_CONTROLLED_BUILD",
+      "exit_gate": "Focused and integrated tests prove exact registry resolution, early rejection of unknown provider/model/fallback, and no external calls or side effects",
+      "tasks": ["PLAT-S40-001"]
+    },
+    {
+      "id": "PLAT-S41",
+      "name": "Controlled output safety boundary",
+      "status": "COMPLETED_CONTROLLED",
+      "goal": "Validate and safely rewrite model/template/knowledge output before response delivery in controlled execution.",
+      "entry_gate": "PLAT-S40 controlled gate complete and SPEC_APPROVED_CONTROLLED_BUILD",
+      "exit_gate": "Focused and integrated tests prove bounded typed/redacted output, Unicode/confusable unsafe-content rejection, safe fallback, coherent handoff state/events, no raw rejected text, and no tool/approval execution after rewrite",
+      "tasks": ["PLAT-S41-001"]
+    },
+    {
+      "id": "PLAT-S42",
+      "name": "Controlled trace provenance boundary",
+      "status": "COMPLETED_CONTROLLED",
+      "goal": "Canonicalize and validate every controlled TestRunTrace at direct, suite and PostgreSQL read/write boundaries.",
+      "entry_gate": "PLAT-S41 controlled gate complete and SPEC_APPROVED_CONTROLLED_BUILD",
+      "exit_gate": "Focused and integrated tests prove allowlisted bounded traces, controlled provider identity, output-policy consistency, suite parity, and fail-closed PostgreSQL reads/writes without unsafe return or side effect",
+      "tasks": ["PLAT-S42-001"]
+    },
+    {
+      "id": "PLAT-S43",
+      "name": "Controlled trace temporal integrity",
+      "status": "COMPLETED_CONTROLLED",
+      "goal": "Enforce coherent controlled trace timestamps, latency and ordered span status without external telemetry.",
+      "entry_gate": "PLAT-S42 controlled gate complete and SPEC_APPROVED_CONTROLLED_BUILD",
+      "exit_gate": "Focused and integrated tests prove temporal, ordinal and derived-status invariants fail closed while optional legacy telemetry remains compatible",
+      "tasks": ["PLAT-S43-001"]
+    },
+    {
+      "id": "PLAT-S44",
+      "name": "Controlled trace stage timing",
+      "status": "COMPLETED_CONTROLLED",
+      "goal": "Measure controlled trace stages with an injectable monotonic clock without external telemetry.",
+      "entry_gate": "PLAT-S43 controlled gate complete and SPEC_APPROVED_CONTROLLED_BUILD",
+      "exit_gate": "Focused and integrated tests prove finite measured durations, skipped-zero behavior, bounded sum and no payload/export side effect",
+      "tasks": ["PLAT-S44-001"]
+    },
+    {
+      "id": "PLAT-S45",
+      "name": "Controlled tool invocation boundary",
+      "status": "COMPLETED_CONTROLLED",
+      "goal": "Validate compiled tool invocation inputs and outputs, authorize the effective actor, bind durable approvals and project handler results before execution and return.",
+      "entry_gate": "PLAT-S44 controlled gate complete and SPEC_APPROVED_CONTROLLED_BUILD",
+      "exit_gate": "Focused and integrated tests prove server-side input/output validation, effective actor authorization, durable single-use approval binding, bounded result projection, no premature consumption, no replay after audit failure and no raw payload return",
+      "tasks": ["PLAT-S45-001"]
+    },
+    {
+      "id": "PLAT-S46",
+      "name": "Controlled execution trace correlation boundary",
+      "status": "COMPLETED_CONTROLLED",
+      "goal": "Resolve one bounded trace identity before execution events and propagate it through the controlled kernel, hooks, tools, audits and trace sinks.",
+      "entry_gate": "PLAT-S45 controlled gate complete and SPEC_APPROVED_CONTROLLED_BUILD",
+      "exit_gate": "Focused and integrated tests prove one traceId per execution, event/hook/tool-audit propagation, early invalid-ID rejection, sink preservation and compatibility of local event/call IDs",
+      "tasks": ["PLAT-S46-001"],
+      "completion": {
+        "phase": "AUDIT",
+        "timestamp": "2026-08-26T11:22:54-03:00",
+        "result": "RED 4 arquivos/33 testes com 8 falhas esperadas; GREEN 6 arquivos/25 testes; regressão 126 arquivos/523 testes pass, 2 arquivos/19 testes skipped; coverage 85.07/80.06/85.95/86.10; PostgreSQL 8/72; readiness 4/4; worker smoke; E2E 4/4; build 70 módulos; audit 0; typecheck, lint, format e diff check PASS",
+        "review": "PASS compatível read-only sem P0/P1/P2",
+        "evidence": "docs/04_audit/0536_plat-s46_controlled_execution_trace_correlation_boundary_evidence.md",
+        "production": "NO-GO"
+      }
+    },
+    {
+      "id": "PLAT-S47",
+      "name": "Controlled multi-agent creation mode",
+      "status": "COMPLETED_CONTROLLED",
+      "goal": "Provide an explicit Control Center create-agent mode so one tenant can create Agent A and Agent B with independent configuration snapshots through the same kernel.",
+      "entry_gate": "PLAT-S46 controlled gate complete and SPEC_APPROVED_CONTROLLED_BUILD",
+      "exit_gate": "UI/API journey proves new-agent reset, same-session A/B creation, isolated derived state and preserved version cloning without external effects",
+      "tasks": ["PLAT-S47-001"],
+      "completion": {
+        "phase": "AUDIT",
+        "timestamp": "2026-08-26T15:59:02-03:00",
+        "result": "RED inicial e auditoria corretiva reproduziram dead-end, histórico sem agente, agentId ausente, reutilização A→B→A, redaction incompleta e spans legado inválido; GREEN cobriu Novo agente, A/B na mesma sessão, clone versionado, isolamento, redaction, agent scope e normalização defensiva",
+        "verification": "focused platform/client 4 arquivos/18 testes pass; regressão integral 127 arquivos/534 testes pass, 2 arquivos/19 testes skipped; coverage 84.86/80.12/84.97/85.97; readiness 4/4; worker smoke; PostgreSQL 8/72; E2E 4/4; build 158 módulos; audit 0; typecheck/lint/format/diff PASS",
+        "review": "PASS_CONTROLLED compatible independent read-only; P0/P1/P2/P3 = 0",
+        "evidence": "docs/04_audit/0537_plat-s47_controlled_multi_agent_creation_evidence.md",
+        "production": "NO-GO"
+      }
     }
   ]
 }

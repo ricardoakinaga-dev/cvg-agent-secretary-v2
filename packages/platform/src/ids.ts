@@ -18,6 +18,12 @@ export const TestSuiteRunIdSchema = z
 export const PluginCatalogIdSchema = z
   .string()
   .regex(new RegExp(`^plugin_catalog_${uuid}$`))
+export const KnowledgeSourceIdSchema = z
+  .string()
+  .regex(new RegExp(`^knowledge_source_${uuid}$`))
+export const ReleaseCandidateIdSchema = z
+  .string()
+  .regex(new RegExp(`^release_candidate_${uuid}$`))
 
 export type TenantId = z.infer<typeof TenantIdSchema>
 export type AgentId = z.infer<typeof AgentIdSchema>
@@ -26,6 +32,8 @@ export type TraceId = z.infer<typeof TraceIdSchema>
 export type TestSuiteId = z.infer<typeof TestSuiteIdSchema>
 export type TestSuiteRunId = z.infer<typeof TestSuiteRunIdSchema>
 export type PluginCatalogId = z.infer<typeof PluginCatalogIdSchema>
+export type KnowledgeSourceId = z.infer<typeof KnowledgeSourceIdSchema>
+export type ReleaseCandidateId = z.infer<typeof ReleaseCandidateIdSchema>
 
 export function createTenantId(): TenantId {
   return `tenant_${randomUUID()}`
@@ -53,4 +61,12 @@ export function createTestSuiteRunId(): TestSuiteRunId {
 
 export function createPluginCatalogId(): PluginCatalogId {
   return `plugin_catalog_${randomUUID()}`
+}
+
+export function createKnowledgeSourceId(): KnowledgeSourceId {
+  return `knowledge_source_${randomUUID()}`
+}
+
+export function createReleaseCandidateId(): ReleaseCandidateId {
+  return `release_candidate_${randomUUID()}`
 }

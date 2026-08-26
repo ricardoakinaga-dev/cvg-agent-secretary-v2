@@ -1,5 +1,22 @@
-import { createDomainId, sanitizeAuditEvidencePayload } from '@cvg/shared'
+import {
+  createDomainId,
+  DomainError,
+  sanitizeAuditEvidencePayload
+} from '@cvg/shared'
 import { TenantIdSchema, type TenantId } from '@cvg/platform'
+import {
+  AuditEvidenceCheckpointActorIdSchema,
+  AuditEvidenceCheckpointCreateInputSchema,
+  AuditEvidenceCheckpointIdSchema,
+  AuditEvidenceCheckpointStatusSchema,
+  cloneAuditEvidenceCheckpoint,
+  computeAuditEvidenceCheckpointDigest,
+  createAuditEvidenceCheckpointId,
+  normalizeAuditEvidenceCheckpointFilters,
+  type AuditEvidenceCheckpointCreateInput,
+  type AuditEvidenceCheckpointRecord,
+  type AuditEvidenceCheckpointStatus
+} from '../audit-evidence-checkpoint.ts'
 import type { InMemoryDatabase } from '../db.ts'
 import type {
   AuditEventRecord,
@@ -77,6 +94,135 @@ export class AuditRepository {
     return summarizeAuditEvents(filtered)
   }
 
+  listAuditEventsByIds(
+    rawIds: string[],
+    rawTenantId?: TenantId
+  ): AuditEventRecord[] {
+    const tenantId = rawTenantId ? TenantIdSchema.parse(rawTenantId) : undefined
+    const ids = new Set(rawIds)
+    return this.db.state.auditEvents.filter(
+      (event) =>
+        ids.has(event.id) &&
+        (!tenantId || this.eventBelongsToTenant(event, tenantId))
+    )
+  }
+
+  createAuditEvidenceCheckpoint(
+    rawInput: AuditEvidenceCheckpointCreateInput,
+    rawCreatedBy: string,
+    rawTenantId?: TenantId
+  ): AuditEvidenceCheckpointRecord {
+    const tenantId = requireCheckpointTenant(rawTenantId)
+    const input = AuditEvidenceCheckpointCreateInputSchema.parse(rawInput)
+    const createdBy = AuditEvidenceCheckpointActorIdSchema.parse(rawCreatedBy)
+    const events = this.listAuditEventsByIds(input.eventIds, tenantId)
+    assertCheckpointEvents(input, events, input.eventIds)
+    const evidenceDigest = computeAuditEvidenceCheckpointDigest(
+      tenantId,
+      input,
+      events
+    )
+    if (
+      this.db.state.auditEvidenceCheckpoints.some(
+        (checkpoint) =>
+          checkpoint.tenantId === tenantId &&
+          checkpoint.evidenceDigest === evidenceDigest
+      )
+    ) {
+      throw new DomainError(
+        'conflict',
+        'Audit evidence checkpoint already exists'
+      )
+    }
+    const now = new Date()
+    const checkpoint: AuditEvidenceCheckpointRecord = {
+      tenantId,
+      id: createAuditEvidenceCheckpointId(),
+      filters: { ...(input.filters ?? {}) },
+      eventIds: [...input.eventIds].sort(),
+      eventCount: input.eventIds.length,
+      evidenceDigest,
+      status: 'SEALED',
+      createdBy,
+      updatedBy: createdBy,
+      createdAt: now,
+      updatedAt: now
+    }
+    this.db.state.auditEvidenceCheckpoints = [
+      ...this.db.state.auditEvidenceCheckpoints,
+      cloneAuditEvidenceCheckpoint(checkpoint)
+    ]
+    return cloneAuditEvidenceCheckpoint(checkpoint)
+  }
+
+  getAuditEvidenceCheckpoint(
+    rawId: string,
+    rawTenantId?: TenantId
+  ): AuditEvidenceCheckpointRecord | null {
+    const tenantId = requireCheckpointTenant(rawTenantId)
+    const id = AuditEvidenceCheckpointIdSchema.parse(rawId)
+    const checkpoint = this.db.state.auditEvidenceCheckpoints.find(
+      (candidate) => candidate.id === id && candidate.tenantId === tenantId
+    )
+    return checkpoint ? cloneAuditEvidenceCheckpoint(checkpoint) : null
+  }
+
+  listAuditEvidenceCheckpoints(
+    rawTenantId?: TenantId
+  ): AuditEvidenceCheckpointRecord[] {
+    const tenantId = requireCheckpointTenant(rawTenantId)
+    return this.db.state.auditEvidenceCheckpoints
+      .filter((checkpoint) => checkpoint.tenantId === tenantId)
+      .sort(
+        (left, right) => right.createdAt.getTime() - left.createdAt.getTime()
+      )
+      .map(cloneAuditEvidenceCheckpoint)
+  }
+
+  transitionAuditEvidenceCheckpoint(
+    rawId: string,
+    rawStatus: AuditEvidenceCheckpointStatus,
+    rawUpdatedBy: string,
+    rawExpectedStatus: AuditEvidenceCheckpointStatus,
+    rawTenantId?: TenantId
+  ): AuditEvidenceCheckpointRecord | null {
+    const tenantId = requireCheckpointTenant(rawTenantId)
+    const id = AuditEvidenceCheckpointIdSchema.parse(rawId)
+    const status = AuditEvidenceCheckpointStatusSchema.parse(rawStatus)
+    const expectedStatus =
+      AuditEvidenceCheckpointStatusSchema.parse(rawExpectedStatus)
+    const updatedBy = AuditEvidenceCheckpointActorIdSchema.parse(rawUpdatedBy)
+    const current = this.db.state.auditEvidenceCheckpoints.find(
+      (candidate) => candidate.id === id && candidate.tenantId === tenantId
+    )
+    if (!current) return null
+    if (current.status !== expectedStatus) {
+      throw new DomainError(
+        'conflict',
+        `Audit evidence checkpoint status is ${current.status}, expected ${expectedStatus}`
+      )
+    }
+    if (current.status !== 'SEALED' || status !== 'ARCHIVED') {
+      throw new DomainError(
+        'invalid_action',
+        'Audit evidence checkpoint transition is not allowed'
+      )
+    }
+    const updated: AuditEvidenceCheckpointRecord = {
+      ...current,
+      status,
+      updatedBy,
+      updatedAt: new Date()
+    }
+    this.db.state.auditEvidenceCheckpoints =
+      this.db.state.auditEvidenceCheckpoints.map((candidate) =>
+        candidate.id === id && candidate.tenantId === tenantId
+          ? cloneAuditEvidenceCheckpoint(updated)
+          : candidate
+      )
+    return cloneAuditEvidenceCheckpoint(updated)
+  }
+
   private filterEvidence(
     filters: AuditEvidenceFilters,
     tenantId?: TenantId
@@ -93,6 +239,34 @@ export class AuditRepository {
     tenantId: TenantId
   ): boolean {
     return event.tenantId === tenantId
+  }
+}
+
+function requireCheckpointTenant(rawTenantId?: TenantId): TenantId {
+  const parsed = TenantIdSchema.safeParse(rawTenantId)
+  if (!parsed.success) {
+    throw new DomainError('unauthorized', 'Tenant scope is required')
+  }
+  return parsed.data
+}
+
+function assertCheckpointEvents(
+  input: AuditEvidenceCheckpointCreateInput,
+  events: AuditEventRecord[],
+  requestedIds: string[]
+): void {
+  if (events.length !== requestedIds.length) {
+    throw new DomainError(
+      'invalid_action',
+      'All audit evidence events must exist in the tenant scope'
+    )
+  }
+  const filters = normalizeAuditEvidenceCheckpointFilters(input.filters ?? {})
+  if (events.some((event) => !auditEventMatches(event, filters))) {
+    throw new DomainError(
+      'invalid_action',
+      'All audit evidence events must match the checkpoint filters'
+    )
   }
 }
 

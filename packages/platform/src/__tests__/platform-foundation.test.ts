@@ -1,20 +1,37 @@
 import { describe, expect, it, vi } from 'vitest'
+import { z } from 'zod'
 import {
   AgentConfigSchema,
   CapabilityGateway,
   createControlledCapabilityGateway,
   createControlledSchedulingPlugin,
+  createValidatedControlledReleaseCandidate,
   InMemoryControlPlaneStore,
   PluginRegistry,
   composePrompt,
   evaluatePlatformPolicy,
   evaluateTestLabCase,
   evaluateTestLabSuite,
+  InMemoryCapabilityApprovalAuthority,
   runTestLab
 } from '../index.ts'
+import type { CapabilityActorAuthorizer } from '../index.ts'
 
 const tenantA = 'tenant_00000000-0000-4000-8000-000000000001'
 const tenantB = 'tenant_00000000-0000-4000-8000-000000000002'
+const foundationActorAuthorizer: CapabilityActorAuthorizer = ({
+  actor,
+  requiredPermission
+}) => (actor.id === 'admin' ? [requiredPermission] : [])
+const foundationEchoOutputSchema = z.union([
+  z.string().max(4000),
+  z
+    .object({
+      ok: z.boolean().optional(),
+      token: z.string().max(4000).optional()
+    })
+    .strict()
+])
 
 function createConfig() {
   return AgentConfigSchema.parse({
@@ -110,9 +127,17 @@ describe('control plane foundation', () => {
     )
     await store.transitionVersion({ tenantId: tenantA }, version.id, 'TESTING')
     await store.transitionVersion({ tenantId: tenantA }, version.id, 'APPROVED')
+    const releaseCandidate = await createValidatedControlledReleaseCandidate(
+      store,
+      tenantA,
+      agent.id,
+      version.id,
+      'admin-a'
+    )
     const published = await store.publishVersion(
       { tenantId: tenantA },
-      version.id
+      version.id,
+      releaseCandidate.id
     )
 
     const returned = await store.getVersion({ tenantId: tenantA }, published.id)
@@ -186,7 +211,18 @@ describe('control plane foundation', () => {
     )
     await store.transitionVersion({ tenantId: tenantA }, first.id, 'TESTING')
     await store.transitionVersion({ tenantId: tenantA }, first.id, 'APPROVED')
-    await store.publishVersion({ tenantId: tenantA }, first.id)
+    const firstCandidate = await createValidatedControlledReleaseCandidate(
+      store,
+      tenantA,
+      agent.id,
+      first.id,
+      'admin-a'
+    )
+    await store.publishVersion(
+      { tenantId: tenantA },
+      first.id,
+      firstCandidate.id
+    )
 
     const secondConfig = createConfig()
     secondConfig.greeting = 'Nova saudação'
@@ -198,13 +234,25 @@ describe('control plane foundation', () => {
     )
     await store.transitionVersion({ tenantId: tenantA }, second.id, 'TESTING')
     await store.transitionVersion({ tenantId: tenantA }, second.id, 'APPROVED')
-    await store.publishVersion({ tenantId: tenantA }, second.id)
+    const secondCandidate = await createValidatedControlledReleaseCandidate(
+      store,
+      tenantA,
+      agent.id,
+      second.id,
+      'admin-a'
+    )
+    await store.publishVersion(
+      { tenantId: tenantA },
+      second.id,
+      secondCandidate.id
+    )
 
     const rollback = await store.rollback(
       { tenantId: tenantA },
       agent.id,
       first.id,
-      'admin-a'
+      'admin-a',
+      firstCandidate.id
     )
     expect(rollback.id).not.toBe(first.id)
     expect(rollback.status).toBe('PUBLISHED')
@@ -264,17 +312,28 @@ describe('control plane foundation', () => {
       store.transitionVersion({ tenantId: tenantA }, draft.id, 'APPROVED')
     ).rejects.toMatchObject({ code: 'invalid_action' })
     await expect(
-      store.publishVersion({ tenantId: tenantA }, draft.id)
+      store.publishVersion(
+        { tenantId: tenantA },
+        draft.id,
+        'release_candidate_00000000-0000-4000-8000-000000000399'
+      )
     ).rejects.toMatchObject({ code: 'invalid_action' })
     await expect(
-      store.rollback({ tenantId: tenantA }, agent.id, draft.id, 'admin-a')
+      store.rollback(
+        { tenantId: tenantA },
+        agent.id,
+        draft.id,
+        'admin-a',
+        'release_candidate_00000000-0000-4000-8000-000000000399'
+      )
     ).rejects.toMatchObject({ code: 'invalid_action' })
     await expect(
       store.rollback(
         { tenantId: tenantA },
         otherTenantAgent.id,
         draft.id,
-        'admin-a'
+        'admin-a',
+        'release_candidate_00000000-0000-4000-8000-000000000399'
       )
     ).rejects.toMatchObject({ code: 'invalid_action' })
     await expect(
@@ -289,6 +348,15 @@ describe('control plane foundation', () => {
       message: 'Olá',
       history: []
     })
+    await expect(
+      store.recordTestRun({ tenantId: tenantA }, {
+        ...trace,
+        provider: { ...trace.provider, externalCall: true }
+      } as unknown as typeof trace)
+    ).rejects.toMatchObject({ code: 'validation_failed' })
+    await expect(
+      store.listTestRuns({ tenantId: tenantA })
+    ).resolves.toHaveLength(1)
     await expect(
       store.recordTestRun({ tenantId: tenantB }, trace)
     ).rejects.toMatchObject({ code: 'forbidden' })
@@ -356,7 +424,9 @@ describe('platform policy and capability gateway', () => {
           dependencies: [],
           configSchemaVersion: '1'
         },
-        handlers: { read: handler }
+        handlers: { read: handler },
+        inputValidators: { read: z.object({}).strict() },
+        outputValidators: { read: z.object({}).strict() }
       })
     )
 
@@ -369,6 +439,7 @@ describe('platform policy and capability gateway', () => {
         plugins: [
           {
             plugin: 'fixture.gateway',
+            version: '1.0.0',
             enabled: true,
             allowedTools: ['read'],
             config: {}
@@ -416,14 +487,26 @@ describe('platform policy and capability gateway', () => {
         dependencies: [],
         configSchemaVersion: '1'
       },
-      handlers: { echo: handler }
+      handlers: { echo: handler },
+      inputValidators: {
+        echo: z
+          .object({
+            email: z.string().email().max(320).optional(),
+            value: z.string().max(4000)
+          })
+          .strict()
+      },
+      outputValidators: { echo: foundationEchoOutputSchema }
     })
-    const gateway = new CapabilityGateway(registry)
+    const gateway = new CapabilityGateway(registry, {
+      actorAuthorizer: foundationActorAuthorizer
+    })
     const config = {
       ...createConfig(),
       plugins: [
         {
           plugin: 'fake.echo',
+          version: '1.0.0',
           enabled: true,
           allowedTools: ['echo'],
           config: {}
@@ -491,14 +574,26 @@ describe('platform policy and capability gateway', () => {
     }
     const registry = new PluginRegistry().register({
       manifest,
-      handlers: { echo: handler }
+      handlers: { echo: handler },
+      inputValidators: {
+        echo: z
+          .object({
+            email: z.string().email().max(320).optional(),
+            value: z.string().max(4000)
+          })
+          .strict()
+      },
+      outputValidators: { echo: foundationEchoOutputSchema }
     })
-    const gateway = new CapabilityGateway(registry)
+    const gateway = new CapabilityGateway(registry, {
+      actorAuthorizer: foundationActorAuthorizer
+    })
     const config = {
       ...createConfig(),
       plugins: [
         {
           plugin: manifest.name,
+          version: '1.0.0',
           enabled: true,
           allowedTools: ['echo'],
           config: {}
@@ -534,7 +629,7 @@ describe('platform policy and capability gateway', () => {
       })
     ).resolves.toMatchObject({
       status: 'blocked',
-      reason: 'plugin_not_registered'
+      reason: 'plugin_version_not_registered'
     })
     await expect(
       gateway.execute({
@@ -564,7 +659,11 @@ describe('platform policy and capability gateway', () => {
     await expect(
       gateway.execute({
         ...base,
-        actor: { ...base.actor, permissions: [] }
+        actor: {
+          id: 'operator',
+          role: 'Operator',
+          permissions: ['tool:echo']
+        }
       })
     ).resolves.toMatchObject({ status: 'blocked', reason: 'permission_denied' })
     await expect(
@@ -619,25 +718,39 @@ describe('platform policy and capability gateway', () => {
     }
     const registry = new PluginRegistry().register({
       manifest,
-      handlers: { approve: handler }
+      handlers: { approve: handler },
+      inputValidators: { approve: z.object({}).strict() },
+      outputValidators: { approve: z.object({}).strict() }
     })
     expect(registry.list()).toHaveLength(1)
     expect(() =>
-      registry.register({ manifest, handlers: { approve: handler } })
+      registry.register({
+        manifest,
+        handlers: { approve: handler },
+        inputValidators: { approve: z.object({}).strict() },
+        outputValidators: { approve: z.object({}).strict() }
+      })
     ).toThrow('already registered')
     expect(() =>
-      new PluginRegistry().register({ manifest, handlers: {} })
+      new PluginRegistry().register({
+        manifest,
+        handlers: {},
+        inputValidators: { approve: z.object({}).strict() },
+        outputValidators: { approve: z.object({}).strict() }
+      })
     ).toThrow('Every manifest tool')
 
+    const approvalAuthority = new InMemoryCapabilityApprovalAuthority()
     const gateway = new CapabilityGateway(registry, {
-      approvalVerifier: async (approval) =>
-        approval.id === 'approval_00000000-0000-4000-8000-000000000001'
+      actorAuthorizer: foundationActorAuthorizer,
+      approvalAuthority
     })
     const config = {
       ...createConfig(),
       plugins: [
         {
           plugin: manifest.name,
+          version: '1.0.0',
           enabled: true,
           allowedTools: ['approve'],
           config: {}
@@ -676,11 +789,21 @@ describe('platform policy and capability gateway', () => {
       status: 'blocked',
       reason: 'approval_required'
     })
+    const issued = await approvalAuthority.issue({
+      tenantId: tenantA,
+      agentId: input.agentId,
+      versionId: input.versionId,
+      toolName: input.toolName,
+      input: {},
+      actorId: input.actor.id,
+      issuer: 'approver.foundation',
+      expiresAt: new Date(Date.now() + 60_000)
+    })
     await expect(
       gateway.execute({
         ...input,
         approval: {
-          id: 'approval_00000000-0000-4000-8000-000000000001',
+          id: issued.id,
           tenantId: tenantA,
           agentId: input.agentId,
           versionId: input.versionId,
@@ -690,6 +813,24 @@ describe('platform policy and capability gateway', () => {
         }
       })
     ).resolves.toMatchObject({ status: 'succeeded' })
+    expect(handler).toHaveBeenCalledTimes(1)
+    await expect(
+      gateway.execute({
+        ...input,
+        approval: {
+          id: issued.id,
+          tenantId: tenantA,
+          agentId: input.agentId,
+          versionId: input.versionId,
+          toolName: input.toolName,
+          actorId: input.actor.id,
+          expiresAt: issued.expiresAt
+        }
+      })
+    ).resolves.toMatchObject({
+      status: 'blocked',
+      reason: 'approval_required'
+    })
     expect(handler).toHaveBeenCalledTimes(1)
   })
 })
@@ -856,6 +997,7 @@ describe('Test Lab dry-run', () => {
         plugins: [
           {
             plugin: 'scheduling.controlled',
+            version: '1.0.0',
             enabled: true,
             allowedTools: ['find_available_slots'],
             config: {}
@@ -926,10 +1068,12 @@ describe('Test Lab dry-run', () => {
     })
 
     expect(trace.knowledge.status).toBe('approved_source_missing')
-    expect(trace.handoff).toEqual({
+    expect(trace.handoff).toMatchObject({
       requested: true,
       reason: 'approved_source_missing',
-      state: 'HANDOFF_REQUESTED'
+      state: 'HANDOFF_REQUESTED',
+      destination: 'controlled-reception',
+      priority: 'medium'
     })
     expect(trace.response.mode).toBe('handoff')
   })
@@ -1076,6 +1220,7 @@ describe('Test Lab dry-run', () => {
       plugins: [
         {
           plugin: 'scheduling.controlled',
+          version: '1.0.0',
           enabled: true,
           allowedTools: ['find_available_slots'],
           config: {}
@@ -1224,6 +1369,7 @@ describe('Test Lab dry-run', () => {
           plugins: [
             {
               plugin: 'scheduling.controlled',
+              version: '1.0.0',
               enabled: true,
               allowedTools: ['find_available_slots'],
               config: {}

@@ -149,12 +149,13 @@ describe('PlatformPanel', () => {
               knowledge: { status: 'not_requested' },
               tools: [{ name: 'find_available_slots', status: 'succeeded' }],
               handoff: { requested: false, reason: null, state: 'BOT_ACTIVE' },
-              response: { text: 'Resposta controlada.', mode: 'answer' },
+              response: { text: 'Contato alice@example.com', mode: 'answer' },
               provider: {
                 provider: 'fake',
                 model: 'deterministic-v1',
                 externalCall: false
-              }
+              },
+              spans: {}
             }
           ],
           pageInfo: { limit: 10, offset: 0, total: 1, hasNextPage: false }
@@ -174,6 +175,16 @@ describe('PlatformPanel', () => {
     expect(
       await screen.findByText('find_available_slots: succeeded')
     ).toBeTruthy()
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: /trace_00000000-0000-4000-8000-000000000021/
+      })
+    )
+    expect(
+      await screen.findByText('response: Contato [redacted-email]')
+    ).toBeTruthy()
+    expect(await screen.findByText('spans: legacy trace')).toBeTruthy()
+    expect(screen.queryByText('response: Contato alice@example.com')).toBeNull()
   })
 
   it('sends the configured knowledge version to Test Lab', async () => {

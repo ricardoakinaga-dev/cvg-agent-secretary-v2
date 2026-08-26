@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   AgentConfigSchema,
+  createControlledModelProviderRegistry,
   DeterministicModelProvider,
   ModelProviderRegistry,
   createDryRunModelProvider
@@ -40,6 +41,29 @@ describe('model provider abstraction', () => {
     expect(registry.resolve('fake')).toBe(provider)
     expect(registry.list()).toEqual([provider])
     expect(() => registry.register(provider)).toThrow('already registered')
+    expect(() => new ModelProviderRegistry([provider, provider])).toThrow(
+      'already registered'
+    )
     expect(registry.resolve('missing')).toBeNull()
+    expect(Object.isFrozen(provider)).toBe(true)
+    expect(Object.isFrozen(provider.supportedModels)).toBe(true)
+    const listed = registry.list()
+    listed.pop()
+    expect(registry.list()).toHaveLength(1)
+  })
+
+  it('resolves only the exact identity from the compiled controlled registry', () => {
+    const registry = createControlledModelProviderRegistry()
+
+    expect(registry.resolveForConfig(model)).toBeInstanceOf(
+      DeterministicModelProvider
+    )
+    expect(() =>
+      registry.resolveForConfig({ ...model, provider: 'openai' })
+    ).toThrow(/controlled|provider|model/i)
+    expect(() =>
+      registry.resolveForConfig({ ...model, model: 'deterministic-v2' })
+    ).toThrow(/controlled|provider|model/i)
+    expect(registry.list()).toHaveLength(1)
   })
 })

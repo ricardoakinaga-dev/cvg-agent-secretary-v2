@@ -2,13 +2,14 @@ import { Client } from 'pg'
 import { describe, expect, it } from 'vitest'
 import {
   AgentConfigSchema,
+  createValidatedControlledReleaseCandidate,
   createTestSuiteRunId,
   createTraceId,
-  type PluginManifest
+  type PluginManifest,
+  type ReleaseCandidateGateResult
 } from '@cvg/platform'
 import {
   PostgresControlPlaneRepository,
-  runInitialPostgresMigration,
   runPostgresMigrations
 } from '../index.ts'
 
@@ -79,7 +80,7 @@ describe('Postgres platform control plane smoke', () => {
       const schemaName = `cvg_platform_${Date.now()}`
       await client.connect()
       try {
-        await runInitialPostgresMigration(client, { schemaName })
+        await runPostgresMigrations(client, { schemaName })
         const repository = new PostgresControlPlaneRepository(client)
         const agent = await repository.createAgent(
           { tenantId },
@@ -107,13 +108,27 @@ describe('Postgres platform control plane smoke', () => {
           'APPROVED',
           'TESTING'
         )
+        const releaseCandidate =
+          await createValidatedControlledReleaseCandidate(
+            repository,
+            tenantId,
+            agent.id,
+            draft.id,
+            'admin.postgres'
+          )
         const published = await repository.publishVersion(
           { tenantId },
           draft.id,
+          releaseCandidate.id,
           'APPROVED'
         )
         await expect(
-          repository.publishVersion({ tenantId }, draft.id, 'APPROVED')
+          repository.publishVersion(
+            { tenantId },
+            draft.id,
+            releaseCandidate.id,
+            'APPROVED'
+          )
         ).rejects.toMatchObject({ code: 'conflict' })
         const trace = {
           traceId: createTraceId(),
@@ -327,6 +342,181 @@ describe('Postgres platform control plane smoke', () => {
           manifest: pluginManifest(),
           status: 'APPROVED'
         })
+      } finally {
+        await client.query(`DROP SCHEMA IF EXISTS ${schemaName} CASCADE`)
+        await client.end()
+      }
+    }
+  )
+
+  itWithPostgres(
+    'persists tenant-scoped knowledge source metadata without content or lifecycle bypass',
+    async () => {
+      const client = new Client({ connectionString: testDatabaseUrl })
+      const schemaName = `cvg_knowledge_catalog_${Date.now()}`
+      await client.connect()
+      try {
+        await runPostgresMigrations(client, { schemaName })
+        await client.query(`SET search_path TO ${schemaName}`)
+        await client.query(`SELECT set_config('cvg.tenant_id', $1, false)`, [
+          tenantId
+        ])
+        const repository = new PostgresControlPlaneRepository(client)
+        const draft = await repository.createKnowledgeSource(
+          { tenantId },
+          {
+            source: 'controlled://institutional-hours',
+            version: 'v1',
+            label: 'Horários fictícios',
+            description: 'Metadata controlada sem conteúdo documental.'
+          },
+          'admin.postgres'
+        )
+
+        await expect(
+          repository.createKnowledgeSource(
+            { tenantId },
+            {
+              source: 'controlled://institutional-hours',
+              version: 'v1',
+              label: 'Duplicada',
+              description: ''
+            },
+            'admin.postgres'
+          )
+        ).rejects.toMatchObject({ code: 'invalid_action' })
+        await expect(
+          repository.listKnowledgeSources({
+            tenantId: 'tenant_00000000-0000-4000-8000-000000000042'
+          })
+        ).resolves.toEqual([])
+
+        const approved = await repository.transitionKnowledgeSource(
+          { tenantId },
+          draft.id,
+          'APPROVED',
+          'approver.postgres',
+          'DRAFT'
+        )
+        expect(approved).toMatchObject({
+          status: 'APPROVED',
+          approvedBy: 'approver.postgres',
+          source: 'controlled://institutional-hours',
+          version: 'v1'
+        })
+        await expect(
+          repository.transitionKnowledgeSource(
+            { tenantId },
+            draft.id,
+            'ARCHIVED',
+            'admin.postgres',
+            'DRAFT'
+          )
+        ).rejects.toMatchObject({ code: 'conflict' })
+        await expect(
+          repository.transitionKnowledgeSource(
+            { tenantId },
+            draft.id,
+            'APPROVED',
+            'admin.postgres',
+            'APPROVED'
+          )
+        ).rejects.toMatchObject({ code: 'invalid_action' })
+        await expect(
+          repository.getKnowledgeSource({ tenantId }, draft.id)
+        ).resolves.toMatchObject({
+          status: 'APPROVED',
+          label: 'Horários fictícios',
+          description: 'Metadata controlada sem conteúdo documental.'
+        })
+      } finally {
+        await client.query(`DROP SCHEMA IF EXISTS ${schemaName} CASCADE`)
+        await client.end()
+      }
+    }
+  )
+
+  itWithPostgres(
+    'persists a validated release-candidate evidence ledger without mutating the version',
+    async () => {
+      const client = new Client({ connectionString: testDatabaseUrl })
+      const schemaName = `cvg_release_candidate_${Date.now()}`
+      await client.connect()
+      try {
+        await runPostgresMigrations(client, { schemaName })
+        await client.query(`SET search_path TO ${schemaName}`)
+        await client.query(`SELECT set_config('cvg.tenant_id', $1, false)`, [
+          tenantId
+        ])
+        const repository = new PostgresControlPlaneRepository(client)
+        const agent = await repository.createAgent(
+          { tenantId },
+          {
+            slug: 'release-candidate-postgres-agent',
+            name: 'Release Candidate Postgres Agent',
+            description: 'Fictício'
+          }
+        )
+        const version = await repository.createVersion(
+          { tenantId },
+          agent.id,
+          config(),
+          'admin.postgres'
+        )
+        const gateResults: ReleaseCandidateGateResult[] = [
+          {
+            key: 'safety_preflight',
+            status: 'PASS',
+            evidenceRef: 'controlled://evidence/safety-preflight-v1'
+          },
+          {
+            key: 'test_lab_regression',
+            status: 'PASS',
+            evidenceRef: 'controlled://evidence/test-lab-regression-v1'
+          },
+          {
+            key: 'snapshot_integrity',
+            status: 'PASS',
+            evidenceRef: 'controlled://evidence/snapshot-integrity-v1'
+          },
+          {
+            key: 'external_boundary',
+            status: 'PASS',
+            evidenceRef: 'controlled://evidence/external-boundary-v1'
+          }
+        ]
+        const candidate = await repository.createReleaseCandidate(
+          { tenantId },
+          { agentId: agent.id, versionId: version.id, gateResults },
+          'admin.postgres'
+        )
+        const validated = await repository.transitionReleaseCandidate(
+          { tenantId },
+          candidate.id,
+          'VALIDATED',
+          'approver.postgres',
+          'DRAFT'
+        )
+        expect(validated).toMatchObject({
+          status: 'VALIDATED',
+          validatedBy: 'approver.postgres'
+        })
+        await expect(
+          client.query(
+            `UPDATE platform_release_candidates
+             SET validated_by = created_by
+             WHERE tenant_id = $1 AND id = $2`,
+            [tenantId, candidate.id]
+          )
+        ).rejects.toThrow()
+        await expect(
+          repository.getVersion({ tenantId }, version.id)
+        ).resolves.toMatchObject({ status: 'DRAFT' })
+        await expect(
+          repository.listReleaseCandidates({
+            tenantId: 'tenant_00000000-0000-0000-0000-000000000042'
+          })
+        ).resolves.toEqual([])
       } finally {
         await client.query(`DROP SCHEMA IF EXISTS ${schemaName} CASCADE`)
         await client.end()

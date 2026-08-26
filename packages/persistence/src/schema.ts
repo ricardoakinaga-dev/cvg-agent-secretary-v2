@@ -8,7 +8,13 @@ import type {
   TaskStatus,
   ToolStatus
 } from '@cvg/shared'
-import type { HumanTakeoverState, TenantId } from '@cvg/platform'
+import type {
+  AgentId,
+  AgentVersionId,
+  HumanTakeoverState,
+  TenantId
+} from '@cvg/platform'
+import type { AuditEvidenceCheckpointRecord } from './audit-evidence-checkpoint.ts'
 
 export interface ConversationRecord {
   tenantId: TenantId
@@ -68,6 +74,9 @@ export interface SessionRecord {
   conversationId: string
   status: SessionStatus
   takeoverState: HumanTakeoverState
+  /** Immutable runtime binding; absent only for legacy/unconfigured sessions. */
+  agentId?: AgentId
+  agentVersionId?: AgentVersionId
   createdAt: Date
   updatedAt: Date
 }
@@ -184,6 +193,7 @@ export interface DatabaseState {
   approvals: ApprovalRequestRecord[]
   tasks: TaskRecord[]
   auditEvents: AuditEventRecord[]
+  auditEvidenceCheckpoints: AuditEvidenceCheckpointRecord[]
   idempotency: IdempotencyRecord[]
   outbox: OutboxEventRecord[]
 }

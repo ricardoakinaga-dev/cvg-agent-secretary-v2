@@ -5,6 +5,7 @@ import type { QueryResult, QueryResultRow } from 'pg'
 import { describe, expect, it } from 'vitest'
 import {
   PostgresRuntimeRepository,
+  readPostgresMigrationSql,
   runInitialPostgresMigration
 } from '../postgres.ts'
 import { createSenderRefFingerprint } from '../sender-fingerprint.ts'
@@ -16,6 +17,20 @@ const migrationPath = resolve(
 const testDatabaseUrl = process.env.TEST_DATABASE_URL
 
 describe('postgres migration smoke', () => {
+  it('ships an additive release-candidate validator integrity migration', async () => {
+    const migration = await readPostgresMigrationSql(
+      '0009_release_candidate_validator_integrity'
+    )
+
+    expect(migration).toContain(
+      'DROP CONSTRAINT IF EXISTS platform_release_candidates_validation_actor_check'
+    )
+    expect(migration).toContain('validated_by IS DISTINCT FROM created_by')
+    expect(migration).toContain(
+      'ADD CONSTRAINT platform_release_candidates_validation_actor_check'
+    )
+  })
+
   it('keeps the initial migration aligned with operational runtime tables and correlation indexes', async () => {
     const migration = await readFile(migrationPath, 'utf8')
 

@@ -1,3 +1,5 @@
+import type { AuditEvidenceCheckpointView } from '../../api/client.ts'
+
 export interface AuditPanelProps {
   events: Array<{ id: string; type: string; actorType: string }>
   error?: string | null
@@ -50,6 +52,12 @@ export interface AuditPanelProps {
   onNextEvidencePage?: () => void
   onPreviousEvidencePage?: () => void
   onRequestEvidenceExport?: () => void
+  checkpoint?: AuditEvidenceCheckpointView | null
+  canManageEvidenceCheckpoint?: boolean
+  checkpointMessage?: string | null
+  isManagingEvidenceCheckpoint?: boolean
+  onSealEvidenceCheckpoint?: () => void
+  onArchiveEvidenceCheckpoint?: () => void
 }
 
 function formatEvidencePageRange(
@@ -74,7 +82,13 @@ export function AuditPanel({
   isRequestingEvidenceExport = false,
   onNextEvidencePage,
   onPreviousEvidencePage,
-  onRequestEvidenceExport
+  onRequestEvidenceExport,
+  checkpoint = null,
+  canManageEvidenceCheckpoint = false,
+  checkpointMessage = null,
+  isManagingEvidenceCheckpoint = false,
+  onSealEvidenceCheckpoint,
+  onArchiveEvidenceCheckpoint
 }: AuditPanelProps) {
   const typeSummary = evidence
     ? Object.entries(evidence.summary.byType)
@@ -84,6 +98,9 @@ export function AuditPanel({
   const pageInfo = evidence?.page.pageInfo
   const hasPreviousEvidencePage = pageInfo ? pageInfo.offset > 0 : false
   const hasNextEvidencePage = pageInfo ? pageInfo.hasNextPage : false
+  const checkpointEventIds = evidence
+    ? evidence.page.items.map((event) => event.id)
+    : events.map((event) => event.id)
 
   return (
     <section className="panel auditPanel" aria-labelledby="audit-title">
@@ -212,6 +229,67 @@ export function AuditPanel({
               ))}
             </div>
           </div>
+        ) : null}
+      </section>
+      <section
+        className="evidenceCheckpoint"
+        aria-labelledby="audit-evidence-checkpoint-title"
+      >
+        <header className="subHeader">
+          <h3 id="audit-evidence-checkpoint-title">Checkpoint de evidencia</h3>
+          <span className="status">
+            {canManageEvidenceCheckpoint ? 'metadata-only' : 'locked'}
+          </span>
+        </header>
+        {!canReviewEvidence ? (
+          <p className="state">
+            Checkpoint restrito a Supervisor/Admin e sem payload bruto.
+          </p>
+        ) : null}
+        {canReviewEvidence && checkpoint ? (
+          <div className="evidenceBody">
+            <div className="evidenceStats" aria-label="Estado do checkpoint">
+              <span>
+                {checkpoint.eventCount} eventos / {checkpoint.status}
+              </span>
+              <span>Digest {checkpoint.evidenceDigest}</span>
+            </div>
+            {checkpoint.status === 'SEALED' ? (
+              <button
+                aria-label="Arquivar checkpoint"
+                disabled={
+                  !canManageEvidenceCheckpoint || isManagingEvidenceCheckpoint
+                }
+                onClick={onArchiveEvidenceCheckpoint}
+                type="button"
+              >
+                Arquivar checkpoint
+              </button>
+            ) : null}
+          </div>
+        ) : null}
+        {canReviewEvidence && !checkpoint ? (
+          <div className="evidenceBody">
+            <p className="state stateCompact">
+              Apenas IDs da pagina carregada serao selados; payload nao e
+              persistido.
+            </p>
+            <button
+              aria-label="Selar checkpoint"
+              disabled={
+                !canManageEvidenceCheckpoint ||
+                checkpointEventIds.length === 0 ||
+                isManagingEvidenceCheckpoint
+              }
+              onClick={onSealEvidenceCheckpoint}
+              type="button"
+            >
+              Selar checkpoint
+            </button>
+          </div>
+        ) : null}
+        {checkpointMessage ? (
+          <p className="state stateCompact">{checkpointMessage}</p>
         ) : null}
       </section>
     </section>

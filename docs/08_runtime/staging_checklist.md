@@ -17,6 +17,8 @@ APPROVED_FOR_SENSITIVE_AUTOMATION: false
 - `npm run test:e2e`
 - `npm run readiness`
 - `npm run test:postgres`
+- `npm run test:worker:startup`
+- `git diff --check`
 - HTTP smoke with `/health` and controlled fictitious webhook payload
 
 ## Boundary Checklist

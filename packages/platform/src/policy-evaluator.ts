@@ -86,7 +86,20 @@ export function evaluatePlatformPolicy(
     )
   }
 
-  if (input.confidence < input.config.policies.minConfidence) {
+  const clarifyThreshold =
+    input.config.policies.clarifyThreshold ??
+    input.config.policies.minConfidence
+  const handoffThreshold = input.config.policies.handoffThreshold ?? 0
+  if (input.confidence < handoffThreshold) {
+    return result(
+      'handoff',
+      'agent_behavior',
+      'low_confidence_handoff_threshold',
+      input.config.policies.version
+    )
+  }
+
+  if (input.confidence < clarifyThreshold) {
     const count = input.clarificationCount ?? 0
     const decision: PlatformDecision =
       input.config.policies.lowConfidence === 'clarify' &&

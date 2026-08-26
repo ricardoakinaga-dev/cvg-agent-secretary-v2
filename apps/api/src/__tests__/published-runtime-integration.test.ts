@@ -1,4 +1,8 @@
-import { AgentConfigSchema, InMemoryControlPlaneStore } from '@cvg/platform'
+import {
+  AgentConfigSchema,
+  createValidatedControlledReleaseCandidate,
+  InMemoryControlPlaneStore
+} from '@cvg/platform'
 import { describe, expect, it } from 'vitest'
 import { buildServer } from '../server.ts'
 
@@ -52,6 +56,7 @@ function config(
       ? [
           {
             plugin: 'scheduling.controlled',
+            version: '1.0.0',
             enabled: true,
             allowedTools: ['find_available_slots'],
             config: {}
@@ -103,7 +108,14 @@ async function createPublishedAgent(
     testing.id,
     'APPROVED'
   )
-  await store.publishVersion({ tenantId }, approved.id)
+  const releaseCandidate = await createValidatedControlledReleaseCandidate(
+    store,
+    tenantId,
+    agent.id,
+    approved.id,
+    'admin.runtime'
+  )
+  await store.publishVersion({ tenantId }, approved.id, releaseCandidate.id)
   return agent
 }
 
@@ -206,6 +218,90 @@ describe('published runtime integration', () => {
     })
   })
 
+  it('keeps a continued session on its first published version after a new publish', async () => {
+    const platform = new InMemoryControlPlaneStore()
+    const agent = await createPublishedAgent(platform)
+    const firstVersion = await platform.resolvePublished({ tenantId }, agent.id)
+    if (!firstVersion)
+      throw new Error('Fixture did not publish its first version')
+    const app = buildServer({
+      platform,
+      inboundTenantResolver: () => tenantId,
+      agentRuntime: { resolveAgentId: () => agent.id }
+    })
+
+    const first = await app.inject({
+      method: 'POST',
+      url: '/v1/webhooks/channels/web/messages',
+      payload: {
+        externalMessageId: 'runtime-pinning-1',
+        senderRef: 'fixture-sender',
+        body: 'Primeira mensagem',
+        receivedAt: '2026-08-23T10:00:00-03:00'
+      }
+    })
+    const firstData = first.json().data as {
+      conversationId: string
+      sessionId: string
+    }
+
+    const nextDraft = await platform.createVersion(
+      { tenantId },
+      agent.id,
+      AgentConfigSchema.parse({
+        ...firstVersion.config,
+        greeting: 'Greeting v2 publicada.'
+      }),
+      'admin.runtime'
+    )
+    const nextTesting = await platform.transitionVersion(
+      { tenantId },
+      nextDraft.id,
+      'TESTING'
+    )
+    const nextApproved = await platform.transitionVersion(
+      { tenantId },
+      nextTesting.id,
+      'APPROVED'
+    )
+    const releaseCandidate = await createValidatedControlledReleaseCandidate(
+      platform,
+      tenantId,
+      agent.id,
+      nextApproved.id,
+      'admin.runtime'
+    )
+    const secondVersion = await platform.publishVersion(
+      { tenantId },
+      nextApproved.id,
+      releaseCandidate.id
+    )
+
+    const continued = await app.inject({
+      method: 'POST',
+      url: '/v1/webhooks/channels/web/messages',
+      payload: {
+        externalMessageId: 'runtime-pinning-2',
+        senderRef: 'fixture-sender',
+        body: 'Continuação da conversa',
+        conversationId: firstData.conversationId,
+        sessionId: firstData.sessionId,
+        receivedAt: '2026-08-23T10:01:00-03:00'
+      }
+    })
+    await app.close()
+
+    const traces = await platform.listExecutionTraces({ tenantId })
+    expect(first.statusCode).toBe(200)
+    expect(continued.statusCode).toBe(200)
+    expect(secondVersion.id).not.toBe(firstVersion.id)
+    expect(traces).toHaveLength(2)
+    expect(traces.map((trace) => trace.versionId)).toEqual([
+      firstVersion.id,
+      firstVersion.id
+    ])
+  })
+
   it('retries pending runtime work when the inbound delivery is replayed after a transient failure', async () => {
     const platform = new RetryableRuntimePlatform()
     const agent = await createPublishedAgent(platform)
@@ -280,6 +376,15 @@ describe('published runtime integration', () => {
     expect(audit.json().data.events).toEqual(
       expect.arrayContaining([expect.objectContaining({ type: 'tool_call' })])
     )
+    const traceId = response.json().data.runtime.trace.traceId as string
+    const toolAudit = audit
+      .json()
+      .data.events.find(
+        (event: { type?: string }) => event.type === 'tool_call'
+      )
+    expect(toolAudit?.payload.traceId).toBe(traceId)
+    expect(toolAudit?.correlationId).toMatch(/^corr_/)
+    expect(toolAudit?.correlationId).not.toBe(traceId)
   })
 
   it('silences a continued session during human takeover and resumes only after explicit release', async () => {
@@ -311,8 +416,19 @@ describe('published runtime integration', () => {
     const firstData = first.json().data as {
       conversationId: string
       sessionId: string
-      runtime: { trace: { handoff: { state: string } } }
+      runtime: {
+        trace: { traceId: string; handoff: { state: string } }
+      }
     }
+    const firstAudit = await app.inject({
+      method: 'GET',
+      url: `/v1/audit/sessions/${firstData.sessionId}`,
+      headers: {
+        'x-operator-id': 'supervisor.runtime',
+        'x-operator-role': 'Supervisor',
+        'x-tenant-id': tenantId
+      }
+    })
     const accept = await app.inject({
       method: 'POST',
       url: `/v1/sessions/${firstData.sessionId}/takeover`,
@@ -371,6 +487,15 @@ describe('published runtime integration', () => {
 
     expect(first.statusCode).toBe(200)
     expect(firstData.runtime.trace.handoff.state).toBe('HANDOFF_REQUESTED')
+    expect(firstAudit.statusCode).toBe(200)
+    const handoffAudit = firstAudit
+      .json()
+      .data.events.find((event: { type?: string }) => event.type === 'handoff')
+    expect(handoffAudit?.correlationId).toMatch(/^corr_/)
+    expect(handoffAudit?.correlationId).not.toBe(
+      firstData.runtime.trace.traceId
+    )
+    expect(handoffAudit?.payload.traceId).toBe(firstData.runtime.trace.traceId)
     expect(accept.statusCode).toBe(200)
     expect(continued.statusCode).toBe(200)
     expect(continued.json().data.runtime).toMatchObject({

@@ -21,7 +21,12 @@ export const ErrorCodes = {
   missing_context: 'missing_context',
   insufficient_context: 'insufficient_context',
   forbidden: 'forbidden',
-  rate_limited: 'rate_limited'
+  rate_limited: 'rate_limited',
+  secure_transport_required: 'secure_transport_required',
+  unsupported_media_type: 'unsupported_media_type',
+  payload_too_large: 'payload_too_large',
+  not_found: 'not_found',
+  request_uri_too_long: 'request_uri_too_long'
 } as const
 
 export type ErrorCode = keyof typeof ErrorCodes

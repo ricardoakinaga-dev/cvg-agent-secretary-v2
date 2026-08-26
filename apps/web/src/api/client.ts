@@ -1,4 +1,4 @@
-import type { ApiEnvelope } from '@cvg/shared'
+import { redactSensitiveText, type ApiEnvelope } from '@cvg/shared'
 
 export interface TimelineItem {
   id: string
@@ -69,6 +69,22 @@ export interface PlatformVersionView {
   config: Record<string, unknown>
 }
 
+export interface PlatformSafetyPreflightView {
+  passed: boolean
+  caseCount: number
+  externalCall: boolean
+  cases: Array<{
+    caseId: string
+    passed: boolean
+    failures: string[]
+    policyDecision: string | null
+    responseMode: string
+    handoffRequested: boolean
+    externalCall: boolean
+  }>
+  failures: Array<{ caseId: string; reasons: string[] }>
+}
+
 export interface PlatformTraceView {
   traceId: string
   agentId: string
@@ -91,10 +107,23 @@ export interface PlatformTraceView {
     requested: boolean
     reason: string | null
     state: 'BOT_ACTIVE' | 'HANDOFF_REQUESTED'
+    destination?: string
+    priority?: 'low' | 'medium' | 'high'
   }
   response: { text: string; mode: string }
+  outputPolicy?: {
+    decision: 'allowed' | 'rewritten'
+    reason: string
+    mode: string
+    redacted: boolean
+  }
   provider: { provider: string; model: string; externalCall: false }
-  prompt?: { version: string; blockIds: string[] }
+  prompt?: {
+    version: string
+    blockIds: string[]
+    status?: string
+    checksum?: string
+  }
   status?: 'completed' | 'blocked' | 'failed'
   startedAt?: string
   completedAt?: string
@@ -121,6 +150,24 @@ interface PlatformTracePageView {
     total: number
     hasNextPage: boolean
   }
+}
+
+function redactPlatformPayload<T>(payload: T): T {
+  return redactPlatformValue(payload) as T
+}
+
+function redactPlatformValue(value: unknown): unknown {
+  if (typeof value === 'string') return redactSensitiveText(value)
+  if (Array.isArray(value)) return value.map(redactPlatformValue)
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, nestedValue]) => [
+        key,
+        redactPlatformValue(nestedValue)
+      ])
+    )
+  }
+  return value
 }
 
 export interface PlatformTestCaseView {
@@ -201,6 +248,52 @@ export interface PlatformPluginCatalogView {
   updatedAt: string
 }
 
+export type PlatformKnowledgeSourceStatus = 'DRAFT' | 'APPROVED' | 'ARCHIVED'
+
+export interface PlatformKnowledgeSourceView {
+  tenantId: string
+  id: string
+  source: string
+  version: string
+  label: string
+  description: string
+  status: PlatformKnowledgeSourceStatus
+  createdBy: string
+  approvedBy: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type PlatformReleaseCandidateStatus =
+  | 'DRAFT'
+  | 'VALIDATED'
+  | 'REJECTED'
+  | 'ARCHIVED'
+export type PlatformReleaseCandidateGateKey =
+  | 'safety_preflight'
+  | 'test_lab_regression'
+  | 'snapshot_integrity'
+  | 'external_boundary'
+export interface PlatformReleaseCandidateGateView {
+  key: PlatformReleaseCandidateGateKey
+  status: 'PASS' | 'FAIL'
+  evidenceRef: string
+}
+export interface PlatformReleaseCandidateView {
+  tenantId: string
+  id: string
+  agentId: string
+  versionId: string
+  evidenceDigest: string
+  gateResults: PlatformReleaseCandidateGateView[]
+  status: PlatformReleaseCandidateStatus
+  createdBy: string
+  validatedBy: string | null
+  createdAt: string
+  updatedAt: string
+  validatedAt: string | null
+}
+
 export interface ApprovalView {
   id: string
   sessionId: string
@@ -271,6 +364,27 @@ export interface AuditEvidenceReviewView {
   }
 }
 
+export type AuditEvidenceCheckpointStatus = 'SEALED' | 'ARCHIVED'
+
+export interface AuditEvidenceCheckpointView {
+  tenantId: string
+  id: string
+  filters: {
+    sessionId?: string
+    correlationId?: string
+    type?: string
+    actorId?: string
+  }
+  eventIds: string[]
+  eventCount: number
+  evidenceDigest: string
+  status: AuditEvidenceCheckpointStatus
+  createdBy: string
+  updatedBy: string
+  createdAt: string
+  updatedAt: string
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = init ? await fetch(path, init) : await fetch(path)
   const envelope = (await response.json()) as ApiEnvelope<T>
@@ -291,6 +405,14 @@ function operatorHeaders(identity: OperatorIdentity) {
   }
   if (identity.tenantId) headers['x-tenant-id'] = identity.tenantId
   return headers
+}
+
+function requireAgentId(agentId: string): string {
+  const normalizedAgentId = agentId.trim()
+  if (!normalizedAgentId) {
+    throw new Error('agentId is required for scoped platform reads')
+  }
+  return normalizedAgentId
 }
 
 function operatorInit(identity: OperatorIdentity): RequestInit {
@@ -377,6 +499,59 @@ export const apiClient = {
     return request(
       `/v1/observability/audit-evidence?${params.toString()}`,
       operatorInit(input.identity)
+    )
+  },
+
+  async createAuditEvidenceCheckpoint(input: {
+    identity: OperatorIdentity
+    eventIds: string[]
+    filters?: {
+      sessionId?: string
+      correlationId?: string
+      type?: string
+      actorId?: string
+    }
+  }): Promise<{ checkpoint: AuditEvidenceCheckpointView }> {
+    return request('/v1/observability/audit-evidence/checkpoints', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        ...operatorHeaders(input.identity)
+      },
+      body: JSON.stringify({
+        eventIds: input.eventIds,
+        ...(input.filters ? { filters: input.filters } : {})
+      })
+    })
+  },
+
+  async listAuditEvidenceCheckpoints(
+    identity: OperatorIdentity
+  ): Promise<{ checkpoints: AuditEvidenceCheckpointView[] }> {
+    return request(
+      '/v1/observability/audit-evidence/checkpoints',
+      operatorInit(identity)
+    )
+  },
+
+  async transitionAuditEvidenceCheckpoint(input: {
+    identity: OperatorIdentity
+    checkpointId: string
+    expectedStatus: 'SEALED'
+  }): Promise<{ checkpoint: AuditEvidenceCheckpointView }> {
+    return request(
+      `/v1/observability/audit-evidence/checkpoints/${input.checkpointId}/transition`,
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          ...operatorHeaders(input.identity)
+        },
+        body: JSON.stringify({
+          status: 'ARCHIVED',
+          expectedStatus: input.expectedStatus
+        })
+      }
     )
   },
 
@@ -498,6 +673,7 @@ export const apiClient = {
     identity: OperatorIdentity & { tenantId: string }
     agentId: string
     versionId: string
+    releaseCandidateId: string
     expectedStatus?: string
   }): Promise<PlatformVersionView> {
     return request(
@@ -508,9 +684,30 @@ export const apiClient = {
           'content-type': 'application/json',
           ...operatorHeaders(input.identity)
         },
-        body: JSON.stringify(
-          input.expectedStatus ? { expectedStatus: input.expectedStatus } : {}
-        )
+        body: JSON.stringify({
+          releaseCandidateId: input.releaseCandidateId,
+          ...(input.expectedStatus
+            ? { expectedStatus: input.expectedStatus }
+            : {})
+        })
+      }
+    )
+  },
+
+  async runPlatformSafetyPreflight(input: {
+    identity: OperatorIdentity & { tenantId: string }
+    agentId: string
+    versionId: string
+  }): Promise<PlatformSafetyPreflightView> {
+    return request(
+      `/v1/admin/agents/${input.agentId}/versions/${input.versionId}/publish-preflight`,
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          ...operatorHeaders(input.identity)
+        },
+        body: '{}'
       }
     )
   },
@@ -519,6 +716,7 @@ export const apiClient = {
     identity: OperatorIdentity & { tenantId: string }
     agentId: string
     versionId: string
+    releaseCandidateId: string
     expectedStatus?: string
   }): Promise<PlatformVersionView> {
     return request(`/v1/admin/agents/${input.agentId}/rollback`, {
@@ -529,6 +727,7 @@ export const apiClient = {
       },
       body: JSON.stringify({
         versionId: input.versionId,
+        releaseCandidateId: input.releaseCandidateId,
         ...(input.expectedStatus
           ? { expectedStatus: input.expectedStatus }
           : {})
@@ -547,7 +746,7 @@ export const apiClient = {
       source: string
     }
   }): Promise<PlatformTraceView> {
-    return request('/v1/admin/test-lab/runs', {
+    const trace = await request<PlatformTraceView>('/v1/admin/test-lab/runs', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
@@ -561,6 +760,7 @@ export const apiClient = {
         approvedKnowledge: input.approvedKnowledge
       })
     })
+    return redactPlatformPayload(trace)
   },
 
   async evaluatePlatformTestLab(input: {
@@ -589,7 +789,15 @@ export const apiClient = {
       trace: PlatformTraceView
     }>
   }> {
-    return request('/v1/admin/test-lab/evaluate', {
+    const result = await request<{
+      passed: boolean
+      results: Array<{
+        caseId: string
+        passed: boolean
+        failures: string[]
+        trace: PlatformTraceView
+      }>
+    }>('/v1/admin/test-lab/evaluate', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
@@ -601,6 +809,7 @@ export const apiClient = {
         cases: input.cases
       })
     })
+    return redactPlatformPayload(result)
   },
 
   async createPlatformTestSuite(input: {
@@ -631,9 +840,9 @@ export const apiClient = {
 
   async listPlatformTestSuites(
     identity: OperatorIdentity & { tenantId: string },
-    agentId?: string
+    agentId: string
   ): Promise<PlatformTestSuiteView[]> {
-    const query = agentId ? `?agentId=${encodeURIComponent(agentId)}` : ''
+    const query = `?agentId=${encodeURIComponent(requireAgentId(agentId))}`
     return request(`/v1/admin/test-lab/suites${query}`, operatorInit(identity))
   },
 
@@ -688,7 +897,7 @@ export const apiClient = {
       `/v1/admin/test-lab/suites/${suiteId}/runs?limit=${limit}`,
       operatorInit(identity)
     )
-    return page.items
+    return redactPlatformPayload(page.items)
   },
 
   async listPlatformTestRuns(
@@ -699,7 +908,7 @@ export const apiClient = {
       `/v1/admin/test-lab/runs?limit=${limit}`,
       operatorInit(identity)
     )
-    return page.items
+    return redactPlatformPayload(page.items)
   },
 
   async listPlatformExecutionTraces(
@@ -710,7 +919,7 @@ export const apiClient = {
       `/v1/admin/execution-traces?limit=${limit}`,
       operatorInit(identity)
     )
-    return page.items
+    return redactPlatformPayload(page.items)
   },
 
   async listPlatformPluginCatalog(
@@ -754,5 +963,109 @@ export const apiClient = {
           : {})
       })
     })
+  },
+
+  async listPlatformKnowledgeSources(
+    identity: OperatorIdentity & { tenantId: string }
+  ): Promise<PlatformKnowledgeSourceView[]> {
+    return request('/v1/admin/knowledge-sources', operatorInit(identity))
+  },
+
+  async createPlatformKnowledgeSource(input: {
+    identity: OperatorIdentity & { tenantId: string }
+    source: string
+    version: string
+    label: string
+    description: string
+  }): Promise<PlatformKnowledgeSourceView> {
+    return request('/v1/admin/knowledge-sources', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        ...operatorHeaders(input.identity)
+      },
+      body: JSON.stringify({
+        source: input.source,
+        version: input.version,
+        label: input.label,
+        description: input.description
+      })
+    })
+  },
+
+  async transitionPlatformKnowledgeSource(input: {
+    identity: OperatorIdentity & { tenantId: string }
+    sourceId: string
+    target: PlatformKnowledgeSourceStatus
+    expectedStatus?: PlatformKnowledgeSourceStatus
+  }): Promise<PlatformKnowledgeSourceView> {
+    return request(`/v1/admin/knowledge-sources/${input.sourceId}/transition`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        ...operatorHeaders(input.identity)
+      },
+      body: JSON.stringify({
+        target: input.target,
+        ...(input.expectedStatus
+          ? { expectedStatus: input.expectedStatus }
+          : {})
+      })
+    })
+  },
+
+  async listPlatformReleaseCandidates(
+    identity: OperatorIdentity & { tenantId: string },
+    agentId: string
+  ): Promise<PlatformReleaseCandidateView[]> {
+    const query = `?agentId=${encodeURIComponent(requireAgentId(agentId))}`
+    return request(
+      `/v1/admin/release-candidates${query}`,
+      operatorInit(identity)
+    )
+  },
+
+  async createPlatformReleaseCandidate(input: {
+    identity: OperatorIdentity & { tenantId: string }
+    agentId: string
+    versionId: string
+    gateResults: PlatformReleaseCandidateGateView[]
+  }): Promise<PlatformReleaseCandidateView> {
+    return request('/v1/admin/release-candidates', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        ...operatorHeaders(input.identity)
+      },
+      body: JSON.stringify({
+        agentId: input.agentId,
+        versionId: input.versionId,
+        gateResults: input.gateResults
+      })
+    })
+  },
+
+  async transitionPlatformReleaseCandidate(input: {
+    identity: OperatorIdentity & { tenantId: string }
+    candidateId: string
+    target: PlatformReleaseCandidateStatus
+    expectedStatus?: PlatformReleaseCandidateStatus
+  }): Promise<PlatformReleaseCandidateView> {
+    return request(
+      `/v1/admin/release-candidates/${input.candidateId}/transition`,
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          ...operatorHeaders(input.identity)
+        },
+        body: JSON.stringify({
+          target: input.target,
+          ...(input.expectedStatus
+            ? { expectedStatus: input.expectedStatus }
+            : {})
+        })
+      }
+    )
   }
 }

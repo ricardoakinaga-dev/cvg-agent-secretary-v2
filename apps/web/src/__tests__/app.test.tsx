@@ -1,4 +1,11 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { App } from '../App.tsx'
 
@@ -131,6 +138,419 @@ describe('web console', () => {
       legacyConversationTimelinePath
     )
     expect(globalThis.fetch).not.toHaveBeenCalledWith(legacyAuditPath)
+  })
+
+  it('isolates operational panels when the tenant changes and ignores the old tenant response', async () => {
+    const tenantA = 'tenant_00000000-0000-4000-8000-000000000001'
+    const tenantB = 'tenant_00000000-0000-4000-8000-000000000002'
+    const deferredTenantBConversations: {
+      resolve?: (response: Response) => void
+    } = {}
+
+    const conversationPage = (conversation: {
+      id: string
+      sessionId: string
+      senderRef: string
+      lastMessageBody: string
+    }) => ({
+      items: [
+        {
+          id: conversation.id,
+          channel: 'whatsapp',
+          senderRef: conversation.senderRef,
+          status: 'active',
+          correlationId: 'corr_00000000-0000-4000-8000-000000000001',
+          openSessionId: conversation.sessionId,
+          lastMessageBody: conversation.lastMessageBody,
+          lastMessageAt: '2026-04-29T12:00:00-03:00',
+          updatedAt: '2026-04-29T12:00:00-03:00'
+        }
+      ],
+      pageInfo: { limit: 25, offset: 0, total: 1, hasNextPage: false }
+    })
+
+    const tenantAConversation = conversationPage({
+      id: 'conv_tenant_a',
+      sessionId: 'sess_tenant_a',
+      senderRef: 'tenant-a-sender',
+      lastMessageBody: 'Mensagem do tenant A'
+    })
+    const tenantBConversation = conversationPage({
+      id: 'conv_tenant_b',
+      sessionId: 'sess_tenant_b',
+      senderRef: 'tenant-b-sender',
+      lastMessageBody: 'Mensagem do tenant B'
+    })
+
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const url = String(input)
+      const headers = init?.headers as Record<string, string> | undefined
+      const tenant = headers?.['x-tenant-id']
+
+      if (url === '/v1/conversations?limit=25&offset=0') {
+        if (tenant === tenantA) return envelope(tenantAConversation)
+        if (tenant === tenantB) {
+          return new Promise<Response>((resolve) => {
+            deferredTenantBConversations.resolve = resolve
+          })
+        }
+        return envelope({
+          items: [],
+          pageInfo: { limit: 25, offset: 0, total: 0, hasNextPage: false }
+        })
+      }
+      if (url === '/v1/conversations/conv_tenant_a/timeline') {
+        return envelope({
+          messages: [
+            {
+              id: 'msg_tenant_a',
+              direction: 'inbound',
+              body: 'Timeline do tenant A',
+              createdAt: '2026-04-29T12:00:00-03:00'
+            }
+          ]
+        })
+      }
+      if (url === '/v1/conversations/conv_tenant_b/timeline') {
+        return envelope({
+          messages: [
+            {
+              id: 'msg_tenant_b',
+              direction: 'inbound',
+              body: 'Timeline do tenant B',
+              createdAt: '2026-04-29T12:00:00-03:00'
+            }
+          ]
+        })
+      }
+      if (url === '/v1/approvals') {
+        return envelope(
+          tenant === tenantA
+            ? [
+                {
+                  id: 'approval_tenant_a',
+                  sessionId: 'sess_tenant_a',
+                  proposedAction: 'approval-tenant-a',
+                  summary: 'A',
+                  riskLevel: 'medium',
+                  status: 'pending'
+                }
+              ]
+            : tenant === tenantB
+              ? [
+                  {
+                    id: 'approval_tenant_b',
+                    sessionId: 'sess_tenant_b',
+                    proposedAction: 'approval-tenant-b',
+                    summary: 'B',
+                    riskLevel: 'medium',
+                    status: 'pending'
+                  }
+                ]
+              : []
+        )
+      }
+      if (url === '/v1/tasks') {
+        return envelope(
+          tenant === tenantA
+            ? [
+                {
+                  id: 'task_tenant_a',
+                  sessionId: 'sess_tenant_a',
+                  title: 'task-tenant-a',
+                  priority: 'medium',
+                  status: 'open'
+                }
+              ]
+            : tenant === tenantB
+              ? [
+                  {
+                    id: 'task_tenant_b',
+                    sessionId: 'sess_tenant_b',
+                    title: 'task-tenant-b',
+                    priority: 'medium',
+                    status: 'open'
+                  }
+                ]
+              : []
+        )
+      }
+      if (url === '/v1/audit/sessions/sess_tenant_a') {
+        return envelope({
+          events: [
+            {
+              id: 'audit_tenant_a',
+              type: 'audit-tenant-a',
+              actorType: 'System',
+              createdAt: '2026-04-29T12:00:00-03:00'
+            }
+          ]
+        })
+      }
+      if (url === '/v1/audit/sessions/sess_tenant_b') {
+        return envelope({
+          events: [
+            {
+              id: 'audit_tenant_b',
+              type: 'audit-tenant-b',
+              actorType: 'System',
+              createdAt: '2026-04-29T12:00:00-03:00'
+            }
+          ]
+        })
+      }
+      return Promise.reject(new Error(`Unexpected URL ${url}`))
+    })
+
+    render(<App />)
+    fireEvent.change(screen.getByLabelText('Tenant ID'), {
+      target: { value: tenantA }
+    })
+    enterOperatorIdentity()
+
+    expect(await screen.findByText('tenant-a-sender')).toBeTruthy()
+    expect(await screen.findByText('approval-tenant-a')).toBeTruthy()
+    expect(await screen.findByText('task-tenant-a')).toBeTruthy()
+    expect(await screen.findByText('audit-tenant-a')).toBeTruthy()
+    expect(await screen.findByText('Timeline do tenant A')).toBeTruthy()
+
+    fireEvent.change(screen.getByLabelText('Tenant ID'), {
+      target: { value: tenantB }
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('tenant-a-sender')).toBeNull()
+      expect(screen.queryByText('approval-tenant-a')).toBeNull()
+      expect(screen.queryByText('task-tenant-a')).toBeNull()
+      expect(screen.queryByText('audit-tenant-a')).toBeNull()
+      expect(screen.queryByText('Timeline do tenant A')).toBeNull()
+    })
+
+    const resolveTenantB = deferredTenantBConversations.resolve
+    expect(resolveTenantB).toEqual(expect.any(Function))
+    if (typeof resolveTenantB !== 'function') {
+      throw new Error('Tenant B conversation request was not deferred')
+    }
+    resolveTenantB(await envelope(tenantBConversation))
+
+    expect(await screen.findByText('tenant-b-sender')).toBeTruthy()
+    expect(await screen.findByText('approval-tenant-b')).toBeTruthy()
+    expect(await screen.findByText('task-tenant-b')).toBeTruthy()
+    expect(await screen.findByText('audit-tenant-b')).toBeTruthy()
+    expect(await screen.findByText('Timeline do tenant B')).toBeTruthy()
+    expect(screen.queryByText('tenant-a-sender')).toBeNull()
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      '/v1/conversations?limit=25&offset=0',
+      expect.objectContaining({
+        headers: expect.objectContaining({ 'x-tenant-id': tenantB })
+      })
+    )
+  })
+
+  it('does not apply an in-flight approval refresh after the tenant changes', async () => {
+    const tenantA = 'tenant_00000000-0000-4000-8000-000000000011'
+    const tenantB = 'tenant_00000000-0000-4000-8000-000000000012'
+    let resolveDecision: ((response: Response) => void) | null = null
+
+    const pageFor = (suffix: 'a' | 'b') => ({
+      items: [
+        {
+          id: `conv_tenant_${suffix}`,
+          channel: 'whatsapp',
+          senderRef: `sender-tenant-${suffix}`,
+          status: 'active',
+          correlationId: 'corr_00000000-0000-4000-8000-000000000011',
+          openSessionId: `sess_tenant_${suffix}`,
+          lastMessageBody: `Mensagem do tenant ${suffix.toUpperCase()}`,
+          lastMessageAt: '2026-04-29T12:00:00-03:00',
+          updatedAt: '2026-04-29T12:00:00-03:00'
+        }
+      ],
+      pageInfo: { limit: 25, offset: 0, total: 1, hasNextPage: false }
+    })
+
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const url = String(input)
+      const headers = init?.headers as Record<string, string> | undefined
+      const tenant = headers?.['x-tenant-id']
+
+      if (url === '/v1/conversations?limit=25&offset=0') {
+        return envelope(tenant === tenantB ? pageFor('b') : pageFor('a'))
+      }
+      if (url.includes('/timeline')) return envelope({ messages: [] })
+      if (url === '/v1/approvals/approval_tenant_a/decision') {
+        return new Promise<Response>((resolve) => {
+          resolveDecision = resolve
+        })
+      }
+      if (url === '/v1/approvals') {
+        return envelope(
+          tenant === tenantB
+            ? [
+                {
+                  id: 'approval_tenant_b',
+                  sessionId: 'sess_tenant_b',
+                  proposedAction: 'approval-tenant-b',
+                  summary: 'B',
+                  riskLevel: 'medium',
+                  status: 'pending'
+                }
+              ]
+            : [
+                {
+                  id: 'approval_tenant_a',
+                  sessionId: 'sess_tenant_a',
+                  proposedAction: 'approval-tenant-a',
+                  summary: 'A',
+                  riskLevel: 'medium',
+                  status: 'pending'
+                }
+              ]
+        )
+      }
+      if (url === '/v1/tasks') return envelope([])
+      if (url === '/v1/audit/sessions/sess_tenant_a')
+        return envelope({ events: [] })
+      if (url === '/v1/audit/sessions/sess_tenant_b')
+        return envelope({ events: [] })
+      return Promise.reject(new Error(`Unexpected URL ${url}`))
+    })
+
+    render(<App />)
+    fireEvent.change(screen.getByLabelText('Tenant ID'), {
+      target: { value: tenantA }
+    })
+    enterOperatorIdentity('approver.shift-a', 'Approver')
+
+    fireEvent.click(
+      await screen.findByRole('button', {
+        name: 'Aprovar approval-tenant-a'
+      })
+    )
+    expect(resolveDecision).not.toBeNull()
+
+    fireEvent.change(screen.getByLabelText('Tenant ID'), {
+      target: { value: tenantB }
+    })
+    expect(await screen.findByText('approval-tenant-b')).toBeTruthy()
+
+    await act(async () => {
+      resolveDecision?.(
+        await envelope({
+          id: 'approval_tenant_a',
+          sessionId: 'sess_tenant_a',
+          proposedAction: 'approval-tenant-a',
+          summary: 'A',
+          riskLevel: 'medium',
+          status: 'approved'
+        })
+      )
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('approval-tenant-a')).toBeNull()
+      expect(screen.getByText('approval-tenant-b')).toBeTruthy()
+    })
+  })
+
+  it('does not reuse an old view scope after returning to the same conversation', async () => {
+    const tenant = 'tenant_00000000-0000-4000-8000-000000000013'
+    const deferredDecision: { resolve?: (response: Response) => void } = {}
+    let approvalReads = 0
+
+    const conversations = [
+      {
+        id: 'conv_scope_a',
+        channel: 'whatsapp',
+        senderRef: 'sender-scope-a',
+        status: 'active',
+        correlationId: 'corr_00000000-0000-4000-8000-000000000013',
+        openSessionId: 'sess_scope_a',
+        lastMessageBody: 'Mensagem A',
+        lastMessageAt: '2026-04-29T12:00:00-03:00',
+        updatedAt: '2026-04-29T12:00:00-03:00'
+      },
+      {
+        id: 'conv_scope_b',
+        channel: 'whatsapp',
+        senderRef: 'sender-scope-b',
+        status: 'active',
+        correlationId: 'corr_00000000-0000-4000-8000-000000000013',
+        openSessionId: 'sess_scope_b',
+        lastMessageBody: 'Mensagem B',
+        lastMessageAt: '2026-04-29T12:00:00-03:00',
+        updatedAt: '2026-04-29T12:00:00-03:00'
+      }
+    ]
+
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
+      const url = String(input)
+      if (url === '/v1/conversations?limit=25&offset=0') {
+        return envelope({
+          items: conversations,
+          pageInfo: { limit: 25, offset: 0, total: 2, hasNextPage: false }
+        })
+      }
+      if (url.includes('/timeline')) return envelope({ messages: [] })
+      if (url === '/v1/approvals') {
+        approvalReads += 1
+        return envelope([
+          {
+            id: 'approval_scope_a',
+            sessionId: 'sess_scope_a',
+            proposedAction: 'approval-scope-a',
+            summary: 'A',
+            riskLevel: 'medium',
+            status: 'pending'
+          }
+        ])
+      }
+      if (url === '/v1/approvals/approval_scope_a/decision') {
+        return new Promise<Response>((resolve) => {
+          deferredDecision.resolve = resolve
+        })
+      }
+      if (url === '/v1/tasks') return envelope([])
+      if (url.includes('/v1/audit/sessions/')) return envelope({ events: [] })
+      return Promise.reject(new Error(`Unexpected URL ${url}`))
+    })
+
+    render(<App />)
+    fireEvent.change(screen.getByLabelText('Tenant ID'), {
+      target: { value: tenant }
+    })
+    enterOperatorIdentity('approver.scope', 'Approver')
+
+    await screen.findByText('sender-scope-a')
+    const initialApprovalReads = approvalReads
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Aprovar approval-scope-a' })
+    )
+    fireEvent.click(screen.getByRole('button', { name: /sender-scope-b/ }))
+    fireEvent.click(screen.getByRole('button', { name: /sender-scope-a/ }))
+
+    const resolveDecision = deferredDecision.resolve
+    expect(resolveDecision).toEqual(expect.any(Function))
+    if (typeof resolveDecision !== 'function') {
+      throw new Error('Approval decision request was not deferred')
+    }
+    await act(async () => {
+      resolveDecision(
+        await envelope({
+          id: 'approval_scope_a',
+          sessionId: 'sess_scope_a',
+          proposedAction: 'approval-scope-a',
+          summary: 'A',
+          riskLevel: 'medium',
+          status: 'approved'
+        })
+      )
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    expect(approvalReads).toBe(initialApprovalReads)
+    expect(screen.getByText('medium / pending')).toBeTruthy()
   })
 
   it('renders empty states when the API returns no operational records', async () => {

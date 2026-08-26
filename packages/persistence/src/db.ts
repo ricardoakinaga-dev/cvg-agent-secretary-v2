@@ -10,6 +10,7 @@ export function createInMemoryState(): DatabaseState {
     approvals: [],
     tasks: [],
     auditEvents: [],
+    auditEvidenceCheckpoints: [],
     idempotency: [],
     outbox: []
   }

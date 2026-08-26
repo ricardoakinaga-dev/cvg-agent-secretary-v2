@@ -8,6 +8,7 @@
     "@cvg/shared": "1.0.0",
     "@cvg/persistence": "1.0.0",
     "@cvg/policy": "1.0.0",
-    "@cvg/platform": "1.0.0"
+    "@cvg/platform": "1.0.0",
+    "zod": "^4.3.6"
   }
 }

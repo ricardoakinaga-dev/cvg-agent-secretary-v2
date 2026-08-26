@@ -1,5 +1,72 @@
 # MASTER EXECUTION LOG — CVG
 
+## AUDIT CORRETIVO CONTROLADO PLAT-S47 — 2026-08-26
+
+### ENGINE
+
+AUDIT
+
+### PHASE
+
+AUDIT
+
+### SPRINT
+
+PLAT-S47_CONTROLLED_MULTI_AGENT_CREATION_MODE
+
+### TASK
+
+PLAT-S47-001_CONTROLLED_MULTI_AGENT_CREATION_MODE
+
+### ACTION
+
+Após a crítica pós-GREEN, foram adicionadas provas negativas e correções para
+scope de Trace Viewer, `agentId` obrigatório nas leituras administrativas,
+redaction recursiva no cliente, geração monotônica de view scope e payload
+legado com `spans` não-array.
+
+### RESULT
+
+RED reproduziu a quebra de `spans: {}`. GREEN passou. A regressão integral
+passou 127 arquivos/534 testes, com 2 arquivos/19 testes skipped; coverage
+84,86/80,12/84,97/85,97; PostgreSQL 8/72; E2E 4/4; readiness 4/4; worker
+smoke; build 158 módulos; audit 0; typecheck, lint, format e diff check PASS.
+
+A crítica independente compatível read-only concluiu `PASS_CONTROLLED`, sem
+P0, P1, P2 ou P3, e não alterou arquivos.
+
+### DECISIONS
+
+Os achados foram fechados somente no MVP controlado, sem provider, canal, RAG,
+rede, dado real, segredo ou side effect. A task foi marcada como
+`COMPLETED_CONTROLLED`; produção permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+### STATUS
+
+COMPLETED_CONTROLLED
+
+## BUILD CONTROLADO PLAT-S47 — GREEN — 2026-08-26T12:02:42-03:00
+
+- task: `PLAT-S47-001_CONTROLLED_MULTI_AGENT_CREATION_MODE`
+- result: focused 4 arquivos/9 testes PASS; E2E real 1/1 PASS.
+- implementation: modo `Novo agente`, reset bounded, clone preservado ao
+  re-selecionar e token local contra respostas assíncronas tardias.
+- evidence: A/B com greetings distintos, IDs/slugs distintos, headers de
+  tenant e ausência de provider/canal/side effect.
+- next: revisão independente pós-correção e gates integrados.
+
+## BUILD CONTROLADO PLAT-S47 — 2026-08-26T11:39:07-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- task: `PLAT-S47-001_CONTROLLED_MULTI_AGENT_CREATION_MODE`
+- action: executar o RED focado da jornada A/B após o gate de SPEC.
+- result: `RED_OBSERVED`; 1 arquivo/1 teste falhou como esperado porque a UI
+  mantém o agente selecionado e não oferece `Novo agente`.
+- decision: implementar somente o reset de estado do Control Center e preservar
+  o clone versionado; nenhum efeito externo ou produção real foi autorizado.
+- next: GREEN focused e gates proporcionais.
+
 ## Entry Template
 
 ### TIMESTAMP
@@ -76,6 +143,129 @@ Todos os arquivos foram mantidos dentro de `docs/`. Implementacao real ficou con
 
 ### STATUS
 
+## SPEC CONTROLADO PLAT-S47 — 2026-08-26T11:33:26-03:00
+
+### ENGINE
+
+SPEC
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S47_CONTROLLED_MULTI_AGENT_CREATION_MODE
+
+### TASK
+
+PLAT-S47-001_CONTROLLED_MULTI_AGENT_CREATION_MODE
+
+### ACTION
+
+Discovery read-only do Control Center reproduziu que, após o primeiro agente,
+o editor permanece preso ao agente selecionado e a ação principal clona uma
+versão. Registrada a lane para criar modo explícito de novo agente e provar
+Agent A/B na mesma sessão tenant-aware.
+
+### RESULT
+
+Gate `SPEC_APPROVED_CONTROLLED_BUILD`; próximo passo obrigatório é RED focado.
+Nenhum kernel, schema, provider, canal, RAG, rede, dado real ou efeito externo
+foi alterado/ativado.
+
+### DECISIONS
+
+Limpar somente estado local derivado de agente/versão ao iniciar criação;
+preservar o clone versionado ao editar agente existente e a identidade do
+operador.
+
+### STATUS
+
+IN_PROGRESS
+
+## AUDIT CONTROLADO PLAT-S46 — 2026-08-26T11:22:54-03:00
+
+### ENGINE
+
+AUDIT
+
+### PHASE
+
+AUDIT
+
+### SPRINT
+
+PLAT-S46_CONTROLLED_EXECUTION_TRACE_CORRELATION_BOUNDARY
+
+### TASK
+
+PLAT-S46-001_CONTROLLED_EXECUTION_TRACE_CORRELATION_BOUNDARY
+
+### ACTION
+
+Executado o BUILD da correlação parental bounded e auditados os boundaries de
+kernel, event bus, hooks, gateway, approvals, runtime publicado e sinks.
+Atualizados os registros de evidência e rastreabilidade.
+
+### RESULT
+
+RED: 4 arquivos/33 testes, 8 falhas esperadas. GREEN final: 6 arquivos/25
+testes. Regressão 126 arquivos/523 testes pass, 2 arquivos/19 testes skipped;
+coverage 85,07/80,06/85,95/86,10; PostgreSQL 8/72; readiness 4/4; worker
+smoke; E2E 4/4; build 70 módulos; audit 0; typecheck, lint, format e diff
+check PASS. Revisão independente compatível read-only `PASS` sem P0/P1/P2.
+
+### DECISIONS
+
+Marcar S46 como `COMPLETED_CONTROLLED` em `AUDIT`. O trace é somente relação
+parental local; IDs de evento/call permanecem distintos. Nenhum provider,
+canal, rede, RAG, dado real ou efeito externo foi ativado.
+
+### STATUS
+
+READY_FOR_NEXT_STEP
+
+## SPEC CONTROLADO PLAT-S46 — 2026-08-26T10:33:24-03:00
+
+### ENGINE
+
+SPEC
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S46_CONTROLLED_EXECUTION_TRACE_CORRELATION_BOUNDARY
+
+### TASK
+
+PLAT-S46-001_CONTROLLED_EXECUTION_TRACE_CORRELATION_BOUNDARY
+
+### ACTION
+
+Registrada a nova lane após discovery do runtime, event bus e gateway. O
+`traceId` será resolvido antes do primeiro evento e propagado como parent
+bounded da execução para lifecycle events, hooks, tools, auditorias e sinks.
+
+### RESULT
+
+Gate `SPEC_APPROVED_CONTROLLED_BUILD`; próximo passo obrigatório é RED focado.
+As correlações locais de HTTP/evento/call permanecem compatíveis e nenhum
+provider, canal, RAG, rede, dado real ou efeito externo foi ativado.
+
+### DECISIONS
+
+Usar o `traceId` canônico já presente em `TestRunTrace` como identidade da
+execução, sem introduzir tracing externo, sem confiar em header/body e sem
+alterar autorização, approval, tenant ou semântica dos IDs locais.
+
+### STATUS
+
+IN_PROGRESS
+
 ## PLAT-S01 Platform Discovery and Build Gate
 
 ### TIMESTAMP
@@ -109,6 +299,318 @@ Gate de construção controlada `IMPLEMENTATION_READY` para o slice de control p
 ### DECISIONS
 
 Adotar separação Control Plane/Data Plane, AgentVersion imutável, secret refs somente e capability gateway único. Usar somente provider/channel fake no primeiro slice. A ausência de `.git` no diretório foi preservada e registrada; nenhum reset/checkout/limpeza foi executado.
+
+### STATUS
+
+IN_PROGRESS
+
+## AUDIT CONTROLADO PLAT-S42 — 2026-08-26T07:41:00-03:00
+
+### TASK
+
+`PLAT-S42-001_CONTROLLED_TRACE_PROVENANCE_BOUNDARY`
+
+### RESULTADO
+
+Lane fechada como `COMPLETED_CONTROLLED` em `AUDIT`. O parser/projetor runtime
+allowlist/bounded agora é aplicado nos sinks InMemory/PostgreSQL, nos traces
+aninhados de suite e nas leituras/mappers PostgreSQL. Provider é exatamente
+`fake/deterministic-v1`, `externalCall` é literalmente `false`, output policy e
+redaction são coerentes, e referências de linha SQL são confrontadas com o
+corpo JSONB antes do retorno.
+
+### EVIDÊNCIAS
+
+- focused final: 6 arquivos/76 testes PASS;
+- regressão: 124 arquivos/492 testes PASS, 2 arquivos/19 testes skipped;
+- coverage: 84,99% statements, 80,24% branches, 85,41% functions, 86,00%
+  lines;
+- PostgreSQL controlado: 8 arquivos/72 testes PASS;
+- E2E: 4/4; readiness: 4/4; worker startup smoke: PASS;
+- build: 70 módulos, bundle web 278,88 kB/gzip 81,99 kB;
+- `npm audit`: 0 vulnerabilidades; typecheck, lint, format e `git diff --check`:
+  PASS.
+
+### REVISÃO E LIMITES
+
+A revisão independente final não foi executada porque o modelo configurado não
+era suportado pela conta; isso não foi tratado como aprovação. Inspeção local,
+testes adversariais e gates executáveis não deixaram achado aberto conhecido no
+escopo. Foram usados somente fixtures, fake client e o banco PostgreSQL de
+teste; nenhuma chamada de provider/canal real, rede, RAG, broker, outbox,
+egress, deploy, migração estrutural, dado real ou side effect ocorreu.
+
+### STATUS
+
+`COMPLETED_CONTROLLED`; produção real permanece `NO-GO`/
+`WAITING_HUMAN_APPROVAL`. Próximo passo seguro: novo discovery/SPEC controlado.
+
+## REGISTRO CONTROLADO PLAT-S45 — 2026-08-26T08:36:00-03:00
+
+### ENGINE
+
+AUDIT
+
+### PHASE
+
+AUDIT
+
+### SPRINT
+
+PLAT-S45_CONTROLLED_TOOL_INVOCATION_BOUNDARY
+
+### TASK
+
+`PLAT-S45-001_CONTROLLED_TOOL_INVOCATION_BOUNDARY`
+
+### ACTION
+
+Discovery read-only comparou o Capability Gateway, o registry e os testes
+atuais. Com fixtures server-side, `input: null` chegou ao handler sem schema,
+`actor.permissions = undefined` lançou `TypeError` em `.includes` e um resultado
+com `data.raw` foi devolvido sem projeção bounded.
+
+### RESULT
+
+Foi aprovado o escopo controlado para exigir validators server-side de
+input/output por tool, authorizer efetivo, validar actor/input antes de
+approval/handler e projetar resultado bounded e redigido antes de
+retorno/auditoria. O BUILD implementou também autoridade durável/single-use,
+limites de config/ciclos/Proxy e retorno explícito `audit_unavailable` sem
+replay. Nenhum provider/canal real, rede, banco, RAG ou side effect foi usado.
+
+### DECISIONS
+
+Validators permanecem código compilado do servidor; o catálogo continua
+metadata-only e não instala código. Gate `SPEC_APPROVED_CONTROLLED_BUILD`.
+Focused 6/41, regressão 125/512 com 2/19 skipped, coverage
+85,01/80,14/85,82/86,03, PostgreSQL 6/53 com 2/19 skipped, E2E 4/4,
+readiness 4/4, worker smoke, build 70 módulos, audit 0, typecheck, lint e
+diff check passaram. Produção permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+### STATUS
+
+`IN_PROGRESS` em `AUDIT`; revisão independente compatível e evidência final
+pendentes.
+
+## AUDIT CONTROLADO PLAT-S45 — 2026-08-26T09:52:30-03:00
+
+### TASK / RESULTADO
+
+`PLAT-S45-001_CONTROLLED_TOOL_INVOCATION_BOUNDARY` foi fechado como
+`COMPLETED_CONTROLLED` após a revisão independente compatível read-only
+retornar `PASS sem P0/P1`. O resultado registra os validators server-side,
+authorizer efetivo, approval durável/single-use, bounds/projeção redigida e
+`audit_unavailable` sem replay.
+
+### EVIDÊNCIAS
+
+- focused: 6 arquivos/41 testes PASS;
+- regressão: 125 arquivos/512 testes PASS, 2 arquivos/19 testes skipped;
+- coverage: 85,01% statements, 80,14% branches, 85,82% functions, 86,03%
+  lines;
+- PostgreSQL controlado: 6 arquivos/53 testes PASS, 2 arquivos/19 testes
+  skipped; E2E 4/4; readiness 4/4;
+- worker startup smoke, build de 70 módulos, typecheck, lint, format, audit 0
+  e `git diff --check` PASS.
+
+### DECISÕES / STATUS
+
+A tentativa de revisão especializada incompatível não foi tratada como
+aprovação. A task fica `COMPLETED_CONTROLLED` em `AUDIT`; a próxima ação segura
+é nova discovery/SPEC. Produção real permanece `NO-GO`/
+`WAITING_HUMAN_APPROVAL`, sem provider/canal real, RAG, dado real ou side
+effect.
+
+## REGISTRO CONTROLADO PLAT-S44 — 2026-08-26T08:25:00-03:00
+
+### TASK / DISCOVERY / SPEC
+
+`PLAT-S44-001_CONTROLLED_TRACE_STAGE_TIMING` foi registrado após o fechamento
+de S43. Discovery read-only confirmou que `createTraceSpans` ainda emite
+`durationMs: 0` estático e não recebe clock/ledger. O contrato exige medição
+local com clock monotônico injetável, duração finita/bounded, skipped zero e
+soma compatível com a latência, sem carregar payload.
+
+### GATE / LIMITES
+
+Gate: `SPEC_APPROVED_CONTROLLED_BUILD`; próximo passo obrigatório: RED focado.
+Escopo congelado em `packages/platform/src/test-lab.ts` e testes, sem
+OTel/exporter, provider/canal real, rede, RAG, broker, outbox, egress, deploy,
+dado real ou side effect.
+
+### STATUS
+
+`IN_PROGRESS` em `SPEC`; produção real permanece `NO-GO`/
+`WAITING_HUMAN_APPROVAL`.
+
+## AUDIT CONTROLADO PLAT-S44 — 2026-08-26T08:45:00-03:00
+
+### TASK / RESULTADO
+
+`PLAT-S44-001_CONTROLLED_TRACE_STAGE_TIMING` foi fechado como
+`COMPLETED_CONTROLLED` em `AUDIT`. O `ControlledTraceTiming` usa clock
+monotônico local injetável, mede operações sync/async sem payload, devolve
+snapshot defensivo e alimenta os spans do executor. Stages skipped permanecem
+zero; durações e soma continuam bounded por S43.
+
+### EVIDÊNCIAS
+
+- focused: 2 arquivos/17 testes PASS;
+- regressão: 124 arquivos/501 testes PASS, 2 arquivos/19 testes skipped;
+- coverage: 85,18% statements, 80,44% branches, 85,70% functions, 86,16%
+  lines;
+- PostgreSQL controlado: 8 arquivos/72 testes PASS; E2E: 4/4; readiness: 4/4;
+- worker startup smoke, build de 70 módulos, typecheck, lint, format e diff
+  check PASS; `npm audit` sem vulnerabilidades.
+
+### REVISÃO / LIMITES
+
+A revisão independente final não foi executada porque o modelo configurado não
+era suportado pela conta; não foi tratada como aprovação. Inspeção estática,
+testes adversariais e gates executáveis não deixaram achado aberto conhecido no
+escopo. Não houve OTel/exporter, provider/canal real, rede, RAG, broker,
+outbox, egress, deploy, dado real ou side effect. Próximo passo seguro:
+novo discovery/SPEC controlado.
+
+### STATUS
+
+`COMPLETED_CONTROLLED`; produção real permanece `NO-GO`/
+`WAITING_HUMAN_APPROVAL`.
+
+## REGISTRO CONTROLADO PLAT-S43 — 2026-08-26T07:49:00-03:00
+
+### TASK
+
+`PLAT-S43-001_CONTROLLED_TRACE_TEMPORAL_INTEGRITY`
+
+### DISCOVERY / SPEC
+
+Discovery read-only encontrou `createTraceSpans` emitindo `durationMs: 0` para
+todas as etapas e nenhuma invariante compartilhada relacionando
+`startedAt`, `completedAt`, `latencyMs`, ordem ou status dos spans. O contrato
+S43 exige coerência temporal/ordinal quando a telemetria opcional é fornecida,
+mantém compatibilidade com traces legados sem esses campos e não cria
+exportação OTel, rede ou efeito externo.
+
+### GATE / LIMITES
+
+Gate: `SPEC_APPROVED_CONTROLLED_BUILD`; próximo passo obrigatório: RED focado.
+Escopo congelado em `packages/platform/src/trace-governance.ts` e seus testes,
+sem provider/canal real, RAG, broker, outbox, egress, deploy, dado real ou
+side effect.
+
+### STATUS
+
+`IN_PROGRESS` em `SPEC`; produção real permanece `NO-GO`/
+`WAITING_HUMAN_APPROVAL`.
+
+## AUDIT CONTROLADO PLAT-S43 — 2026-08-26T08:15:00-03:00
+
+### TASK / RESULTADO
+
+`PLAT-S43-001_CONTROLLED_TRACE_TEMPORAL_INTEGRITY` foi fechado como
+`COMPLETED_CONTROLLED` em `AUDIT`. O parser compartilhado agora exige timing
+completo e coerente quando fornecido, ordem canônica e soma bounded de spans,
+além de status derivado consistente com policy, knowledge, tools, handoff e
+delivery. Traces sem telemetria opcional permanecem compatíveis.
+
+### EVIDÊNCIAS
+
+- focused: 1 arquivo/14 testes PASS;
+- regressão: 124 arquivos/499 testes PASS, 2 arquivos/19 testes skipped;
+- coverage: 85,08% statements, 80,41% branches, 85,45% functions, 86,08%
+  lines;
+- PostgreSQL controlado: 8 arquivos/72 testes PASS; E2E: 4/4; readiness: 4/4;
+- worker startup smoke, build de 70 módulos, typecheck, lint, format e diff
+  check PASS; `npm audit` sem vulnerabilidades.
+
+### REVISÃO / LIMITES
+
+A revisão independente final não foi executada porque o modelo configurado não
+era suportado pela conta; não foi tratada como aprovação. Inspeção estática,
+testes adversariais e gates executáveis não deixaram achado aberto conhecido no
+escopo. A lane não mediu/exportou telemetria externa e não ativou provider,
+canal, rede, RAG, broker, outbox, egress, deploy, dado real ou side effect.
+Instrumentação monotônica dos spans permanece como próxima lane controlada.
+
+### STATUS
+
+`COMPLETED_CONTROLLED`; produção real permanece `NO-GO`/
+`WAITING_HUMAN_APPROVAL`. Próximo passo seguro: novo discovery/SPEC controlado.
+
+## REGRESSÃO FOCADA PLAT-S40 — 2026-08-26T04:17:24-03:00
+
+### ENGINE
+
+BUILD
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S40_CONTROLLED_MODEL_PROVIDER_IDENTITY_BOUNDARY
+
+### TASK
+
+PLAT-S40-001_CONTROLLED_MODEL_PROVIDER_IDENTITY_BOUNDARY
+
+### ACTION
+
+Ampliada a regressão para o provider boundary, Test Lab, runtime publicado e
+worker; corrigida a formatação dos testes novos.
+
+### RESULT
+
+4 arquivos/18 testes passaram. Typecheck, lint e diff check passaram; o format
+check será repetido após a correção mecânica dos dois arquivos apontados.
+
+### DECISIONS
+
+O resolver permanece único e pré-pipeline. Nenhum provider externo, rede,
+canal, RAG, broker, outbox, egress, deploy, dado real ou side effect foi
+acionado.
+
+### STATUS
+
+IN_PROGRESS
+
+## GREEN FOCADO PLAT-S40 — 2026-08-26T04:10:43-03:00
+
+### ENGINE
+
+BUILD
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S40_CONTROLLED_MODEL_PROVIDER_IDENTITY_BOUNDARY
+
+### TASK
+
+PLAT-S40-001_CONTROLLED_MODEL_PROVIDER_IDENTITY_BOUNDARY
+
+### ACTION
+
+Implementado o registry compilado e integrada sua resolução no provider dry-run
+e no executor compartilhado; executado o focused GREEN.
+
+### RESULT
+
+2 arquivos/6 testes passaram. `fake/deterministic-v1` permanece determinístico
+e sem chamada externa; provider/model não suportado e `fallbackProvider`
+configurado falham com `invalid_action` antes de `message.received`.
+
+### DECISIONS
+
+O schema genérico de configuração foi preservado para referências futuras, mas
+somente o registry controlado autoriza execução nesta fase. Regressão do runtime
+publicado/worker, revisão independente e gates integrados continuam pendentes.
 
 ### STATUS
 
@@ -151,6 +653,155 @@ Modo default continua in-memory. PostgreSQL so e ativado com `API_PERSISTENCE_MO
 ### STATUS
 
 READY_FOR_NEXT_STEP
+
+## RED CONTROLADO PLAT-S40 — 2026-08-26T04:08:47-03:00
+
+### ENGINE
+
+BUILD
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S40_CONTROLLED_MODEL_PROVIDER_IDENTITY_BOUNDARY
+
+### TASK
+
+PLAT-S40-001_CONTROLLED_MODEL_PROVIDER_IDENTITY_BOUNDARY
+
+### ACTION
+
+Escrito e executado o RED focado antes do GREEN em
+`packages/platform/src/__tests__/model-provider-boundary.test.ts`.
+
+### RESULT
+
+1 arquivo/4 testes; os 4 falharam como esperado. Provider/model desconhecido
+foi aceito, `fallbackProvider` foi ignorado e o executor emitiu eventos e
+retornou a identidade fictícia `openrouter/external`.
+
+### DECISIONS
+
+Nenhuma rede, provider externo, canal, RAG, broker, outbox, egress, deploy,
+dado real ou side effect foi acionado. O GREEN deve resolver a identidade pelo
+registry compilado antes de `message.received`.
+
+### STATUS
+
+IN_PROGRESS
+
+## Agent Platform — PLAT-S12 prompt profile e templates controlados
+
+### TIMESTAMP
+
+2026-08-25T08:41:18-03:00
+
+### ENGINE
+
+AUDIT
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S12_CONTROLLED_PROMPT_PROFILE_TEMPLATE_CONTROL_CENTER
+
+### TASK
+
+PLAT-S12-001_PROMPT_PROFILE_TEMPLATE_CONTROL_CENTER
+
+### ACTION
+
+Implementado e auditado o editor versionado de prompt profile/templates no
+Control Center. A UI faz parse/serialização controlada e rejeita JSON inválido,
+shape, limites, ids/kinds/prioridades, duplicidade, prototype keys, segredos e
+chaves kernel reservadas antes do request. O backend/store/repository repete a
+validação, preserva blocks system/safety/kernel e `locked`, rejeita novos blocks
+protegidos em clone e mantém `AgentVersion` como snapshot imutável. O Test Lab
+usa somente fallbacks operacionais seguros e registra versão/status/checksum
+determinístico no trace; medication, hard safety, takeover, emergência e erro
+continuam kernel-owned.
+
+### RESULT
+
+PASS controlado. `npm test` passou com 77 arquivos, 279 testes e 16 skips
+condicionais. `npm run test:coverage` passou com 84,92% statements, 80,30%
+branches, 85,76% functions e 85,87% lines. Typecheck, lint, format, build,
+readiness, E2E 1/1, PostgreSQL controlado 49 pass/16 skips, audit com 0
+vulnerabilidades e `git diff --check` também passaram.
+
+### REVIEW
+
+Foram executados RED/GREEN, regressão integral, revisão de segurança de entrada,
+inspeção temporal do diff e crítica adversarial lead-only. Child agents não
+estavam disponíveis no runtime; nenhuma aprovação independente é reivindicada.
+
+### DECISIONS
+
+`PLAT-S12-001` = `COMPLETED_CONTROLLED`. `CONTROLLED_MVP_READY` permanece o
+resultado máximo. `PRODUCTION_REAL_DATA_READY` continua `NO-GO`/
+`WAITING_HUMAN_APPROVAL`; IdP, tenant/RBAC, RLS/backfill, secret manager,
+operações distribuídas, host security, retenção/PII, providers, canais,
+knowledge institucional e ações sensíveis continuam bloqueados.
+
+### EVIDENCE
+
+`docs/04_audit/0502_plat_s12_prompt_profile_template_control_center_evidence.md`,
+`docs/platform/final-technical-audit.md`, `docs/99_runtime_state.md`,
+`docs/platform/04-backlog.md`, `docs/platform/06-platform-spec.md`,
+`docs/platform/07-platform-execplan.md`, `docs/30_backlog_master.md`,
+`.gauntlet/state.md` e `.gauntlet/progress.md` foram sincronizados.
+
+### STATUS
+
+READY_FOR_NEXT_STEP
+
+## Agent Platform — PLAT-S12 registered before BUILD
+
+### TIMESTAMP
+
+2026-08-24T22:14:10-03:00
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S12_CONTROLLED_PROMPT_PROFILE_TEMPLATE_CONTROL_CENTER
+
+### TASK
+
+PLAT-S12-001_PROMPT_PROFILE_TEMPLATE_CONTROL_CENTER
+
+### ACTION
+
+Registrado o próximo lane controlado para fechar a lacuna de operação dos
+`promptBlocks` e `responseTemplates`: o Control Center passará a editar um
+perfil JSON validado e salvará uma nova `AgentVersion`, sem sobrescrever
+snapshots. O checksum/status do perfil será levado ao trace do Test Lab.
+
+### RESULT
+
+BUILD autorizado somente para o editor e runtime controlados descritos no PRD,
+SPEC e ExecPlan S12. Blocos `system`/`safety` e respostas kernel permanecem
+imutáveis/fail-closed; templates de baixa confiança, ausência de knowledge,
+handoff e scheduling sem evidência podem ser configurados dentro dos limites.
+
+### DECISIONS
+
+O `AgentVersion` existente continua sendo a autoridade de versionamento; não
+será criado um catálogo mutável paralelo. Não há migration, provider/canal,
+RAG institucional, dado real, side effect ou autorização de produção.
+
+### STATUS
+
+IN_PROGRESS
 
 ## Agent Platform — PLAT-S10 plugin catalog Control Center registration
 
@@ -1968,3 +2619,2368 @@ providers, canais, dados reais e ações sensíveis continuam bloqueados.
 ### STATUS
 
 READY_FOR_NEXT_STEP
+
+## Agent Platform — PLAT-S13 Handoff Policy Studio controlado
+
+### TIMESTAMP
+
+2026-08-25T08:48:33-03:00
+
+### ENGINE
+
+SPEC
+
+### PHASE
+
+SPECIFICATION
+
+### SPRINT
+
+PLAT-S13_CONTROLLED_HANDOFF_POLICY_STUDIO
+
+### TASK
+
+PLAT-S13-001_HANDOFF_POLICY_STUDIO
+
+### ACTION
+
+Registrado novo lane para externalizar thresholds de baixa confiança,
+clarificações, destinos e prioridade no snapshot imutável de `AgentVersion`.
+O gate autoriza somente BUILD controlado em fixtures e Test Lab dry-run;
+nenhum provider, canal, migration, dado real ou side effect está autorizado.
+
+### STATUS
+
+IN_PROGRESS
+
+### NEXT ACTION
+
+Abrir novo SPEC controlado para a próxima lacuna segura; produção real
+continua bloqueada por decisão humana/infraestrutura.
+
+Executar BUILD por TDD após o gate `SPEC_APPROVED_CONTROLLED_BUILD`, seguido de
+AUDIT e atualização da evidência.
+
+## FECHAMENTO CONTROLADO PLAT-S13 — 2026-08-25T09:22:22-03:00
+
+- current_task: `PLAT-S13-001_HANDOFF_POLICY_STUDIO`
+- status: `COMPLETED_CONTROLLED`
+- current_engine: `AUDIT`
+- entrega: Handoff Policy Studio controlado com thresholds de clarificação e
+  handoff, limite de clarificações, múltiplos destinos, prioridade, evaluator
+  determinístico, trace redigido e UI/API/E2E por clone imutável
+- evidence: `docs/04_audit/0503_plat_s13_handoff_policy_studio_evidence.md`
+- gates: verify 79 arquivos/284 testes pass/16 skips, coverage
+  84,98%/80,44%/86,00%/85,92%, readiness 4/4, E2E 1/1, PostgreSQL 49 pass/16
+  skips, audit 0 vulnerabilidades, format e diff check PASS
+- controlled_release: `CONTROLLED_MVP_READY`
+- real_release: `NO-GO` / `WAITING_HUMAN_APPROVAL`
+- limites: nenhum provider/canal/RAG/migration/dado real/side effect foi
+  adicionado; destinos reais, IdP/RBAC, HA, retenção/PII e ações sensíveis
+  continuam fora do gate
+
+### NEXT ACTION
+
+Escrever os testes RED do próximo lane registrado. Não executar deploy,
+migração, provider, canal, RAG institucional, dado real ou ação sensível.
+
+## Agent Platform — PLAT-S14 registrado antes do BUILD
+
+Timestamp: `2026-08-25T09:32:00-03:00`
+
+### Discovery / PRD / SPEC / Gate
+
+`PLAT-S13-001_HANDOFF_POLICY_STUDIO` foi auditada e fechada como
+`COMPLETED_CONTROLLED`. A maior lacuna segura seguinte é a ausência de uma
+suíte crítica obrigatória entre `APPROVED` e `PUBLISHED`.
+
+Registro:
+
+PLAT-S14_CONTROLLED_SAFETY_PUBLISH_PREFLIGHT
+
+PLAT-S14-001_CONTROLLED_SAFETY_PUBLISH_PREFLIGHT
+
+Escopo congelado: preflight determinístico no mesmo tenant/agent/version com
+cases fixos para medicamento, confirmação/cancelamento/reagendamento de
+consulta real e envio externo; endpoint redigido; enforcement em publish e
+rollback; nenhuma mensagem/resposta bruta, case arbitrário ou efeito externo.
+
+Gate:
+
+`SPEC_APPROVED_CONTROLLED_BUILD` — BUILD controlado autorizado somente após
+este registro. Próximo passo obrigatório: testes RED. O resultado máximo segue
+`CONTROLLED_MVP_READY`; produção real permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+## RED observado — PLAT-S18 — 2026-08-25T13:44:30-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S18_CONTROLLED_HTTP_SECURITY_BOUNDARY`
+- task: `PLAT-S18-001_CONTROLLED_HTTP_SECURITY_BOUNDARY`
+- action: testes focados de normalização, API/preflight/HTTPS e env executados
+  antes da implementação
+- result: RED conforme esperado; `http-security.ts` ainda não existe, as
+  opções não estão integradas ao Fastify e o parser de env não exige nem expõe
+  `API_ALLOWED_ORIGINS`, `API_REQUIRE_HTTPS` ou `API_TRUSTED_PROXY_HOPS`
+- decision: implementar somente a política HTTP registrada, sem alterar
+  endpoints de negócio, persistência, provider, canal ou side effect
+- status: `IN_PROGRESS`
+
+## FECHAMENTO CONTROLADO PLAT-S16 — 2026-08-25T11:55:53-03:00
+
+- current_task: `PLAT-S16-001_CONTROLLED_RELEASE_CANDIDATE_EVIDENCE_LEDGER`
+- status: `COMPLETED_CONTROLLED`
+- current_engine: `AUDIT`
+- entrega: ledger tenant-aware metadata-only de quatro gates fixos, refs
+  controladas, digest SHA-256 do servidor, unique/RLS, lifecycle/CAS,
+  repository PostgreSQL, API admin, Control Center e audit redigido
+- invariantes: shape strict, secret-free, duplicate/cross-tenant/stale e
+  transições inválidas falham; `VALIDATED` exige quatro `PASS`, não muta
+  `AgentVersion`/`activeVersionId` e não habilita execução externa
+- evidence: `docs/04_audit/0506_plat_s16_controlled_release_candidate_evidence_ledger_evidence.md`
+- gates: `npm run verify` PASS; 88 arquivos/303 testes pass/18 skips; coverage
+  84,81% statements, 80,03% branches, 84,87% functions, 85,65% lines;
+  readiness 4/4; E2E 1/1; PostgreSQL controlado 49 pass/18 skips; audit 0,
+  format e diff check PASS
+- controlled_release: `CONTROLLED_MVP_READY`
+- real_release: `NO-GO` / `WAITING_HUMAN_APPROVAL`
+- próximo passo seguro: novo SPEC antes de qualquer BUILD; nenhum deploy,
+  rollout, provider/canal, RAG, dado real ou side effect foi autorizado.
+
+## Agent Platform — PLAT-S17 registrado antes do BUILD
+
+Timestamp: `2026-08-25T12:03:00-03:00`
+
+### Discovery / PRD / SPEC / Gate
+
+`PLAT-S16-001_CONTROLLED_RELEASE_CANDIDATE_EVIDENCE_LEDGER` foi fechada como
+`COMPLETED_CONTROLLED`. A próxima lacuna segura é a ausência de um checkpoint
+tenant-aware imutável para o conjunto de eventos de auditoria já redigidos e
+visíveis ao operador.
+
+Registro:
+
+`PLAT-S17_CONTROLLED_AUDIT_EVIDENCE_CHECKPOINT`
+
+`PLAT-S17-001_CONTROLLED_AUDIT_EVIDENCE_CHECKPOINT`
+
+Escopo congelado: até 200 IDs de eventos, filtros strict, verificação
+server-side, digest SHA-256 canônico, lifecycle `SEALED/ARCHIVED`, migration
+`0007`, RLS, API/client/UI e audit metadata-only. Payload bruto, export externo,
+retenção real, alteração de eventos, provider/canal, RAG, dado real e side
+effect permanecem fora do slice.
+
+Gate:
+
+`SPEC_APPROVED_CONTROLLED_BUILD` — BUILD controlado autorizado somente após
+este registro. Próximo passo obrigatório: testes RED. O resultado máximo segue
+`CONTROLLED_MVP_READY`; produção real permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+## RED observado — PLAT-S17 — 2026-08-25T12:10:32-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S17_CONTROLLED_AUDIT_EVIDENCE_CHECKPOINT`
+- task: `PLAT-S17-001_CONTROLLED_AUDIT_EVIDENCE_CHECKPOINT`
+- action: testes RED focados de contrato, store, API, client e UI executados
+  antes da implementação
+- result: RED conforme esperado; contrato/store não resolvem, endpoints
+  respondem 404, client não possui o método e a UI não expõe os controles
+- decision: implementar contrato bounded, digest server-side e store defensivo;
+  preservar tenant scope, ausência de payload e ausência de side effect
+- status: `IN_PROGRESS`
+
+## FECHAMENTO CONTROLADO PLAT-S17 — 2026-08-25T13:24:09-03:00
+
+- engine: `AUDIT`
+- sprint: `PLAT-S17_CONTROLLED_AUDIT_EVIDENCE_CHECKPOINT`
+- task: `PLAT-S17-001_CONTROLLED_AUDIT_EVIDENCE_CHECKPOINT`
+- status: `COMPLETED_CONTROLLED`
+- entrega: checkpoint tenant-aware metadata-only, IDs/filtros strict bounded,
+  digest SHA-256 server-side, `SEALED -> ARCHIVED` com CAS, migration 0007/RLS,
+  memória/PostgreSQL, API/client/UI e audit redigido
+- gates: `npm run verify` PASS; 95 arquivos/317 testes pass/18 skips; coverage
+  84,95% statements, 80,00% branches, 84,52% functions, 85,82% lines;
+  readiness 4/4; E2E 2/2; PostgreSQL controlado 51 pass/18 skips; audit 0;
+  format e diff check PASS
+- evidence: `docs/04_audit/0507_plat_s17_controlled_audit_evidence_checkpoint_evidence.md`
+- controlled_release: `CONTROLLED_MVP_READY`
+- real_release: `NO-GO` / `WAITING_HUMAN_APPROVAL`
+- limite: nenhum payload bruto, export externo, retenção real, evento mutável,
+  provider/canal, RAG, dado real ou side effect foi autorizado
+
+## Agent Platform — PLAT-S18 registrado antes do BUILD
+
+Timestamp: `2026-08-25T13:38:08-03:00`
+
+### Discovery / PRD / SPEC / Gate
+
+`PLAT-S17-001_CONTROLLED_AUDIT_EVIDENCE_CHECKPOINT` foi fechada como
+`COMPLETED_CONTROLLED`. A maior lacuna segura seguinte é o boundary HTTP do
+console: headers defensivos existem, mas Origin/CORS/preflight e HTTPS com
+proxy confiável ainda não possuem enforcement executável no API.
+
+Registro:
+
+`PLAT-S18_CONTROLLED_HTTP_SECURITY_BOUNDARY`
+
+`PLAT-S18-001_CONTROLLED_HTTP_SECURITY_BOUNDARY`
+
+Escopo congelado: normalização exact-match de origins, CORS/preflight sem
+wildcard/credentials, rejeição de origin/método/header não allowlisted, HTTPS
+fail-closed com `trustedProxyHops`, headers CSP/HSTS e bootstrap de produção
+com `API_ALLOWED_ORIGINS`, `API_REQUIRE_HTTPS` e `API_TRUSTED_PROXY_HOPS`.
+Não inclui host/proxy/IdP real, deploy, provider/canal, RAG, dado real,
+migration irreversível ou side effect.
+
+Gate:
+
+`SPEC_APPROVED_CONTROLLED_BUILD` — BUILD controlado autorizado somente após
+este registro. Próximo passo obrigatório: testes RED. O resultado máximo segue
+`CONTROLLED_MVP_READY`; produção real permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+## RED observado — PLAT-S16 — 2026-08-25T11:13:59-03:00
+
+- engine: `BUILD`
+- task: `PLAT-S16-001_CONTROLLED_RELEASE_CANDIDATE_EVIDENCE_LEDGER`
+- action: testes RED de contrato/digest, lifecycle/store e API foram executados
+  antes da implementação
+- result: 5 testes falharam conforme esperado; schemas/store/digest/rotas ainda
+  não existem e a nova rota responde 404
+- decision: iniciar implementação controlada de contratos, digest e store; sem
+  deploy, provider/canal, RAG, dado real ou side effect
+- status: `IN_PROGRESS`
+
+## FECHAMENTO CONTROLADO PLAT-S15 — 2026-08-25T11:03:13-03:00
+
+- task: `PLAT-S15-001_CONTROLLED_KNOWLEDGE_SOURCE_CATALOG`
+- status: `COMPLETED_CONTROLLED`
+- current_engine: `AUDIT`
+- entrega: catálogo tenant-aware metadata-only para `controlled://` source/version,
+  label e descrição; lifecycle defensivo, unique, RLS, migration 0005,
+  API admin, audit redigido, Control Center e fluxo E2E
+- invariantes: campos extras, URL externa e padrões de segredo falham; duplicate,
+  cross-tenant, transição inválida e precondition stale falham fechado; APPROVED
+  não muta AgentVersion, não habilita RAG e não faz dispatch
+- gates: `npm run verify` PASS; 83 arquivos/294 testes pass/17 skips; coverage
+  85,03% statements, 80,26% branches, 85,41% functions, 85,88% lines;
+  readiness, E2E 1/1, PostgreSQL 49 pass/17 skips, audit 0 e diff check PASS
+- evidência: `docs/04_audit/0505_plat_s15_controlled_knowledge_source_catalog_evidence.md`
+- fechamento lead-only por indisponibilidade de child agents; não é aprovação
+  independente nem autorização de produção
+- controlled_release: `CONTROLLED_MVP_READY`
+- real_release: `NO-GO` / `WAITING_HUMAN_APPROVAL`
+- próximo passo seguro: novo SPEC; sem conteúdo, RAG, provider, canal, dado real
+  ou side effect
+
+## Agent Platform — PLAT-S16 registrado antes do BUILD
+
+Timestamp: `2026-08-25T11:07:40-03:00`
+
+### Discovery / PRD / SPEC / Gate
+
+`PLAT-S15-001_CONTROLLED_KNOWLEDGE_SOURCE_CATALOG` foi fechada como
+`COMPLETED_CONTROLLED`. A lacuna segura seguinte é manter a declaração de
+evidência que sustenta uma versão candidata ao release controlado, sem depender
+de reconstrução manual nem confundir governança com ativação.
+
+Registro:
+
+`PLAT-S16_CONTROLLED_RELEASE_CANDIDATE_EVIDENCE_LEDGER`
+
+`PLAT-S16-001_CONTROLLED_RELEASE_CANDIDATE_EVIDENCE_LEDGER`
+
+Escopo congelado: ledger tenant-aware de quatro gates fixos, refs
+`controlled://evidence/...`, digest SHA-256 calculado pelo servidor,
+lifecycle `DRAFT/VALIDATED/REJECTED/ARCHIVED`, unique/RLS, migration `0006`,
+API/UI e audit metadata-only. `VALIDATED` não publica, não faz deploy, não
+altera AgentVersion/activeVersionId e não libera provider, canal, RAG, dado real
+ou side effect.
+
+Gate:
+
+`SPEC_APPROVED_CONTROLLED_BUILD` — BUILD controlado autorizado somente após
+este registro. Próximo passo obrigatório: testes RED. O resultado máximo segue
+`CONTROLLED_MVP_READY`; produção real permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+## FECHAMENTO CONTROLADO PLAT-S14 — 2026-08-25T09:59:11-03:00
+
+- current_task: `PLAT-S14-001_CONTROLLED_SAFETY_PUBLISH_PREFLIGHT`
+- status: `COMPLETED_CONTROLLED`
+- current_engine: `AUDIT`
+- entrega: cases críticos fixos, preflight redigido, endpoint administrativo,
+  enforcement em publish/rollback/bootstrap, UI/API e fixture negativa sem
+  mutação quando `externalCall` viola o contrato
+- evidence: `docs/04_audit/0504_plat_s14_controlled_safety_publish_preflight_evidence.md`
+- gates: verify 80 arquivos/289 testes pass/16 skips, coverage
+  85,06%/80,38%/85,97%/85,98%, readiness 4/4, E2E 1/1, PostgreSQL 49 pass/16
+  skips, audit 0 vulnerabilidades, format e diff check PASS
+- controlled_release: `CONTROLLED_MVP_READY`
+- real_release: `NO-GO` / `WAITING_HUMAN_APPROVAL`
+- limites: nenhum provider/canal/RAG/migration/dado real/side effect foi
+  adicionado; próximo lane exige novo SPEC
+
+## Agent Platform — PLAT-S15 registrado antes do BUILD
+
+Timestamp: `2026-08-25T10:05:24-03:00`
+
+### Discovery / PRD / SPEC / Gate
+
+`PLAT-S14-001_CONTROLLED_SAFETY_PUBLISH_PREFLIGHT` foi auditada e fechada como
+`COMPLETED_CONTROLLED`. A maior lacuna segura seguinte é a ausência de um
+catálogo tenant-aware para governar identidade, versão e status das fontes de
+knowledge, apesar de o binding controlado já exigir `source/version`.
+
+Registro:
+
+PLAT-S15_CONTROLLED_KNOWLEDGE_SOURCE_CATALOG
+
+PLAT-S15-001_CONTROLLED_KNOWLEDGE_SOURCE_CATALOG
+
+Escopo congelado: metadata-only de source/version/label/description, lifecycle
+`DRAFT/APPROVED/ARCHIVED`, unique/RLS, API/UI e audit redigido; sem conteúdo,
+ingestão, embeddings, vector store, RAG, URL externa, provider, canal, dado
+real ou side effect.
+
+Gate:
+
+`SPEC_APPROVED_CONTROLLED_BUILD` — BUILD controlado autorizado somente após
+este registro. Próximo passo obrigatório: testes RED. O resultado máximo segue
+`CONTROLLED_MVP_READY`; produção real permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+## FECHAMENTO CONTROLADO PLAT-S18 — 2026-08-25T14:31:48-03:00
+
+- sprint: `PLAT-S18_CONTROLLED_HTTP_SECURITY_BOUNDARY`
+- task: `PLAT-S18-001_CONTROLLED_HTTP_SECURITY_BOUNDARY`
+- result: `COMPLETED_CONTROLLED`
+- entrega: boundary HTTP exact-match, CORS/preflight allowlisted com
+  `GET/POST/PATCH/OPTIONS`, headers fixos, HTTPS fail-closed com
+  `trustedProxyHops` explícito, HSTS HTTPS-only e bootstrap production
+  fail-closed.
+- gates: `npm run verify` PASS; 97 arquivos/330 testes pass/18 skips;
+  coverage 85,16%/80,44%/84,75%/86,06%; readiness 4/4; E2E 3/3;
+  PostgreSQL controlado 51 pass/18 skips; audit 0; format e diff check PASS.
+- evidence: `docs/04_audit/0508_plat_s18_controlled_http_security_boundary_evidence.md`
+- limits: sem host/proxy/TLS/IdP real, deploy, provider/canal, RAG, dado real,
+  persistência nova ou side effect; produção permanece `NO-GO`/
+  `WAITING_HUMAN_APPROVAL`.
+- next_safe_action: novo SPEC controlado; nenhuma ativação real foi autorizada.
+
+## Agent Platform — PLAT-S19 registrado antes do BUILD
+
+Timestamp: `2026-08-25T14:33:47-03:00`
+
+### Discovery / PRD / SPEC / Gate
+
+`PLAT-S18-001_CONTROLLED_HTTP_SECURITY_BOUNDARY` foi fechada como
+`COMPLETED_CONTROLLED`. A lacuna segura seguinte é obter uma visão agregada de
+respostas HTTP e latência sem depender de logs de domínio ou armazenar dados
+sensíveis. O collector será process-local, bounded e explicitamente insuficiente
+para observabilidade distribuída real.
+
+Registro:
+
+`PLAT-S19_CONTROLLED_REQUEST_OBSERVABILITY_METRICS`
+
+`PLAT-S19-001_CONTROLLED_REQUEST_OBSERVABILITY_METRICS`
+
+Escopo congelado: collector por substituição imutável de estado, template de
+rota bounded, método/status/latência, fallback `__unmatched__`/`__other__`,
+snapshot defensivo e `GET /health/metrics` read-only. Nenhum path/query/body,
+header sensível, token, PII, identidade, persistência, provider, canal, RAG,
+dado real ou side effect entra no lane.
+
+Gate:
+
+`SPEC_APPROVED_CONTROLLED_BUILD` — BUILD controlado autorizado somente após
+este registro. Próximo passo obrigatório: testes RED. Métricas distribuídas,
+Prometheus/OTel e produção real permanecem fora do escopo e sem autorização.
+
+## RED observado — PLAT-S19 — 2026-08-25T14:38:14-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S19_CONTROLLED_REQUEST_OBSERVABILITY_METRICS`
+- task: `PLAT-S19-001_CONTROLLED_REQUEST_OBSERVABILITY_METRICS`
+- action: testes focados do collector e endpoint `/health/metrics` executados
+  antes da implementação
+- result: RED conforme esperado; `request-metrics.ts` não existe e não há
+  integração do collector com hooks/endpoint Fastify
+- decision: implementar somente collector bounded, `onResponse` e endpoint
+  read-only; sem path/query/body bruto, persistência ou side effect
+- status: `IN_PROGRESS`
+
+## FECHAMENTO CONTROLADO PLAT-S19 — 2026-08-25T14:51:53-03:00
+
+- sprint: `PLAT-S19_CONTROLLED_REQUEST_OBSERVABILITY_METRICS`
+- task: `PLAT-S19-001_CONTROLLED_REQUEST_OBSERVABILITY_METRICS`
+- result: `COMPLETED_CONTROLLED`
+- entrega: collector process-local immutable-by-replacement, templates de rota
+  bounded, métodos/status/latência, fallback `__unmatched__`/`__other__`,
+  hooks `onResponse` e `/health/metrics` read-only/redaction-safe.
+- gates: `npm run verify` PASS; 98 arquivos/333 testes pass/18 skips;
+  coverage 85,24%/80,63%/84,99%/86,16%; readiness 4/4; E2E 3/3;
+  PostgreSQL controlado 51 pass/18 skips; audit 0; format e diff check PASS.
+- evidence: `docs/04_audit/0509_plat_s19_controlled_request_observability_metrics_evidence.md`
+- limits: sem Prometheus/OTel/broker/storage distribuído, retenção, alerting,
+  HA, provider/canal, RAG, dado real ou side effect; produção permanece
+  `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+- next_safe_action: novo SPEC controlado; nenhuma ativação real foi autorizada.
+
+## Agent Platform — PLAT-S20 registrado antes do BUILD
+
+Timestamp: `2026-08-25T15:00:00-03:00`
+
+### Discovery / PRD / SPEC / Gate
+
+`PLAT-S19-001_CONTROLLED_REQUEST_OBSERVABILITY_METRICS` foi fechado como
+`COMPLETED_CONTROLLED`. A próxima lacuna segura é o crescimento potencialmente
+ilimitado do mapa do limiter process-local. O S20 limita somente cardinalidade
+de buckets, purga/evicção e validação de policy/key; o limiter distribuído e o
+edge real continuam bloqueios externos.
+
+Registro:
+
+`PLAT-S20_CONTROLLED_RATE_LIMIT_MEMORY_SAFETY`
+
+`PLAT-S20-001_CONTROLLED_RATE_LIMIT_MEMORY_SAFETY`
+
+Escopo congelado: `maxBuckets` bounded, purge de expirados, evicção
+determinística do bucket ativo mais antigo, snapshot sem chaves e
+`Cache-Control: no-store` no 429. Nenhuma mudança de identidade, tenant
+binding, persistência, provider, canal, RAG, dado real ou side effect entra no
+lane.
+
+Gate:
+
+`SPEC_APPROVED_CONTROLLED_BUILD` — BUILD controlado autorizado somente após
+este registro. Próximo passo obrigatório: testes RED. Produção real permanece
+`NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+## Agent Platform — PLAT-S21 registrado antes do BUILD
+
+Timestamp: `2026-08-25T15:23:50-03:00`
+
+### Discovery / PRD / SPEC / Gate
+
+`PLAT-S20-001_CONTROLLED_RATE_LIMIT_MEMORY_SAFETY` foi fechado como
+`COMPLETED_CONTROLLED`. A próxima lacuna segura é a exposição pública de
+`GET /health/metrics` fora de fixtures. O S21 desabilita a rota em
+`production`, `staging` e ambientes desconhecidos, sem fingir auth/edge real.
+
+Registro:
+
+`PLAT-S21_CONTROLLED_METRICS_EXPOSURE_BOUNDARY`
+
+`PLAT-S21-001_CONTROLLED_METRICS_EXPOSURE_BOUNDARY`
+
+Escopo congelado: habilitar somente em `NODE_ENV=test/development`, permitir
+apenas desabilitação controlled-only, responder 404 genérico sem snapshot fora
+desses ambientes e aplicar `Cache-Control: no-store`. `/health`, collector,
+limiter, identidade, persistência, provider, canal, RAG, dado real e side effect
+ficam fora do lane.
+
+Gate:
+
+`SPEC_APPROVED_CONTROLLED_BUILD` — BUILD controlado autorizado somente após
+este registro. Próximo passo obrigatório: testes RED. Produção real permanece
+`NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+## RED observado — PLAT-S21 — 2026-08-25T15:27:31-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S21_CONTROLLED_METRICS_EXPOSURE_BOUNDARY`
+- task: `PLAT-S21-001_CONTROLLED_METRICS_EXPOSURE_BOUNDARY`
+- action: testes focados de disable, ambientes não controlados, 404 e no-store
+  executados antes da implementação
+- result: RED conforme esperado; 3 assertions falharam porque a opção não
+  existe, production/staging/qa retornam 200 e o endpoint não tem no-store
+- decision: iniciar GREEN somente no gate de ambiente e header, sem auth/IdP,
+  edge, persistência, provider, canal, RAG ou side effect
+
+## FECHAMENTO CONTROLADO PLAT-S21 — 2026-08-25T15:36:38-03:00
+
+- sprint: `PLAT-S21_CONTROLLED_METRICS_EXPOSURE_BOUNDARY`
+- task: `PLAT-S21-001_CONTROLLED_METRICS_EXPOSURE_BOUNDARY`
+- result: `COMPLETED_CONTROLLED`
+- entrega: `/health/metrics` habilitado somente em test/development, opção de
+  desabilitação controlled-only, 404 genérico sem snapshot fora desses
+  ambientes e `Cache-Control: no-store`.
+- gates: `npm run verify` PASS; 99 arquivos/337 testes pass/18 skips;
+  coverage 85,33%/80,74%/85,07%/86,25%; readiness 4/4; E2E 3/3;
+  PostgreSQL controlado 51 pass/18 skips; audit 0; format e diff check PASS.
+- evidence: `docs/04_audit/0511_plat_s21_controlled_metrics_exposure_boundary_evidence.md`
+- limits: sem auth/IdP operacional, edge/allowlist de rede, Prometheus/OTel,
+  broker, HA, provider/canal, RAG, dado real ou side effect; produção permanece
+  `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+- next_safe_action: novo SPEC controlado; nenhuma ativação real foi autorizada.
+
+## Agent Platform — PLAT-S22 registrado antes do BUILD
+
+Timestamp: `2026-08-25T15:46:42-03:00`
+
+### Discovery / PRD / SPEC / Gate
+
+`PLAT-S21-001_CONTROLLED_METRICS_EXPOSURE_BOUNDARY` foi fechado como
+`COMPLETED_CONTROLLED`. A próxima lacuna segura é permitir que clientes
+correlacionem a resposta HTTP com logs e auditoria sem decodificar cada body.
+O S22 publica somente o correlation ID já existente no envelope, sem aceitar
+header externo ou fingir tracing distribuído.
+
+Registro:
+
+`PLAT-S22_CONTROLLED_CORRELATION_RESPONSE_BOUNDARY`
+
+`PLAT-S22-001_CONTROLLED_CORRELATION_RESPONSE_BOUNDARY`
+
+Escopo congelado: extrair `meta.correlationId` validado e publicar
+`X-Correlation-Id`; expor somente esse header em CORS de origem aprovada; não
+inventar header em preflight/non-envelope; manter envelope, auth, tenant,
+collector, métricas e Secretary inalterados.
+
+Gate:
+
+`SPEC_APPROVED_CONTROLLED_BUILD` — BUILD controlado autorizado somente após
+este registro. Próximo passo obrigatório: testes RED. Produção real permanece
+`NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+## RED observado — PLAT-S22 — 2026-08-25T15:52:03-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S22_CONTROLLED_CORRELATION_RESPONSE_BOUNDARY`
+- task: `PLAT-S22-001_CONTROLLED_CORRELATION_RESPONSE_BOUNDARY`
+- action: testes focados de paridade envelope/header, CORS, preflight, 404,
+  header externo e erro do boundary executados antes da implementação
+- result: RED conforme esperado; 4 assertions falharam porque nenhum
+  `X-Correlation-Id` era publicado e CORS não expunha o header
+- decision: iniciar GREEN somente no pre-serialization e no header CORS, sem
+  tracing distribuído, logging de payload, auth/IdP, tenant change, provider,
+  canal, RAG ou side effect
+
+## FECHAMENTO CONTROLADO PLAT-S22 — 2026-08-25T16:02:37-03:00
+
+- sprint: `PLAT-S22_CONTROLLED_CORRELATION_RESPONSE_BOUNDARY`
+- task: `PLAT-S22-001_CONTROLLED_CORRELATION_RESPONSE_BOUNDARY`
+- result: `COMPLETED_CONTROLLED`
+- entrega: `X-Correlation-Id` derivado exclusivamente de envelope válido,
+  exposição CORS somente para origem aprovada e ausência segura em
+  preflight/non-envelope ou diante de header externo.
+- gates: `npm run verify` PASS; 100 arquivos/343 testes pass/18 skips;
+  coverage 85,37%/80,81%/85,10%/86,29%; readiness 4/4; E2E 3/3;
+  PostgreSQL controlado 51 pass/18 skips; audit 0; format e diff check PASS.
+- evidence: `docs/04_audit/0512_plat_s22_controlled_correlation_response_boundary_evidence.md`
+- limits: sem tracing distribuído/OTel, broker, logging de payload, auth/IdP,
+  mudança de tenant, provider/canal, RAG, dado real ou side effect; produção
+  permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+- next_safe_action: novo SPEC controlado; nenhuma ativação real foi autorizada.
+
+## Agent Platform — PLAT-S23 registrado antes do BUILD
+
+### TIMESTAMP
+
+2026-08-25T16:14:10-03:00
+
+### ENGINE
+
+SPEC
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S23_CONTROLLED_STARTUP_FAILURE_REDACTION
+
+### TASK
+
+PLAT-S23-001_CONTROLLED_STARTUP_FAILURE_REDACTION
+
+### ACTION
+
+Após o fechamento controlado do S22, a descoberta encontrou o catch de
+`apps/api/src/main.ts` emitindo o objeto de erro bruto. Registrado o S23 para
+criar uma fronteira local de falha de startup com evento/código/mensagem
+bounded, redaction de credenciais/tokens/PII e ausência de stack/cause.
+
+### RESULT
+
+`SPEC_APPROVED_CONTROLLED_BUILD` para BUILD controlado somente. O próximo
+passo obrigatório é escrever testes RED. Fail-closed, `process.exit(1)`, ordem
+de bootstrap, tenant, identidade, persistência, provider/canal, RAG, dado real
+e side effect permanecem inalterados.
+
+### DECISIONS
+
+Não criar logger distribuído nem serializar o erro original. Mensagens seguras
+conhecidas podem permanecer acionáveis apenas após sanitização e truncamento;
+Zod/unknown devem ser genéricos. Produção continua `NO-GO`/
+`WAITING_HUMAN_APPROVAL`.
+
+### STATUS
+
+IN_PROGRESS
+
+## RED observado — PLAT-S23 — 2026-08-25T16:19:41-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S23_CONTROLLED_STARTUP_FAILURE_REDACTION`
+- task: `PLAT-S23-001_CONTROLLED_STARTUP_FAILURE_REDACTION`
+- action: executada a suíte focada antes da implementação
+- result: RED conforme esperado; o import de `./startup-failure.ts` falhou por
+  ausência do módulo. Nenhum gate amplo foi considerado PASS.
+- decision: implementar somente formatter local e integração do catch do API,
+  sem alterar fail-closed, exit code, preflight, tenant, identidade,
+  persistência, provider/canal, RAG ou side effect
+- status: `IN_PROGRESS`
+
+## GREEN focado — PLAT-S23 — 2026-08-25T16:21:58-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S23_CONTROLLED_STARTUP_FAILURE_REDACTION`
+- task: `PLAT-S23-001_CONTROLLED_STARTUP_FAILURE_REDACTION`
+- action: implementado `apps/api/src/startup-failure.ts` e integrado o
+  formatter ao catch de `apps/api/src/main.ts`
+- result: suíte focada passou 1 arquivo/7 testes; redaction de credenciais,
+  tokens, PII e URL, JSON bounded, newline controlado e ausência de
+  stack/cause cobertos
+- next: executar verify, readiness, E2E, PostgreSQL, audit, format e diff check
+- status: `IN_PROGRESS`
+
+## CRÍTICA LEAD-ONLY — PLAT-S23 — 2026-08-25T16:32:01-03:00
+
+- engine: `AUDIT`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S23_CONTROLLED_STARTUP_FAILURE_REDACTION`
+- task: `PLAT-S23-001_CONTROLLED_STARTUP_FAILURE_REDACTION`
+- finding: um `Error`-like com `message` não-string fazia o formatter lançar
+  `message.replace is not a function`
+- action: adicionado teste negativo antes da correção; RED reproduzido
+- decision: aceitar somente mensagem textual; qualquer outro tipo cai no
+  fallback genérico, sem stack/cause
+- status: `IN_PROGRESS`
+
+## CORREÇÃO E RETEST FOCADO — PLAT-S23 — 2026-08-25T16:32:19-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S23_CONTROLLED_STARTUP_FAILURE_REDACTION`
+- task: `PLAT-S23-001_CONTROLLED_STARTUP_FAILURE_REDACTION`
+- action: validação de tipo adicionada ao formatter
+- result: focused 1 arquivo/8 testes PASS; typecheck, lint e format PASS
+- next: repetir verify, readiness, E2E, PostgreSQL, audit e diff check
+- status: `IN_PROGRESS`
+
+## FECHAMENTO CONTROLADO PLAT-S23 — 2026-08-25T16:40:41-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S23_CONTROLLED_STARTUP_FAILURE_REDACTION`
+- task: `PLAT-S23-001_CONTROLLED_STARTUP_FAILURE_REDACTION`
+- result: `COMPLETED_CONTROLLED`; formatter de startup bounded e redaction-safe
+  integrado ao `main`, sem serializar erro bruto, `stack` ou `cause`; `process.exit(1)`
+  e fail-closed preservados
+- gates: `npm run verify` PASS; 101 arquivos/351 testes pass/18 skips;
+  coverage 85,42% statements / 80,84% branches / 85,16% functions /
+  86,33% lines; readiness 4/4; E2E 3/3; PostgreSQL controlado 51 pass/18
+  skips; audit 0; format e `git diff --check` PASS; startup smoke controlado PASS
+- evidence: `docs/04_audit/0513_plat_s23_controlled_startup_failure_redaction_evidence.md`
+- release: `CONTROLLED_MVP_READY`; produção real `NO-GO`/
+  `WAITING_HUMAN_APPROVAL`
+- next: abrir novo SPEC controlado; sem deploy, dado real, provider, canal, RAG
+  ou side effect
+- status: `READY_FOR_NEXT_STEP`
+
+## REGISTRO CONTROLADO PLAT-S38 — 2026-08-26T02:40:00-03:00
+
+- engine: `SPEC`
+- phase: `SPEC`
+- sprint: `PLAT-S38_CONTROLLED_WORKER_KNOWLEDGE_INPUT_PARITY`
+- task: `PLAT-S38-001_CONTROLLED_WORKER_KNOWLEDGE_INPUT_PARITY`
+- action: registrada nova lane após discovery do drift entre o schema strict do
+  worker e o contrato compartilhado `ApprovedKnowledgeForTestSchema`
+- contract: job publicado aceita opcionalmente fixture `controlled://` bounded e
+  o worker encaminha apenas o valor parseado ao executor pinned
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`; próximo passo RED focado
+- limits: sem broker, provider/canal, RAG, egress, outbox, dado real, deploy ou
+  side effect
+- status: `REGISTERED`
+
+## AUDIT CONTROLADO PLAT-S38 — 2026-08-26T03:00:00-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S38_CONTROLLED_WORKER_KNOWLEDGE_INPUT_PARITY`
+- task: `PLAT-S38-001_CONTROLLED_WORKER_KNOWLEDGE_INPUT_PARITY`
+- action: alinhado o job strict do worker ao contrato compartilhado de
+  `approvedKnowledge`, com forwarding ao runtime pinned e history bounded em
+  50; estado, backlog, PRD, SPEC, tracking e gauntlet sincronizados
+- result: `COMPLETED_CONTROLLED`; RED inicial 3/1 falha e RED de correção 5/1
+  falha; GREEN focused 3 arquivos/14 testes; npm test 120/432/19 skips;
+  coverage 84,92/80,09/85,08/85,92; readiness 4/4; worker smoke; E2E 4/4;
+  PostgreSQL 8/71; build, typecheck, lint, format, audit 0 e diff check PASS
+- review: crítica independente sem CRITICAL/HIGH; drift MEDIUM de history e
+  lacuna LOW de cobertura foram corrigidos e revalidados
+- evidence: `docs/04_audit/0528_plat_s38_controlled_worker_knowledge_input_parity_evidence.md`
+- limits: sem broker, retry distribuído, RAG, provider/canal, egress, outbox,
+  dado real, deploy ou side effect; produção real `NO-GO` /
+  `WAITING_HUMAN_APPROVAL`
+- next: nova discovery/SPEC controlada
+- status: `READY_FOR_NEXT_STEP`
+
+## REGISTRO CONTROLADO PLAT-S40 — 2026-08-26T04:05:14-03:00
+
+### ENGINE
+
+SPEC
+
+### PHASE
+
+SPEC
+
+### SPRINT
+
+PLAT-S40_CONTROLLED_MODEL_PROVIDER_IDENTITY_BOUNDARY
+
+### TASK
+
+PLAT-S40-001_CONTROLLED_MODEL_PROVIDER_IDENTITY_BOUNDARY
+
+### ACTION
+
+Executada discovery read-only após o fechamento S39 e registrada a próxima
+lane em backlog, PRD, SPEC, ExecPlan, runtime state, tracking, task catalog e
+gauntlet. A análise confirmou que o executor instancia diretamente o provider
+determinístico, sem consultar o `ModelProviderRegistry`, e que
+`fallbackProvider` é aceito pelo schema sem execução correspondente.
+
+### RESULT
+
+Task registrada com gate `SPEC_APPROVED_CONTROLLED_BUILD`. O contrato exige
+registry server-side imutável, identidade exata `fake/deterministic-v1` e falha
+precoce para provider/model desconhecido ou fallback configurado.
+
+### DECISIONS
+
+Manter `ModelConfigSchema` genérico para referências futuras, mas não tratar
+referência como capacidade instalada. O slice não terá provider real, chamada
+de rede, fallback operacional, secret manager, canal, RAG, broker, egress,
+deploy, dado real ou side effect. Scouts Spark falharam por limite de uso e não
+são contabilizados como revisão independente.
+
+### STATUS
+
+READY_FOR_NEXT_STEP
+
+## RED OBSERVADO PLAT-S33 — 2026-08-25T21:23:51-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S33_CONTROLLED_WORKER_RUNTIME_BOUNDARY`
+- task: `PLAT-S33-001_CONTROLLED_WORKER_RUNTIME_BOUNDARY`
+- action: suíte focada `apps/worker/src/__tests__/published-worker-runtime.test.ts`
+  executada antes da implementação
+- result: RED real com 4 testes falhando; `apps/worker/src/worker.ts` ainda
+  chama `runAgentTurn` legado, aceita `{ sessionId, triggerMessageId }`, ignora
+  tenant/agent/version, não produz `pinned_version_missing` e não possui
+  startup guard de queue adapter
+- decision: implementar somente o job strict/bounded, delegação pinned ao
+  `executePublishedAgent` e entrypoint fail-closed sem bootstrap hardcoded
+- limits: sem broker, retry distribuído, outbox, provider/canal, deploy, dados
+  reais ou side effect
+- next: executar GREEN focado
+- status: `IN_PROGRESS`
+
+## GREEN FOCADO OBSERVADO PLAT-S34 — 2026-08-25T22:09:23-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S34_CONTROLLED_CI_GATE_PARITY`
+- task: `PLAT-S34-001_CONTROLLED_CI_GATE_PARITY`
+- action: implementados script processual, npm script e guardrails/gates do
+  workflow
+- result: focused passou 2 arquivos/3 testes; `npm run test:worker:startup`
+  passou com `worker.startup_smoke_passed`/`queue_adapter_missing`, sem
+  bootstrap, stack ou cause
+- security: `permissions: contents: read`, concurrency cancelável,
+  `persist-credentials: false` e `npm ci --ignore-scripts`; container scan não
+  foi inventado sem artefato
+- next: executar regressão próxima e gates integrados
+- status: `IN_PROGRESS`
+
+## GREEN FOCADO OBSERVADO PLAT-S33 — 2026-08-25T21:29:30-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S33_CONTROLLED_WORKER_RUNTIME_BOUNDARY`
+- task: `PLAT-S33-001_CONTROLLED_WORKER_RUNTIME_BOUNDARY`
+- action: implementado o schema strict/bounded, o executor worker pinned e o
+  startup guard sem bootstrap hardcoded
+- result: suíte focada passou 2 arquivos/5 testes; typecheck, lint, format e
+  smoke do `npm run dev:worker` passaram. O smoke encerrou com exit 1 e emitiu
+  somente `queue_adapter_missing`, sem stack/cause ou payload bruto
+- security: payload legado é rejeitado antes do store; versão explícita é
+  encaminhada ao runtime publicado; provider fake permanece `externalCall:false`
+- next: executar regressão próxima e gates integrados
+- status: `IN_PROGRESS`
+
+## CORREÇÃO DE BOUNDARY PLAT-S33 — 2026-08-25T21:35:16-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S33_CONTROLLED_WORKER_RUNTIME_BOUNDARY`
+- task: `PLAT-S33-001_CONTROLLED_WORKER_RUNTIME_BOUNDARY`
+- finding: a primeira suíte completa encontrou uma falha no teste de estrutura:
+  `apps/worker` não pode declarar `@cvg/platform` como dependência direta
+- correction: o schema/parse bounded foi movido para
+  `packages/agent-core/src/commands/published-worker-job.ts`; o worker usa a
+  API permitida de `@cvg/agent-core`, mantendo validação strict, pinning e
+  startup fail-closed
+- result: teste estrutural + worker focused passaram 3 arquivos/7 testes; não
+  houve relaxamento do target repository nem mudança de side effect
+- next: repetir `npm test` completo
+- status: `IN_PROGRESS`
+
+## REGISTRO CONTROLADO PLAT-S33 — 2026-08-25T21:15:00-03:00
+
+- engine: `SPEC`
+- phase: `SPEC`
+- sprint: `PLAT-S33_CONTROLLED_WORKER_RUNTIME_BOUNDARY`
+- task: `PLAT-S33-001_CONTROLLED_WORKER_RUNTIME_BOUNDARY`
+- discovery: o worker ainda delega para `runAgentTurn` legado sem tenant,
+  agent/version, store publicado ou trace; `main.ts` inicia job bootstrap
+  hardcoded sem adapter de fila
+- scope: job strict/bounded, executor worker sobre `executePublishedAgent`
+  com `versionId` explícito e entrypoint fail-closed sem bootstrap fictício
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- limits: sem broker, retry distribuído, outbox, provider/canal, deploy, dados
+  reais ou side effect
+- next: escrever testes RED focados
+- status: `IN_PROGRESS`
+
+## REGISTRO CONTROLADO PLAT-S32 — 2026-08-25T20:31:00-03:00
+
+- engine: `SPEC`
+- phase: `SPEC`
+- sprint: `PLAT-S32_CONTROLLED_SESSION_AGENT_VERSION_PINNING`
+- task: `PLAT-S32-001_CONTROLLED_SESSION_AGENT_VERSION_PINNING`
+- discovery: `executePublishedAgent` resolve a publicação corrente em cada
+  inbound; sessões não persistem identidade de agent/version e uma publicação
+  v2 pode trocar uma conversa que iniciou em v1
+- scope: adicionar binding opcional `agentId`/`agentVersionId` à sessão,
+  migration aditiva 0008, CAS tenant-scoped nos repositories e execução de
+  continuations pelo snapshot pinned, inclusive `ARCHIVED`
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- decision: implementar somente em fixtures e PostgreSQL controlado, sem
+  backfill automático nem provider/canal/RAG/dados reais; escrever RED antes do
+  BUILD e manter o fluxo legado `0000_initial` sem as novas colunas
+- next: executar testes RED focados
+- status: `IN_PROGRESS`
+
+## RED OBSERVADO PLAT-S32 — 2026-08-25T20:38:26-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- action: suíte focada de quatro arquivos para runtime publicado, adapter,
+  binding em memória e migration
+- result: RED real com 5 testes falhando e 7 passando; continuação usou v2,
+  `versionId` foi ignorado, método de binding não existia e migration 0008
+  estava ausente
+- decision: implementar GREEN mínimo com binding monotônico, snapshot
+  `ARCHIVED` válido e compatibilidade explícita do modo legado
+- next: adicionar contratos, migration e repositories antes da integração API
+- status: `IN_PROGRESS`
+
+## REGISTRO CONTROLADO PLAT-S24 — 2026-08-25T16:51:17-03:00
+
+- engine: `SPEC`
+- phase: `SPEC`
+- sprint: `PLAT-S24_CONTROLLED_HTTP_PARSE_PAYLOAD_BOUNDARY`
+- task: `PLAT-S24-001_CONTROLLED_HTTP_PARSE_PAYLOAD_BOUNDARY`
+- discovery: JSON inválido, media type não suportado e body excessivo escapam
+  para o error handler padrão do Fastify; a resposta não é envelope API e não
+  recebe correlation ID. O `bodyLimit` também não está explícito no bootstrap.
+- scope: limite de 1 MiB, parser JSON bounded, códigos de erro conhecidos e
+  handler global com envelope seguro/correlation ID server-generated
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- decision: registrar antes do BUILD e escrever RED; não alterar rotas,
+  autenticação, tenant, identidade, Secretary, persistência, provider/canal,
+  RAG, dado real ou side effect
+- next: executar testes RED focados
+- status: `IN_PROGRESS`
+
+## RED observado — PLAT-S24 — 2026-08-25T16:54:19-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S24_CONTROLLED_HTTP_PARSE_PAYLOAD_BOUNDARY`
+- task: `PLAT-S24-001_CONTROLLED_HTTP_PARSE_PAYLOAD_BOUNDARY`
+- action: suíte focada executada antes da implementação
+- result: RED conforme esperado; `http-request-boundary.ts` estava ausente e
+  o contrato de bodyLimit/classificação/envelope ainda não existia
+- decision: implementar somente boundary local de parser/payload, sem alterar
+  rotas, autenticação, tenant, identidade, Secretary, persistência, provider,
+  canal, RAG, dado real ou side effect
+- status: `IN_PROGRESS`
+
+## GREEN focado — PLAT-S24 — 2026-08-25T16:55:23-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S24_CONTROLLED_HTTP_PARSE_PAYLOAD_BOUNDARY`
+- task: `PLAT-S24-001_CONTROLLED_HTTP_PARSE_PAYLOAD_BOUNDARY`
+- action: implementado `http-request-boundary.ts`, bodyLimit explícito,
+  parser JSON classificado e error handler global
+- result: focused 1 arquivo/6 testes PASS; 400/413/415 em envelopes seguros
+  com correlation ID server-generated
+- next: crítica lead-only e verify integrado
+- status: `IN_PROGRESS`
+
+## CRÍTICA LEAD-ONLY — PLAT-S24 — 2026-08-25T16:55:56-03:00
+
+- engine: `AUDIT`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S24_CONTROLLED_HTTP_PARSE_PAYLOAD_BOUNDARY`
+- task: `PLAT-S24-001_CONTROLLED_HTTP_PARSE_PAYLOAD_BOUNDARY`
+- finding: error-like com getter defeituoso em `code` fazia o classificador
+  lançar dentro do error handler
+- action: adicionado teste negativo antes da correção; RED reproduzido
+- decision: leitura de `code` deve falhar fechado em `internal_error` genérico
+- status: `IN_PROGRESS`
+
+## CORREÇÃO E RETEST FOCADO — PLAT-S24 — 2026-08-25T16:56:09-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S24_CONTROLLED_HTTP_PARSE_PAYLOAD_BOUNDARY`
+- task: `PLAT-S24-001_CONTROLLED_HTTP_PARSE_PAYLOAD_BOUNDARY`
+- action: leitura defensiva de `error.code` adicionada
+- result: focused 1 arquivo/7 testes PASS; typecheck e lint PASS
+- next: repetir verify, readiness, E2E, PostgreSQL, audit, format e diff check
+- status: `IN_PROGRESS`
+
+## FECHAMENTO CONTROLADO PLAT-S24 — 2026-08-25T17:04:21-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S24_CONTROLLED_HTTP_PARSE_PAYLOAD_BOUNDARY`
+- task: `PLAT-S24-001_CONTROLLED_HTTP_PARSE_PAYLOAD_BOUNDARY`
+- result: `COMPLETED_CONTROLLED`; bodyLimit de 1 MiB, parser JSON classificado
+  e error handler global com envelope/correlation ID server-generated; sem
+  raw body, stack, cause ou mensagem arbitrária
+- gates: `npm run verify` PASS; 102 arquivos/358 testes pass/18 skips;
+  coverage 85,46% statements / 80,85% branches / 85,21% functions /
+  86,40% lines; readiness 4/4; E2E 3/3; PostgreSQL controlado 51 pass/18
+  skips; audit 0; format e `git diff --check` PASS; boundary smoke PASS
+- evidence: `docs/04_audit/0514_plat_s24_controlled_http_parse_payload_boundary_evidence.md`
+- release: `CONTROLLED_MVP_READY`; produção real `NO-GO`/
+  `WAITING_HUMAN_APPROVAL`
+- next: abrir novo SPEC controlado; sem upload, dado real, provider, canal,
+  RAG ou side effect
+- status: `READY_FOR_NEXT_STEP`
+
+## ATUALIZAÇÃO FINAL DE EVIDÊNCIA PLAT-S24 — 2026-08-25T17:20:00-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S24_CONTROLLED_HTTP_PARSE_PAYLOAD_BOUNDARY`
+- task: `PLAT-S24-001_CONTROLLED_HTTP_PARSE_PAYLOAD_BOUNDARY`
+- reason: após o fechamento inicial, foi adicionado um teste de erro não tratado
+  de rota; o focused final revalidado passou 8/8, conforme horário registrado
+  na evidência dedicada
+- gates: verify PASS com 102 arquivos/359 testes pass/18 skips; coverage
+  85,46% statements / 80,85% branches / 85,21% functions / 86,40% lines;
+  readiness 4/4; E2E 3/3; PostgreSQL 51 pass/18 skips; audit 0; format,
+  `git diff --check` e smoke controlado PASS
+- evidence: `docs/04_audit/0514_plat_s24_controlled_http_parse_payload_boundary_evidence.md`
+- status: `READY_FOR_NEXT_STEP`; `CONTROLLED_MVP_READY` permanece; produção
+  real `NO-GO`/`WAITING_HUMAN_APPROVAL`
+
+## REGISTRO CONTROLADO PLAT-S25 — 2026-08-25T17:26:43-03:00
+
+- engine: `SPEC`
+- phase: `SPEC`
+- sprint: `PLAT-S25_CONTROLLED_HTTP_TARGET_BOUNDARY`
+- task: `PLAT-S25-001_CONTROLLED_HTTP_TARGET_BOUNDARY`
+- discovery: rota desconhecida retornou 404 padrão do Fastify com o
+  request-target bruto; request-targets extensos foram aceitos sem contrato
+  explícito no checkout
+- scope: limite de 8192 bytes do target bruto, `maxParamLength` explícito de 100
+  e not-found handler com envelope/correlation ID server-generated
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- decision: escrever RED antes do BUILD; preservar body/parser S24, auth, tenant,
+  identidade, Secretary, persistência, provider/canal, RAG, dado real e side
+  effect
+- next: executar testes RED focados
+- status: `IN_PROGRESS`
+
+## RED observado — PLAT-S25 — 2026-08-25T17:30:16-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S25_CONTROLLED_HTTP_TARGET_BOUNDARY`
+- task: `PLAT-S25-001_CONTROLLED_HTTP_TARGET_BOUNDARY`
+- action: suíte focada executada antes da implementação
+- result: RED conforme esperado; `http-target-boundary.ts` estava ausente
+- decision: implementar somente o boundary local de request-target e 404/414,
+  sem alterar body/parser S24, auth, tenant, identidade, Secretary,
+  persistência, provider/canal, RAG, dado real ou side effect
+- next: implementar o mínimo para GREEN
+- status: `IN_PROGRESS`
+
+## GREEN focado — PLAT-S25 — 2026-08-25T17:32:34-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S25_CONTROLLED_HTTP_TARGET_BOUNDARY`
+- task: `PLAT-S25-001_CONTROLLED_HTTP_TARGET_BOUNDARY`
+- action: implementados `http-target-boundary.ts`, limites Fastify explícitos,
+  not-found envelope e rejeição 414 para target excessivo
+- result: focused 1 arquivo/8 testes PASS; typecheck, lint, format e diff check
+  PASS; target desconhecido não é refletido e target excessivo falha fechado
+- next: crítica lead-only e verify integrado
+- status: `IN_PROGRESS`
+
+## CRÍTICA LEAD-ONLY E CORREÇÃO — PLAT-S25 — 2026-08-25T17:38:16-03:00
+
+- engine: `AUDIT`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S25_CONTROLLED_HTTP_TARGET_BOUNDARY`
+- task: `PLAT-S25-001_CONTROLLED_HTTP_TARGET_BOUNDARY`
+- finding: o verify encontrou a expectativa S22 de que 404 seria non-envelope
+  sem correlation header, incompatível com o contrato S25 de 404 seguro
+- RED: falha anterior registrada na evidência dedicada
+- action: teste atualizado para paridade envelope/header; preflight 204 continua
+  sem header de correlação
+- result: focused S25 + response-correlation PASS 14/14
+- next: repetir verify integrado e gates externos
+- status: `IN_PROGRESS`
+
+## FECHAMENTO CONTROLADO PLAT-S25 — 2026-08-25T17:47:28-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S25_CONTROLLED_HTTP_TARGET_BOUNDARY`
+- task: `PLAT-S25-001_CONTROLLED_HTTP_TARGET_BOUNDARY`
+- result: `COMPLETED_CONTROLLED`; request-target bounded em 8192 bytes UTF-8,
+  `routerOptions.maxParamLength` explícito em 100, 404 `not_found` seguro e
+  414 `request_uri_too_long` sem echo do target
+- gates: verify PASS com 103 arquivos/367 testes pass/18 skips; coverage
+  85,41%/80,76%/85,24%/86,42%; readiness 4/4; E2E 3/3; PostgreSQL 51 pass/18
+  skips; audit 0; format, diff check, target smoke e startup smoke PASS
+- evidence: `docs/04_audit/0515_plat_s25_controlled_http_target_boundary_evidence.md`
+- scope: Secretary, auth, tenant, identidade, provider/canal, RAG, dado real,
+  deploy e side effects permanecem fora do lane
+- status: `READY_FOR_NEXT_STEP`; release controlado pronto e produção real
+  `NO-GO`/`WAITING_HUMAN_APPROVAL`; próximo passo: novo SPEC controlado
+
+## REGISTRO CONTROLADO PLAT-S26 — 2026-08-25T17:57:45-03:00
+
+- engine: `SPEC`
+- phase: `SPEC`
+- sprint: `PLAT-S26_CONTROLLED_PROMPT_PROFILE_ERROR_MESSAGE_BOUNDARY`
+- task: `PLAT-S26-001_CONTROLLED_PROMPT_PROFILE_ERROR_MESSAGE_BOUNDARY`
+- discovery: `assertPromptProfileIntegrity` e `assertPromptProfileClone`
+  interpolam chaves/IDs do payload em `DomainError.message`; a reprodução da
+  API refletiu `token=fixture-secret<script>` no erro de clone inválido
+- scope: mensagens constantes para chave de template inválida, ID duplicado e
+  block protegido, preservando código, status, envelope, correlation ID e
+  ausência de clone/version
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- decision: registrar antes do BUILD e escrever testes RED; não alterar
+  `toSafeError` global, auth, tenant, identidade, Secretary, persistência,
+  provider/canal, RAG, dado real, deploy ou side effect
+- next: executar testes RED focados
+- status: `IN_PROGRESS`
+
+## RED observado — PLAT-S26 — 2026-08-25T18:01:36-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S26_CONTROLLED_PROMPT_PROFILE_ERROR_MESSAGE_BOUNDARY`
+- task: `PLAT-S26-001_CONTROLLED_PROMPT_PROFILE_ERROR_MESSAGE_BOUNDARY`
+- action: suíte focada `apps/api/src/prompt-profile-error-boundary.test.ts`
+  executada antes da implementação
+- result: RED esperado; 4 testes falharam porque mensagens de chave, ID
+  duplicado e block protegido ainda não são constantes e a API refletiu o
+  sentinel no clone inválido
+- decision: alterar somente mensagens externas dinâmicas do Prompt Profile,
+  preservando código, status, envelope, correlation e ausência de clone/version
+- next: implementar o mínimo para GREEN
+- status: `IN_PROGRESS`
+
+## GREEN focado — PLAT-S26 — 2026-08-25T18:02:37-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S26_CONTROLLED_PROMPT_PROFILE_ERROR_MESSAGE_BOUNDARY`
+- task: `PLAT-S26-001_CONTROLLED_PROMPT_PROFILE_ERROR_MESSAGE_BOUNDARY`
+- action: mensagens constantes aplicadas somente em
+  `packages/platform/src/prompt-profile.ts`
+- result: focused 1 arquivo/4 testes PASS; chave inválida, ID duplicado e block
+  protegido não refletem o sentinel; clone API falha 400 sem criar nova versão
+- next: executar regressão próxima e verify integrado
+- status: `IN_PROGRESS`
+
+## CRÍTICA LEAD-ONLY E CORREÇÃO — PLAT-S26 — 2026-08-25T18:03:50-03:00
+
+- engine: `AUDIT`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S26_CONTROLLED_PROMPT_PROFILE_ERROR_MESSAGE_BOUNDARY`
+- task: `PLAT-S26-001_CONTROLLED_PROMPT_PROFILE_ERROR_MESSAGE_BOUNDARY`
+- finding: regressão próxima tinha expectativa histórica de palavras
+  interpoladas para remoção de block protegido
+- fix: teste atualizado para exigir a mensagem constante
+  `Protected prompt block must be preserved`
+- result: S26 + control-plane + prompt-profile PASS 3 arquivos/21 testes;
+  typecheck, lint, format e diff check PASS
+- limitation: revisão independente física indisponível; verificação lead-only
+  permanece explícita
+- next: repetir verify integrado e gates externos
+- status: `IN_PROGRESS`
+
+## FECHAMENTO CONTROLADO PLAT-S26 — 2026-08-25T18:12:10-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S26_CONTROLLED_PROMPT_PROFILE_ERROR_MESSAGE_BOUNDARY`
+- task: `PLAT-S26-001_CONTROLLED_PROMPT_PROFILE_ERROR_MESSAGE_BOUNDARY`
+- result: `COMPLETED_CONTROLLED`; mensagens de erro do Prompt Profile agora
+  são constantes e não refletem chave/ID do payload
+- gates: verify PASS com 104 arquivos/371 testes pass/18 skips; coverage
+  85,41%/80,77%/85,24%/86,42%; readiness 4/4; E2E 3/3; PostgreSQL 51 pass/18
+  skips; audit 0; format e diff check PASS
+- evidence: `docs/04_audit/0516_plat_s26_controlled_error_message_boundary_evidence.md`
+- scope: sem alteração de `toSafeError` global, auth, tenant, identidade,
+  Secretary, persistência, provider/canal, RAG, dado real, deploy ou side effect
+- status: `READY_FOR_NEXT_STEP`; release controlado pronto e produção real
+  `NO-GO`/`WAITING_HUMAN_APPROVAL`; próximo passo: novo SPEC controlado
+
+## REGISTRO CONTROLADO PLAT-S27 — 2026-08-25T18:18:06-03:00
+
+- engine: `SPEC`
+- phase: `SPEC`
+- sprint: `PLAT-S27_CONTROLLED_PAGINATION_OFFSET_BOUNDARY`
+- task: `PLAT-S27-001_CONTROLLED_PAGINATION_OFFSET_BOUNDARY`
+- discovery: `parsePagination` aceitou `offset=1e100` e
+  `offset=9007199254740992` como inteiros; conversas retornaram 200 e o valor
+  também alimenta `OFFSET` parametrizado no PostgreSQL
+- scope: teto de offset 10.000 e rejeição de valores negativos, fracionários,
+  não seguros ou acima do teto em conversas e audit evidence
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- decision: registrar antes do BUILD e escrever testes RED; não alterar limit,
+  cursor, auth, tenant, identidade, Secretary, persistência estrutural,
+  provider/canal, RAG, dado real, deploy ou side effect
+- next: executar testes RED focados
+- status: `IN_PROGRESS`
+
+## RED observado — PLAT-S27 — 2026-08-25T18:22:35-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S27_CONTROLLED_PAGINATION_OFFSET_BOUNDARY`
+- task: `PLAT-S27-001_CONTROLLED_PAGINATION_OFFSET_BOUNDARY`
+- action: suíte focada `apps/api/src/pagination-boundary.test.ts` executada
+  antes da implementação
+- result: RED conforme esperado; o import de
+  `apps/api/src/pagination-boundary.ts` falhou porque o arquivo ainda não
+  existe, portanto nenhum teste foi considerado PASS
+- decision: implementar somente o classificador de offset seguro e o limite
+  explícito nos parsers de conversas/audit evidence, preservando limit, cursor,
+  auth, tenant, identidade, Secretary, persistência e ausência de side effect
+- next: implementar o mínimo para GREEN
+- status: `IN_PROGRESS`
+
+## GREEN focado — PLAT-S27 — 2026-08-25T18:24:45-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S27_CONTROLLED_PAGINATION_OFFSET_BOUNDARY`
+- task: `PLAT-S27-001_CONTROLLED_PAGINATION_OFFSET_BOUNDARY`
+- action: `pagination-boundary.ts` implementado e integrado aos parsers de
+  conversas/audit evidence
+- result: focused 1 arquivo/5 testes PASS; teto inclusivo 10.000 aceito,
+  negativos/fracionários/unsafe/acima do teto rejeitados com envelope seguro e
+  nenhum repositório chamado no caminho inválido; `limit=1` preservado no
+  offset 10.000
+- next: executar regressão próxima, crítica lead-only e verify integrado
+- status: `IN_PROGRESS`
+
+## FECHAMENTO CONTROLADO PLAT-S27 — 2026-08-25T18:36:17-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S27_CONTROLLED_PAGINATION_OFFSET_BOUNDARY`
+- task: `PLAT-S27-001_CONTROLLED_PAGINATION_OFFSET_BOUNDARY`
+- result: `COMPLETED_CONTROLLED`; offset seguro e bounded de 0 a 10.000 em
+  conversas e audit evidence, com rejeição antes do repositório
+- gates: verify PASS com 105 arquivos/376 testes pass/18 skips; coverage
+  85,43%/80,80%/85,25%/86,44%; readiness 4/4; E2E 3/3; PostgreSQL 51 pass/18
+  skips; audit 0; format e diff check PASS
+- evidence: `docs/04_audit/0517_plat_s27_controlled_pagination_offset_boundary_evidence.md`
+- scope: sem alteração de limit, cursor, auth, tenant, identidade, Secretary,
+  persistência estrutural, provider/canal, RAG, dado real, deploy ou side effect
+- status: `READY_FOR_NEXT_STEP`; release controlado pronto e produção real
+  `NO-GO`/`WAITING_HUMAN_APPROVAL`; próximo passo: novo SPEC controlado
+
+## REGISTRO CONTROLADO PLAT-S28 — 2026-08-25T18:43:39-03:00
+
+- engine: `SPEC`
+- phase: `SPEC`
+- sprint: `PLAT-S28_CONTROLLED_AUDIT_FILTER_DUPLICATE_BOUNDARY`
+- task: `PLAT-S28-001_CONTROLLED_AUDIT_FILTER_DUPLICATE_BOUNDARY`
+- discovery: `parseOptionalAuditFilter` aceita arrays de query e escolhe o
+  primeiro valor; `sessionId=a&sessionId=b` retornou 200 e o repositório recebeu
+  somente `a`
+- scope: rejeitar filtros repetidos `sessionId`, `correlationId`, `actorId` e
+  `type` com `validation_failed`/400 antes de summary/page, preservando filtro
+  single-value, paginação, auth, tenant, identidade, Secretary, persistência,
+  provider/canal, RAG, dado real, deploy e side effect
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- decision: registrar antes do BUILD e escrever testes RED; não alterar filtros
+  single-value, offset/limit, auth, tenant, identidade, Secretary, persistência,
+  provider/canal, RAG, dado real, deploy ou side effect
+- next: executar testes RED focados
+- status: `IN_PROGRESS`
+
+## RED observado — PLAT-S28 — 2026-08-25T18:47:07-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S28_CONTROLLED_AUDIT_FILTER_DUPLICATE_BOUNDARY`
+- task: `PLAT-S28-001_CONTROLLED_AUDIT_FILTER_DUPLICATE_BOUNDARY`
+- action: suíte focada `apps/api/src/audit-filter-duplicate-boundary.test.ts`
+  executada antes da implementação
+- result: RED conforme esperado; o import de
+  `apps/api/src/audit-filter-duplicate-boundary.ts` falhou porque o arquivo
+  ainda não existe, portanto nenhum teste foi considerado PASS
+- decision: implementar somente a classificação single-valued e a rejeição de
+  filtros repetidos antes de summary/page, preservando filtros únicos,
+  paginação, auth, tenant, identidade, Secretary, persistência e ausência de
+  side effect
+- next: implementar o mínimo para GREEN
+- status: `IN_PROGRESS`
+
+## GREEN focado — PLAT-S28 — 2026-08-25T18:48:48-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S28_CONTROLLED_AUDIT_FILTER_DUPLICATE_BOUNDARY`
+- task: `PLAT-S28-001_CONTROLLED_AUDIT_FILTER_DUPLICATE_BOUNDARY`
+- action: implementado `audit-filter-duplicate-boundary.ts` e integrado
+  `parseOptionalAuditFilter`
+- result: focused 1 arquivo/6 testes PASS; os quatro filtros repetidos falham
+  com envelope 400 antes de summary/page, e filtro único com paginação continua
+  200
+- next: executar regressão próxima, crítica lead-only e verify integrado
+- status: `IN_PROGRESS`
+
+## FECHAMENTO CONTROLADO PLAT-S28 — 2026-08-25T18:57:03-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S28_CONTROLLED_AUDIT_FILTER_DUPLICATE_BOUNDARY`
+- task: `PLAT-S28-001_CONTROLLED_AUDIT_FILTER_DUPLICATE_BOUNDARY`
+- result: `COMPLETED_CONTROLLED`; filtros repetidos de audit evidence falham
+  com `validation_failed`/400 antes de summary/page, sem reduzir ao primeiro
+  valor
+- gates: verify PASS com 106 arquivos/382 testes pass/18 skips; coverage
+  85,45%/80,83%/85,26%/86,45%; readiness 4/4; E2E 3/3; PostgreSQL 51 pass/18
+  skips; audit 0; format e diff check PASS
+- evidence: `docs/04_audit/0518_plat_s28_controlled_audit_filter_duplicate_boundary_evidence.md`
+- scope: sem alteração de filtro único, offset/limit, auth, tenant, identidade,
+  Secretary, persistência estrutural, provider/canal, RAG, dado real, deploy ou
+  side effect
+- status: `READY_FOR_NEXT_STEP`; release controlado pronto e produção real
+  `NO-GO`/`WAITING_HUMAN_APPROVAL`; próximo passo: novo SPEC controlado
+
+## REGISTRO CONTROLADO PLAT-S29 — 2026-08-25T19:05:04-03:00
+
+- engine: `SPEC`
+- phase: `SPEC`
+- sprint: `PLAT-S29_CONTROLLED_INTERNAL_TASK_FIELD_BOUNDARY`
+- task: `PLAT-S29-001_CONTROLLED_INTERNAL_TASK_FIELD_BOUNDARY`
+- discovery: `CreateInternalTaskSchema` não tinha máximos para os campos livres;
+  uma requisição fictícia a `POST /v1/tasks` persistiu `title`, `description`,
+  `source` e `idempotencyKey` com 5.000 caracteres
+- scope: limitar `sessionId` a 160, `title` a 200, `description` a 4.000,
+  `source` a 120 e `idempotencyKey` a 200 no schema compartilhado, antes do
+  repositório, preservando mínimo 8 da chave e criação válida
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- decision: registrar antes do BUILD e escrever RED; não alterar auth, tenant,
+  identidade, Secretary, persistência estrutural, provider/canal, RAG, dado
+  real, deploy ou side effect
+- next: executar testes RED focados
+- status: `IN_PROGRESS`
+
+## RED observado — PLAT-S29 — 2026-08-25T19:09:13-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S29_CONTROLLED_INTERNAL_TASK_FIELD_BOUNDARY`
+- task: `PLAT-S29-001_CONTROLLED_INTERNAL_TASK_FIELD_BOUNDARY`
+- action: suíte `apps/api/src/internal-task-field-boundary.test.ts` executada
+  antes da implementação
+- result: RED real com 7 testes, 1 PASS e 6 FAIL; os cinco campos ainda não
+  têm máximos, campos de 5.000 caracteres são persistidos e `sessionId` longo
+  resulta em `invalid_action` tardio, não `validation_failed`
+- decision: implementar somente os máximos do schema compartilhado antes de
+  `tasks.create`, preservando o mínimo 8 da chave e o restante do contrato
+- next: executar GREEN focado
+- status: `IN_PROGRESS`
+
+## GREEN focado — PLAT-S29 — 2026-08-25T19:10:24-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S29_CONTROLLED_INTERNAL_TASK_FIELD_BOUNDARY`
+- task: `PLAT-S29-001_CONTROLLED_INTERNAL_TASK_FIELD_BOUNDARY`
+- action: adicionados máximos por campo ao `CreateInternalTaskSchema`
+- result: focused 1 arquivo/7 testes PASS; os cinco campos excedentes falham
+  como `validation_failed`/400 antes de `tasks.create`, valores nos máximos
+  continuam válidos e o conteúdo excedente não é refletido
+- next: executar regressão próxima, typecheck/lint/format e verify integrado
+- status: `IN_PROGRESS`
+
+## FECHAMENTO CONTROLADO PLAT-S29 — 2026-08-25T19:21:22-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S29_CONTROLLED_INTERNAL_TASK_FIELD_BOUNDARY`
+- task: `PLAT-S29-001_CONTROLLED_INTERNAL_TASK_FIELD_BOUNDARY`
+- result: `COMPLETED_CONTROLLED`; máximos de `CreateInternalTaskSchema`
+  rejeitam entradas excedentes antes de `tasks.create`, sem echo, enquanto
+  valores nos limites continuam válidos
+- gates: verify PASS com 107 arquivos/389 testes pass/18 skips; coverage
+  85,45%/80,83%/85,26%/86,45%; readiness 4/4; E2E 3/3; PostgreSQL 51 pass/18
+  skips; audit 0; format e diff check PASS
+- evidence: `docs/04_audit/0519_plat_s29_controlled_internal_task_field_boundary_evidence.md`
+- scope: sem alteração de auth, tenant, identidade, Secretary, persistência
+  estrutural, provider/canal, RAG, dado real, deploy ou side effect
+- status: `READY_FOR_NEXT_STEP`; release controlado pronto e produção real
+  `NO-GO`/`WAITING_HUMAN_APPROVAL`; próximo passo: novo SPEC controlado
+
+## REGISTRO CONTROLADO PLAT-S30 — 2026-08-25T19:28:17-03:00
+
+- engine: `SPEC`
+- phase: `SPEC`
+- sprint: `PLAT-S30_CONTROLLED_APPROVAL_REQUEST_FIELD_BOUNDARY`
+- task: `PLAT-S30-001_CONTROLLED_APPROVAL_REQUEST_FIELD_BOUNDARY`
+- discovery: `RequestHumanApprovalSchema` aceitava campos livres sem máximo; uma
+  fixture tenant-scoped persistiu `summary` com 5.000 caracteres em
+  `POST /v1/approvals`
+- scope: limitar `sessionId` a 160, `proposedAction` a 200 e `summary` a 4.000
+  no schema compartilhado antes de `approvals.save`, preservando risk level,
+  auth, tenant, approval pending e decisão humana
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- decision: registrar antes do BUILD e escrever RED; não alterar decisão de
+  approval, handoff, provider/canal, RAG, dado real, deploy ou side effect
+- next: executar testes RED focados
+- status: `IN_PROGRESS`
+
+## RED observado — PLAT-S30 — 2026-08-25T19:30:53-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S30_CONTROLLED_APPROVAL_REQUEST_FIELD_BOUNDARY`
+- task: `PLAT-S30-001_CONTROLLED_APPROVAL_REQUEST_FIELD_BOUNDARY`
+- action: suíte `apps/api/src/approval-request-field-boundary.test.ts` executada
+  antes da implementação
+- result: RED real com 5 testes, 1 PASS e 4 FAIL; campos longos ainda chegam
+  a `approvals.save` e `sessionId` excedente resulta em `invalid_action` tardio
+- decision: implementar somente os máximos do schema compartilhado antes de
+  `approvals.save`, preservando approval pending e decisão humana
+- next: executar GREEN focado
+- status: `IN_PROGRESS`
+
+## GREEN focado — PLAT-S30 — 2026-08-25T19:31:49-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S30_CONTROLLED_APPROVAL_REQUEST_FIELD_BOUNDARY`
+- task: `PLAT-S30-001_CONTROLLED_APPROVAL_REQUEST_FIELD_BOUNDARY`
+- action: adicionados máximos por campo ao `RequestHumanApprovalSchema`
+- result: focused 1 arquivo/5 testes PASS; os três campos excedentes falham
+  como `validation_failed`/400 antes de `approvals.save`, valores nos máximos
+  continuam válidos e approval permanece `pending`
+- next: executar regressão próxima, typecheck/lint/format e verify integrado
+- status: `IN_PROGRESS`
+
+## FECHAMENTO CONTROLADO PLAT-S30 — 2026-08-25T19:40:47-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S30_CONTROLLED_APPROVAL_REQUEST_FIELD_BOUNDARY`
+- task: `PLAT-S30-001_CONTROLLED_APPROVAL_REQUEST_FIELD_BOUNDARY`
+- result: `COMPLETED_CONTROLLED`; máximos de `RequestHumanApprovalSchema`
+  rejeitam entradas excedentes antes de `approvals.save`, sem echo, enquanto
+  valores nos limites continuam válidos e approval permanece `pending`
+- gates: verify PASS com 108 arquivos/394 testes pass/18 skips; coverage
+  85,45%/80,83%/85,26%/86,45%; readiness 4/4; E2E 3/3; PostgreSQL 51 pass/18
+  skips; audit 0; format e diff check PASS
+- evidence: `docs/04_audit/0520_plat_s30_controlled_approval_request_field_boundary_evidence.md`
+- scope: sem alteração de auth, tenant, identidade, Secretary, handoff,
+  decisão de approval, persistência estrutural, provider/canal, RAG, dado real,
+  deploy ou side effect
+- status: `READY_FOR_NEXT_STEP`; release controlado pronto e produção real
+  `NO-GO`/`WAITING_HUMAN_APPROVAL`; próximo passo: novo SPEC controlado
+
+## REGISTRO CONTROLADO PLAT-S31 — 2026-08-25T19:51:14-03:00
+
+- engine: `SPEC`
+- phase: `SPEC`
+- sprint: `PLAT-S31_CONTROLLED_APPROVAL_DECISION_NOTE_FIELD_BOUNDARY`
+- task: `PLAT-S31-001_CONTROLLED_APPROVAL_DECISION_NOTE_FIELD_BOUNDARY`
+- discovery: `ResolveApprovalSchema.note` aceitava string opcional sem máximo;
+  uma fixture efêmera aceitou `note` com 5.000 caracteres em uma decisão de
+  approval e persistiu o estado `approved`, embora o conteúdo não fosse ecoado
+  nem persistido
+- scope: limitar `note` a 4.000 caracteres no schema compartilhado antes de
+  `approvals.save`, mantendo decisão, identidade, estado de approval, handoff e
+  semântica atual de não persistência da nota
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- decision: registrar antes do BUILD e escrever RED; não alterar auth, tenant,
+  operador, decisão humana, provider/canal, RAG, dado real, deploy ou side effect
+- next: executar testes RED focados
+- status: `IN_PROGRESS`
+
+## RED OBSERVADO PLAT-S31 — 2026-08-25T19:55:57-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- action: suíte focada `apps/api/src/approval-decision-note-field-boundary.test.ts`
+  executada antes da implementação
+- result: RED real com 3 testes, 1 PASS e 2 FAIL; `note` de 4.001 caracteres
+  ainda é aceito e a decisão chega a `approvals.save` com 200, enquanto o caso
+  válido no limite passa
+- decision: adicionar somente máximo 4.000 em `ResolveApprovalSchema.note`,
+  preservando o fluxo de decisão, estado pending no caso rejeitado, identidade,
+  handoff e não persistência atual da nota
+- next: executar GREEN focado
+- status: `IN_PROGRESS`
+
+## GREEN FOCADO OBSERVADO PLAT-S31 — 2026-08-25T19:56:51-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- action: adicionado somente `.max(4000)` ao `ResolveApprovalSchema.note`
+- result: focused passou 1 arquivo/3 testes; nota excedente falha como
+  `validation_failed`/400 antes de `approvals.save`, sem echo e sem mutação do
+  approval pending; nota no limite preserva decisão `approved`
+- next: executar regressão próxima, typecheck/lint/format e verify integrado
+- status: `IN_PROGRESS`
+
+## REGRESSÃO PRÓXIMA OBSERVADA PLAT-S31 — 2026-08-25T19:57:31-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- action: regressão de S31/S30, approval actions, RBAC, tenant isolation,
+  health, observability, audit evidence e `agent-core`
+- result: 9 arquivos/31 testes PASS; decisão válida, approval pending,
+  handoff, identidade, tenant e Secretary permanecem verdes
+- next: executar `npm run verify` e os gates externos
+- status: `IN_PROGRESS`
+
+## FECHAMENTO CONTROLADO PLAT-S31 — 2026-08-25T20:06:15-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S31_CONTROLLED_APPROVAL_DECISION_NOTE_FIELD_BOUNDARY`
+- task: `PLAT-S31-001_CONTROLLED_APPROVAL_DECISION_NOTE_FIELD_BOUNDARY`
+- result: `COMPLETED_CONTROLLED`; `.max(4000)` no `ResolveApprovalSchema.note`
+  rejeita nota excedente antes de `approvals.save`, sem echo e sem alterar
+  approval pending; valor no limite mantém decisão `approved`
+- gates: verify PASS com 109 arquivos/397 testes pass/18 skips; coverage
+  85,45%/80,83%/85,26%/86,45%; readiness 4/4; E2E 3/3; PostgreSQL 51 pass/18
+  skips; audit 0; format, JSON e diff check PASS
+- evidence: `docs/04_audit/0521_plat_s31_controlled_approval_decision_note_field_boundary_evidence.md`
+- controlled_release: `CONTROLLED_MVP_READY`; real release permanece
+  `NO-GO`/`WAITING_HUMAN_APPROVAL`
+- limits: sem alteração de auth, tenant, identidade, decisão, handoff,
+  persistência estrutural, Secretary, provider, canal, RAG, dado real, deploy
+  ou side effect
+- status: `READY_FOR_NEXT_STEP`
+
+## REGISTRO CONTROLADO PLAT-S32 — 2026-08-25T20:31:00-03:00
+
+- engine: `SPEC`
+- phase: `SPEC`
+- sprint: `PLAT-S32_CONTROLLED_SESSION_AGENT_VERSION_PINNING`
+- task: `PLAT-S32-001_CONTROLLED_SESSION_AGENT_VERSION_PINNING`
+- discovery: `executePublishedAgent` resolvia a publicação corrente a cada
+  inbound; sessões não persistiam identidade de agent/version e publish v2
+  podia trocar uma conversa iniciada em v1
+- scope: migration aditiva 0008, binding tenant-scoped/CAS em memória e
+  PostgreSQL, seleção pinned no runtime e testes v1→v2/ARCHIVED/RLS
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- next: escrever e executar testes RED focados
+- status: `IN_PROGRESS`
+
+## RED OBSERVADO PLAT-S32 — 2026-08-25T20:38:26-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- action: suíte focada de runtime publicado, adapter e persistence pinning
+- result: 4 arquivos; 5 testes falharam e 7 passaram; continuação trocou de
+  v1 para v2, `versionId` explícito foi ignorado, binding memory não existia e
+  migration 0008 retornou `ENOENT`
+- next: GREEN mínimo sem alterar o modo legado `0000_initial`
+- status: `IN_PROGRESS`
+
+## GREEN FOCADO OBSERVADO PLAT-S32 — 2026-08-25T20:44:28-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- action: migration 0008, binding memory/PostgreSQL, adapter pinned e runtime
+  de continuação implementados
+- result: focused passou 4 arquivos/12 testes; regressão próxima passou 3
+  arquivos/34 testes com 10 skips; typecheck passou
+- security: o modo legacy `0000_initial` não consulta colunas ausentes e a
+  persistência tenant-scoped exige pinning explícito
+- next: executar todos os gates e auditoria final
+- status: `IN_PROGRESS`
+
+## FECHAMENTO CONTROLADO PLAT-S32 — 2026-08-25T21:08:00-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S32_CONTROLLED_SESSION_AGENT_VERSION_PINNING`
+- task: `PLAT-S32-001_CONTROLLED_SESSION_AGENT_VERSION_PINNING`
+- result: `COMPLETED_CONTROLLED`; sessão fixa o par agent/version uma única vez,
+  continuations usam `PUBLISHED`/`ARCHIVED` do mesmo escopo e falhas de pinning
+  fecham sem fallback ou efeito externo
+- gates: `npm test` 111 arquivos pass/2 skips, 402 testes pass/19 skips;
+  coverage 85,01/80,37/85,11/85,99; readiness 4/4; Playwright 4/4;
+  PostgreSQL 8 arquivos/71 testes pass; typecheck, lint, build, format e diff
+  check PASS; audit 0 vulnerabilidades
+- correction: o gate PostgreSQL encontrou `jsonb_object_length` incompatível
+  com PostgreSQL 16 no migration 0007; a expressão foi substituída por
+  contagem JSONPath bounded e o conjunto voltou a passar
+- evidence: `docs/04_audit/0522_plat_s32_controlled_session_version_pinning_evidence.md`
+- controlled_release: `CONTROLLED_MVP_READY`; real release permanece
+  `NO-GO`/`WAITING_HUMAN_APPROVAL`
+- review: lead-only; child agents indisponíveis nesta sessão, sem declarar
+  aprovação independente
+- limits: sem IdP/RBAC real, backfill/rollout, provider, canal, RAG, worker
+  distribuído, dados reais, deploy ou side effect
+- status: `READY_FOR_NEXT_STEP`
+
+## FECHAMENTO CONTROLADO PLAT-S33 — 2026-08-25T21:58:18-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S33_CONTROLLED_WORKER_RUNTIME_BOUNDARY`
+- task: `PLAT-S33-001_CONTROLLED_WORKER_RUNTIME_BOUNDARY`
+- result: `COMPLETED_CONTROLLED`; job worker strict/bounded com tenant/agent/
+  version pinned, delegação ao runtime publicado, negativos de legacy/limite/
+  status/mismatch e entrypoint fail-closed sem bootstrap fictício
+- gates: `npm test` 112 arquivos pass/2 skips, 408 testes pass/19 skips;
+  coverage 85,01/80,42/85,14/85,99; readiness 4/4; Playwright 4/4;
+  PostgreSQL 8 arquivos/71 testes pass; typecheck, lint, build, format e diff
+  check PASS; audit 0 vulnerabilidades; metadata JSON válido
+- evidence: `docs/04_audit/0523_plat_s33_controlled_worker_runtime_boundary_evidence.md`
+- controlled_release: `CONTROLLED_MVP_READY`; real release permanece
+  `NO-GO`/`WAITING_HUMAN_APPROVAL`
+- review: lead-only; child agents indisponíveis nesta sessão, sem declarar
+  aprovação independente
+- limits: sem broker, retry distribuído, outbox, provider/canal, RAG, deploy,
+  dados reais ou side effect
+- next: abrir nova descoberta/SPEC controlado, mantendo o goal ativo
+- status: `READY_FOR_NEXT_STEP`
+
+## REGISTRO CONTROLADO PLAT-S34 — 2026-08-25T22:04:49-03:00
+
+- engine: `SPEC`
+- phase: `SPEC`
+- sprint: `PLAT-S34_CONTROLLED_CI_GATE_PARITY`
+- task: `PLAT-S34-001_CONTROLLED_CI_GATE_PARITY`
+- discovery: workflow CI já chama verify, PostgreSQL e Playwright, mas não
+  explicita readiness nem smoke processual do worker; `npm ci` não declara
+  `--ignore-scripts`, permissions/concurrency não estão declarados e não há
+  Dockerfile/imagem para um container scan honesto
+- scope: adicionar somente paridade dos gates disponíveis, smoke real do
+  worker sem queue adapter e hardening do workflow; não simular container scan
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- limits: sem container, registry, deploy, broker, provider/canal, dados reais
+  ou side effect
+- next: escrever testes RED dos contratos CI/startup
+- status: `IN_PROGRESS`
+
+## RED OBSERVADO PLAT-S34 — 2026-08-25T22:07:22-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S34_CONTROLLED_CI_GATE_PARITY`
+- task: `PLAT-S34-001_CONTROLLED_CI_GATE_PARITY`
+- action: focused `tests/ci-workflow-contract.test.js` e
+  `tests/worker-startup-smoke.test.js` executados antes da implementação
+- result: RED real com 3 testes falhando; workflow não declara permissions,
+  concurrency, `npm ci --ignore-scripts`, readiness ou worker smoke, e o
+  script processual ainda está ausente
+- decision: implementar somente smoke bounded e gates CI disponíveis; manter
+  container scan fora por ausência de Dockerfile/imagem
+- limits: sem container, registry, deploy, broker, provider/canal, dados reais
+  ou side effect
+- next: executar GREEN focado
+- status: `IN_PROGRESS`
+
+## FECHAMENTO CONTROLADO PLAT-S34 — 2026-08-25T23:43:32-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S34_CONTROLLED_CI_GATE_PARITY`
+- task: `PLAT-S34-001_CONTROLLED_CI_GATE_PARITY`
+- action: executados focused final, regressão completa, readiness, smoke
+  processual, PostgreSQL 16 efêmero, Playwright, typecheck, lint, build,
+  format, audit e diff check após o fechamento da paridade CI
+- result: `COMPLETED_CONTROLLED`; workflow chama todos os gates disponíveis,
+  instala com `npm ci --ignore-scripts`, aplica permissions/concurrency mínimos
+  e o worker sem adapter encerra com exit 1 e JSON bounded sem bootstrap,
+  stack ou cause
+- gates: focused 2 arquivos/3 testes; verify 114 arquivos/411 testes pass/19
+  skips; coverage 85,01% statements, 80,42% branches, 85,14% functions,
+  85,99% lines; readiness 4/4; E2E 4/4; PostgreSQL 8 arquivos/71 testes;
+  audit 0 vulnerabilidades; typecheck, lint, build, format e diff check PASS
+- evidence: `docs/04_audit/0524_plat_s34_controlled_ci_gate_parity_evidence.md`
+- decisions: nenhum Dockerfile/imagem existe; container scan não foi simulado.
+  Nenhum dado real, segredo, provider, canal, broker, deploy ou side effect foi
+  usado. `CONTROLLED_MVP_READY` é o teto; produção real permanece `NO-GO` /
+  `WAITING_HUMAN_APPROVAL`.
+- review: revisão read-only independente aprovou os quatro controles locais e
+  aceitou verify/PostgreSQL como evidência fornecida consistente; não repetiu
+  os gates longos nessa leitura. GitHub Actions hospedado não foi executado,
+  portanto essa limitação não é convertida em prova de disponibilidade
+  operacional
+- next: nova descoberta/SPEC controlado; manter o goal ativo e os bloqueios
+  de produção
+- status: `READY_FOR_NEXT_STEP`
+
+## REGISTRO CONTROLADO PLAT-S35 — 2026-08-25T23:56:42-03:00
+
+- engine: `SPEC`
+- phase: `SPEC`
+- sprint: `PLAT-S35_CONTROLLED_TOOL_REGISTRY_IDENTITY_BOUNDARY`
+- task: `PLAT-S35-001_CONTROLLED_TOOL_REGISTRY_IDENTITY_BOUNDARY`
+- action: registrada nova lane após discovery e crítica independente do gap de
+  planner/API hardcoded; backlog, PRD, SPEC, ExecPlan, runtime state, task
+  catalog, release boundary e gauntlet state foram sincronizados antes do BUILD
+- discovery: bindings configuráveis não tornam uma tool executável; o planner
+  e approval/API fixavam `find_available_slots`; catálogo permanece
+  metadata-only e não é autoridade de execução
+- decision: implementar somente registry compilado server-side com versão
+  exata, intent bounded, deduplicação/colisão fail-closed e permission
+  server-owned; genericizar approval sem abrir handlers externos
+- limits: sem import dinâmico, marketplace, provider/canal, egress, broker,
+  outbox, dado real, deploy ou side effect
+- next: escrever e executar RED antes do BUILD
+- status: `IN_PROGRESS`
+
+## RED CONTROLADO PLAT-S35 — 2026-08-26T00:00:58-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- task: `PLAT-S35-001_CONTROLLED_TOOL_REGISTRY_IDENTITY_BOUNDARY`
+- action: executado focused RED antes da implementação
+- command: `npx vitest run packages/platform/src/__tests__/controlled-tool-registry.test.ts`
+- result: `RED`; 4 testes executados, 3 falharam e 1 passou
+- findings: manifesto rejeita intents; gateway ainda aceita latest/primeiro
+  binding; planner `planTools` não existe; catalog-only já falha fechado
+- next: implementar GREEN mínimo e executar focused novamente
+- status: `IN_PROGRESS`
+
+## GREEN CONTROLADO PLAT-S35 — 2026-08-26T00:07:55-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- task: `PLAT-S35-001_CONTROLLED_TOOL_REGISTRY_IDENTITY_BOUNDARY`
+- action: implementado GREEN mínimo e executada regressão próxima
+- result: 10 arquivos/49 testes PASS; `npm run typecheck` PASS
+- delivery: intents bounded, registry planner por intent, versão exata,
+  colisão/deduplicação fail-closed, Test Lab sem literal, approval/API com
+  resolução server-side e permissão derivada no servidor; bindings controlados
+  fixados em `1.0.0`
+- boundary: catalog-only sem handler permaneceu bloqueado; sem import,
+  marketplace, provider/canal, egress, broker, outbox, dado real, deploy ou
+  side effect
+- next: verify, readiness, E2E, PostgreSQL, audit e crítica independente
+- status: `IN_PROGRESS`
+
+## CORREÇÃO APÓS CRÍTICA INDEPENDENTE PLAT-S35 — 2026-08-26T00:31:34-03:00
+
+- review: crítica read-only `NEEDS_CORRECTION`, sem CRITICAL/HIGH; os gates
+  focados e longos fornecidos eram consistentes, mas a invariável pública de
+  versão exata não estava completa
+- findings: binding/manifest aceitavam `latest`; `PluginRegistry.get(name)`
+  resolvia latest implicitamente; construtor copiava plugins sem validar
+  manifesto/handlers
+- correction: rejeitar alias `latest`, exigir versão em `get`, expor
+  `getLatest` explicitamente e compartilhar normalização/validação entre
+  constructor e register
+- focused: 3 arquivos/28 testes PASS; typecheck/lint PASS
+- next: repetir verify/readiness/E2E/PostgreSQL e fechar com crítica final
+- status: `IN_PROGRESS`
+
+## FECHAMENTO CONTROLADO PLAT-S35 — 2026-08-26T00:50:28-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S35_CONTROLLED_TOOL_REGISTRY_IDENTITY_BOUNDARY`
+- task: `PLAT-S35-001_CONTROLLED_TOOL_REGISTRY_IDENTITY_BOUNDARY`
+- action: sincronizada a evidência após a crítica final e fechada a lane
+- result: `COMPLETED_CONTROLLED`; verify 115 arquivos/417 testes PASS/19
+  skips, coverage 84,99/80,30/85,11/86,01; readiness 4/4; worker smoke PASS;
+  E2E 4/4; PostgreSQL 8 arquivos/71 testes; audit 0; typecheck, lint, build,
+  format e diff check PASS
+- review: crítica independente confirmou os invariantes de código e não
+  encontrou CRITICAL/HIGH; o último ajuste foi somente alinhar tracking e
+  evidência aos resultados mais recentes
+- evidence: `docs/04_audit/0525_plat_s35_controlled_tool_registry_identity_evidence.md`
+- limits: sem import dinâmico, marketplace, provider/canal, egress, broker,
+  outbox, dado real, deploy ou side effect; produção real `NO-GO`
+- next: nova descoberta/SPEC controlado
+- status: `READY_FOR_NEXT_STEP`
+
+## REGISTRO CONTROLADO PLAT-S36 — 2026-08-26T01:05:00-03:00
+
+- engine: `SPEC`
+- phase: `SPEC`
+- sprint: `PLAT-S36_CONTROLLED_KNOWLEDGE_INPUT_PROVENANCE_BOUNDARY`
+- task: `PLAT-S36-001_CONTROLLED_KNOWLEDGE_INPUT_PROVENANCE_BOUNDARY`
+- action: registrada nova lane após discovery read-only do runtime; a validação
+  `validateApprovedKnowledge` é parcial e os schemas da API estão duplicados
+- contract: schema shared strict/bounded para source `controlled://`, version e
+  answer; runtime rejeita input inválido antes de resolver knowledge/model/tools
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- limits: sem RAG/ingestão/conteúdo real, URL externa, provider/canal, egress,
+  broker, outbox, dado real, deploy ou side effect
+- next: RED focado antes de qualquer implementação
+- status: `REGISTERED`
+
+## RED CONTROLADO PLAT-S36 — 2026-08-26T01:01:16-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- task: `PLAT-S36-001_CONTROLLED_KNOWLEDGE_INPUT_PROVENANCE_BOUNDARY`
+- action: executado focused RED antes do GREEN
+- command: `npx vitest run packages/platform/src/__tests__/knowledge-input-boundary.test.ts apps/api/src/__tests__/knowledge-input-boundary.test.ts`
+- result: 4 testes; 2 PASS válidos e 2 FAIL esperados. O runtime aceitou
+  answer com 4.001 caracteres/campo extra e a API aceitou source
+  `controlled://` com mais de 200 caracteres.
+- boundary: nenhuma chamada de provider externo, RAG, canal, egress, broker,
+  outbox, dado real, deploy ou side effect ocorreu
+- next: GREEN mínimo com schema compartilhado e validação no runtime
+- status: `IN_PROGRESS`
+
+## GREEN CONTROLADO PLAT-S36 — 2026-08-26T01:03:58-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- task: `PLAT-S36-001_CONTROLLED_KNOWLEDGE_INPUT_PROVENANCE_BOUNDARY`
+- action: implementado GREEN mínimo e executada suíte focada
+- result: 2 arquivos/4 testes PASS; `npm run typecheck` PASS; `npm run lint`
+  PASS
+- implementation: schema `ApprovedKnowledgeForTestSchema` strict/bounded em
+  `contracts.ts`, runtime parseia/normaliza antes de knowledge/model/tools, API
+  Test Lab e approval execution reutilizam o contrato
+- boundary: source apenas `controlled://`; nenhum conteúdo externo, RAG,
+  provider/canal, egress, broker, outbox, dado real, deploy ou side effect
+- next: regressão próxima e gates integrados
+- status: `IN_PROGRESS`
+
+## AUDIT CONTROLADO PLAT-S36 — 2026-08-26T01:45:00-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S36_CONTROLLED_KNOWLEDGE_INPUT_PROVENANCE_BOUNDARY`
+- task: `PLAT-S36-001_CONTROLLED_KNOWLEDGE_INPUT_PROVENANCE_BOUNDARY`
+- action: encerrado o lane após correção das observações independentes e
+  repetição dos gates integrados
+- result: `COMPLETED_CONTROLLED`; verify 117 arquivos/422 testes/19 skips,
+  coverage 85,05/80,31/85,11/86,07, readiness 4/4, worker startup smoke,
+  E2E 4/4, PostgreSQL controlado 8/71, audit 0, build, format, lint e diff
+  check PASS
+- review: sem CRITICAL/HIGH; chave `last_green` duplicada, backlog mestre
+  dessincronizado e ausência de teste negativo na execução de approval foram
+  corrigidos e revalidados
+- evidence: `docs/04_audit/0526_plat_s36_controlled_knowledge_input_boundary_evidence.md`
+- limits: somente fixture `controlled://`; sem RAG/ingestão/conteúdo real,
+  URL externa, provider/canal, egress, broker, outbox, dado real, deploy ou
+  side effect
+- next: nova discovery/SPEC controlada; produção real `NO-GO` /
+  `WAITING_HUMAN_APPROVAL`
+- status: `READY_FOR_NEXT_STEP`
+
+## REGISTRO CONTROLADO PLAT-S37 — 2026-08-26T01:59:37-03:00
+
+- engine: `SPEC`
+- phase: `SPEC`
+- sprint: `PLAT-S37_CONTROLLED_PUBLISH_EVIDENCE_AUTHORITY_BOUNDARY`
+- task: `PLAT-S37-001_CONTROLLED_PUBLISH_EVIDENCE_AUTHORITY_BOUNDARY`
+- action: registrada nova lane após discovery e crítica independente do
+  control plane; backlog, PRD, SPEC, ExecPlan, runtime state, task catalog,
+  tracking e gauntlet foram sincronizados antes do BUILD
+- discovery: release candidates aceitam gates bounded, porém publish e rollback
+  não exigem candidato validado, não revalidam digest/binding e deixam a
+  atestação sem autoridade efetiva sobre a mutação
+- decision: exigir `releaseCandidateId` no contrato/store/API, validar status
+  `VALIDATED`, digest recomputável, quatro gates PASS e tenant/agente/versão
+  exatos; manter preflight crítico server-side e rollback derivado da fonte
+- limits: sem dados reais, deploy, provider/canal, RAG, egress, broker,
+  outbox, rollout gradual ou side effect
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- next: escrever e executar RED focado antes de qualquer implementação
+- status: `REGISTERED`
+
+## AUDIT CONTROLADO PLAT-S37 — 2026-08-26T02:34:03-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S37_CONTROLLED_PUBLISH_EVIDENCE_AUTHORITY_BOUNDARY`
+- task: `PLAT-S37-001_CONTROLLED_PUBLISH_EVIDENCE_AUTHORITY_BOUNDARY`
+- action: implementada e auditada a autoridade server-side do release candidate
+  para publish/rollback; estado, backlog, PRD, SPEC, tracking e gauntlet foram
+  sincronizados após os gates
+- result: `COMPLETED_CONTROLLED`; focused GREEN 2 arquivos/5 testes; npm test
+  119/427/19 skips; coverage 84,92/80,08/85,08/85,92; readiness 4/4; worker
+  smoke; E2E 4/4; PostgreSQL controlado 8/71; build, typecheck, lint, format,
+  audit 0 e diff check PASS
+- review: auditoria estática local percorreu API, stores, SQL, UI e callsites;
+  duas tentativas de subagente não concluíram por timeout/indisponibilidade e
+  não são apresentadas como aprovação externa
+- evidence: `docs/04_audit/0527_plat_s37_controlled_publish_evidence_authority_evidence.md`
+- limits: sem dados reais, deploy, provider/canal, RAG, egress, broker,
+  outbox, rollout ou side effect; produção real `NO-GO` /
+  `WAITING_HUMAN_APPROVAL`
+- next: nova discovery/SPEC controlada; gap conhecido de transporte de
+  `approvedKnowledge` no job strict do worker permanece separado e não foi
+  misturado a esta lane
+- status: `READY_FOR_NEXT_STEP`
+
+## REGISTRO CONTROLADO PLAT-S39 — 2026-08-26T03:03:45-03:00
+
+- engine: `SPEC`
+- phase: `SPEC`
+- sprint: `PLAT-S39_CONTROLLED_RELEASE_CANDIDATE_LIFECYCLE_INTEGRITY`
+- task: `PLAT-S39-001_CONTROLLED_RELEASE_CANDIDATE_LIFECYCLE_INTEGRITY`
+- action: registrada nova lane após discovery read-only do lifecycle; backlog,
+  PRD, SPEC, ExecPlan, runtime state, tracking, task catalog e gauntlet foram
+  sincronizados antes do BUILD
+- discovery: transição `DRAFT -> VALIDATED` em memória e PostgreSQL verifica
+  gates, porém não recompõe o `evidenceDigest` do candidate carregado
+- decision: aplicar asserção compartilhada de schema, quatro gates PASS e
+  digest canônico antes de escrever status/validatedBy/validatedAt
+- limits: somente ledger/lifecycle controlado; sem publish adicional, deploy,
+  provider/canal, RAG, egress, broker, outbox, dado real ou side effect
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- next: escrever e executar RED focado nos dois adapters antes de qualquer
+  implementação
+- status: `REGISTERED`
+
+## RED CONTROLADO PLAT-S39 — 2026-08-26T03:06:20-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S39_CONTROLLED_RELEASE_CANDIDATE_LIFECYCLE_INTEGRITY`
+- task: `PLAT-S39-001_CONTROLLED_RELEASE_CANDIDATE_LIFECYCLE_INTEGRITY`
+- action: executado focused RED antes do GREEN nos adapters InMemory e
+  PostgreSQL
+- command: `npx vitest run packages/platform/src/__tests__/release-candidate-ledger.test.ts packages/persistence/src/__tests__/release-candidate-repository.test.ts`
+- result: 2 arquivos/6 testes; 4 PASS e 2 FAIL esperados. Digest adulterado
+  ainda permitiu a transição para `VALIDATED` nos dois adapters.
+- boundary: nenhum provider, canal, RAG, broker, outbox, egress, deploy, dado
+  real ou side effect foi acionado
+- next: GREEN mínimo com asserção compartilhada antes da mutação
+- status: `IN_PROGRESS`
+
+## GREEN FOCADO PLAT-S39 — 2026-08-26T03:08:23-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S39_CONTROLLED_RELEASE_CANDIDATE_LIFECYCLE_INTEGRITY`
+- task: `PLAT-S39-001_CONTROLLED_RELEASE_CANDIDATE_LIFECYCLE_INTEGRITY`
+- action: implementada asserção compartilhada de integridade e executado
+  focused GREEN nos adapters InMemory/PostgreSQL
+- result: 2 arquivos/6 testes PASS; digest íntegro é validado e digest
+  adulterado falha preservando `DRAFT`; typecheck e lint PASS
+- implementation: `assertReleaseCandidateEvidenceIntegrity` é reutilizada pela
+  autoridade de publish e chamada antes de status/validatedBy/validatedAt
+- limits: nenhum provider, canal, RAG, broker, outbox, egress, deploy, dado
+  real ou side effect
+- next: regressão completa, gates operacionais e crítica independente
+- status: `IN_PROGRESS`
+
+## CORREÇÃO APÓS CRÍTICA INDEPENDENTE PLAT-S39 — 2026-08-26T03:18:24-03:00
+
+- engine: `BUILD`
+- phase: `CONTROLLED_CONSTRUCTION`
+- sprint: `PLAT-S39_CONTROLLED_RELEASE_CANDIDATE_LIFECYCLE_INTEGRITY`
+- task: `PLAT-S39-001_CONTROLLED_RELEASE_CANDIDATE_LIFECYCLE_INTEGRITY`
+- review: achado alto de autoatestação pelo `createdBy`; achado médio de
+  `gate_results` não-array mascarado como lista vazia no mapper PostgreSQL
+- action: exigido validador independente, extraído parser shared fail-closed e
+  separados testes de digest, self-validation e JSON corrompido
+- result: focused final 2 arquivos/8 testes PASS; typecheck/lint PASS; nenhum
+  efeito externo
+- next: repetir regressão completa e gates operacionais antes da auditoria
+- status: `IN_PROGRESS`
+
+## AUDIT/FECHAMENTO CONTROLADO PLAT-S39 — 2026-08-26T03:58:39-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S39_CONTROLLED_RELEASE_CANDIDATE_LIFECYCLE_INTEGRITY`
+- task: `PLAT-S39-001_CONTROLLED_RELEASE_CANDIDATE_LIFECYCLE_INTEGRITY`
+- action: executados os gates finais, aplicada a correção de autoridade
+  persistida e sincronizados runtime state, backlog, PRD, SPEC, ExecPlan,
+  tracking, task catalog, gauntlet e evidência
+- implementation: `assertReleaseCandidatePublishAuthority` revalida o
+  validador independente; migration `0009` adiciona a constraint PostgreSQL;
+  testes core/API/PG/UI cobrem self-validation, digest e JSON corrompido
+- result: `COMPLETED_CONTROLLED`; focused 7 arquivos/23 testes/1 skip; npm
+  test 120 arquivos/438 testes/19 skips; coverage 85,08/80,16/85,18/86,08;
+  readiness 4/4; worker smoke; PostgreSQL 8/72; E2E 4/4; build, typecheck,
+  lint, format, audit 0 e diff check PASS
+- review: revisão independente final `PASS sem achados`
+- evidence: `docs/04_audit/0529_plat_s39_controlled_release_candidate_lifecycle_integrity_evidence.md`
+- limits: sem dados reais, deploy, provider/canal, RAG, egress, broker,
+  outbox ou side effect; produção real `NO-GO` / `WAITING_HUMAN_APPROVAL`
+- next: nova discovery/SPEC controlada
+- status: `READY_FOR_NEXT_STEP`
+
+## AUDIT/FECHAMENTO CONTROLADO PLAT-S40 — 2026-08-26T04:41:44-03:00
+
+- engine: `AUDIT`
+- phase: `AUDIT`
+- sprint: `PLAT-S40_CONTROLLED_MODEL_PROVIDER_IDENTITY_BOUNDARY`
+- task: `PLAT-S40-001_CONTROLLED_MODEL_PROVIDER_IDENTITY_BOUNDARY`
+- action: executados os gates finais, aplicada a revisão independente de
+  follow-up e sincronizados runtime state, backlog, PRD, SPEC, ExecPlan,
+  tracking, task catalog, gauntlet e evidência
+- implementation: registry compilado e defensivo resolve somente
+  `fake/deterministic-v1`; identidade desconhecida, modelo divergente e
+  `fallbackProvider` falham antes dos eventos; Test Lab, runtime publicado e
+  worker convergem para `executeConfiguredAgent`
+- result: `COMPLETED_CONTROLLED`; focused 4 arquivos/19 testes; npm test 121
+  arquivos/446 testes/19 skips; coverage 85,08/80,11/85,17/86,07; readiness
+  4/4; worker smoke; PostgreSQL 8/72; E2E 4/4; build 70 módulos; typecheck,
+  lint, format, audit 0 e diff check PASS
+- review: follow-up independente `PASS sem achados estáticos`; testes
+  executáveis verificados separadamente no workspace controlado
+- evidence: `docs/04_audit/0530_plat_s40_controlled_model_provider_identity_evidence.md`
+- limits: sem dados reais, provider/canal, rede, fallback/retry operacional,
+  secret manager, RAG, broker, outbox, egress, deploy ou side effect; produção
+  real `NO-GO` / `WAITING_HUMAN_APPROVAL`
+- next: nova discovery/SPEC controlada
+- status: `READY_FOR_NEXT_STEP`
+
+## PLAT-S41 registrado antes do BUILD — 2026-08-26T04:54:16-03:00
+
+### TIMESTAMP
+
+2026-08-26T04:54:16-03:00
+
+### ENGINE
+
+SPEC
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S41_CONTROLLED_OUTPUT_SAFETY_BOUNDARY
+
+### TASK
+
+PLAT-S41-001_CONTROLLED_OUTPUT_SAFETY_BOUNDARY
+
+### ACTION
+
+Discovery read-only confirmou que `approvedKnowledge.answer` e
+`responseTemplates` alimentam o `fallbackText` do provider determinístico e
+chegam à resposta final sem uma output policy formal. A lane foi registrada no
+backlog, PRD, SPEC, ExecPlan, runtime state, tracking, task catalog e gauntlet.
+
+### RESULT
+
+Contrato aprovado para validação pós-modelo de tipo, vazio, limite de 4.000,
+redaction e conteúdo inseguro, com fallback seguro e handoff coerente. O RED
+focado ainda não foi executado.
+
+### DECISIONS
+
+Somente runtime controlado e eventos bounded entram no escopo. Não há provider
+ou canal real, RAG, broker, outbox, egress, deploy, dado real ou side effect.
+
+### STATUS
+
+IN_PROGRESS
+
+## RED CONTROLADO PLAT-S41 — 2026-08-26T05:01:39-03:00
+
+### ENGINE
+
+BUILD
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S41_CONTROLLED_OUTPUT_SAFETY_BOUNDARY
+
+### TASK
+
+PLAT-S41-001_CONTROLLED_OUTPUT_SAFETY_BOUNDARY
+
+### ACTION
+
+Executado o focused RED em
+`packages/platform/src/__tests__/output-policy.test.ts` antes da implementação.
+
+### RESULT
+
+1 arquivo/7 testes falhou como esperado: `enforceControlledOutput` e
+`CONTROLLED_SAFE_OUTPUTS` ainda não existem, e o caso integrado reproduz que
+texto de knowledge com diagnóstico/medicação chega ao trace sem validação
+pós-modelo.
+
+### DECISIONS
+
+Nenhum provider/canal real, rede, RAG, broker, outbox, egress, deploy, dado
+real ou side effect foi acionado. O próximo passo é GREEN mínimo no módulo
+puro e integração antes de `response.after`.
+
+### STATUS
+
+IN_PROGRESS
+
+## GREEN FOCADO PLAT-S41 — 2026-08-26T05:05:27-03:00
+
+### ENGINE
+
+BUILD
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S41_CONTROLLED_OUTPUT_SAFETY_BOUNDARY
+
+### TASK
+
+PLAT-S41-001_CONTROLLED_OUTPUT_SAFETY_BOUNDARY
+
+### ACTION
+
+Implementada a output policy pura e integrada após `model.after`, com eventos
+allowlisted antes/depois da decisão.
+
+### RESULT
+
+Focused 3 arquivos/14 testes PASS; texto seguro segue com redaction, output
+inválido ou inseguro vira fallback seguro, e o trace sincroniza mode, handoff,
+reason e estado sem refletir o texto rejeitado. Typecheck e lint PASS.
+
+### DECISIONS
+
+O fallback é local e determinístico; nenhum provider/canal real, rede, RAG,
+broker, outbox, egress, deploy, dado real ou side effect foi acionado. Gates
+integrados e revisão independente ainda estão pendentes.
+
+### STATUS
+
+IN_PROGRESS
+
+## REVIEW CONTROLADO PLAT-S41 — 2026-08-26T05:24:08-03:00
+
+### ENGINE
+
+AUDIT
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S41_CONTROLLED_OUTPUT_SAFETY_BOUNDARY
+
+### TASK
+
+PLAT-S41-001_CONTROLLED_OUTPUT_SAFETY_BOUNDARY
+
+### ACTION
+
+A revisão independente read-only encontrou dois P0: o detector de output era
+bypassável por variantes linguísticas/numéricas/Unicode, e output rejeitado
+ainda alcançava planning/approval/execute de tools. Também encontrou
+inconsistência de motivo de handoff, teste sem event bus real/ordem e
+cardinalidade, ausência de metadado bounded no trace e cobertura incompleta de
+templates/provider malformado.
+
+### RESULT
+
+A implementação inicial permaneceu em revisão controlada; a tentativa do
+papel especializado não iniciou por incompatibilidade do modelo e não foi
+tratada como aprovação. A correção foi aberta antes dos gates integrados.
+
+### DECISIONS
+
+O escopo continua somente controlado, sem provider/canal real, rede, RAG,
+broker, outbox, egress, deploy, dado real ou side effect.
+
+### STATUS
+
+IN_PROGRESS
+
+## RED CORRETIVO CONTROLADO PLAT-S41 — 2026-08-26T05:18:05-03:00
+
+### ENGINE
+
+BUILD
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S41_CONTROLLED_OUTPUT_SAFETY_BOUNDARY
+
+### TASK
+
+PLAT-S41-001_CONTROLLED_OUTPUT_SAFETY_BOUNDARY
+
+### ACTION
+
+Executado o focused
+`npx vitest run packages/platform/src/__tests__/output-policy.test.ts` após
+adicionar regressões corretivas.
+
+### RESULT
+
+1 arquivo/21 testes apresentou 11 falhas esperadas para dose numérica,
+plurais/inflexões, agenda com newline/separador, pagamento, zero-width/
+confusable, motivo high-risk, redaction no rewrite, trace e ausência de
+execução de capability.
+
+### DECISIONS
+
+Nenhum provider/canal real, rede, RAG, broker, outbox, egress, deploy, dado
+real ou side effect foi acionado. Próximo passo: GREEN corretivo.
+
+### STATUS
+
+IN_PROGRESS
+
+## GREEN CORRETIVO FOCADO PLAT-S41 — 2026-08-26T05:22:47-03:00
+
+### ENGINE
+
+BUILD
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S41_CONTROLLED_OUTPUT_SAFETY_BOUNDARY
+
+### TASK
+
+PLAT-S41-001_CONTROLLED_OUTPUT_SAFETY_BOUNDARY
+
+### ACTION
+
+Aplicada a correção de output policy, runtime, adapter publicado, clones de
+trace, observabilidade e regressões Test Lab/runtime publicado.
+
+### RESULT
+
+Focused 4 arquivos/36 testes PASS. A policy normaliza Unicode/confusáveis,
+rejeita variantes unsafe, preserva redaction, interrompe tools/approval após
+qualquer rewrite e usa fallback seguro. O handoff final tem motivo coerente e
+evento único após a decisão; `outputPolicy` bounded sobrevive ao Test Lab,
+persistência/clonagem, API/UI e CONTROLLED_RUNTIME. Typecheck, lint e diff
+check PASS.
+
+### DECISIONS
+
+Nenhum provider/canal real, rede, RAG, broker, outbox, egress, deploy, dado
+real ou side effect foi acionado. Revisão independente suportada e gates
+integrados continuam pendentes.
+
+### STATUS
+
+IN_PROGRESS
+
+## AUDIT/FECHAMENTO CONTROLADO PLAT-S41 — 2026-08-26T06:37:13-03:00
+
+### ENGINE
+
+AUDIT
+
+### PHASE
+
+AUDIT
+
+### SPRINT
+
+PLAT-S41_CONTROLLED_OUTPUT_SAFETY_BOUNDARY
+
+### TASK
+
+PLAT-S41-001_CONTROLLED_OUTPUT_SAFETY_BOUNDARY
+
+### ACTION
+
+Fechada a output safety boundary no runtime controlado e sincronizados os
+sinks de trace, API e conclusão transacional PostgreSQL. A saída do provider é
+tratada como não confiável, normalizada/redigida, reescrita para fallback
+seguro quando necessário e nunca alcança tools após rewrite.
+
+### RESULT
+
+Focused final: 7 arquivos/76 testes PASS. `npm test`: 123 arquivos PASS, 2
+skipped; 483 testes PASS, 19 skipped. Coverage: 85,08% statements, 80,29%
+branches, 85,39% functions e 86,12% lines. Readiness 4/4, worker startup
+smoke, PostgreSQL 8 arquivos/72 testes, E2E 4/4, build 70 módulos,
+typecheck, lint, format, audit 0 e diff check PASS.
+
+### REVIEW
+
+A revisão independente read-only anterior encontrou P0/P1; todos os achados
+foram convertidos em regressões e corrigidos. A tentativa de confirmação
+assíncrona final não retornou no limite e não foi tratada como aprovação; a
+inspeção estática local e os gates não deixaram achado aberto conhecido no
+escopo controlado.
+
+### DECISIONS
+
+Nenhum provider/canal real, rede, RAG, broker, outbox, egress, deploy, dado
+real ou side effect foi acionado. `PLAT-S41-001 = COMPLETED_CONTROLLED`.
+Produção real permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+### EVIDENCE
+
+`docs/04_audit/0531_plat_s41_controlled_output_safety_boundary_evidence.md`
+
+### STATUS
+
+COMPLETED_CONTROLLED
+
+## SPEC/REGISTRO CONTROLADO PLAT-S42 — 2026-08-26T06:49:52-03:00
+
+### ENGINE
+
+SPEC
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S42_CONTROLLED_TRACE_PROVENANCE_BOUNDARY
+
+### TASK
+
+PLAT-S42-001_CONTROLLED_TRACE_PROVENANCE_BOUNDARY
+
+### DISCOVERY
+
+`TestRunTrace` é somente interface TypeScript. O sink atual valida response e
+outputPolicy, mas preserva campos arbitrários; `recordTestSuiteRun` clona
+traces aninhados sem sanitização; e as listagens/mappers PostgreSQL retornam
+JSON sem revalidar o contrato. Isso deixa uma lacuna de proveniência,
+identidade de provider e segurança de auditoria.
+
+### CONTRACT
+
+Aplicar parser/projeção allowlist e bounded em todo trace recebido ou lido,
+validando IDs, enums, números, datas, spans, policy, handoff, output policy,
+redaction, provider `fake/deterministic-v1` e `externalCall: false`. Campos
+extras devem ser omitidos; formas inválidas devem falhar fechado antes de
+INSERT/efeito/retorno.
+
+### GATE
+
+`SPEC_APPROVED_CONTROLLED_BUILD`; próximo passo obrigatório: RED focused.
+
+### LIMITS
+
+Nenhum provider/canal real, rede, RAG, broker, outbox, egress, secret manager,
+deploy, migração estrutural, dado real ou side effect.
+
+### STATUS
+
+IN_PROGRESS
+
+## RED CONTROLADO PLAT-S42 — 2026-08-26T06:54:32-03:00
+
+### ENGINE
+
+BUILD
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### TASK
+
+PLAT-S42-001_CONTROLLED_TRACE_PROVENANCE_BOUNDARY
+
+### COMMAND/RESULT
+
+O focused de 3 arquivos/16 testes apresentou 9 falhas esperadas: campo extra,
+provider externo, estrutura/data inválida, suite aninhada e JSON PostgreSQL
+corrompido atravessaram os caminhos anteriores. Nenhuma integração externa ou
+side effect foi acionado.
+
+### STATUS
+
+IN_PROGRESS
+
+## GREEN FOCADO CONTROLADO PLAT-S42 — 2026-08-26T07:06:42-03:00
+
+### ENGINE
+
+BUILD
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### TASK
+
+PLAT-S42-001_CONTROLLED_TRACE_PROVENANCE_BOUNDARY
+
+### COMMAND/RESULT
+
+O focused ampliado passou 6 arquivos/74 testes. O parser/projetor allowlist
+valida campos bounded, provider controlado, `externalCall: false`, dates
+serializadas, redaction e output policy; sinks InMemory/PostgreSQL, suites e
+listagens usam a mesma regra. Typecheck e lint passaram.
+
+### DECISIONS
+
+O escopo continua somente controlado: sem provider/canal real, rede, RAG,
+broker, outbox, egress, deploy, migração estrutural, dado real ou side effect.
+
+### NEXT
+
+Executar regressão completa, revisão independente suportada e gates integrados.
+
+### STATUS
+
+IN_PROGRESS

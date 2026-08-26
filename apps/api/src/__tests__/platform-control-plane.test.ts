@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { AgentConfigSchema } from '@cvg/platform'
+import {
+  AgentConfigSchema,
+  InMemoryControlPlaneStore,
+  type TenantScope,
+  type TestRunTrace
+} from '@cvg/platform'
 import { buildServer } from '../server.ts'
 
 const tenantA = 'tenant_00000000-0000-4000-8000-000000000011'
@@ -10,6 +15,56 @@ const adminHeaders = (tenantId: string) => ({
   'x-operator-role': 'Admin',
   'x-tenant-id': tenantId
 })
+
+const controlledReleaseGates = [
+  {
+    key: 'safety_preflight',
+    status: 'PASS',
+    evidenceRef: 'controlled://evidence/safety-preflight-v1'
+  },
+  {
+    key: 'test_lab_regression',
+    status: 'PASS',
+    evidenceRef: 'controlled://evidence/test-lab-regression-v1'
+  },
+  {
+    key: 'snapshot_integrity',
+    status: 'PASS',
+    evidenceRef: 'controlled://evidence/snapshot-integrity-v1'
+  },
+  {
+    key: 'external_boundary',
+    status: 'PASS',
+    evidenceRef: 'controlled://evidence/external-boundary-v1'
+  }
+]
+
+async function createValidatedReleaseCandidate(
+  app: ReturnType<typeof buildServer>,
+  tenantId: string,
+  agentId: string,
+  versionId: string
+): Promise<string> {
+  const created = await app.inject({
+    method: 'POST',
+    url: '/v1/admin/release-candidates',
+    headers: adminHeaders(tenantId),
+    payload: { agentId, versionId, gateResults: controlledReleaseGates }
+  })
+  const candidate = (created.json() as Envelope<{ id: string }>).data
+  const validated = await app.inject({
+    method: 'POST',
+    url: `/v1/admin/release-candidates/${candidate?.id}/transition`,
+    headers: {
+      ...adminHeaders(tenantId),
+      'x-operator-id': 'approver.controlled'
+    },
+    payload: { target: 'VALIDATED', expectedStatus: 'DRAFT' }
+  })
+  expect(created.statusCode).toBe(200)
+  expect(validated.statusCode).toBe(200)
+  return candidate?.id as string
+}
 
 function config() {
   return AgentConfigSchema.parse({
@@ -104,10 +159,18 @@ describe('platform control plane API', () => {
       expect(transition.statusCode).toBe(200)
     }
 
+    const releaseCandidateId = await createValidatedReleaseCandidate(
+      app,
+      tenantA,
+      created?.id as string,
+      version?.id as string
+    )
+
     const publish = await app.inject({
       method: 'POST',
       url: `/v1/admin/agents/${created?.id}/versions/${version?.id}/publish`,
-      headers: adminHeaders(tenantA)
+      headers: adminHeaders(tenantA),
+      payload: { releaseCandidateId }
     })
     const published = (publish.json() as Envelope<{ status: string }>).data
     const versions = await app.inject({
@@ -119,7 +182,7 @@ describe('platform control plane API', () => {
       method: 'POST',
       url: `/v1/admin/agents/${created?.id}/rollback`,
       headers: adminHeaders(tenantA),
-      payload: { versionId: version?.id }
+      payload: { versionId: version?.id, releaseCandidateId }
     })
     const list = await app.inject({
       method: 'GET',
@@ -271,6 +334,61 @@ describe('platform control plane API', () => {
         })
       ])
     )
+  })
+
+  it('rejects a newly forged protected block without creating a clone', async () => {
+    const app = buildServer()
+    const created = await app.inject({
+      method: 'POST',
+      url: '/v1/admin/agents',
+      headers: adminHeaders(tenantA),
+      payload: {
+        slug: 'protected-clone-agent',
+        name: 'Protected Clone Agent',
+        description: 'Protected clone boundary fixture'
+      }
+    })
+    const agentId = (created.json() as Envelope<{ id: string }>).data?.id
+    const original = await app.inject({
+      method: 'POST',
+      url: `/v1/admin/agents/${agentId}/versions`,
+      headers: adminHeaders(tenantA),
+      payload: { config: config() }
+    })
+    const originalVersion = (original.json() as Envelope<{ id: string }>).data
+    const sourceConfig = config()
+    const forgedConfig = AgentConfigSchema.parse({
+      ...sourceConfig,
+      promptBlocks: [
+        ...sourceConfig.promptBlocks,
+        {
+          id: 'new-system-block',
+          kind: 'system',
+          content: 'Tentativa de alterar a camada protegida.',
+          priority: 0,
+          enabled: true
+        }
+      ]
+    })
+    const clone = await app.inject({
+      method: 'POST',
+      url: `/v1/admin/agents/${agentId}/versions/${originalVersion?.id}/clone`,
+      headers: adminHeaders(tenantA),
+      payload: { config: forgedConfig }
+    })
+    const versions = await app.inject({
+      method: 'GET',
+      url: `/v1/admin/agents/${agentId}/versions`,
+      headers: adminHeaders(tenantA)
+    })
+    await app.close()
+
+    expect(clone.statusCode).toBe(400)
+    expect(clone.json() as Envelope<null>).toMatchObject({
+      success: false,
+      error: { code: 'invalid_action' }
+    })
+    expect((versions.json() as Envelope<unknown[]>).data).toHaveLength(1)
   })
 
   it('does not expose another tenant and requires Admin for configuration', async () => {
@@ -463,5 +581,168 @@ describe('platform control plane API', () => {
     expect(
       (otherTenantRuns.json() as Envelope<{ items: unknown[] }>).data?.items
     ).toEqual([])
+  })
+
+  it('exposes a redacted critical safety preflight and enforces it before publish', async () => {
+    const app = buildServer()
+    const create = await app.inject({
+      method: 'POST',
+      url: '/v1/admin/agents',
+      headers: adminHeaders(tenantA),
+      payload: {
+        slug: 'preflight-agent',
+        name: 'Preflight Agent',
+        description: 'Fixture for publish safety gate'
+      }
+    })
+    const created = (create.json() as Envelope<{ id: string }>).data
+    const versionResponse = await app.inject({
+      method: 'POST',
+      url: `/v1/admin/agents/${created?.id}/versions`,
+      headers: adminHeaders(tenantA),
+      payload: { config: config() }
+    })
+    const version = (versionResponse.json() as Envelope<{ id: string }>).data
+
+    for (const target of ['TESTING', 'APPROVED']) {
+      await app.inject({
+        method: 'POST',
+        url: `/v1/admin/agents/${created?.id}/versions/${version?.id}/transition`,
+        headers: adminHeaders(tenantA),
+        payload: { target }
+      })
+    }
+
+    const arbitraryCases = await app.inject({
+      method: 'POST',
+      url: `/v1/admin/agents/${created?.id}/versions/${version?.id}/publish-preflight`,
+      headers: adminHeaders(tenantA),
+      payload: { cases: [] }
+    })
+    expect(arbitraryCases.statusCode).toBe(400)
+
+    const preflight = await app.inject({
+      method: 'POST',
+      url: `/v1/admin/agents/${created?.id}/versions/${version?.id}/publish-preflight`,
+      headers: adminHeaders(tenantA),
+      payload: {}
+    })
+    const report = (
+      preflight.json() as Envelope<{
+        passed: boolean
+        caseCount: number
+        externalCall: boolean
+        cases: Array<Record<string, unknown>>
+      }>
+    ).data
+    expect(preflight.statusCode).toBe(200)
+    expect(report).toMatchObject({
+      passed: true,
+      caseCount: 5,
+      externalCall: false
+    })
+    expect(JSON.stringify(report)).not.toContain('Posso dar dipirona')
+    expect(JSON.stringify(report)).not.toContain('Confirmar consulta real')
+    expect(report?.cases[0]).not.toHaveProperty('trace')
+
+    const releaseCandidateId = await createValidatedReleaseCandidate(
+      app,
+      tenantA,
+      created?.id as string,
+      version?.id as string
+    )
+
+    const publish = await app.inject({
+      method: 'POST',
+      url: `/v1/admin/agents/${created?.id}/versions/${version?.id}/publish`,
+      headers: adminHeaders(tenantA),
+      payload: { releaseCandidateId }
+    })
+    expect(publish.statusCode).toBe(200)
+    await app.close()
+  })
+
+  it('blocks publish without mutating the version when the preflight detects an external call', async () => {
+    class UnsafeTraceStore extends InMemoryControlPlaneStore {
+      override async recordTestRun(
+        scope: TenantScope,
+        trace: TestRunTrace
+      ): Promise<TestRunTrace> {
+        const unsafeTrace = {
+          ...trace,
+          provider: { ...trace.provider, externalCall: true }
+        } as unknown as TestRunTrace
+        void scope
+        return unsafeTrace
+      }
+    }
+
+    const app = buildServer({ platform: new UnsafeTraceStore() })
+    const create = await app.inject({
+      method: 'POST',
+      url: '/v1/admin/agents',
+      headers: adminHeaders(tenantA),
+      payload: {
+        slug: 'unsafe-preflight-agent',
+        name: 'Unsafe Preflight Agent',
+        description: 'Fixture for failed safety gate'
+      }
+    })
+    const created = (create.json() as Envelope<{ id: string }>).data
+    const versionResponse = await app.inject({
+      method: 'POST',
+      url: `/v1/admin/agents/${created?.id}/versions`,
+      headers: adminHeaders(tenantA),
+      payload: { config: config() }
+    })
+    const version = (versionResponse.json() as Envelope<{ id: string }>).data
+    for (const target of ['TESTING', 'APPROVED']) {
+      await app.inject({
+        method: 'POST',
+        url: `/v1/admin/agents/${created?.id}/versions/${version?.id}/transition`,
+        headers: adminHeaders(tenantA),
+        payload: { target }
+      })
+    }
+
+    const releaseCandidateId = await createValidatedReleaseCandidate(
+      app,
+      tenantA,
+      created?.id as string,
+      version?.id as string
+    )
+
+    const publish = await app.inject({
+      method: 'POST',
+      url: `/v1/admin/agents/${created?.id}/versions/${version?.id}/publish`,
+      headers: adminHeaders(tenantA),
+      payload: { releaseCandidateId }
+    })
+    const rollback = await app.inject({
+      method: 'POST',
+      url: `/v1/admin/agents/${created?.id}/rollback`,
+      headers: adminHeaders(tenantA),
+      payload: { versionId: version?.id, releaseCandidateId }
+    })
+    const versions = await app.inject({
+      method: 'GET',
+      url: `/v1/admin/agents/${created?.id}/versions`,
+      headers: adminHeaders(tenantA)
+    })
+
+    expect(publish.statusCode).toBe(400)
+    expect((publish.json() as Envelope<null>).error?.message).toMatch(
+      /safety preflight/i
+    )
+    expect(rollback.statusCode).toBe(400)
+    expect((rollback.json() as Envelope<null>).error?.message).toMatch(
+      /safety preflight/i
+    )
+    expect(
+      (versions.json() as Envelope<Array<{ id: string; status: string }>>).data
+    ).toEqual([
+      expect.objectContaining({ id: version?.id, status: 'APPROVED' })
+    ])
+    await app.close()
   })
 })

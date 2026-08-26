@@ -1,4 +1,9 @@
 import { z } from 'zod'
+import type {
+  ControlledOutputDecision,
+  ControlledOutputMode,
+  ControlledOutputReason
+} from './output-policy.ts'
 import {
   AgentIdSchema,
   AgentVersionIdSchema,
@@ -10,7 +15,9 @@ import {
   type TraceId,
   type TestSuiteId,
   type TestSuiteRunId,
-  type PluginCatalogId
+  type PluginCatalogId,
+  type KnowledgeSourceId,
+  type ReleaseCandidateId
 } from './ids.ts'
 
 export const TenantScopeSchema = z.object({ tenantId: TenantIdSchema }).strict()
@@ -45,7 +52,8 @@ export const PromptBlockSchema = z
     kind: PromptBlockKindSchema,
     content: z.string().trim().min(1).max(8000),
     priority: z.number().int().min(-10000).max(10000),
-    enabled: z.boolean().default(true)
+    enabled: z.boolean().default(true),
+    locked: z.boolean().optional()
   })
   .strict()
 export type PromptBlock = z.infer<typeof PromptBlockSchema>
@@ -86,6 +94,8 @@ export const PolicyBundleSchema = z
   .object({
     version: z.string().trim().min(1).max(120),
     minConfidence: z.number().min(0).max(1),
+    clarifyThreshold: z.number().min(0).max(1).optional(),
+    handoffThreshold: z.number().min(0).max(1).optional(),
     lowConfidence: z.enum(['clarify', 'handoff']),
     maxClarifications: z.number().int().min(0).max(5),
     enabledActions: z.array(z.string().trim().min(1).max(120)).max(256),
@@ -93,6 +103,29 @@ export const PolicyBundleSchema = z
     blockedActions: z.array(z.string().trim().min(1).max(120)).max(256)
   })
   .strict()
+  .superRefine((value, context) => {
+    const clarifyThreshold = value.clarifyThreshold ?? value.minConfidence
+    if (
+      value.clarifyThreshold !== undefined &&
+      value.clarifyThreshold !== value.minConfidence
+    ) {
+      context.addIssue({
+        code: 'custom',
+        path: ['clarifyThreshold'],
+        message: 'clarifyThreshold must match minConfidence'
+      })
+    }
+    if (
+      value.handoffThreshold !== undefined &&
+      value.handoffThreshold > clarifyThreshold
+    ) {
+      context.addIssue({
+        code: 'custom',
+        path: ['handoffThreshold'],
+        message: 'handoffThreshold cannot exceed clarifyThreshold'
+      })
+    }
+  })
 export type PolicyBundle = z.infer<typeof PolicyBundleSchema>
 
 export const PluginBindingSchema = z
@@ -103,7 +136,15 @@ export const PluginBindingSchema = z
       .min(1)
       .max(120)
       .regex(/^[A-Za-z0-9._:-]+$/),
-    version: z.string().trim().min(1).max(80).optional(),
+    version: z
+      .string()
+      .trim()
+      .min(1)
+      .max(80)
+      .refine((value) => value.toLowerCase() !== 'latest', {
+        message: 'Plugin version must be exact; latest is not allowed'
+      })
+      .optional(),
     enabled: z.boolean(),
     allowedTools: z
       .array(
@@ -115,7 +156,11 @@ export const PluginBindingSchema = z
           .regex(/^[A-Za-z0-9._:-]+$/)
       )
       .max(128),
-    config: z.record(z.string(), z.unknown())
+    config: z
+      .record(z.string(), z.unknown())
+      .refine((value) => Object.keys(value).length <= 64, {
+        message: 'Plugin configuration has too many keys'
+      })
   })
   .strict()
 export type PluginBinding = z.infer<typeof PluginBindingSchema>
@@ -135,13 +180,56 @@ export const KnowledgeBindingSchema = z
   .strict()
 export type KnowledgeBinding = z.infer<typeof KnowledgeBindingSchema>
 
-export const HandoffConfigSchema = z
+export const ApprovedKnowledgeForTestSchema = z
   .object({
-    lowConfidenceDestination: z.string().trim().min(1).max(120),
-    destinations: z.array(z.string().trim().min(1).max(120)).min(1).max(32),
-    maxClarifications: z.number().int().min(0).max(5)
+    version: z.string().trim().min(1).max(120),
+    answer: z.string().trim().min(1).max(4000),
+    source: z
+      .string()
+      .trim()
+      .min(1)
+      .max(200)
+      .regex(/^controlled:\/\//)
   })
   .strict()
+export type ApprovedKnowledgeForTest = z.infer<
+  typeof ApprovedKnowledgeForTestSchema
+>
+
+export const HandoffPrioritySchema = z.enum(['low', 'medium', 'high'])
+export type HandoffPriority = z.infer<typeof HandoffPrioritySchema>
+
+const HandoffDestinationSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(120)
+  .regex(/^[A-Za-z0-9._:-]+$/)
+
+export const HandoffConfigSchema = z
+  .object({
+    lowConfidenceDestination: HandoffDestinationSchema,
+    destinations: z.array(HandoffDestinationSchema).min(1).max(32),
+    maxClarifications: z.number().int().min(0).max(5),
+    priority: HandoffPrioritySchema.optional()
+  })
+  .strict()
+  .superRefine((value, context) => {
+    if (new Set(value.destinations).size !== value.destinations.length) {
+      context.addIssue({
+        code: 'custom',
+        path: ['destinations'],
+        message: 'Handoff destinations must be unique'
+      })
+    }
+    if (!value.destinations.includes(value.lowConfidenceDestination)) {
+      context.addIssue({
+        code: 'custom',
+        path: ['lowConfidenceDestination'],
+        message: 'Low-confidence destination must be listed in destinations'
+      })
+    }
+  })
 export type HandoffConfig = z.infer<typeof HandoffConfigSchema>
 
 export const FeatureFlagsSchema = z
@@ -160,8 +248,23 @@ export type FeatureFlags = z.infer<typeof FeatureFlagsSchema>
 const sensitiveKeyPattern =
   /(api.?key|access.?token|client.?secret|credential|password|private.?key)/i
 const secretValuePattern = /^(sk-|pk_|Bearer\s|ghp_|xox[baprs]-)/i
+const MAX_CONFIG_INSPECTION_DEPTH = 16
+const MAX_CONFIG_INSPECTION_NODES = 4096
 
-function assertNoSecretValues(value: unknown, path: string): void {
+function assertNoSecretValues(
+  value: unknown,
+  path: string,
+  seen: WeakSet<object> = new WeakSet<object>(),
+  state: { nodes: number } = { nodes: 0 },
+  depth = 0
+): void {
+  if (depth > MAX_CONFIG_INSPECTION_DEPTH) {
+    throw new Error('Configuration nesting exceeds the controlled limit')
+  }
+  state.nodes += 1
+  if (state.nodes > MAX_CONFIG_INSPECTION_NODES) {
+    throw new Error('Configuration size exceeds the controlled limit')
+  }
   if (typeof value === 'string') {
     if (secretValuePattern.test(value)) {
       throw new Error(`Sensitive credential value at ${path}`)
@@ -176,12 +279,20 @@ function assertNoSecretValues(value: unknown, path: string): void {
   }
   if (typeof value !== 'object' || value === null) return
 
-  Object.entries(value).forEach(([key, child]) => {
-    if (key !== 'secretRef' && sensitiveKeyPattern.test(key)) {
-      throw new Error(`Sensitive credential field at ${path}.${key}`)
-    }
-    assertNoSecretValues(child, `${path}.${key}`)
-  })
+  if (seen.has(value)) {
+    throw new Error(`Cyclic configuration value at ${path}`)
+  }
+  seen.add(value)
+  try {
+    Object.entries(value).forEach(([key, child]) => {
+      if (key !== 'secretRef' && sensitiveKeyPattern.test(key)) {
+        throw new Error(`Sensitive credential field at ${path}.${key}`)
+      }
+      assertNoSecretValues(child, `${path}.${key}`, seen, state, depth + 1)
+    })
+  } finally {
+    seen.delete(value)
+  }
 }
 
 export const AgentConfigSchema = z
@@ -287,7 +398,8 @@ export const PluginToolSchema = z
       .regex(/^[A-Za-z0-9._:-]+$/),
     permission: z.string().trim().min(1).max(160),
     risk: z.enum(['low', 'medium', 'high', 'critical']),
-    requiresApproval: z.boolean()
+    requiresApproval: z.boolean(),
+    intents: z.array(z.string().trim().min(1).max(80)).max(16).optional()
   })
   .strict()
 
@@ -299,7 +411,14 @@ export const PluginManifestSchema = z
       .min(1)
       .max(120)
       .regex(/^[A-Za-z0-9._:-]+$/),
-    version: z.string().trim().min(1).max(80),
+    version: z
+      .string()
+      .trim()
+      .min(1)
+      .max(80)
+      .refine((value) => value.toLowerCase() !== 'latest', {
+        message: 'Plugin version must be exact; latest is not allowed'
+      }),
     capabilities: z.array(z.string().trim().min(1).max(160)).max(128),
     permissions: z.array(z.string().trim().min(1).max(160)).max(128),
     tools: z.array(PluginToolSchema).max(128),
@@ -387,6 +506,192 @@ export interface PluginCatalogRecord {
   updatedAt: Date
 }
 
+export const KnowledgeSourceStatusSchema = z.enum([
+  'DRAFT',
+  'APPROVED',
+  'ARCHIVED'
+])
+export type KnowledgeSourceStatus = z.infer<typeof KnowledgeSourceStatusSchema>
+
+const KnowledgeSourceSecretPattern = /(secret|token|password|api[_-]?key)/i
+
+export const KnowledgeSourceCreateInputSchema = z
+  .object({
+    source: z
+      .string()
+      .trim()
+      .min(1)
+      .max(200)
+      .regex(/^controlled:\/\/[A-Za-z0-9._:/-]+$/)
+      .refine((value) => !KnowledgeSourceSecretPattern.test(value), {
+        message: 'Knowledge source URI cannot contain secret material'
+      }),
+    version: z
+      .string()
+      .trim()
+      .min(1)
+      .max(120)
+      .regex(/^[A-Za-z0-9._:-]+$/)
+      .refine((value) => !KnowledgeSourceSecretPattern.test(value), {
+        message: 'Knowledge source metadata cannot contain secret material'
+      }),
+    label: z
+      .string()
+      .trim()
+      .min(1)
+      .max(120)
+      .refine((value) => !KnowledgeSourceSecretPattern.test(value), {
+        message: 'Knowledge source metadata cannot contain secret material'
+      }),
+    description: z
+      .string()
+      .trim()
+      .max(1000)
+      .refine((value) => !KnowledgeSourceSecretPattern.test(value), {
+        message: 'Knowledge source metadata cannot contain secret material'
+      })
+  })
+  .strict()
+export type KnowledgeSourceCreateInput = z.infer<
+  typeof KnowledgeSourceCreateInputSchema
+>
+
+export const KnowledgeSourceTransitionInputSchema = z
+  .object({
+    target: KnowledgeSourceStatusSchema,
+    expectedStatus: KnowledgeSourceStatusSchema.optional()
+  })
+  .strict()
+export type KnowledgeSourceTransitionInput = z.infer<
+  typeof KnowledgeSourceTransitionInputSchema
+>
+
+export interface KnowledgeSourceRecord {
+  tenantId: TenantId
+  id: KnowledgeSourceId
+  source: string
+  version: string
+  label: string
+  description: string
+  status: KnowledgeSourceStatus
+  createdBy: string
+  approvedBy: string | null
+  createdAt: Date
+  updatedAt: Date
+}
+
+export const ReleaseCandidateStatusSchema = z.enum([
+  'DRAFT',
+  'VALIDATED',
+  'REJECTED',
+  'ARCHIVED'
+])
+export type ReleaseCandidateStatus = z.infer<
+  typeof ReleaseCandidateStatusSchema
+>
+
+export const ReleaseCandidateGateKeySchema = z.enum([
+  'safety_preflight',
+  'test_lab_regression',
+  'snapshot_integrity',
+  'external_boundary'
+])
+export type ReleaseCandidateGateKey = z.infer<
+  typeof ReleaseCandidateGateKeySchema
+>
+
+export const ReleaseCandidateGateStatusSchema = z.enum(['PASS', 'FAIL'])
+export type ReleaseCandidateGateStatus = z.infer<
+  typeof ReleaseCandidateGateStatusSchema
+>
+
+const ReleaseCandidateEvidenceRefSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(200)
+  .regex(/^controlled:\/\/evidence\/[A-Za-z0-9._:-]+$/)
+  .refine((value) => !KnowledgeSourceSecretPattern.test(value), {
+    message: 'Release evidence reference cannot contain secret material'
+  })
+
+export const ReleaseCandidateGateResultSchema = z
+  .object({
+    key: ReleaseCandidateGateKeySchema,
+    status: ReleaseCandidateGateStatusSchema,
+    evidenceRef: ReleaseCandidateEvidenceRefSchema
+  })
+  .strict()
+export type ReleaseCandidateGateResult = z.infer<
+  typeof ReleaseCandidateGateResultSchema
+>
+
+const RELEASE_CANDIDATE_GATE_KEYS = [
+  'safety_preflight',
+  'test_lab_regression',
+  'snapshot_integrity',
+  'external_boundary'
+] as const
+
+export const ReleaseCandidateCreateInputSchema = z
+  .object({
+    agentId: AgentIdSchema,
+    versionId: AgentVersionIdSchema,
+    gateResults: z
+      .array(ReleaseCandidateGateResultSchema)
+      .length(RELEASE_CANDIDATE_GATE_KEYS.length)
+  })
+  .strict()
+  .superRefine((value, context) => {
+    const keys = value.gateResults.map((gate) => gate.key)
+    const uniqueKeys = new Set(keys)
+    if (uniqueKeys.size !== RELEASE_CANDIDATE_GATE_KEYS.length) {
+      context.addIssue({
+        code: 'custom',
+        path: ['gateResults'],
+        message: 'Release candidate must contain each fixed gate exactly once'
+      })
+      return
+    }
+    RELEASE_CANDIDATE_GATE_KEYS.forEach((key) => {
+      if (!uniqueKeys.has(key)) {
+        context.addIssue({
+          code: 'custom',
+          path: ['gateResults'],
+          message: `Missing release candidate gate: ${key}`
+        })
+      }
+    })
+  })
+export type ReleaseCandidateCreateInput = z.infer<
+  typeof ReleaseCandidateCreateInputSchema
+>
+
+export const ReleaseCandidateTransitionInputSchema = z
+  .object({
+    target: ReleaseCandidateStatusSchema,
+    expectedStatus: ReleaseCandidateStatusSchema.optional()
+  })
+  .strict()
+export type ReleaseCandidateTransitionInput = z.infer<
+  typeof ReleaseCandidateTransitionInputSchema
+>
+
+export interface ReleaseCandidateRecord {
+  tenantId: TenantId
+  id: ReleaseCandidateId
+  agentId: AgentId
+  versionId: AgentVersionId
+  evidenceDigest: string
+  gateResults: ReleaseCandidateGateResult[]
+  status: ReleaseCandidateStatus
+  createdBy: string
+  validatedBy: string | null
+  createdAt: Date
+  updatedAt: Date
+  validatedAt: Date | null
+}
+
 export type TraceSpanName =
   | 'normalize'
   | 'context'
@@ -438,13 +743,26 @@ export interface TestRunTrace {
     requested: boolean
     reason: string | null
     state: 'BOT_ACTIVE' | 'HANDOFF_REQUESTED'
+    destination?: string
+    priority?: HandoffPriority
   }
   response: {
     text: string
     mode: 'answer' | 'clarify' | 'handoff' | 'blocked'
   }
+  outputPolicy?: {
+    decision: ControlledOutputDecision
+    reason: ControlledOutputReason
+    mode: ControlledOutputMode
+    redacted: boolean
+  }
   provider: { provider: string; model: string; externalCall: false }
-  prompt?: { version: string; blockIds: string[] }
+  prompt?: {
+    version: string
+    blockIds: string[]
+    status?: AgentVersionStatus
+    checksum?: string
+  }
   configVersion: string
   executionMode: AgentExecutionMode
   status?: 'completed' | 'blocked' | 'failed'
@@ -476,17 +794,7 @@ export const TestLabCaseSchema = z
     expectedPolicyDecision: PlatformDecisionSchema.optional(),
     expectedResponseMode: z.enum(['answer', 'clarify', 'handoff', 'blocked']),
     expectedHandoff: z.boolean().optional(),
-    approvedKnowledge: z
-      .object({
-        version: z.string().trim().min(1).max(120),
-        answer: z.string().trim().min(1).max(4000),
-        source: z
-          .string()
-          .trim()
-          .regex(/^controlled:\/\//)
-      })
-      .strict()
-      .optional()
+    approvedKnowledge: ApprovedKnowledgeForTestSchema.optional()
   })
   .strict()
 export type TestLabCase = z.infer<typeof TestLabCaseSchema>

@@ -9,6 +9,14 @@ import {
   type AgentCreateInput,
   type AgentRecord,
   type AgentVersionRecord,
+  type KnowledgeSourceCreateInput,
+  type KnowledgeSourceId,
+  type KnowledgeSourceRecord,
+  type KnowledgeSourceStatus,
+  type ReleaseCandidateCreateInput,
+  type ReleaseCandidateId,
+  type ReleaseCandidateRecord,
+  type ReleaseCandidateStatus,
   type TenantScope,
   type TestRunTrace,
   type PluginCatalogCreateInput,
@@ -35,6 +43,11 @@ import type {
   SessionRecord,
   TaskRecord
 } from './schema.ts'
+import type {
+  AuditEvidenceCheckpointCreateInput,
+  AuditEvidenceCheckpointRecord,
+  AuditEvidenceCheckpointStatus
+} from './audit-evidence-checkpoint.ts'
 import {
   PostgresRuntimeRepository,
   type InboundRuntimeCompletionInput,
@@ -146,6 +159,22 @@ export class TenantScopedPostgresRuntimeRepository {
     )
   }
 
+  bindSessionAgentVersion(
+    tenantId: TenantId,
+    sessionId: string,
+    agentId: AgentId,
+    agentVersionId: AgentVersionId
+  ): Promise<SessionRecord | null> {
+    return this.run(tenantId, (repository) =>
+      repository.bindSessionAgentVersion(
+        tenantId,
+        sessionId,
+        agentId,
+        agentVersionId
+      )
+    )
+  }
+
   appendOutboundMessage(
     input: Parameters<PostgresRuntimeRepository['appendOutboundMessage']>[0]
   ): Promise<
@@ -229,6 +258,51 @@ export class TenantScopedPostgresRuntimeRepository {
   ): Promise<AuditEvidenceSummary> {
     return this.run(tenantId, (repository) =>
       repository.summarizeAuditEvidence(filters, tenantId)
+    )
+  }
+
+  createAuditEvidenceCheckpoint(
+    input: AuditEvidenceCheckpointCreateInput,
+    createdBy: string,
+    tenantId: TenantId
+  ): Promise<AuditEvidenceCheckpointRecord> {
+    return this.run(tenantId, (repository) =>
+      repository.createAuditEvidenceCheckpoint(input, createdBy, tenantId)
+    )
+  }
+
+  getAuditEvidenceCheckpoint(
+    id: string,
+    tenantId: TenantId
+  ): Promise<AuditEvidenceCheckpointRecord | null> {
+    return this.run(tenantId, (repository) =>
+      repository.getAuditEvidenceCheckpoint(id, tenantId)
+    )
+  }
+
+  listAuditEvidenceCheckpoints(
+    tenantId: TenantId
+  ): Promise<AuditEvidenceCheckpointRecord[]> {
+    return this.run(tenantId, (repository) =>
+      repository.listAuditEvidenceCheckpoints(tenantId)
+    )
+  }
+
+  transitionAuditEvidenceCheckpoint(
+    id: string,
+    status: AuditEvidenceCheckpointStatus,
+    updatedBy: string,
+    expectedStatus: AuditEvidenceCheckpointStatus,
+    tenantId: TenantId
+  ): Promise<AuditEvidenceCheckpointRecord | null> {
+    return this.run(tenantId, (repository) =>
+      repository.transitionAuditEvidenceCheckpoint(
+        id,
+        status,
+        updatedBy,
+        expectedStatus,
+        tenantId
+      )
     )
   }
 
@@ -377,10 +451,16 @@ export class TenantScopedPostgresControlPlaneRepository {
   publishVersion(
     scope: TenantScope,
     versionId: AgentVersionId,
+    releaseCandidateId: ReleaseCandidateId,
     expectedStatus?: AgentVersionStatus
   ): Promise<AgentVersionRecord> {
     return this.run(scope, (repository) =>
-      repository.publishVersion(scope, versionId, expectedStatus)
+      repository.publishVersion(
+        scope,
+        versionId,
+        releaseCandidateId,
+        expectedStatus
+      )
     )
   }
 
@@ -389,10 +469,18 @@ export class TenantScopedPostgresControlPlaneRepository {
     agentId: AgentId,
     versionId: AgentVersionId,
     createdBy: string,
+    releaseCandidateId: ReleaseCandidateId,
     expectedStatus?: AgentVersionStatus
   ): Promise<AgentVersionRecord> {
     return this.run(scope, (repository) =>
-      repository.rollback(scope, agentId, versionId, createdBy, expectedStatus)
+      repository.rollback(
+        scope,
+        agentId,
+        versionId,
+        createdBy,
+        releaseCandidateId,
+        expectedStatus
+      )
     )
   }
 
@@ -402,6 +490,95 @@ export class TenantScopedPostgresControlPlaneRepository {
   ): Promise<AgentVersionRecord | null> {
     return this.run(scope, (repository) =>
       repository.resolvePublished(scope, agentId)
+    )
+  }
+
+  createKnowledgeSource(
+    scope: TenantScope,
+    input: KnowledgeSourceCreateInput,
+    createdBy: string
+  ): Promise<KnowledgeSourceRecord> {
+    return this.run(scope, (repository) =>
+      repository.createKnowledgeSource(scope, input, createdBy)
+    )
+  }
+
+  getKnowledgeSource(
+    scope: TenantScope,
+    sourceId: KnowledgeSourceId
+  ): Promise<KnowledgeSourceRecord | null> {
+    return this.run(scope, (repository) =>
+      repository.getKnowledgeSource(scope, sourceId)
+    )
+  }
+
+  listKnowledgeSources(scope: TenantScope): Promise<KnowledgeSourceRecord[]> {
+    return this.run(scope, (repository) =>
+      repository.listKnowledgeSources(scope)
+    )
+  }
+
+  transitionKnowledgeSource(
+    scope: TenantScope,
+    sourceId: KnowledgeSourceId,
+    target: KnowledgeSourceStatus,
+    actorId: string,
+    expectedStatus?: KnowledgeSourceStatus
+  ): Promise<KnowledgeSourceRecord> {
+    return this.run(scope, (repository) =>
+      repository.transitionKnowledgeSource(
+        scope,
+        sourceId,
+        target,
+        actorId,
+        expectedStatus
+      )
+    )
+  }
+
+  createReleaseCandidate(
+    scope: TenantScope,
+    input: ReleaseCandidateCreateInput,
+    createdBy: string
+  ): Promise<ReleaseCandidateRecord> {
+    return this.run(scope, (repository) =>
+      repository.createReleaseCandidate(scope, input, createdBy)
+    )
+  }
+
+  getReleaseCandidate(
+    scope: TenantScope,
+    candidateId: ReleaseCandidateId
+  ): Promise<ReleaseCandidateRecord | null> {
+    return this.run(scope, (repository) =>
+      repository.getReleaseCandidate(scope, candidateId)
+    )
+  }
+
+  listReleaseCandidates(
+    scope: TenantScope,
+    agentId?: AgentId
+  ): Promise<ReleaseCandidateRecord[]> {
+    return this.run(scope, (repository) =>
+      repository.listReleaseCandidates(scope, agentId)
+    )
+  }
+
+  transitionReleaseCandidate(
+    scope: TenantScope,
+    candidateId: ReleaseCandidateId,
+    target: ReleaseCandidateStatus,
+    actorId: string,
+    expectedStatus?: ReleaseCandidateStatus
+  ): Promise<ReleaseCandidateRecord> {
+    return this.run(scope, (repository) =>
+      repository.transitionReleaseCandidate(
+        scope,
+        candidateId,
+        target,
+        actorId,
+        expectedStatus
+      )
     )
   }
 

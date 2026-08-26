@@ -448,7 +448,20 @@ describe('platform control center', () => {
   it('shows the snapshot identity in the redacted Trace Viewer', async () => {
     vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
       const url = String(input)
-      if (url === '/v1/admin/agents') return envelope([])
+      if (url === '/v1/admin/agents') {
+        return envelope([
+          {
+            id: agentId,
+            slug: 'ui-trace-agent',
+            name: 'Agente de trace',
+            description: 'Fixture de trace',
+            activeVersionId: versionId
+          }
+        ])
+      }
+      if (url === `/v1/admin/agents/${agentId}/versions`) {
+        return envelope([])
+      }
       if (url === '/v1/admin/test-lab/runs?limit=10') {
         return envelope({ items: [], pageInfo: {} })
       }

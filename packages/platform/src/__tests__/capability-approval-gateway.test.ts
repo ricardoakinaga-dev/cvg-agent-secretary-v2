@@ -1,8 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
+import { z } from 'zod'
 import { AgentConfigSchema } from '../contracts.ts'
 import {
   CapabilityGateway,
   PluginRegistry,
+  type CapabilityActorAuthorizer,
   type CapabilityExecutionInput,
   type PluginHandler
 } from '../plugin-gateway.ts'
@@ -14,6 +16,10 @@ import {
 const tenantId = 'tenant_00000000-0000-4000-8000-000000000111' as const
 const agentId = 'agent_00000000-0000-4000-8000-000000000111' as const
 const versionId = 'agent_version_00000000-0000-4000-8000-000000000111' as const
+const approvalActorAuthorizer: CapabilityActorAuthorizer = ({
+  actor,
+  requiredPermission
+}) => (actor.id === 'operator.fixture' ? [requiredPermission] : [])
 
 const config = AgentConfigSchema.parse({
   persona: { name: 'Fixture', role: 'secretary', tone: 'calm' },
@@ -41,6 +47,7 @@ const config = AgentConfigSchema.parse({
   plugins: [
     {
       plugin: 'approval.fixture',
+      version: '1.0.0',
       enabled: true,
       allowedTools: ['approve-controlled-read'],
       config: {}
@@ -76,9 +83,20 @@ function createGateway(
       dependencies: [],
       configSchemaVersion: '1'
     },
-    handlers: { 'approve-controlled-read': handler }
+    handlers: { 'approve-controlled-read': handler },
+    inputValidators: {
+      'approve-controlled-read': z
+        .object({ value: z.string().max(4000) })
+        .strict()
+    },
+    outputValidators: {
+      'approve-controlled-read': z.object({}).strict()
+    }
   })
-  return new CapabilityGateway(registry, { approvalAuthority: authority })
+  return new CapabilityGateway(registry, {
+    actorAuthorizer: approvalActorAuthorizer,
+    approvalAuthority: authority
+  })
 }
 
 function executionInput(

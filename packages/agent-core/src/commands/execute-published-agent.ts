@@ -7,14 +7,19 @@ import {
   type PluginAuditEvent,
   type CapabilityApproval,
   type CapabilityApprovalResolver,
-  type CapabilityGateway
+  type CapabilityGateway,
+  type PlatformEventBus
 } from '@cvg/platform'
-import type { AgentId, TenantId } from '@cvg/platform'
+import { TraceIdSchema } from '@cvg/platform'
+import { DomainError } from '@cvg/shared'
+import type { AgentId, AgentVersionId, TenantId, TraceId } from '@cvg/platform'
 
 export interface PublishedAgentExecutionInput {
   store: ControlPlaneStore
   tenantId: TenantId
   agentId: AgentId
+  versionId?: AgentVersionId
+  traceId?: TraceId
   message: string
   history: string[]
   context?: { conversationId?: string; sessionId?: string }
@@ -25,6 +30,7 @@ export interface PublishedAgentExecutionInput {
   resolveCapabilityApproval?: CapabilityApprovalResolver
   requireCapabilityApproval?: boolean
   onToolAudit?: (event: PluginAuditEvent) => void | Promise<void>
+  eventBus?: PlatformEventBus
 }
 
 export type PublishedAgentExecutionResult =
@@ -35,21 +41,44 @@ export type PublishedAgentExecutionResult =
   | {
       status: 'not_configured'
       trace: null
-      reason: 'published_version_missing'
+      reason:
+        | 'published_version_missing'
+        | 'pinned_version_missing'
+        | 'pinned_version_invalid'
     }
 
 export async function executePublishedAgent(
   input: PublishedAgentExecutionInput
 ): Promise<PublishedAgentExecutionResult> {
-  const version = await input.store.resolvePublished(
-    { tenantId: input.tenantId },
-    input.agentId
-  )
+  const traceId = resolveOptionalTraceId(input.traceId)
+  const version = input.versionId
+    ? await input.store.getVersion(
+        { tenantId: input.tenantId },
+        input.versionId
+      )
+    : await input.store.resolvePublished(
+        { tenantId: input.tenantId },
+        input.agentId
+      )
   if (!version) {
     return {
       status: 'not_configured',
       trace: null,
-      reason: 'published_version_missing'
+      reason: input.versionId
+        ? ('pinned_version_missing' as const)
+        : ('published_version_missing' as const)
+    }
+  }
+  if (
+    version.agentId !== input.agentId ||
+    (input.versionId &&
+      version.status !== 'PUBLISHED' &&
+      version.status !== 'ARCHIVED')
+  ) {
+    return {
+      status: 'not_configured',
+      trace: null,
+      reason: 'pinned_version_invalid' as const
     }
   }
 
@@ -58,6 +87,7 @@ export async function executePublishedAgent(
     tenantId: input.tenantId,
     agentId: input.agentId,
     versionId: version.id,
+    ...(traceId !== undefined ? { traceId } : {}),
     message: input.message,
     history: input.history,
     executionMode: 'CONTROLLED_RUNTIME',
@@ -78,10 +108,20 @@ export async function executePublishedAgent(
       ? { requireCapabilityApproval: true }
       : {}),
     ...(input.onToolAudit ? { onToolAudit: input.onToolAudit } : {}),
+    ...(input.eventBus ? { eventBus: input.eventBus } : {}),
     ...(input.context ? { context: input.context } : {}),
     ...(input.approvedKnowledge
       ? { approvedKnowledge: input.approvedKnowledge }
       : {})
   })
   return { status: 'completed', trace }
+}
+
+function resolveOptionalTraceId(rawTraceId: unknown): TraceId | undefined {
+  if (rawTraceId === undefined) return undefined
+  const parsed = TraceIdSchema.safeParse(rawTraceId)
+  if (!parsed.success) {
+    throw new DomainError('validation_failed', 'Execution trace ID is invalid')
+  }
+  return parsed.data
 }
