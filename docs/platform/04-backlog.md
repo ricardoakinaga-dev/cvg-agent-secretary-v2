@@ -1,5 +1,59 @@
 # Backlog — Agent Platform
 
+## Sprint de baseline determinístico e contratos de teste — `PLAT-S48`
+
+### `PLAT-S48-001` — Controlled Deterministic Approval Clock
+
+- prioridade: P0
+- estado: `COMPLETED_CONTROLLED`
+- fase: `AUDIT`
+- owner: `platform/security`
+- dependências: `PLAT-S47-001`, `PLAT-S45-001`
+- escopo: tornar a fonte de tempo do `CapabilityGateway` injetável, mantendo
+  default real e a autoridade durável como decisão final de approval
+- aceite: approval válido com clock compartilhado passa; clock inválido,
+  expiração vencida, binding inválido e replay continuam falhando fechado
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- limite: sem mudança de policy/schema/contrato HTTP ou API externa; a opção
+  TypeScript `now` é uma seam interna não configurável por input externo; sem
+  provider/canal real, RAG, rede, deploy, dado real ou side effect
+- evidência planejada:
+  `docs/04_audit/0538_plat-s48_controlled_deterministic_clock_and_test_contract_evidence.md`
+
+### `PLAT-S48-002` — Controlled Semantic Timeline Assertion
+
+- prioridade: P0
+- estado: `COMPLETED_CONTROLLED`
+- fase: `AUDIT`
+- owner: `platform/test-infrastructure`
+- dependências: `PLAT-S47-001`
+- escopo: escopar a asserção da mensagem API à timeline selecionada, mantendo
+  preview e timeline como superfícies distintas
+- aceite: teste não fica ambíguo quando o mesmo texto aparece no preview e na
+  timeline; a UI de produção não muda
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- limite: somente contrato de teste; sem alteração de comportamento, rede,
+  dado real ou side effect
+- evidência planejada:
+  `docs/04_audit/0538_plat-s48_controlled_deterministic_clock_and_test_contract_evidence.md`
+
+### Registro controlado PLAT-S48 — 2026-09-02T07:03:00-03:00
+
+Discovery reproduziu duas falhas no baseline atual: divergência entre o clock
+do gateway e o clock injetado da autoridade de approval, e consulta web global
+ambígua para texto legítimo em preview/timeline. O BUILD está autorizado pelo
+SPEC controlado, com RED focado obrigatório. Produção permanece
+`NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+### Fechamento controlado PLAT-S48 — 2026-09-02T07:32:00-03:00
+
+RED/GREEN, regressão e gates foram fechados. A evidência S48 registra
+clock compartilhado, fail-closed sem consumo/handler para entradas temporais
+inválidas e timeline escopada; regressão 127 arquivos/537 testes pass, 2/19
+skipped; coverage 84.87/80.12/84.98/85.98; PostgreSQL 8/72; E2E 4/4;
+readiness 4/4; worker smoke; build 158 módulos; audit 0; checks estáticos
+PASS. `PLAT-S48` está `COMPLETED_CONTROLLED`; produção segue `NO-GO`.
+
 ## Sprint de criação de múltiplos agentes — `PLAT-S47`
 
 ### `PLAT-S47-001` — Controlled Multi-Agent Creation Mode

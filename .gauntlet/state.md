@@ -47,8 +47,43 @@ Do not claim `PRODUCTION_REAL_DATA_READY` while any PROD criterion lacks evidenc
 ## Continuity
 
 - Canonical project state: `docs/99_runtime_state.md`, `docs/20_master_execution_log.md`, `docs/30_backlog_master.md`.
-- Current task: `PLAT-S47-001_CONTROLLED_MULTI_AGENT_CREATION_MODE`
-  (`READY_FOR_NEXT_STEP` in AUDIT; no production authorization changed).
+- Current task: `PLAT-S48_CONTROLLED_BASELINE_DETERMINISM`
+  (`COMPLETED_CONTROLLED` in AUDIT; no production authorization changed).
+
+## Quality bar v45 — PLAT-S48 controlled baseline determinism
+
+| ID       | Criterion                                                    | Required evidence                                    | Current state   |
+| -------- | ------------------------------------------------------------ | ---------------------------------------------------- | --------------- |
+| CTRL-186 | Approval gateway and authority fixtures share one clock seam | focused gateway/authority regression                 | PASS controlled |
+| CTRL-187 | Invalid, expired and replayed approvals remain fail-closed   | approval boundary negative tests                     | PASS controlled |
+| CTRL-188 | API-backed timeline assertion is semantically scoped         | app regression with duplicate preview/timeline text  | PASS controlled |
+| CTRL-189 | Controlled baseline is reproducible across all gates         | full verify, coverage, readiness, worker, PG and E2E | PASS controlled |
+
+## Round 150 — PLAT-S48 discovery e registro
+
+- O baseline atual falhou em dois pontos reproduzíveis: `CapabilityGateway`
+  compara expiração com `Date.now()` enquanto a autoridade do fixture usa
+  clock injetado; `app.test.tsx` busca globalmente texto que existe no preview
+  e na timeline.
+- PRD, SPEC, ExecPlan, backlog, task catalog e runtime state registraram as
+  duas tasks antes do BUILD. O próximo passo obrigatório é RED focado.
+- Review independente será tentado quando a infraestrutura de agentes
+  permitir; indisponibilidade não será convertida em PASS. Produção segue
+  `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+## Round 151 — PLAT-S48 auditoria e fechamento controlado
+
+- O clock de approval tornou-se injetável com default real; a mesma função é
+  compartilhada entre gateway e autoridade nos fixtures. Clock inválido,
+  lançando e expiração local falham fechado antes de `verifyAndConsume`, sem
+  consumo nem handler.
+- A asserção web passou a consultar somente a timeline selecionada. Verify:
+  127 arquivos/537 testes PASS, 2 arquivos/19 skipped; coverage
+  84.87/80.12/84.98/85.98; readiness 4/4; worker; PostgreSQL 8/72; E2E 4/4;
+  build 158 módulos; audit 0; typecheck/lint/format/diff PASS.
+- Evidência publicada em `docs/04_audit/0538_plat-s48_controlled_deterministic_clock_and_test_contract_evidence.md`;
+  S48 está `COMPLETED_CONTROLLED`. Produção permanece
+  `NO-GO`/`WAITING_HUMAN_APPROVAL`.
 
 ## Quality bar v38 — PLAT-S41 controlled output safety
 

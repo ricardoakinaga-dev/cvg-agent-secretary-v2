@@ -3,7 +3,7 @@
   "project": "cvg-agent-secretary-v2",
   "current_status": "READY_FOR_NEXT_STEP",
   "current_phase": "AUDIT",
-  "current_sprint": "PLAT-S47_CONTROLLED_MULTI_AGENT_CREATION_MODE",
+  "current_sprint": "PLAT-S48_CONTROLLED_BASELINE_DETERMINISM",
   "human_decision_required": false,
   "decision_required": null,
   "decision_record": "docs/03_build/tracking/enterprise_decisions.json",
@@ -41,38 +41,50 @@
     "docs/03_build/0308_task_catalog.json"
   ],
   "last_verification": {
-    "command": "npm test; npm run test:coverage; npm run readiness; npm run test:worker:startup; TEST_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5433/cvg_his_v2_test npm run test:postgres; npm run test:e2e; npm run build; npm run audit:security; npm run format:check; npm run typecheck; npm run lint; git diff --check",
+    "command": "npm run verify; npm run readiness; npm run test:worker:startup; TEST_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5433/cvg_his_v2_test npm run test:postgres; npm run test:e2e; git diff --check",
     "status": "PASS_CONTROLLED",
-    "notes": "PLAT-S47 auditoria corretiva controlada: npm test 127 arquivos pass/2 skips, 534 testes pass/19 skips; coverage 84.86/80.12/84.97/85.97; readiness 4/4; worker startup smoke; E2E 4/4; PostgreSQL controlado 8 arquivos/72 testes pass; build 158 módulos; npm audit encontrou 0 vulnerabilidades; typecheck, lint, format e diff check PASS; crítica independente compatível final PASS_CONTROLLED sem P0/P1/P2/P3."
+    "notes": "PLAT-S48 fechamento controlado: npm test 127 arquivos pass/2 skips, 537 testes pass/19 skips; coverage 84.87/80.12/84.98/85.98; readiness 4/4; worker startup smoke; E2E 4/4; PostgreSQL controlado 8 arquivos/72 testes pass; build 158 módulos; npm audit encontrou 0 vulnerabilidades; typecheck, lint, format e diff check PASS."
   },
   "latest_verification": {
-    "command": "npm test; npm run test:coverage; npm run readiness; npm run test:worker:startup; TEST_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5433/cvg_his_v2_test npm run test:postgres; npm run test:e2e; npm run build; npm run audit:security; npm run format:check; npm run typecheck; npm run lint; git diff --check",
+    "command": "npm run verify; npm run readiness; npm run test:worker:startup; TEST_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5433/cvg_his_v2_test npm run test:postgres; npm run test:e2e; git diff --check",
     "status": "PASS_CONTROLLED",
-    "notes": "PLAT-S47 auditoria corretiva controlada: Trace Viewer sem agente agora fica vazio e filtrado; agentId é obrigatório nas leituras de suites/ledger; redaction e shape legado são defensivos; view scopes são monotônicos. npm test 127 arquivos pass/2 skips, 534 testes pass/19 skips; coverage 84.86/80.12/84.97/85.97; readiness 4/4; worker smoke; E2E 4/4; PostgreSQL 8/72; build 158 módulos; audit 0; typecheck, lint, format e diff check PASS; crítica independente compatível final PASS_CONTROLLED sem P0/P1/P2/P3."
+    "notes": "PLAT-S48 fechamento controlado: clock compartilhado no gateway/autoridade, fail-closed para clock inválido/lançando/expiração local e query web escopada. npm test 127 arquivos pass/2 skips, 537 testes pass/19 skips; coverage 84.87/80.12/84.98/85.98; readiness 4/4; worker smoke; E2E 4/4; PostgreSQL 8/72; build 158 módulos; audit 0; typecheck, lint, format e diff check PASS."
   },
-  "current_task": "PLAT-S47-001_CONTROLLED_MULTI_AGENT_CREATION_MODE",
+  "current_task": "PLAT-S48_CONTROLLED_BASELINE_DETERMINISM",
   "current_task_status": "COMPLETED_CONTROLLED",
-  "current_evidence": "docs/04_audit/0537_plat-s47_controlled_multi_agent_creation_evidence.md",
+  "current_evidence": "docs/04_audit/0538_plat-s48_controlled_deterministic_clock_and_test_contract_evidence.md",
+  "current_baseline": {
+    "timestamp": "2026-09-02T07:32:00-03:00",
+    "status": "PASS_CONTROLLED",
+    "initial_status": "BASELINE_FAIL",
+    "command": "npm test",
+    "initial_result": "129 arquivos: 125 pass, 2 failed, 2 skipped; 553 testes: 532 pass, 2 failed, 19 skipped",
+    "final_result": "127 arquivos: 537 pass, 2 skipped; 556 testes: 537 pass, 19 skipped",
+    "resolved_failures": [
+      "CapabilityGateway fixture usa clock injetado na autoridade e Date.now() no gateway, bloqueando approval válida",
+      "app.test.tsx usa findByText global para mensagem renderizada legitimamente no preview e na timeline"
+    ]
+  },
   "current_task_registration": {
     "status": "COMPLETED_CONTROLLED",
     "gate": "SPEC_APPROVED_CONTROLLED_BUILD",
-    "contract": "Add explicit Control Center create-agent mode, reset only selected-agent derived state, and prove same-session Agent A/B creation with independent snapshots through the existing tenant-aware kernel",
-    "limits": "controlled Control Center creation mode only; no kernel/schema change, real provider/channel, network call, RAG, broker, egress, deploy, real data or side effect",
-    "next": "start a new controlled DISCOVERY -> PRD -> SPEC lane and preserve the controlled NO-GO production boundary"
+    "contract": "Share an injectable approval clock between CapabilityGateway and controlled authority fixtures, and scope the web API-message assertion to the selected timeline",
+    "limits": "controlled test determinism only; no policy/API/schema change, real provider/channel, network call, RAG, broker, egress, deploy, real data or side effect",
+    "next": "start a new controlled DISCOVERY -> PRD -> SPEC lane; preserve the controlled NO-GO production boundary"
   },
   "last_red": {
-    "command": "npx vitest run apps/web/src/features/platform/platform.test.tsx --no-file-parallelism --maxWorkers=2",
+    "command": "npm test (initial baseline); npx vitest run packages/platform/src/__tests__/capability-approval-gateway.test.ts --no-file-parallelism --maxWorkers=2",
     "status": "RED_OBSERVED",
-    "notes": "Auditoria corretiva RED: 1 teste falhou como esperado porque spans: {} atravessou a boundary do painel e causou TypeError; nenhum efeito externo ocorreu."
+    "notes": "S48 RED: baseline integral reproduziu 2 falhas; após os contratos de teste, o gateway focused manteve 1 falha esperada enquanto a app focused passou. Nenhum efeito externo ocorreu."
   },
   "last_green": {
-    "command": "npx vitest run apps/web/src/features/platform/handoff-policy-control-center.test.tsx apps/web/src/features/platform/knowledge-source-catalog.test.tsx apps/web/src/features/platform/multi-agent-creation.test.tsx apps/web/src/features/platform/platform.test.tsx apps/web/src/features/platform/prompt-profile-control-center.test.tsx apps/web/src/features/platform/prompt-profile.test.ts apps/web/src/features/platform/release-candidate-ledger.test.tsx --no-file-parallelism --maxWorkers=2; npm test; npx vitest run --coverage --no-file-parallelism --maxWorkers=1; npm run readiness; npm run test:worker:startup; TEST_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5433/cvg_his_v2_test npm run test:postgres; npm run test:e2e; npm run build; npm run audit:security; npm run format:check; npm run typecheck; npm run lint; git diff --check",
+    "command": "npx vitest run packages/platform/src/__tests__/capability-approval-gateway.test.ts packages/platform/src/__tests__/approval-authority.test.ts apps/web/src/__tests__/app.test.tsx --no-file-parallelism --maxWorkers=2; npm run verify; npm run readiness; npm run test:worker:startup; TEST_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5433/cvg_his_v2_test npm run test:postgres; npm run test:e2e; git diff --check",
     "status": "PASS_CONTROLLED",
-    "notes": "S47 auditoria corretiva GREEN: focused combinado platform/client 4 arquivos/18 testes PASS; regressão integral 127 arquivos/534 testes pass, 2 arquivos/19 testes skipped; coverage 84.86/80.12/84.97/85.97; readiness 4/4; worker smoke; PostgreSQL 8/72; E2E 4/4; build 158 módulos; audit 0; typecheck/lint/format/diff PASS."
+    "notes": "S48 GREEN: focused final 3 arquivos/25 testes PASS; verify 127 arquivos/537 testes pass, 2 arquivos/19 testes skipped; coverage 84.87/80.12/84.98/85.98; readiness 4/4; worker smoke; PostgreSQL 8/72; E2E 4/4; build 158 módulos; audit 0; typecheck/lint/format/diff PASS."
   },
   "last_review": {
     "status": "PASS_CONTROLLED",
     "severity": "NONE",
-    "notes": "A revisão especializada fixa falhou por incompatibilidade do modelo com a conta e não foi tratada como aprovação. A crítica independente compatível final retornou PASS_CONTROLLED sem P0/P1/P2/P3 após verificar agent scope HTTP/UI, filtragem e tolerância do Trace Viewer, redaction recursiva, UUID browser-safe e callbacks A→B→A. Nenhum arquivo foi alterado pelo revisor."
+    "notes": "Crítica independente default read-only final confirmou evidência S48 presente, tracking/plano/tasks em AUDIT/COMPLETED_CONTROLLED e nenhum achado P0/P1/P2/P3. O revisor não executou os gates amplos do lead e não alterou arquivos; tentativa de papéis especializados permaneceu indisponível por quota/modelo."
   }
 }

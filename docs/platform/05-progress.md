@@ -1,5 +1,34 @@
 # Progress — CVG Agent Platform
 
+## S48 — auditoria e fechamento controlado — 2026-09-02
+
+O clock do `CapabilityGateway` agora é injetável com default real; o fixture
+compartilha literalmente a mesma função com a autoridade e provas negativas
+confirmam que clock inválido, clock que lança e expiração local não consomem
+approval nem chamam handler. A asserção web foi escopada à timeline selecionada
+com `within`, sem mudança funcional da UI.
+
+Focused final: 3 arquivos/25 testes PASS. Regressão: 127 arquivos/537 testes
+PASS, 2 arquivos/19 testes skipped; coverage 84.87/80.12/84.98/85.98; build
+158 módulos; PostgreSQL 8/72; E2E 4/4; readiness 4/4; worker smoke; audit 0;
+typecheck, lint, format e diff check PASS. S48 está
+`COMPLETED_CONTROLLED`; produção real permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+Evidência: `docs/04_audit/0538_plat-s48_controlled_deterministic_clock_and_test_contract_evidence.md`.
+
+## S48 — registro e discovery do baseline controlado — 2026-09-02
+
+`PLAT-S48_CONTROLLED_BASELINE_DETERMINISM` foi registrado após a regressão
+reproduzir dois defeitos de confiabilidade do próprio baseline. O gateway usa
+`Date.now()` enquanto a autoridade do fixture usa clock injetado, bloqueando
+uma approval válida; o teste web procura globalmente uma mensagem que aparece
+legitimamente no preview e na timeline.
+
+Tasks: `PLAT-S48-001_CONTROLLED_DETERMINISTIC_APPROVAL_CLOCK` e
+`PLAT-S48-002_CONTROLLED_SEMANTIC_TIMELINE_ASSERTION`. O contrato preserva
+fail-closed, single-use, binding e autoridade durável; a correção web é apenas
+uma asserção escopada. Próximo passo obrigatório: RED focado antes do BUILD.
+Nenhum provider, canal, RAG, rede, dado real ou side effect foi usado.
+
 ## S47 — auditoria corretiva e fechamento controlado — 2026-08-26
 
 Após a crítica independente, foram fechadas as boundaries de leitura sem

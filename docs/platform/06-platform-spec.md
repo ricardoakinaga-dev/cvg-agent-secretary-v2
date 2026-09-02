@@ -1,5 +1,46 @@
 # SPEC — Control Plane Foundation e Test Lab dry-run
 
+## PLAT-S48 — especificação de baseline determinístico
+
+### Capability Gateway
+
+`CapabilityGatewayOptions` recebe `now?: () => Date`. O construtor usa a
+função fornecida ou `() => new Date()` e `hasValidApproval` obtém um instante
+uma única vez, rejeitando valor inválido/não-finito e expiração vencida. A
+`CapabilityApprovalAuthority.verifyAndConsume` permanece obrigatória e
+autoritativa para status, expiração durável, binding, hash de input, revogação
+e consumo único.
+
+### Teste web
+
+`apps/web/src/__tests__/app.test.tsx` usa `within` no elemento
+`aria-label="Timeline selecionada"` para validar a mensagem API. A UI continua
+renderizando preview e timeline sem alteração funcional.
+
+### Invariantes e limites
+
+Approval inválida ou vencida falha fechado; handler não é alcançado antes das
+validações; nenhum input/output/payload é ampliado; nenhum provider, canal,
+RAG, rede, schema, contrato HTTP ou comportamento de API externa, deploy, dado
+real ou side effect é introduzido; a opção TypeScript `now` não é configurável
+por input externo.
+O clock injetável é seam de teste/runtime controlado, não autoridade de
+caller.
+
+### Registro controlado — 2026-09-02T07:03:00-03:00
+
+Tasks: `PLAT-S48-001_CONTROLLED_DETERMINISTIC_APPROVAL_CLOCK` e
+`PLAT-S48-002_CONTROLLED_SEMANTIC_TIMELINE_ASSERTION`. RED focado precede o
+BUILD; review independente será tentado e sua indisponibilidade será exposta.
+
+### Fechamento de auditoria S48 — 2026-09-02T07:32:00-03:00
+
+Status: `COMPLETED_CONTROLLED`. A implementação usa `now` com default real,
+clock compartilhado nos fixtures, rejeição fail-closed de clock inválido,
+clock que lança e expiração local antes de `verifyAndConsume`, além de
+asserção web escopada à timeline. Regressão e gates estão na evidência S48;
+produção permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
 ## PLAT-S47 — Boundary de criação de múltiplos agentes na UI
 
 ### Contrato

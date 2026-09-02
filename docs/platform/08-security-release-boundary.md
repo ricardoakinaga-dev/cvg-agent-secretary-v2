@@ -1,5 +1,25 @@
 # Security and release boundary — Agent Platform
 
+# PLAT-S48 — determinismo de approval e testes controlados
+
+- `CapabilityGatewayOptions.now` é uma seam TypeScript interna, com default
+  para relógio real; não é configurável por input externo nem altera o
+  contrato HTTP de approval.
+- A boundary continua fail-closed: clock inválido/lançando e expiração local
+  não alcançam autoridade durável nem handler; approval válida usa o clock
+  compartilhado no fixture e a autoridade continua decidindo consumo único,
+  binding, revogação e expiração durável.
+- A asserção web usa o escopo semântico da `Timeline selecionada`; preview e
+  timeline continuam superfícies distintas na UI.
+- S48 está `COMPLETED_CONTROLLED` em `AUDIT`; verify 127 arquivos/537 testes
+  pass, 2 arquivos/19 skipped; coverage 84.87/80.12/84.98/85.98; PostgreSQL
+  8/72; E2E 4/4; readiness 4/4; worker smoke; build 158 módulos; audit 0;
+  typecheck, lint, format e diff check PASS.
+- Evidência:
+  `docs/04_audit/0538_plat-s48_controlled_deterministic_clock_and_test_contract_evidence.md`.
+- Nenhum provider/canal/RAG/rede/dado real/segredo/side effect foi ativado;
+  produção permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
 # PLAT-S47 — modo de criação multi-agente controlado
 
 - `Novo agente` deve limpar somente estado local derivado da seleção; não pode

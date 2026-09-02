@@ -258,6 +258,7 @@ export type CapabilityApprovalResolver = (
 export interface CapabilityGatewayOptions {
   actorAuthorizer?: CapabilityActorAuthorizer
   approvalAuthority?: CapabilityApprovalAuthority
+  now?: () => Date
 }
 
 export interface CapabilityExecutionResult {
@@ -337,10 +338,14 @@ const CapabilityApprovalSchema = z
   .strict()
 
 export class CapabilityGateway {
+  private readonly now: () => Date
+
   constructor(
     private readonly registry: PluginRegistry,
     private readonly options: CapabilityGatewayOptions = {}
-  ) {}
+  ) {
+    this.now = options.now ?? (() => new Date())
+  }
 
   planTools(config: AgentConfig, intent: string): PlannedCapabilityTool[] {
     const parsedConfig = safeParseAgentConfig(config)
@@ -597,6 +602,14 @@ export class CapabilityGateway {
     if (!parsedApproval.success) return false
     const approval = parsedApproval.data
     const authority = this.options.approvalAuthority
+    let currentTimeMs: number
+    try {
+      const currentTime = this.now()
+      currentTimeMs =
+        currentTime instanceof Date ? currentTime.getTime() : Number.NaN
+    } catch {
+      return false
+    }
     if (
       TenantIdSchema.safeParse(input.tenantId).success === false ||
       AgentIdSchema.safeParse(input.agentId).success === false ||
@@ -607,7 +620,8 @@ export class CapabilityGateway {
       approval.toolName !== input.toolName ||
       approval.actorId !== input.actor.id ||
       !Number.isFinite(approval.expiresAt.getTime()) ||
-      approval.expiresAt.getTime() <= Date.now()
+      !Number.isFinite(currentTimeMs) ||
+      approval.expiresAt.getTime() <= currentTimeMs
     ) {
       return false
     }

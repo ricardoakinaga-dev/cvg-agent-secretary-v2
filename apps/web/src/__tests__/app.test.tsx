@@ -4,7 +4,8 @@ import {
   fireEvent,
   render,
   screen,
-  waitFor
+  waitFor,
+  within
 } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { App } from '../App.tsx'
@@ -121,7 +122,11 @@ describe('web console', () => {
     expect(screen.getByText('CVG Agent Secretary')).toBeTruthy()
     expect(screen.getAllByText('Carregando...')).toHaveLength(4)
     expect(await screen.findByText('fixture-sender')).toBeTruthy()
-    expect(await screen.findByText('Mensagem via API')).toBeTruthy()
+    expect(
+      await within(screen.getByLabelText('Timeline selecionada')).findByText(
+        'Mensagem via API'
+      )
+    ).toBeTruthy()
     expect(await screen.findByText('create_appointment_draft')).toBeTruthy()
     expect(await screen.findByText('Tarefa via API')).toBeTruthy()
     expect(await screen.findByText('integration_event')).toBeTruthy()

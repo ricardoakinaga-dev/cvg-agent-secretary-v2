@@ -494,6 +494,24 @@
       }
     },
     {
+      "id": "PLAT-S48",
+      "name": "Controlled baseline determinism",
+      "status": "COMPLETED_CONTROLLED",
+      "goal": "Restore reproducible controlled evidence by sharing an injectable approval clock and scoping the web timeline assertion semantically.",
+      "entry_gate": "PLAT-S47 controlled gate complete and SPEC_APPROVED_CONTROLLED_BUILD",
+      "exit_gate": "Focused RED/GREEN and integrated gates prove valid approval, fail-closed expiry/replay behavior, unambiguous timeline assertion and unchanged production boundary",
+      "tasks": ["PLAT-S48-001", "PLAT-S48-002"],
+      "completion": {
+        "phase": "AUDIT",
+        "timestamp": "2026-09-02T07:32:00-03:00",
+        "result": "RED reproduziu divergência de clock no approval gateway e query web ambígua; GREEN cobriu clock compartilhado, clock inválido/lançando, expiração local sem consumo e timeline escopada",
+        "verification": "127 arquivos/537 testes pass, 2 arquivos/19 testes skipped; coverage 84.87/80.12/84.98/85.98; readiness 4/4; worker smoke; PostgreSQL 8/72; E2E 4/4; build 158 módulos; audit 0; typecheck/lint/format/diff PASS",
+        "review": "PASS_CONTROLLED independent read-only after evidence/tracking closure; P0/P1/P2/P3 = 0",
+        "evidence": "docs/04_audit/0538_plat-s48_controlled_deterministic_clock_and_test_contract_evidence.md",
+        "production": "NO-GO"
+      }
+    },
+    {
       "id": "PLAT-S47",
       "name": "Controlled multi-agent creation mode",
       "status": "COMPLETED_CONTROLLED",

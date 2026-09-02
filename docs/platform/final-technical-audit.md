@@ -2,13 +2,37 @@
 
 ## Identificação
 
-- data da auditoria: `2026-08-26`
-- timestamp do fechamento: `2026-08-26T15:59:02-03:00`
-- base Git: `f9e0096` (`main`) + checkout controlado `PLAT-S47` fechado, não
+- data da auditoria: `2026-09-02`
+- timestamp do fechamento: `2026-09-02T07:32:00-03:00`
+- base Git: `146c068` (`main`) + checkout controlado `PLAT-S48` fechado, não
   publicado
 - escopo: todos os arquivos de `docs/`, o prompt fornecido e o checkout atual
 - modo: `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`
 - dados: somente fixtures e valores fictícios
+
+## Atualização de auditoria — PLAT-S48
+
+O baseline executável reproduziu duas falhas: `CapabilityGateway` comparava a
+expiração com `Date.now()` enquanto a autoridade do fixture usava clock
+injetado, e `app.test.tsx` consultava globalmente uma mensagem legítima em
+preview e timeline. A correção adicionou somente `now?: () => Date` ao
+`CapabilityGatewayOptions`, com default real, validação fail-closed de clock e
+provas de não consumo/execução para clock inválido, clock lançando e expiração
+local. A UI de produção não mudou; a query do teste passou a ser escopada com
+`within` à `Timeline selecionada`.
+
+Gates finais: `npm run verify` PASS; regressão `127 arquivos/537 testes pass`,
+`2 arquivos/19 testes skipped`; coverage `84.87/80.12/84.98/85.98`; readiness
+`4/4`; worker smoke; PostgreSQL `8/72`; E2E `4/4`; build `158 módulos`; audit
+`0 vulnerabilidades`; typecheck, lint, format e diff check PASS. Evidência
+detalhada: `docs/04_audit/0538_plat-s48_controlled_deterministic_clock_and_test_contract_evidence.md`.
+
+A crítica independente read-only final confirmou `PASS_CONTROLLED`, sem
+P0/P1/P2/P3; o único apontamento documental foi a ausência temporária da
+evidência, corrigida nesta atualização. Nenhum provider, canal, RAG, rede,
+segredo, dado real ou side effect foi ativado. S48 é
+`COMPLETED_CONTROLLED`; produção real permanece `NO-GO`/
+`WAITING_HUMAN_APPROVAL`.
 
 ## Atualização de auditoria — PLAT-S47 corretivo
 

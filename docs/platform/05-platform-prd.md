@@ -1,5 +1,49 @@
 # PRD — CVG Agent Platform MVP controlado
 
+## PLAT-S48 — baseline determinístico e contrato semântico de testes
+
+### Problema
+
+O baseline controlado atual não é reproduzível: a boundary de approval compara
+expiração com o relógio real, enquanto o fixture da autoridade usa um relógio
+injetado; adicionalmente, uma asserção web globaliza uma mensagem presente em
+preview e timeline.
+
+### Resultado controlado
+
+O `CapabilityGateway` aceitará uma função `now` opcional, com relógio real por
+default e clock compartilhado nos fixtures. A autoridade durável continuará
+decidindo expiração, binding, revogação e consumo único. O teste web consultará
+a timeline selecionada por seu rótulo semântico, sem mudar a UI de produção.
+
+### Aceite e limites
+
+- approval válida com clock compartilhado passa e casos inválidos continuam
+  fail-closed;
+- nenhuma comparação de expiração usa uma fonte temporal diferente da função
+  configurada no gateway;
+- preview e timeline com texto igual não tornam a asserção ambígua;
+- focused, regressão, coverage >= 80%, typecheck, lint, format, audit, build,
+  readiness, worker, PostgreSQL, E2E e diff check são obrigatórios;
+- sem mudança de schema, contrato HTTP ou comportamento de API externa; a
+  opção TypeScript `now` é uma seam interna não configurável por input externo;
+  sem policy, provider/canal, RAG, rede, deploy, dado real ou side effect.
+
+## Registro controlado PLAT-S48 — 2026-09-02T07:03:00-03:00
+
+Gate: `SPEC_APPROVED_CONTROLLED_BUILD`. A lane contém somente higiene de
+determinismo/contrato de teste para recuperar evidência confiável do MVP;
+produção real continua `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+## Fechamento controlado PLAT-S48 — 2026-09-02T07:32:00-03:00
+
+`PLAT-S48-001` e `PLAT-S48-002` foram fechadas em `AUDIT`. O gateway mantém
+approval durável/fail-closed com clock injetável e a aplicação valida a
+timeline por escopo semântico. Regressão 127 arquivos/537 testes pass, 2/19
+skipped; coverage 84.87/80.12/84.98/85.98; todos os gates controlados PASS.
+Não houve alteração de contrato HTTP, schema, UI funcional ou fronteira de
+produção. Evidência: `docs/04_audit/0538_plat-s48_controlled_deterministic_clock_and_test_contract_evidence.md`.
+
 ## PLAT-S47 — modo de criação de múltiplos agentes no Control Center
 
 ### Problema

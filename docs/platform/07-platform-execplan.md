@@ -1,5 +1,44 @@
 # ExecPlan — PLAT-S01 control plane foundation
 
+## PLAT-S48 — ordem de implementação e auditoria
+
+### Estado de registro
+
+- stage: `AUDIT`
+- status: `COMPLETED_CONTROLLED`
+- scope: `PLAT-S48_CONTROLLED_BASELINE_DETERMINISM`
+- owner: `platform/security/test-infrastructure`
+- write sets: gateway, teste de approval, teste web e evidência S48
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+
+### Sequência
+
+1. Registrar discovery, PRD, SPEC, backlog e task catalog.
+2. Executar RED focado dos dois defeitos observados.
+3. Ajustar os testes para explicitar clock compartilhado e timeline escopada.
+4. Implementar `now?: () => Date` no gateway, mantendo default real e
+   autoridade durável.
+5. Executar focused GREEN, regressão completa e todos os gates controlados.
+6. Auditar diff, cobertura, segurança e fronteira de produção; registrar
+   evidência e atualizar o estado canônico.
+
+### Limites
+
+Somente determinismo do approval gateway e semântica da asserção web. Sem
+schema/contrato HTTP/API externa ou policy change; a opção TypeScript `now` é
+uma seam interna não configurável por input externo. Sem provider/canal real,
+RAG, rede, deploy, dado real, segredo ou side effect.
+
+### Fechamento controlado S48 — 2026-09-02T07:32:00-03:00
+
+RED/GREEN e todos os gates controlados passaram. Regressão 127 arquivos/537
+testes pass, 2 arquivos/19 skipped; coverage 84.87/80.12/84.98/85.98;
+PostgreSQL 8/72; E2E 4/4; readiness 4/4; worker smoke; build 158 módulos;
+audit 0; typecheck/lint/format/diff PASS. A revisão independente read-only
+retornou `PASS_CONTROLLED`, sem P0/P1/P2/P3; o gap documental foi fechado com
+a evidência S48. Próxima ação segura: nova `DISCOVERY -> PRD -> SPEC`
+controlada.
+
 ## PLAT-S47 — ordem de implementação e auditoria
 
 ### Estado de registro

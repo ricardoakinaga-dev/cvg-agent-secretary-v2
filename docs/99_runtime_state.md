@@ -5,12 +5,35 @@
 - project: cvg-agent-secretary-v2
 - current_engine: AUDIT
 
+## AUDIT CONTROLADO PLAT-S48 — 2026-09-02T07:32:00-03:00
+
+- current_engine: `AUDIT`
+- current_phase: `AUDIT`
+- current_sprint: `PLAT-S48_CONTROLLED_BASELINE_DETERMINISM`
+- current_task: `PLAT-S48_CONTROLLED_BASELINE_DETERMINISM`
+- status: `COMPLETED_CONTROLLED`
+- task_status: `COMPLETED_CONTROLLED`
+- discovery: baseline reproduziu divergência de clock entre gateway e
+  autoridade de approval e ambiguidade de query no teste web; ambos foram
+  corrigidos com regressões adversariais
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`; todos os gates controlados passaram
+- verification: 127 arquivos/537 testes pass, 2 arquivos/19 testes skipped;
+  coverage 84.87/80.12/84.98/85.98; readiness 4/4; worker smoke; PostgreSQL
+  8/72; E2E 4/4; build 158 módulos; audit 0; typecheck/lint/format/diff PASS
+- limits: somente seam de tempo do gateway e asserção escopada da timeline; sem
+  provider/canal/RAG/rede/schema/contrato HTTP ou API externa/deploy/dado
+  real/side effect; `now` não é exposto a input externo
+- human_decision_required: `no` para a lane controlada; `yes` para qualquer
+  piloto real, produção ou ação sensível
+- production_boundary: `PRODUCTION_REAL_DATA_READY=NO-GO`
+
 ## VERIFICAÇÃO DE SINCRONIZAÇÃO DO REPOSITÓRIO — 2026-08-29T23:03:20-03:00
 
 - action: `git fetch --prune origin` seguido de verificação da árvore de
   trabalho, branch rastreada e contagem de commits contra `origin/main`
-- result: árvore limpa; `HEAD` local e `origin/main` apontam para
-  `66407ef`; divergência `ahead=0`/`behind=0`; remoto confirmado como
+- result histórico: árvore limpa; `HEAD` local e `origin/main` apontavam para
+  `66407ef` antes do commit de rastreabilidade; o checkout atual está em
+  `146c068`, com divergência `ahead=0`/`behind=0`; remoto confirmado como
   `https://github.com/ricardoakinaga-dev/cvg-agent-secretary-v2.git`
 - scope: nenhuma task de produto, backlog ou código foi alterada; nenhum
   deploy, provider, canal, dado real ou side effect foi executado
@@ -18,8 +41,8 @@
 ## POSICAO ATUAL
 
 - current_phase: AUDIT
-- current_sprint: PLAT-S47_CONTROLLED_MULTI_AGENT_CREATION_MODE
-- current_task: PLAT-S47-001_CONTROLLED_MULTI_AGENT_CREATION_MODE
+- current_sprint: PLAT-S48_CONTROLLED_BASELINE_DETERMINISM
+- current_task: PLAT-S48_CONTROLLED_BASELINE_DETERMINISM
 
 ## STATUS
 
@@ -27,12 +50,12 @@
 
 ## PROGRESSO
 
-- last_completed_action: verificação de sincronização confirmou árvore limpa,
-  `HEAD == origin/main == 66407ef` e nenhuma divergência após `fetch`; S47
-  permanece fechado com `PASS_CONTROLLED` sem P0/P1/P2/P3.
-- next_action: iniciar nova `DISCOVERY -> PRD -> SPEC` controlada; nenhum
-  deploy, rollout, RAG, provider externo, canal, dado real ou ação sensível
-  está autorizado.
+- last_completed_action: auditoria S48 fechou os dois REDs, a regressão e todos
+  os gates controlados; a evidência foi publicada em
+  `docs/04_audit/0538_plat-s48_controlled_deterministic_clock_and_test_contract_evidence.md`.
+- next_action: iniciar nova `DISCOVERY -> PRD -> SPEC` controlada; nenhum deploy,
+  rollout, RAG, provider externo, canal, dado real ou ação sensível está
+  autorizado.
 
 ## BLOQUEIOS
 
@@ -48,7 +71,7 @@
 
 ## TIMESTAMP
 
-- last_update: 2026-08-29T23:03:20-03:00
+- last_update: 2026-09-02T07:32:00-03:00
 
 ## AUDIT CORRETIVO CONTROLADO PLAT-S47 — 2026-08-26T15:59:02-03:00
 

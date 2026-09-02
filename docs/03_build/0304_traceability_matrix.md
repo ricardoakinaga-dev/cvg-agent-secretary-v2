@@ -36,6 +36,12 @@ Mapear cada caso de uso, requisito funcional e contrato tecnico para phase, spri
 | SPEC 0111          | Permissoes e auditoria                                 | 4,7     | varies  | P4-S1-T02                               | `rbac-policy.test.ts`                      |
 | SPEC 0113          | Logs, metricas, health e tracing                       | 9       | 9.1     | P9-S1-T01                               | `observability-smoke.test.ts`              |
 
+## Lanes de qualidade controladas
+
+| Fonte/controle | Descricao                                                 | Phase | Sprint   | Task             | Teste obrigatorio                  |
+| -------------- | --------------------------------------------------------- | ----- | -------- | ---------------- | ---------------------------------- |
+| CTRL-186..189  | Determinismo de approval e assercao semantica da timeline | AUDIT | PLAT-S48 | PLAT-S48-001/002 | gateway/authority e `app.test.tsx` |
+
 ## Bloqueios de rastreabilidade
 
 | Fonte                 | Bloqueio                   | Condicao para liberar                        |

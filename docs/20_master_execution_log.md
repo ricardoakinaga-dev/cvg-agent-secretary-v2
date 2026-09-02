@@ -1,5 +1,93 @@
 # MASTER EXECUTION LOG — CVG
 
+## AUDIT / FECHAMENTO CONTROLADO PLAT-S48 — 2026-09-02T07:32:00-03:00
+
+### ENGINE
+
+AUDIT
+
+### PHASE
+
+AUDIT
+
+### SPRINT
+
+PLAT-S48_CONTROLLED_BASELINE_DETERMINISM
+
+### TASKS
+
+PLAT-S48-001_CONTROLLED_DETERMINISTIC_APPROVAL_CLOCK;
+PLAT-S48-002_CONTROLLED_SEMANTIC_TIMELINE_ASSERTION
+
+### RESULT
+
+O clock injetável do `CapabilityGateway` eliminou a divergência artificial com
+a autoridade de approval; clock inválido, clock que lança e expiração local
+falham fechado antes de consumo/handler. A query da timeline foi escopada com
+`within` sem mudança da UI. `npm run verify` passou com 127 arquivos/537 testes
+pass, 2 arquivos/19 testes skipped; coverage 84.87/80.12/84.98/85.98;
+PostgreSQL 8/72; E2E 4/4; readiness 4/4; worker smoke; build 158 módulos;
+audit 0; typecheck, lint, format e diff check PASS.
+
+### REVIEW
+
+Crítica independente read-only final confirmou `PASS_CONTROLLED`, sem
+P0/P1/P2/P3; achados anteriores de literalidade do clock, cobertura
+fail-closed e documentação foram corrigidos. O revisor não executou os gates
+amplos do lead e não alterou arquivos.
+
+### DECISIONS
+
+`PLAT-S48` está `COMPLETED_CONTROLLED`; nenhum provider, canal, RAG, rede,
+dado real, segredo, ação sensível ou side effect foi ativado. Produção real
+permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+### STATUS
+
+COMPLETED_CONTROLLED
+
+## SPEC / REGISTRO CONTROLADO PLAT-S48 — 2026-09-02T07:03:00-03:00
+
+### ENGINE
+
+SPEC
+
+### PHASE
+
+CONTROLLED_CONSTRUCTION
+
+### SPRINT
+
+PLAT-S48_CONTROLLED_BASELINE_DETERMINISM
+
+### TASKS
+
+PLAT-S48-001_CONTROLLED_DETERMINISTIC_APPROVAL_CLOCK;
+PLAT-S48-002_CONTROLLED_SEMANTIC_TIMELINE_ASSERTION
+
+### ACTION
+
+Discovery e baseline executável reproduziram duas falhas: o gateway usa
+`Date.now()` em desacordo com o clock injetado da autoridade de approval, e o
+teste web usa query global para texto presente em preview e timeline. PRD,
+SPEC, backlog, task catalog e ExecPlan foram registrados antes do BUILD.
+
+### RESULT
+
+Gate `SPEC_APPROVED_CONTROLLED_BUILD`; próximo passo RED focado. O baseline
+atual é `BASELINE_FAIL` e não será descrito como PASS até a regressão e os
+gates controlados passarem novamente.
+
+### LIMITS
+
+Sem provider, canal, RAG, rede, schema/contrato HTTP ou API externa, deploy,
+dado real, segredo, ação clínica/financeira/prontuário ou side effect; a seam
+TypeScript `now` não é exposta a input externo.
+
+### STATUS
+
+IN_PROGRESS
+
 ## VERIFICAÇÃO DE SINCRONIZAÇÃO DO REPOSITÓRIO — 2026-08-29T23:03:20-03:00
 
 ### ENGINE

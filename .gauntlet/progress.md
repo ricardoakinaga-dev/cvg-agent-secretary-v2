@@ -1,5 +1,29 @@
 # Gauntlet progress
 
+## Round 151 — PLAT-S48 auditoria e fechamento
+
+- S48 fechou os dois REDs do baseline: clock compartilhado/injetável no
+  approval gateway e asserção semântica da timeline web.
+- Gates finais: verify PASS; 127 arquivos/537 testes PASS, 2/19 skipped;
+  coverage 84.87/80.12/84.98/85.98; PostgreSQL 8/72; E2E 4/4; readiness 4/4;
+  worker smoke; build 158 módulos; audit 0; typecheck, lint, format e diff
+  check PASS.
+- Evidência S48 foi publicada e os registros canônicos foram fechados como
+  `COMPLETED_CONTROLLED`. A revisão read-only final retornou
+  `PASS_CONTROLLED`, P0/P1/P2/P3 = 0; produção real permanece
+  `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
+## Round 150 — PLAT-S48 discovery e registro do baseline
+
+- A regressão atual reproduziu dois defeitos de confiabilidade: clock real no
+  gateway contra clock injetado na autoridade de approval, e query global
+  ambígua no teste web porque preview e timeline compartilham a mensagem.
+- Registradas as tasks `PLAT-S48-001` e `PLAT-S48-002` em DISCOVERY → PRD →
+  SPEC, com gate `SPEC_APPROVED_CONTROLLED_BUILD` e write-set mínimo.
+- Baseline permanece `BASELINE_FAIL`; o próximo passo é RED focado. Nenhum
+  provider, canal, RAG, rede, dado real ou side effect foi usado. Produção
+  real permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
 ## Round 149 — PLAT-S47 veredito independente e fechamento
 
 - A revisão compatível independente e read-only concluiu

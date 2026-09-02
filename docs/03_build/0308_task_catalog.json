@@ -1563,6 +1563,72 @@
       }
     },
     {
+      "id": "PLAT-S48-001",
+      "name": "Implement controlled deterministic approval clock",
+      "phase": "AUDIT",
+      "sprint": "PLAT-S48",
+      "status": "COMPLETED_CONTROLLED",
+      "files_expected": [
+        "packages/platform/src/plugin-gateway.ts",
+        "packages/platform/src/__tests__/capability-approval-gateway.test.ts",
+        "docs/04_audit/0538_plat-s48_controlled_deterministic_clock_and_test_contract_evidence.md"
+      ],
+      "tests_expected": [
+        "packages/platform/src/__tests__/capability-approval-gateway.test.ts",
+        "packages/platform/src/__tests__/approval-authority.test.ts"
+      ],
+      "validation_commands": [
+        "npx vitest run packages/platform/src/__tests__/capability-approval-gateway.test.ts packages/platform/src/__tests__/approval-authority.test.ts --no-file-parallelism --maxWorkers=2",
+        "npm test",
+        "npm run test:coverage",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run format:check",
+        "npm run audit:security",
+        "npm run build",
+        "git diff --check"
+      ],
+      "completion": {
+        "timestamp": "2026-09-02T07:32:00-03:00",
+        "red": "approval válida bloqueada por Date.now() divergente do clock da autoridade",
+        "green": "clock compartilhado, clock inválido/lançando e expiração local sem verifyAndConsume/handler; focused gateway/authority 8 testes PASS",
+        "verification": "127 arquivos/537 testes pass, 2 arquivos/19 testes skipped; coverage 84.87/80.12/84.98/85.98; PostgreSQL 8/72; E2E 4/4; readiness 4/4; worker smoke; build 158 módulos; audit 0; typecheck/lint/format/diff PASS",
+        "review": "PASS_CONTROLLED independent read-only after evidence/tracking closure; P0/P1/P2/P3 = 0",
+        "evidence": "docs/04_audit/0538_plat-s48_controlled_deterministic_clock_and_test_contract_evidence.md",
+        "production": "NO-GO"
+      }
+    },
+    {
+      "id": "PLAT-S48-002",
+      "name": "Scope controlled timeline assertion semantically",
+      "phase": "AUDIT",
+      "sprint": "PLAT-S48",
+      "status": "COMPLETED_CONTROLLED",
+      "files_expected": [
+        "apps/web/src/__tests__/app.test.tsx",
+        "docs/04_audit/0538_plat-s48_controlled_deterministic_clock_and_test_contract_evidence.md"
+      ],
+      "tests_expected": ["apps/web/src/__tests__/app.test.tsx"],
+      "validation_commands": [
+        "npx vitest run apps/web/src/__tests__/app.test.tsx --no-file-parallelism --maxWorkers=2",
+        "npm test",
+        "npm run test:coverage",
+        "npm run typecheck",
+        "npm run lint",
+        "npm run format:check",
+        "git diff --check"
+      ],
+      "completion": {
+        "timestamp": "2026-09-02T07:32:00-03:00",
+        "red": "findByText global encontrou preview e timeline com a mesma mensagem",
+        "green": "within(getByLabelText('Timeline selecionada')) passou e preservou ambas as superfícies da UI",
+        "verification": "app focused 15/15; regressão 127 arquivos/537 testes pass, 2 arquivos/19 testes skipped; E2E 4/4; typecheck/lint/format/diff PASS",
+        "review": "PASS_CONTROLLED independent read-only after evidence/tracking closure; P0/P1/P2/P3 = 0",
+        "evidence": "docs/04_audit/0538_plat-s48_controlled_deterministic_clock_and_test_contract_evidence.md",
+        "production": "NO-GO"
+      }
+    },
+    {
       "id": "PLAT-S47-001",
       "name": "Implement controlled multi-agent creation mode",
       "phase": "AUDIT",

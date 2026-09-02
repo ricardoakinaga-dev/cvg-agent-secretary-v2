@@ -1,5 +1,44 @@
 # BACKLOG MASTER — CVG
 
+## PLAT-S48 — Controlled Baseline Determinism
+
+- id: `PLAT-S48_CONTROLLED_BASELINE_DETERMINISM`
+- prioridade: P0
+- status: `COMPLETED_CONTROLLED`
+- fase: `AUDIT`
+- owner: `platform/security/test-infrastructure`
+- dependências: `PLAT-S47-001`, `PLAT-S45-001`
+- tasks:
+  `PLAT-S48-001_CONTROLLED_DETERMINISTIC_APPROVAL_CLOCK` e
+  `PLAT-S48-002_CONTROLLED_SEMANTIC_TIMELINE_ASSERTION`
+- contrato: compartilhar clock injetável entre gateway e autoridade nos
+  fixtures, preservar fail-closed/consumo único e escopar a asserção da
+  timeline sem mudar a UI
+- aceite: os dois REDs deixam de falhar; regressão e gates controlados passam
+  com coverage >= 80% em todas as métricas
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`
+- limite: sem produção real, provider/canal, RAG, rede, schema, deploy, dado
+  real ou side effect
+- evidência planejada:
+  `docs/04_audit/0538_plat-s48_controlled_deterministic_clock_and_test_contract_evidence.md`
+
+### Registro controlado S48 — 2026-09-02T07:03:00-03:00
+
+Discovery encontrou divergência temporal entre gateway e autoridade de
+approval e ambiguidade de query no teste web; ambos foram reproduzidos no
+checkout atual. Próximo passo: RED focado.
+
+### Fechamento controlado S48 — 2026-09-02T07:32:00-03:00
+
+As duas tasks passaram por RED/GREEN e auditoria: o gateway usa clock
+injetável compartilhável com a autoridade, mantém fail-closed e não consome
+approval inválida/expirada; a asserção web usa escopo semântico da timeline.
+Regressão 127/537 pass com 2/19 skipped; coverage 84.87/80.12/84.98/85.98;
+PostgreSQL 8/72; E2E 4/4; readiness 4/4; worker smoke; build 158 módulos;
+audit 0; typecheck/lint/format/diff PASS. Evidência:
+`docs/04_audit/0538_plat-s48_controlled_deterministic_clock_and_test_contract_evidence.md`.
+Produção permanece `NO-GO`/`WAITING_HUMAN_APPROVAL`.
+
 ## PLAT-S47 — Controlled Multi-Agent Creation Mode
 
 - id: `PLAT-S47-001_CONTROLLED_MULTI_AGENT_CREATION_MODE`

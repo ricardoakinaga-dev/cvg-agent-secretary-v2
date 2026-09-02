@@ -63,7 +63,8 @@ const config = AgentConfigSchema.parse({
 
 function createGateway(
   handler: PluginHandler,
-  authority: InMemoryCapabilityApprovalAuthority
+  authority: InMemoryCapabilityApprovalAuthority,
+  now: () => Date
 ) {
   const registry = new PluginRegistry().register({
     manifest: {
@@ -95,7 +96,8 @@ function createGateway(
   })
   return new CapabilityGateway(registry, {
     actorAuthorizer: approvalActorAuthorizer,
-    approvalAuthority: authority
+    approvalAuthority: authority,
+    now
   })
 }
 
@@ -123,11 +125,12 @@ function executionInput(
 describe('capability gateway durable approval', () => {
   it('consumes a durable approval before the handler and blocks replay/substitution', async () => {
     const now = new Date('2026-09-01T10:00:00.000Z')
-    const authority = new InMemoryCapabilityApprovalAuthority(() => now)
+    const clock = () => now
+    const authority = new InMemoryCapabilityApprovalAuthority(clock)
     const handler = vi.fn<PluginHandler>(async () => ({
       status: 'succeeded' as const
     }))
-    const gateway = createGateway(handler, authority)
+    const gateway = createGateway(handler, authority, clock)
     const input = executionInput()
     const issue: CapabilityApprovalIssueInput = {
       tenantId,
@@ -187,5 +190,140 @@ describe('capability gateway durable approval', () => {
         }
       })
     ).resolves.toMatchObject({ status: 'blocked', reason: 'approval_required' })
+  })
+
+  it('fails closed when the configured clock is invalid', async () => {
+    const authorityNow = new Date('2026-09-01T10:00:00.000Z')
+    const authority = new InMemoryCapabilityApprovalAuthority(
+      () => authorityNow
+    )
+    const handler = vi.fn<PluginHandler>(async () => ({
+      status: 'succeeded' as const
+    }))
+    const gateway = createGateway(
+      handler,
+      authority,
+      () => new Date(Number.NaN)
+    )
+    const input = executionInput()
+    const approval = await authority.issue({
+      tenantId,
+      agentId,
+      versionId,
+      toolName: input.toolName,
+      input: input.input,
+      actorId: input.actor.id,
+      issuer: 'approver.fixture',
+      expiresAt: new Date('2026-09-03T11:00:00.000Z')
+    })
+    const verifyAndConsume = vi.spyOn(authority, 'verifyAndConsume')
+
+    await expect(
+      gateway.execute({
+        ...input,
+        approval: {
+          id: approval.id,
+          tenantId,
+          agentId,
+          versionId,
+          toolName: input.toolName,
+          actorId: input.actor.id,
+          expiresAt: approval.expiresAt
+        }
+      })
+    ).resolves.toMatchObject({ status: 'blocked', reason: 'approval_required' })
+    expect(handler).not.toHaveBeenCalled()
+    expect(verifyAndConsume).not.toHaveBeenCalled()
+    expect(await authority.get(approval.id, tenantId)).toMatchObject({
+      status: 'issued'
+    })
+  })
+
+  it('fails closed before consuming an approval expired for the gateway clock', async () => {
+    const authorityNow = new Date('2026-09-01T10:00:00.000Z')
+    const gatewayNow = new Date('2026-09-01T12:00:00.000Z')
+    const clock = () => authorityNow
+    const authority = new InMemoryCapabilityApprovalAuthority(clock)
+    const handler = vi.fn<PluginHandler>(async () => ({
+      status: 'succeeded' as const
+    }))
+    const gateway = createGateway(handler, authority, () => gatewayNow)
+    const input = executionInput()
+    const approval = await authority.issue({
+      tenantId,
+      agentId,
+      versionId,
+      toolName: input.toolName,
+      input: input.input,
+      actorId: input.actor.id,
+      issuer: 'approver.fixture',
+      expiresAt: new Date('2026-09-01T11:00:00.000Z')
+    })
+    const verifyAndConsume = vi.spyOn(authority, 'verifyAndConsume')
+
+    await expect(
+      gateway.execute({
+        ...input,
+        approval: {
+          id: approval.id,
+          tenantId,
+          agentId,
+          versionId,
+          toolName: input.toolName,
+          actorId: input.actor.id,
+          expiresAt: approval.expiresAt
+        }
+      })
+    ).resolves.toMatchObject({ status: 'blocked', reason: 'approval_required' })
+    expect(handler).not.toHaveBeenCalled()
+    expect(verifyAndConsume).not.toHaveBeenCalled()
+    expect(await authority.get(approval.id, tenantId)).toMatchObject({
+      status: 'issued'
+    })
+  })
+
+  it('fails closed when the configured clock throws', async () => {
+    const authorityNow = new Date('2026-09-01T10:00:00.000Z')
+    const authority = new InMemoryCapabilityApprovalAuthority(
+      () => authorityNow
+    )
+    const handler = vi.fn<PluginHandler>(async () => ({
+      status: 'succeeded' as const
+    }))
+    const gateway = createGateway(handler, authority, () => {
+      throw new Error('clock unavailable')
+    })
+    const input = executionInput()
+    const approval = await authority.issue({
+      tenantId,
+      agentId,
+      versionId,
+      toolName: input.toolName,
+      input: input.input,
+      actorId: input.actor.id,
+      issuer: 'approver.fixture',
+      expiresAt: new Date('2026-09-03T11:00:00.000Z')
+    })
+    const verifyAndConsume = vi.spyOn(authority, 'verifyAndConsume')
+
+    await expect(
+      gateway.execute({
+        ...input,
+        approval: {
+          id: approval.id,
+          tenantId,
+          agentId,
+          versionId,
+          toolName: input.toolName,
+          actorId: input.actor.id,
+          expiresAt: approval.expiresAt
+        }
+      })
+    ).resolves.toMatchObject({ status: 'blocked', reason: 'approval_required' })
+    expect(handler).not.toHaveBeenCalled()
+    expect(verifyAndConsume).not.toHaveBeenCalled()
+    expect(await authority.get(approval.id, tenantId)).toMatchObject({
+      status: 'issued'
+    })
   })
 })
