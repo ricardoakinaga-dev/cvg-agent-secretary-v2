@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "phase": "10",
+  "kind": "phase10-backlog",
+  "generatedAt": "2026-09-11",
+  "items": [
+    {
+      "id": "P10-B01",
+      "priority": "HIGH",
+      "severity": "P2",
+      "owner": "SRE",
+      "status": "OPEN",
+      "dependencies": ["TEST_DATABASE_URL"],
+      "acceptanceCriteria": "npm run test:postgres PASS com 0 skip em PostgreSQL real, incluindo CHAOS-04/05",
+      "evidence": "certification/phase10-result.json gates.postgres",
+      "blocker": true
+    },
+    {
+      "id": "P10-B02",
+      "priority": "HIGH",
+      "severity": "P2",
+      "owner": "Platform Engineering",
+      "status": "OPEN",
+      "dependencies": ["P10-B01"],
+      "acceptanceCriteria": "API/worker usam GovernedAgentRuntime no caminho principal com testes de regressão",
+      "evidence": "packages/agent-runtime",
+      "blocker": false
+    },
+    {
+      "id": "P10-B03",
+      "priority": "MEDIUM",
+      "severity": "P2",
+      "owner": "Platform Engineering",
+      "status": "OPEN",
+      "dependencies": ["P10-B02"],
+      "acceptanceCriteria": "Spans OTel nativos propagados por API→worker→modelo→tool→outbox com exporter configurado",
+      "evidence": "packages/observability/src/otel.ts",
+      "blocker": false
+    },
+    {
+      "id": "P10-B04",
+      "priority": "HIGH",
+      "severity": "P2",
+      "owner": "SRE",
+      "status": "OPEN",
+      "dependencies": ["infra de produção"],
+      "acceptanceCriteria": "RPO/RTO medidos e aprovados; restore completo em banco separado",
+      "evidence": "docs/10_phase10/PHASE10_RPO_RTO_REPORT.md",
+      "blocker": true
+    },
+    {
+      "id": "P10-B05",
+      "priority": "HIGH",
+      "severity": "P2",
+      "owner": "Integrations Engineering",
+      "status": "OPEN",
+      "dependencies": ["credenciais"],
+      "acceptanceCriteria": "Provider e canal reais validados com opt-in e credenciais de homologação",
+      "evidence": "certification/external-gates.json",
+      "blocker": true
+    },
+    {
+      "id": "P10-B06",
+      "priority": "MEDIUM",
+      "severity": "P3",
+      "owner": "QA Architecture",
+      "status": "OPEN",
+      "dependencies": [],
+      "acceptanceCriteria": "Load de 100k eventos contra PostgreSQL com p50/p95/p99 e recursos",
+      "evidence": "scripts/phase10-load.ts",
+      "blocker": false
+    },
+    {
+      "id": "P10-B07",
+      "priority": "MEDIUM",
+      "severity": "P3",
+      "owner": "Platform Engineering",
+      "status": "OPEN",
+      "dependencies": [],
+      "acceptanceCriteria": "Audit ledger persistido em PostgreSQL com endpoint de verificação",
+      "evidence": "packages/observability/src/audit-ledger.ts",
+      "blocker": false
+    },
+    {
+      "id": "P10-B08",
+      "priority": "MEDIUM",
+      "severity": "P3",
+      "owner": "Product/Operations",
+      "status": "OPEN",
+      "dependencies": ["P10-B05"],
+      "acceptanceCriteria": "Signoff humano registrado no gate (não inferido por modelo)",
+      "evidence": "certification/external-gates.json",
+      "blocker": true
+    },
+    {
+      "id": "P10-B09",
+      "priority": "LOW",
+      "severity": "P4",
+      "owner": "Frontend",
+      "status": "OPEN",
+      "dependencies": [],
+      "acceptanceCriteria": "UI expõe dead letters, versão de política/agente e estado degradado",
+      "evidence": "apps/web",
+      "blocker": false
+    },
+    {
+      "id": "P10-B10",
+      "priority": "LOW",
+      "severity": "P4",
+      "owner": "Security Engineering",
+      "status": "OPEN",
+      "dependencies": [],
+      "acceptanceCriteria": "Teste de rotação de segredo com janela de graça e revogação",
+      "evidence": "apps/api/src/webhook-security.ts",
+      "blocker": false
+    }
+  ]
+}

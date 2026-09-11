@@ -1,5 +1,5 @@
 import { TenantIdSchema } from '@cvg/platform'
-import { createDomainId } from '@cvg/shared'
+import { createDomainId, createShutdownController } from '@cvg/shared'
 import { createControlledWorker } from './controlled-worker.ts'
 import {
   createPostgresControlledWorker,
@@ -88,6 +88,18 @@ async function runControlledMemoryWorker(env: NodeJS.ProcessEnv) {
 
 async function runPostgresControlledWorker(env: NodeJS.ProcessEnv) {
   const runtime = createPostgresControlledWorker(env)
+  const shutdown = createShutdownController({
+    close: () => runtime.pool.end(),
+    exit: (code) => process.exit(code),
+    log: (event) => {
+      if (event.type !== 'shutdown.started') {
+        console.error(
+          JSON.stringify({ event: event.type, signal: event.signal })
+        )
+      }
+    }
+  })
+  shutdown.install(process)
   try {
     const drained = await runtime.worker.drain(
       parseControlledDrainLimit(env.CVG_WORKER_MAX_EVENTS)

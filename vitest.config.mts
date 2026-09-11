@@ -77,7 +77,36 @@ export default defineConfig({
       '@cvg/adapters': resolve(workspaceRoot, 'packages/adapters/src/index.ts'),
       '@cvg/memory': resolve(workspaceRoot, 'packages/memory/src/index.ts'),
       '@cvg/rag': resolve(workspaceRoot, 'packages/rag/src/index.ts'),
-      '@cvg/platform': resolve(workspaceRoot, 'packages/platform/src/index.ts')
+      '@cvg/platform': resolve(workspaceRoot, 'packages/platform/src/index.ts'),
+      '@cvg/model-gateway': resolve(
+        workspaceRoot,
+        'packages/model-gateway/src/index.ts'
+      ),
+      '@cvg/policy-engine': resolve(
+        workspaceRoot,
+        'packages/policy-engine/src/index.ts'
+      ),
+      '@cvg/approval-engine': resolve(
+        workspaceRoot,
+        'packages/approval-engine/src/index.ts'
+      ),
+      '@cvg/channel-gateway': resolve(
+        workspaceRoot,
+        'packages/channel-gateway/src/index.ts'
+      ),
+      '@cvg/observability': resolve(
+        workspaceRoot,
+        'packages/observability/src/index.ts'
+      ),
+      '@cvg/agent-runtime': resolve(
+        workspaceRoot,
+        'packages/agent-runtime/src/index.ts'
+      ),
+      '@cvg/agent-evals': resolve(
+        workspaceRoot,
+        'packages/agent-evals/src/index.ts'
+      ),
+      '@cvg/chaos': resolve(workspaceRoot, 'packages/chaos/src/index.ts')
     }
   }
 })

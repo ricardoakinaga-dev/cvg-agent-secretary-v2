@@ -27,7 +27,15 @@
       "@cvg/adapters": ["packages/adapters/src/index.ts"],
       "@cvg/memory": ["packages/memory/src/index.ts"],
       "@cvg/rag": ["packages/rag/src/index.ts"],
-      "@cvg/platform": ["packages/platform/src/index.ts"]
+      "@cvg/platform": ["packages/platform/src/index.ts"],
+      "@cvg/model-gateway": ["packages/model-gateway/src/index.ts"],
+      "@cvg/policy-engine": ["packages/policy-engine/src/index.ts"],
+      "@cvg/approval-engine": ["packages/approval-engine/src/index.ts"],
+      "@cvg/channel-gateway": ["packages/channel-gateway/src/index.ts"],
+      "@cvg/observability": ["packages/observability/src/index.ts"],
+      "@cvg/agent-runtime": ["packages/agent-runtime/src/index.ts"],
+      "@cvg/agent-evals": ["packages/agent-evals/src/index.ts"],
+      "@cvg/chaos": ["packages/chaos/src/index.ts"]
     }
   }
 }

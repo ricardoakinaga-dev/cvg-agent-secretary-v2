@@ -17,7 +17,7 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     services:
       postgres:
         image: postgres:16-alpine
@@ -34,12 +34,12 @@ jobs:
           --health-retries 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: npm
@@ -58,6 +58,18 @@ jobs:
 
       - name: Worker startup fail-closed smoke
         run: npm run test:worker:startup
+
+      - name: Agent evals
+        run: npm run test:evals
+
+      - name: Chaos suite
+        run: npm run test:chaos
+
+      - name: Dependency licenses
+        run: npm run licenses:check
+
+      - name: SBOM
+        run: npm run sbom
 
       - name: PostgreSQL migration smoke
         env:

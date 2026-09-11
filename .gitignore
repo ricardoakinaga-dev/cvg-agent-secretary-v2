@@ -7,6 +7,7 @@ playwright-report/
 playwright-results.xml
 blob-report/
 .gauntlet/*.lock
+.opencode/
 .env
 .env.local
 .env.*

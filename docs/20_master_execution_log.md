@@ -1,3 +1,13 @@
+# PHASE 10 — PRODUCTION ASSURANCE & AGENT RUNTIME CLOSURE — 2026-09-11
+
+- status: `COMPLETED_WITH_EXTERNAL_GATES_PENDING`; engine: `BUILD`+`AUDIT`; ondas 10.0–10.13 executadas em escopo controlado.
+- ação: baseline mecânico (`certification/baseline.json`), kernel governado (policy→approval binding→model gateway→tool→outbox→audit chain), evals com adversarial, chaos 16 cenários, observabilidade OTel, supply chain e certificação derivada por script.
+- resultado: gates locais 16/16 executados, 15 PASS + PostgreSQL `NOT_EXECUTED` (sem `TEST_DATABASE_URL`); decisão mecânica `CONDITIONAL_GO`/`AAA_CONTROLLED`; P0=0, P1=0, P2=5 com owner e mitigação.
+- verificação: 172 arquivos/864 testes PASS; coverage 86,67/81,63/90,36/87,71; evals 94,64% task success com 0 violação; chaos 14/14; load 10k com 0 perda/0 duplicação; restore íntegro; SBOM 369 componentes; 0 licenças negadas; validação por mutação prova que o gate falha sob adulteração e volta a PASS restaurado.
+- evidência: `certification/phase10-result.json`, `certification/manifest.json`, `docs/10_phase10/PHASE10_FINAL_AUDIT.md`.
+- limites: sem produção, dados reais, provider/canal/IdP, deploy, RPO/RTO medido ou signoff humano; nenhuma alegação de `STATE_OF_ART_TRIPLE_AAA`.
+- próxima ação: P10-B01/P10-B04/P10-B05/P10-B08; manter produção e ações sensíveis bloqueadas.
+
 # AUD-20260911-001 — auditoria integral atual — 2026-09-11
 
 - status: `COMPLETED_WITH_OPEN_FINDINGS`; engine: `AUDIT`; escopo: API, worker, runtime, persistência, segurança, governança, RAG, integrações, UI, CI e operação.

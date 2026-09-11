@@ -1,3 +1,11 @@
+# PHASE 10 — backlog de produção assurance — 2026-09-11
+
+- status: `READY_FOR_NEXT_STEP`; itens rastreáveis em `docs/10_phase10/PHASE10_BACKLOG.json`.
+- bloqueadores de produção: `P10-B01` gate PostgreSQL real; `P10-B04` RPO/RTO medidos; `P10-B05` provider/canal/identidade validados; `P10-B08` signoff humano.
+- itens de evolução: `P10-B02` migrar runtime legado ao kernel governado; `P10-B03` propagação OTel nativa; `P10-B06` load 100k; `P10-B07` audit ledger persistido; `P10-B09` UI de dead letters; `P10-B10` rotação de segredo.
+- decisão: `CONDITIONAL_GO`/`AAA_CONTROLLED`; nenhum item deste backlog autoriza produção; P0=0 e P1=0.
+- evidência: `certification/phase10-result.json` e `docs/10_phase10/PHASE10_FINAL_AUDIT.md`.
+
 # AUD-20260911-001 — backlog derivado da auditoria atual — 2026-09-11
 
 - status: `COMPLETED_WITH_OPEN_FINDINGS`; fase: `AUDIT`; veredicto: `CONDITIONAL_PASS_CONTROLLED_NO_GO_EXTERNAL`.

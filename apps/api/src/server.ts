@@ -121,6 +121,8 @@ import {
 import { InMemoryRateLimiter } from './rate-limit.ts'
 import { ControlledRequestMetrics } from './request-metrics.ts'
 import { installResponseCorrelationHook } from './response-correlation.ts'
+import { healthRoute, liveRoute, readyRoute } from './routes/health.ts'
+import { evaluateReadiness } from './readiness.ts'
 import {
   classifyHttpRequestError,
   createInvalidJsonBodyError,
@@ -421,9 +423,24 @@ export function buildServer(options: BuildServerOptions = {}) {
       ? (options.requireAuthenticatedMutations ?? false)
       : true
 
-  app.get('/health', async () =>
+  app.get(healthRoute, async () =>
     ok({ status: 'ok', runtime: 'api' }, createCorrelationId())
   )
+
+  app.get(liveRoute, async () =>
+    ok({ status: 'ok', runtime: 'api', probe: 'live' }, createCorrelationId())
+  )
+
+  app.get(readyRoute, async (_request, reply) => {
+    const readiness = evaluateReadiness({
+      persistenceMode: options.persistence?.kind ?? 'memory',
+      durableInbound,
+      production: process.env.NODE_ENV === 'production'
+    })
+    reply.header('cache-control', 'no-store')
+    reply.code(readiness.ready ? 200 : 503)
+    return ok(readiness, createCorrelationId())
+  })
 
   app.get('/health/metrics', async (_request, reply) => {
     const correlationId = createCorrelationId()

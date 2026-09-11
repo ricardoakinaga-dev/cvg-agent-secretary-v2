@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "phase": "10",
+  "kind": "phase10-certification",
+  "commit": "0d48cc80ca9b5f359255547c8482b3aae1f93ad7",
+  "decision": "CONDITIONAL_GO",
+  "certification": "AAA_CONTROLLED",
+  "mechanicalEvidence": {
+    "result": "certification/phase10-result.json",
+    "manifest": "certification/manifest.json",
+    "baseline": "certification/baseline.json",
+    "evals": "certification/agent-eval-report.json",
+    "chaos": "certification/chaos-report.json",
+    "load": "certification/load-report.json",
+    "restore": "certification/restore-report.json",
+    "negativeValidation": "certification/negative-validation.json",
+    "sbom": "certification/sbom.cyclonedx.json",
+    "licenses": "certification/license-report.json",
+    "findings": "certification/findings.json",
+    "externalGates": "certification/external-gates.json"
+  },
+  "verifiedBy": "npm run certification:verify",
+  "humanSignoff": "PENDING",
+  "externalIntegrations": "NOT_VALIDATED",
+  "notes": [
+    "This file is a human-readable pointer; the authoritative decision is derived and validated mechanically from certification/phase10-result.json.",
+    "CONDITIONAL_GO is the maximum decision while PostgreSQL, external integrations and human signoff gates are not satisfied.",
+    "No production deployment, real channel, real provider, real patient data or clinical/financial action was performed."
+  ]
+}

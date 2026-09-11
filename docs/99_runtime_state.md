@@ -1,3 +1,14 @@
+# PHASE 10 — PRODUCTION ASSURANCE & AGENT RUNTIME CLOSURE — 2026-09-11
+
+- status: `READY_FOR_NEXT_STEP`; engine: `BUILD`+`AUDIT`; fase: Phase 10.0–10.13 executada em escopo controlado (sem produção, dados reais, canais, provider ou IdP reais).
+- last_completed_action: oito pacotes novos (`model-gateway`, `policy-engine`, `approval-engine`, `channel-gateway`, `observability`, `agent-runtime`, `agent-evals`, `chaos`), hardening de `/live`/`/ready` e shutdown gracioso, supply chain (CodeQL/gitleaks/SBOM/licenças/actions pinadas), certificação mecânica `npm run certify` + `npm run certification:verify`.
+- verificação final: 172 arquivos/864 testes PASS; coverage 86,67/81,63/90,36/87,71; evals 56 cenários com 0 violação e 100% adversarial; chaos 14/14 executados PASS (CHAOS-04/05 NOT_EXECUTED sem PostgreSQL); load 10k eventos com 0 perda/0 duplicação; restore com digest íntegro; SBOM 369 componentes e 0 licenças negadas; format/typecheck/lint/build/security/worker/e2e PASS.
+- decisão: `CONDITIONAL_GO` / `AAA_CONTROLLED`; nenhum gate externo, RPO/RTO de produção ou signoff humano foi inventado.
+- evidência: `certification/phase10-result.json`, `certification/manifest.json`, `certification/negative-validation.json`, `docs/10_phase10/PHASE10_FINAL_AUDIT.md`.
+- next_action: fechar o gate PostgreSQL em ambiente real (P10-B01), medir RPO/RTO (P10-B04) e validar provider/canal/identidade com signoff humano (P10-B05/P10-B08).
+- human_decision_required: no para a lane controlada; sim para qualquer piloto real, produção, integração externa ou ação sensível.
+- limites: fixtures sintéticas e serviços locais; nenhum deploy, segredo real, dado de paciente ou ação clínica/financeira foi executado.
+
 # AUD-20260911-001 — auditoria integral atual — 2026-09-11
 
 - status: `COMPLETED_WITH_OPEN_FINDINGS`; engine: `AUDIT`; fase: auditoria integral read-only do estado atual.

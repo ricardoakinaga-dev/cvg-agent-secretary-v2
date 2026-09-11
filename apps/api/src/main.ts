@@ -1,10 +1,22 @@
 import { buildServerFromEnv } from './server.ts'
 import { serializeStartupFailure } from './startup-failure.ts'
-import { parseEnv } from '@cvg/shared'
+import { createShutdownController, parseEnv } from '@cvg/shared'
 
 async function start() {
   parseEnv(process.env)
   const app = await buildServerFromEnv()
+  const shutdown = createShutdownController({
+    close: () => app.close(),
+    exit: (code) => process.exit(code),
+    log: (event) => {
+      if (event.type !== 'shutdown.started') {
+        console.error(
+          JSON.stringify({ event: event.type, signal: event.signal })
+        )
+      }
+    }
+  })
+  shutdown.install(process)
   const port = Number(process.env.PORT ?? 3000)
   await app.listen({ port, host: '0.0.0.0' })
 }

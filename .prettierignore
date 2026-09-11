@@ -1,0 +1,10 @@
+certification/chaos-report.json
+certification/agent-eval-report.json
+certification/load-report.json
+certification/restore-report.json
+certification/logs/
+certification/baseline-logs/
+coverage/
+test-results/
+playwright-report/
+certification/mutation-logs/
