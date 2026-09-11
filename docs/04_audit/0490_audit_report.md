@@ -1,5 +1,15 @@
 # 0490 — Audit Report
 
+## Parecer vigente — AUD-DOC-001 — 2026-09-05T00:54:31-03:00
+
+Parecer consolidado: Nota geral 69/100; RF 61,4/100; plataforma controlada 85/100; operação real 25/100. AUDIT_COMPLETED_WITH_OPEN_FINDINGS; produção NO-GO. Testes verdes não encerram os achados.
+
+Fonte atual: [relatório integral](0539_documentation_implementation_review.md), [inventário](0540_documentation_review_inventory.json) e [evidências](0541_documentation_review_evidence.json). Auditoria solicitada concluída; correções futuras ainda abertas.
+
+AUD-F07 (P2) adicional: repositório de approval de atendimento aceita escrita de snapshot obsoleto; consumo único de capability approval não prova CAS nessa fila. Reprodução e limites no relatório 0539; remediação futura por gate próprio.
+
+## Registro histórico anterior a esta auditoria
+
 ## Status geral
 
 ```txt

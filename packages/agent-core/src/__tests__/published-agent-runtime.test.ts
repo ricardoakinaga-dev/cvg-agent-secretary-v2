@@ -109,6 +109,45 @@ async function publishedFixture() {
 }
 
 describe('published agent runtime adapter', () => {
+  it('preempts administrative planning for compound and unresolved history risk', async () => {
+    const { store, agent, published } = await publishedFixture()
+    const planTools = vi.fn().mockReturnValue([{ toolName: 'fixture_tool' }])
+    const execute = vi.fn()
+    const resolveCapabilityApproval = vi.fn()
+    for (const entry of [
+      {
+        message: 'Quero consulta, meu cachorro está vomitando sangue.',
+        history: []
+      },
+      {
+        message: 'Quero consulta.',
+        history: ['Meu cachorro está vomitando sangue.']
+      }
+    ]) {
+      const result = await executePublishedAgent({
+        store,
+        tenantId,
+        agentId: agent.id,
+        versionId: published.id,
+        ...entry,
+        capabilityGateway: {
+          planTools,
+          execute
+        } as unknown as CapabilityGateway,
+        resolveCapabilityApproval
+      })
+      expect(result.trace).toMatchObject({
+        risk: { level: 'high' },
+        handoff: { requested: true, priority: 'high' },
+        tools: [],
+        provider: { externalCall: false }
+      })
+    }
+    expect(planTools).not.toHaveBeenCalled()
+    expect(execute).not.toHaveBeenCalled()
+    expect(resolveCapabilityApproval).not.toHaveBeenCalled()
+  })
+
   it('blocks tools after rejecting an unsafe output in controlled runtime', async () => {
     const { store, agent, published } = await publishedFixture()
     const observed: PlatformEventEnvelope[] = []

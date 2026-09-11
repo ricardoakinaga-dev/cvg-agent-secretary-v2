@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+import * as testLab from '../test-lab.ts'
 import {
   AgentConfigSchema,
   createControlledSecretaryConfig,
@@ -40,7 +41,7 @@ describe('critical safety publish preflight', () => {
 
     expect(result).toMatchObject({
       passed: true,
-      caseCount: 5,
+      caseCount: 10,
       externalCall: false
     })
     expect(result.cases).toEqual(
@@ -124,6 +125,155 @@ describe('critical safety publish preflight', () => {
           caseId: 'medication-advice',
           reasons: expect.arrayContaining(['external_call_must_remain_false'])
         })
+      ])
+    )
+  })
+
+  it('detects an attempted empty plan even when the trace shows no tools', async () => {
+    const store = new InMemoryControlPlaneStore()
+    const { agent, version } = await createCandidate(store)
+    const run = testLab.runTestLab
+    const spy = vi
+      .spyOn(testLab, 'runTestLab')
+      .mockImplementation(async (input) => {
+        if (input.message.includes('sangue') && input.capabilityGateway) {
+          const emptyConfig = createControlledSecretaryConfig()
+          emptyConfig.plugins = []
+          expect(
+            input.capabilityGateway.planTools(emptyConfig, 'scheduling')
+          ).toEqual([])
+        }
+        return run(input)
+      })
+    try {
+      const report = await runCriticalSafetyPreflight({
+        store,
+        tenantId,
+        agentId: agent.id,
+        versionId: version.id
+      })
+      expect(report.passed).toBe(false)
+      expect(report.failures).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            caseId: 'compound-scheduling-risk',
+            reasons: expect.arrayContaining([
+              'compound_tools_must_not_be_planned'
+            ])
+          })
+        ])
+      )
+    } finally {
+      spy.mockRestore()
+    }
+  })
+
+  it.each(['risk', 'priority', 'tools'] as const)(
+    'rejects compound safety regression: %s',
+    async (field) => {
+      class RegressedStore extends InMemoryControlPlaneStore {
+        override async recordTestRun(
+          scope: TenantScope,
+          trace: TestRunTrace
+        ): Promise<TestRunTrace> {
+          const recorded = await super.recordTestRun(scope, trace)
+          if (!trace.input.message.includes('sangue')) return recorded
+          return {
+            ...recorded,
+            ...(field === 'risk'
+              ? { risk: { level: 'low' as const, reason: 'regression' } }
+              : {}),
+            ...(field === 'priority'
+              ? { handoff: { ...recorded.handoff, priority: 'low' as const } }
+              : {}),
+            ...(field === 'tools'
+              ? {
+                  tools: [
+                    { name: 'find_available_slots', status: 'blocked' as const }
+                  ]
+                }
+              : {})
+          }
+        }
+      }
+      const store = new RegressedStore()
+      const { agent, version } = await createCandidate(store)
+      const report = await runCriticalSafetyPreflight({
+        store,
+        tenantId,
+        agentId: agent.id,
+        versionId: version.id
+      })
+      expect(report.passed).toBe(false)
+      expect(report.failures).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ caseId: 'compound-scheduling-risk' })
+        ])
+      )
+    }
+  )
+
+  it('fails closed when the medication risk is downgraded in the recorded trace', async () => {
+    class RegressedMedicationStore extends InMemoryControlPlaneStore {
+      override async recordTestRun(
+        scope: TenantScope,
+        trace: TestRunTrace
+      ): Promise<TestRunTrace> {
+        const recorded = await super.recordTestRun(scope, trace)
+        if (!trace.input.message.includes('dipirona')) return recorded
+        return {
+          ...recorded,
+          risk: { level: 'low', reason: 'synthetic-regression' }
+        } as TestRunTrace
+      }
+    }
+    const store = new RegressedMedicationStore()
+    const { agent, version } = await createCandidate(store)
+    const report = await runCriticalSafetyPreflight({
+      store,
+      tenantId,
+      agentId: agent.id,
+      versionId: version.id
+    })
+    expect(report.passed).toBe(false)
+    expect(report.failures).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ caseId: 'medication-safety-boundary' })
+      ])
+    )
+  })
+
+  it('fails closed when a medication trace is downgraded and carries a planned tool', async () => {
+    class RegressedMedicationTraceStore extends InMemoryControlPlaneStore {
+      override async recordTestRun(
+        scope: TenantScope,
+        trace: TestRunTrace
+      ): Promise<TestRunTrace> {
+        const recorded = await super.recordTestRun(scope, trace)
+        if (!trace.input.message.includes('dipirona')) return recorded
+        return {
+          ...recorded,
+          risk: { level: 'low', reason: 'synthetic-regression' },
+          tools: [{ name: 'find_available_slots', status: 'blocked' }]
+        } as TestRunTrace
+      }
+    }
+    const store = new RegressedMedicationTraceStore()
+    const { agent, version } = await createCandidate(store)
+    const report = await runCriticalSafetyPreflight({
+      store,
+      tenantId,
+      agentId: agent.id,
+      versionId: version.id
+    })
+    const medication = report.failures.find(
+      (failure) => failure.caseId === 'medication-advice'
+    )
+    expect(report.passed).toBe(false)
+    expect(medication?.reasons).toEqual(
+      expect.arrayContaining([
+        'medication_risk_must_remain_critical',
+        'critical_tools_must_not_be_planned'
       ])
     )
   })

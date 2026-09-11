@@ -22,6 +22,26 @@ export interface SanitizedAuditEvidencePayload {
   redactedFields: string[]
 }
 
+export const REDACTED_OUTBOX_ERROR = '[redacted-outbox-error]'
+
+/**
+ * Durable error columns are operational metadata, never an error-message
+ * transport. Preserve only a bounded machine code when one is explicitly
+ * supplied; arbitrary Error messages are replaced with a fixed marker.
+ */
+export function sanitizeOutboxError(error: unknown): string {
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    typeof error.code === 'string' &&
+    /^[a-z][a-z0-9_]{0,63}$/.test(error.code)
+  ) {
+    return `outbox_error:${error.code}`
+  }
+  return REDACTED_OUTBOX_ERROR
+}
+
 const sensitivePayloadKeys = new Set([
   'authorization',
   'body',
@@ -75,10 +95,85 @@ const sensitivePayloadFragments = [
   'token'
 ]
 
+const outboxFieldRedactions = new Map<string, string>([
+  ['address', '[redacted-address]'],
+  ['cnpj', '[redacted-cnpj]'],
+  ['cpf', '[redacted-cpf]'],
+  ['dateofbirth', '[redacted-birth-date]'],
+  ['diagnosis', '[redacted-diagnosis]'],
+  ['document', '[redacted-document]'],
+  ['documentid', '[redacted-document]'],
+  ['email', '[redacted-email]'],
+  ['medicalrecord', '[redacted-medical-record]'],
+  ['name', '[redacted-name]'],
+  ['patientname', '[redacted-name]'],
+  ['phone', '[redacted-phone]'],
+  ['prescription', '[redacted-prescription]'],
+  ['symptoms', '[redacted-symptoms]']
+])
+
+const outboxSecretFragments = [
+  'accesskey',
+  'accesstoken',
+  'apikey',
+  'authorization',
+  'clientsecret',
+  'credential',
+  'password',
+  'privatekey',
+  'secret',
+  'token'
+]
+
+const outboxSafeStringKeys = new Set([
+  'agentid',
+  'agentversionid',
+  'channel',
+  'conversationid',
+  'correlationid',
+  'eventid',
+  'eventtype',
+  'inboundmessageid',
+  'messageid',
+  'policy',
+  'sessionid',
+  'tenantid',
+  'type'
+])
+
+const outboxOpaqueTextKeys = new Set([
+  'content',
+  'description',
+  'error',
+  'message',
+  'prompt',
+  'query',
+  'reason',
+  'response',
+  'summary',
+  'text'
+])
+
 export function sanitizeAuditEvidencePayload(
   payload: unknown
 ): SanitizedAuditEvidencePayload {
   const result = sanitizeValue(payload, '')
+  return {
+    payload: result.value,
+    redactedFields: result.redactedFields
+  }
+}
+
+/**
+ * Sanitizes durable queue envelopes while preserving their shape for a
+ * controlled consumer. Audit evidence intentionally drops sensitive fields;
+ * an outbox envelope instead keeps stable keys as explicit placeholders so a
+ * worker can correlate the event by id without persisting raw inbound content.
+ */
+export function sanitizeOutboxPayload(
+  payload: unknown
+): SanitizedAuditEvidencePayload {
+  const result = sanitizeOutboxValue(payload, '')
   return {
     payload: result.value,
     redactedFields: result.redactedFields
@@ -112,6 +207,11 @@ export function redactSensitiveText(text: string): string {
         return uuidLike ? match : '[redacted-phone]'
       }
     )
+    .replace(
+      /\b(?:authorization|api[_-]?key|access[_-]?token|client[_-]?secret|credential|password|private[_-]?key|token|secret)\s*[:=]\s*(?:bearer\s+)?[^\s,;]+/gi,
+      '[redacted-secret]'
+    )
+    .replace(/\bBearer\s+[A-Za-z0-9._~+/=-]+/gi, 'Bearer [redacted-secret]')
 }
 
 function sanitizeValue(
@@ -167,6 +267,135 @@ function sanitizeValue(
     },
     { value: {}, redactedFields: [] }
   )
+}
+
+function sanitizeOutboxValue(
+  value: unknown,
+  path: string
+): { value: unknown; redactedFields: string[] } {
+  if (Array.isArray(value)) {
+    return value.reduce<{ value: unknown[]; redactedFields: string[] }>(
+      (result, item, index) => {
+        const sanitized = sanitizeOutboxValue(
+          item,
+          joinPath(path, String(index))
+        )
+        return {
+          value: [...result.value, sanitized.value],
+          redactedFields: [
+            ...result.redactedFields,
+            ...sanitized.redactedFields
+          ]
+        }
+      },
+      { value: [], redactedFields: [] }
+    )
+  }
+
+  if (typeof value === 'string') {
+    const key =
+      path
+        .split('.')
+        .at(-1)
+        ?.toLowerCase()
+        .replace(/[^a-z0-9]/g, '') ?? ''
+    const sanitized = isSafeOutboxString(key, value)
+      ? value
+      : '[redacted-outbox-text]'
+    return {
+      value: sanitized,
+      redactedFields: sanitized === value && path ? [] : path ? [path] : []
+    }
+  }
+
+  if (typeof value === 'number') {
+    return {
+      value: '[redacted-outbox-number]',
+      redactedFields: path ? [path] : []
+    }
+  }
+
+  if (typeof value !== 'object' || value === null) {
+    return { value, redactedFields: [] }
+  }
+
+  return Object.entries(value).reduce<{
+    value: Record<string, unknown>
+    redactedFields: string[]
+  }>(
+    (result, [key, child]) => {
+      const childPath = joinPath(path, key)
+      const replacement = outboxReplacementForKey(key, child)
+      if (replacement) {
+        return {
+          value: { ...result.value, [key]: replacement },
+          redactedFields: [...result.redactedFields, childPath]
+        }
+      }
+
+      const sanitized = sanitizeOutboxValue(child, childPath)
+      return {
+        value: { ...result.value, [key]: sanitized.value },
+        redactedFields: [...result.redactedFields, ...sanitized.redactedFields]
+      }
+    },
+    { value: {}, redactedFields: [] }
+  )
+}
+
+function outboxReplacementForKey(key: string, value: unknown): string | null {
+  const normalized = key.toLowerCase().replace(/[^a-z0-9]/g, '')
+  if (outboxSecretFragments.some((fragment) => normalized.includes(fragment))) {
+    return '[redacted-secret]'
+  }
+  if (normalized.includes('body')) {
+    return '[redacted-outbox-body]'
+  }
+  if (normalized.includes('externalmessageid')) {
+    return '[redacted-external-message-id]'
+  }
+  if (normalized.includes('senderref')) {
+    return '[redacted-sender-ref]'
+  }
+  const direct = outboxFieldRedactions.get(normalized)
+  if (direct) return direct
+  if (outboxOpaqueTextKeys.has(normalized)) {
+    return '[redacted-outbox-text]'
+  }
+  if (normalized.includes('address')) return '[redacted-address]'
+  if (normalized.includes('birth')) return '[redacted-birth-date]'
+  if (normalized.includes('email')) return '[redacted-email]'
+  if (normalized.includes('name')) return '[redacted-name]'
+  if (normalized.includes('phone')) return '[redacted-phone]'
+  if (normalized.includes('senderref')) return '[redacted-sender-ref]'
+  if (typeof value === 'string' && !isSafeOutboxString(normalized, value)) {
+    return '[redacted-outbox-text]'
+  }
+  return null
+}
+
+function isSafeOutboxString(key: string, value: string): boolean {
+  if (!outboxSafeStringKeys.has(key)) return false
+  if (key === 'channel') return /^(?:internal|web|whatsapp)$/.test(value)
+  if (key === 'policy') return /^outbox-r[0-9]{1,3}$/.test(value)
+  if (key === 'type' || key === 'eventtype') {
+    return /^[a-z][a-z0-9_.:-]{1,127}$/.test(value)
+  }
+  if (key === 'correlationid') return /^corr_[0-9a-f-]{36}$/.test(value)
+  if (key === 'tenantid') return /^tenant_[0-9a-f-]{36}$/.test(value)
+  if (key === 'agentid') return /^agent_[0-9a-f-]{36}$/.test(value)
+  if (key === 'agentversionid') {
+    return /^agent_version_[0-9a-f-]{36}$/.test(value)
+  }
+  if (key === 'conversationid') return /^conv_[0-9a-f-]{36}$/.test(value)
+  if (key === 'sessionid') return /^sess_[0-9a-f-]{36}$/.test(value)
+  if (key === 'inboundmessageid' || key === 'messageid') {
+    return /^[a-z][a-z0-9]*_[0-9a-f-]{36}$/.test(value)
+  }
+  if (key === 'eventid') {
+    return /^[a-z][a-z0-9]*_[0-9a-f-]{36}$/.test(value)
+  }
+  return false
 }
 
 function joinPath(parent: string, child: string): string {

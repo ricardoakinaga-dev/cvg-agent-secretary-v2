@@ -81,6 +81,8 @@ describe('postgres migration smoke', () => {
         values?: unknown[]
       ) {
         queries.push(values ? { text, values } : { text })
+        if (text.includes('INSERT INTO approval_requests'))
+          return result([{ id: 'approval_fake' }] as unknown as T[])
         if (text.includes('UPDATE sessions SET takeover_state')) {
           fakeTakeoverState = values?.[1] as typeof fakeTakeoverState
         }
@@ -171,6 +173,13 @@ describe('postgres migration smoke', () => {
       externalMessageId: 'ext_fake',
       body: 'Mensagem fake'
     })
+    const idempotencyInsert = queries.find((query) =>
+      query.text.includes('INSERT INTO idempotency')
+    )
+    expect(idempotencyInsert?.values?.[1]).toMatch(
+      /^inbound:whatsapp:sha256:[0-9a-f]{64}$/
+    )
+    expect(idempotencyInsert?.values?.[1]).not.toContain('ext_fake')
     const continued = await repository.createWithSession({
       tenantId,
       channel: 'whatsapp',
@@ -313,6 +322,76 @@ describe('postgres migration smoke', () => {
     ).toBeGreaterThanOrEqual(5)
   })
 
+  it('reloads a committed inbound runtime context inside the tenant boundary', async () => {
+    const tenantId = 'tenant_00000000-0000-4000-8000-000000000174' as const
+    const queries: Array<{ text: string; values?: unknown[] }> = []
+    const fakeClient = {
+      async query<T extends QueryResultRow = QueryResultRow>(
+        text: string,
+        values?: unknown[]
+      ): Promise<QueryResult<T>> {
+        queries.push(values ? { text, values } : { text })
+        return {
+          command: 'SELECT',
+          fields: [],
+          oid: 0,
+          rowCount: 1,
+          rows: [
+            {
+              message_id: 'msg_runtime_context',
+              conversation_id: 'conv_runtime_context',
+              external_message_id: 'provider-id-without-pii',
+              direction: 'inbound',
+              body: 'token=sk-live-not-real',
+              runtime_status: 'pending',
+              message_created_at: new Date('2026-09-05T12:00:00.000Z'),
+              channel: 'web',
+              sender_ref: 'sender-runtime-context',
+              correlation_id: 'corr_00000000-0000-4000-8000-000000000174',
+              session_id: 'sess_runtime_context',
+              session_status: 'open',
+              session_takeover_state: 'BOT_ACTIVE',
+              agent_id: null,
+              agent_version_id: null,
+              session_created_at: new Date('2026-09-05T12:00:00.000Z'),
+              session_updated_at: new Date('2026-09-05T12:00:00.000Z')
+            }
+          ] as unknown as T[]
+        }
+      }
+    }
+    const repository = new PostgresRuntimeRepository(fakeClient, {
+      tenantIsolation: true
+    })
+
+    const context = await repository.findInboundRuntimeContext(
+      tenantId,
+      'conv_runtime_context',
+      'sess_runtime_context',
+      'msg_runtime_context'
+    )
+
+    expect(context).toMatchObject({
+      message: {
+        id: 'msg_runtime_context',
+        body: '[redacted-secret]'
+      },
+      channel: 'web',
+      session: {
+        id: 'sess_runtime_context',
+        takeoverState: 'BOT_ACTIVE'
+      }
+    })
+    expect(queries[0]?.text).toContain('conversations.tenant_id = $4')
+    expect(queries[0]?.text).not.toContain('msg_runtime_context')
+    expect(queries[0]?.values).toEqual([
+      'msg_runtime_context',
+      'conv_runtime_context',
+      'sess_runtime_context',
+      tenantId
+    ])
+  })
+
   it('reads the migration marker and does not replay an applied version', async () => {
     let applied = false
     let migrationRuns = 0
@@ -346,6 +425,122 @@ describe('postgres migration smoke', () => {
     })
 
     expect(migrationRuns).toBe(1)
+  })
+
+  it('commits the PostgreSQL outbox ownership check before invoking the effect', async () => {
+    let activeTransaction = false
+    let commits = 0
+    let journaled = false
+    const createdAt = new Date('2026-09-05T12:00:00.000Z')
+    const leaseUntil = new Date('2026-09-05T12:01:00.000Z')
+    const row = {
+      id: 'outbox_ack_boundary_176',
+      tenant_id: 'tenant_00000000-0000-4000-8000-000000000176',
+      type: 'inbound.process',
+      envelope_version: 1,
+      correlation_id: 'corr_00000000-0000-4000-8000-000000000176',
+      idempotency_key: 'ack-boundary-176',
+      conversation_id: null,
+      session_id: null,
+      agent_id: null,
+      agent_version_id: null,
+      inbound_message_id: null,
+      payload: { fixture: true },
+      status: 'processing',
+      created_at: createdAt,
+      available_at: createdAt,
+      attempts: 1,
+      lease_owner: 'worker-ack-boundary',
+      lease_until: leaseUntil,
+      last_error: null,
+      processed_at: null,
+      dead_lettered_at: null,
+      parent_event_id: null
+    }
+    const result = <T extends QueryResultRow>(rows: T[]): QueryResult<T> => ({
+      command: 'SELECT',
+      fields: [],
+      oid: 0,
+      rowCount: rows.length,
+      rows
+    })
+    const fakeClient = {
+      async query<T extends QueryResultRow = QueryResultRow>(text: string) {
+        if (text === 'BEGIN') {
+          activeTransaction = true
+          return result([] as T[])
+        }
+        if (text === 'COMMIT') {
+          activeTransaction = false
+          commits += 1
+          return result([] as T[])
+        }
+        if (text === 'ROLLBACK') {
+          activeTransaction = false
+          return result([] as T[])
+        }
+        if (
+          text.includes('FROM outbox_events') &&
+          text.includes('FOR UPDATE')
+        ) {
+          return result([
+            journaled
+              ? {
+                  ...row,
+                  status: 'processed',
+                  lease_owner: null,
+                  lease_until: null,
+                  processed_at: createdAt
+                }
+              : row
+          ] as unknown as T[])
+        }
+        if (
+          text.includes('FROM outbox_effects') &&
+          text.includes('FOR UPDATE')
+        ) {
+          return result(
+            (journaled
+              ? [{ result: { status: 'done' }, event_id: row.id }]
+              : []) as unknown as T[]
+          )
+        }
+        if (text.includes('INSERT INTO outbox_effects')) {
+          journaled = true
+          return result([] as T[])
+        }
+        if (text.includes("SET status = 'processed'")) {
+          return result([
+            {
+              ...row,
+              status: 'processed',
+              lease_owner: null,
+              lease_until: null,
+              processed_at: createdAt
+            }
+          ] as unknown as T[])
+        }
+        return result([] as T[])
+      }
+    }
+    const repository = new PostgresRuntimeRepository(fakeClient, {
+      tenantIsolation: true,
+      clock: () => createdAt
+    })
+    const processed = await repository.ack({
+      tenantId: row.tenant_id,
+      eventId: row.id,
+      workerId: row.lease_owner,
+      effect: () => {
+        expect(activeTransaction).toBe(false)
+        expect(commits).toBe(1)
+        return { status: 'done' }
+      }
+    })
+
+    expect(processed.status).toBe('processed')
+    expect(activeTransaction).toBe(false)
+    expect(commits).toBe(2)
   })
 
   it('reconciles a concurrent task idempotency conflict by reading the winner', async () => {

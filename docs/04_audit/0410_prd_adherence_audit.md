@@ -1,5 +1,13 @@
 # 0410 — PRD Adherence Audit
 
+## Parecer vigente — AUD-DOC-001 — 2026-09-05T00:54:31-03:00
+
+Aderência ao PRD: 39 RF: 61,4/100; 9 UC: 53,6/100. Cadastro/agenda/canais/LLM/RAG permanecem parciais ou simulados; AUD-F01 aberto.
+
+Fonte atual: [relatório integral](0539_documentation_implementation_review.md), [inventário](0540_documentation_review_inventory.json) e [evidências](0541_documentation_review_evidence.json). Auditoria solicitada concluída; correções futuras ainda abertas.
+
+## Registro histórico anterior a esta auditoria
+
 ## Objetivo
 
 Validar se a Esmeralda V2 faz o que o PRD prometeu.

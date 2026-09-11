@@ -12,7 +12,12 @@ export function createInMemoryState(): DatabaseState {
     auditEvents: [],
     auditEvidenceCheckpoints: [],
     idempotency: [],
-    outbox: []
+    outbox: [],
+    outboxAttempts: [],
+    outboxEffects: [],
+    ownerDrafts: [],
+    patientDrafts: [],
+    appointmentDrafts: []
   }
 }
 

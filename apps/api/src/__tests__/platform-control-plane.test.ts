@@ -638,7 +638,7 @@ describe('platform control plane API', () => {
     expect(preflight.statusCode).toBe(200)
     expect(report).toMatchObject({
       passed: true,
-      caseCount: 5,
+      caseCount: 10,
       externalCall: false
     })
     expect(JSON.stringify(report)).not.toContain('Posso dar dipirona')

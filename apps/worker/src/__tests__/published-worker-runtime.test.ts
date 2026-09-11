@@ -1,5 +1,6 @@
 import {
   createControlledSecretaryConfig,
+  CapabilityGateway,
   createValidatedControlledReleaseCandidate,
   InMemoryControlPlaneStore,
   TenantIdSchema,
@@ -45,6 +46,60 @@ async function publishVersion(
 }
 
 describe('published worker runtime boundary', () => {
+  it.each([
+    {
+      message: 'Quero consulta, meu cachorro está vomitando sangue.',
+      history: []
+    },
+    {
+      message: 'Quero consulta.',
+      history: ['Meu cachorro está vomitando sangue.']
+    }
+  ])(
+    'hands off compound/context risk before tools: $message',
+    async (entry) => {
+      const platform = new InMemoryControlPlaneStore()
+      const agent = await platform.createAgent(
+        { tenantId },
+        {
+          slug: 'worker-risk',
+          name: 'Synthetic worker risk',
+          description: 'Fixture'
+        }
+      )
+      const published = await publishVersion(platform, agent.id)
+      const planner = vi.spyOn(CapabilityGateway.prototype, 'planTools')
+      const executor = vi.spyOn(CapabilityGateway.prototype, 'execute')
+      try {
+        const result = await processAgentTurnJob(
+          {
+            tenantId,
+            agentId: agent.id,
+            versionId: published.id,
+            ...entry,
+            conversationId: 'conversation_worker_risk',
+            sessionId: 'session_worker_risk'
+          },
+          { platform }
+        )
+        expect(result).toMatchObject({
+          status: 'completed',
+          trace: {
+            risk: { level: 'high' },
+            handoff: { requested: true, priority: 'high' },
+            tools: [],
+            provider: { externalCall: false }
+          }
+        })
+        expect(planner).not.toHaveBeenCalled()
+        expect(executor).not.toHaveBeenCalled()
+      } finally {
+        planner.mockRestore()
+        executor.mockRestore()
+      }
+    }
+  )
+
   it('executes only a bounded pinned job through the published runtime', async () => {
     const platform = new InMemoryControlPlaneStore()
     const agent = await platform.createAgent(
@@ -249,6 +304,90 @@ describe('published worker runtime boundary', () => {
     ).toEqual({
       code: 'queue_adapter_unsupported',
       message: 'No controlled worker queue adapter is available'
+    })
+    expect(
+      getWorkerStartupFailure({
+        CVG_WORKER_QUEUE_ADAPTER: 'controlled-memory'
+      })
+    ).toEqual({
+      code: 'controlled_tenant_missing',
+      message: 'Controlled worker tenant is not configured'
+    })
+    expect(
+      getWorkerStartupFailure({
+        CVG_WORKER_QUEUE_ADAPTER: 'controlled-memory',
+        CVG_WORKER_TENANT_ID: 'tenant_00000000-0000-4000-8000-000000000172'
+      })
+    ).toBeNull()
+    expect(
+      getWorkerStartupFailure({
+        CVG_WORKER_QUEUE_ADAPTER: 'postgres-controlled'
+      })
+    ).toEqual({
+      code: 'postgres_database_missing',
+      message: 'DATABASE_URL is required for the PostgreSQL worker'
+    })
+    expect(
+      getWorkerStartupFailure({
+        CVG_WORKER_QUEUE_ADAPTER: 'postgres-controlled',
+        DATABASE_URL: 'postgres://fixture.invalid/cvg'
+      })
+    ).toEqual({
+      code: 'controlled_tenant_missing',
+      message: 'Controlled worker tenant is not configured'
+    })
+    expect(
+      getWorkerStartupFailure({
+        CVG_WORKER_QUEUE_ADAPTER: 'postgres-controlled',
+        DATABASE_URL: 'postgres://fixture.invalid/cvg',
+        CVG_WORKER_TENANT_ID: tenantId
+      })
+    ).toEqual({
+      code: 'postgres_rls_required',
+      message: 'PostgreSQL worker requires tenant RLS enforcement'
+    })
+    expect(
+      getWorkerStartupFailure({
+        CVG_WORKER_QUEUE_ADAPTER: 'postgres-controlled',
+        DATABASE_URL: 'postgres://fixture.invalid/cvg',
+        CVG_WORKER_TENANT_ID: tenantId,
+        POSTGRES_RLS_ENFORCEMENT: 'true'
+      })
+    ).toEqual({
+      code: 'controlled_mode_required',
+      message: 'PostgreSQL worker requires explicit controlled mode'
+    })
+    expect(
+      getWorkerStartupFailure({
+        CVG_WORKER_QUEUE_ADAPTER: 'postgres-controlled',
+        DATABASE_URL: 'postgres://fixture.invalid/cvg',
+        CVG_WORKER_TENANT_ID: tenantId,
+        POSTGRES_RLS_ENFORCEMENT: 'true',
+        CVG_WORKER_CONTROLLED_MODE: 'true'
+      })
+    ).toBeNull()
+    expect(
+      getWorkerStartupFailure({
+        CVG_WORKER_QUEUE_ADAPTER: 'postgres',
+        DATABASE_URL: 'postgres://fixture.invalid/cvg',
+        CVG_WORKER_TENANT_ID: tenantId,
+        POSTGRES_RLS_ENFORCEMENT: 'true',
+        CVG_WORKER_CONTROLLED_MODE: 'true'
+      })
+    ).toBeNull()
+    expect(
+      getWorkerStartupFailure({
+        NODE_ENV: 'production',
+        CVG_WORKER_QUEUE_ADAPTER: 'postgres-controlled',
+        DATABASE_URL: 'postgres://fixture.invalid/cvg',
+        CVG_WORKER_TENANT_ID: tenantId,
+        POSTGRES_RLS_ENFORCEMENT: 'true',
+        CVG_WORKER_CONTROLLED_MODE: 'true'
+      })
+    ).toEqual({
+      code: 'production_controlled_worker_forbidden',
+      message:
+        'Controlled PostgreSQL worker is disabled in production pending external gates'
     })
   })
 })

@@ -7,6 +7,7 @@ const permissionsByRole: Record<Role, string[]> = {
     'approval:execute',
     'audit:view_limited',
     'conversation:view_assigned',
+    'conversation:update',
     'conversation:assume',
     'task:view',
     'task:update'
@@ -16,6 +17,7 @@ const permissionsByRole: Record<Role, string[]> = {
     'approval:decide',
     'audit:view_limited',
     'conversation:view_assigned',
+    'conversation:update',
     'task:view'
   ],
   Supervisor: [
@@ -23,6 +25,7 @@ const permissionsByRole: Record<Role, string[]> = {
     'approval:decide',
     'audit:view_full',
     'conversation:view_assigned',
+    'conversation:update',
     'conversation:assume',
     'safety:review',
     'task:view'
@@ -32,6 +35,7 @@ const permissionsByRole: Record<Role, string[]> = {
     'audit:view_full',
     'channel:configure',
     'conversation:view_assigned',
+    'conversation:update',
     'conversation:assume',
     'agent:view',
     'agent:configure',

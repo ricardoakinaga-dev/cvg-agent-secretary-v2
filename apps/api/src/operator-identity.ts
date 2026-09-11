@@ -1,22 +1,28 @@
-import { createHmac, timingSafeEqual } from 'node:crypto'
+import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto'
 import { OperatorIdentitySchema, type OperatorIdentity } from '@cvg/shared'
 
 export const TRUSTED_OPERATOR_TOKEN_HEADER = 'x-cvg-operator-token'
 const TRUSTED_OPERATOR_TOKEN_AUDIENCE = 'cvg-api'
 const DEFAULT_TOKEN_LIFETIME_SECONDS = 300
 const DEFAULT_CLOCK_SKEW_SECONDS = 30
+const DEFAULT_REPLAY_CACHE_SIZE = 4_096
+const MAX_REPLAY_CACHE_SIZE = 100_000
 
 interface TrustedOperatorTokenClaims extends OperatorIdentity {
   aud: typeof TRUSTED_OPERATOR_TOKEN_AUDIENCE
   iat: number
   exp: number
+  jti: string
 }
 
 export interface TrustedOperatorIdentityResolverOptions {
-  secret: string
+  /** Active secret first; previous secrets may remain during a bounded rotation. */
+  secret: string | readonly string[]
   now?: () => number
   maxLifetimeSeconds?: number
   clockSkewSeconds?: number
+  /** Maximum number of unexpired token IDs retained for replay protection. */
+  replayCacheSize?: number
 }
 
 export function createTrustedOperatorIdentityToken(
@@ -36,7 +42,8 @@ export function createTrustedOperatorIdentityToken(
     ...OperatorIdentitySchema.parse(identity),
     aud: TRUSTED_OPERATOR_TOKEN_AUDIENCE,
     iat: issuedAt,
-    exp: issuedAt + lifetimeSeconds
+    exp: issuedAt + lifetimeSeconds,
+    jti: `jti_${randomUUID()}`
   }
   const encodedClaims = encodeJson(claims)
   return `${encodedClaims}.${sign(encodedClaims, secret)}`
@@ -45,13 +52,21 @@ export function createTrustedOperatorIdentityToken(
 export function createTrustedOperatorIdentityResolver(
   options: TrustedOperatorIdentityResolverOptions
 ): (headers: Record<string, unknown>) => OperatorIdentity {
-  assertSigningSecret(options.secret)
+  const secrets = (
+    Array.isArray(options.secret) ? options.secret : [options.secret]
+  ).map((secret) => secret.trim())
+  if (secrets.length === 0)
+    throw new Error('At least one signing secret is required')
+  secrets.forEach(assertSigningSecret)
   const now = options.now ?? Date.now
   const maxLifetimeSeconds =
     options.maxLifetimeSeconds ?? DEFAULT_TOKEN_LIFETIME_SECONDS
   const clockSkewSeconds =
     options.clockSkewSeconds ?? DEFAULT_CLOCK_SKEW_SECONDS
+  const replayCacheSize = options.replayCacheSize ?? DEFAULT_REPLAY_CACHE_SIZE
   assertTokenWindow(maxLifetimeSeconds, clockSkewSeconds)
+  assertReplayCacheSize(replayCacheSize)
+  const replayedTokenIds = new Map<string, number>()
 
   return (headers) => {
     const token = headers[TRUSTED_OPERATOR_TOKEN_HEADER]
@@ -62,13 +77,15 @@ export function createTrustedOperatorIdentityResolver(
     if (!encodedClaims || !encodedSignature || extraParts.length > 0) {
       throw new Error('Trusted operator token format is invalid')
     }
-    const expectedSignature = sign(encodedClaims, options.secret)
-    const expectedBuffer = Buffer.from(expectedSignature, 'utf8')
     const receivedBuffer = Buffer.from(encodedSignature, 'utf8')
-    if (
-      expectedBuffer.length !== receivedBuffer.length ||
-      !timingSafeEqual(expectedBuffer, receivedBuffer)
-    ) {
+    const signatureMatches = secrets.some((secret) => {
+      const expectedBuffer = Buffer.from(sign(encodedClaims, secret), 'utf8')
+      return (
+        expectedBuffer.length === receivedBuffer.length &&
+        timingSafeEqual(expectedBuffer, receivedBuffer)
+      )
+    })
+    if (!signatureMatches) {
       throw new Error('Trusted operator token signature is invalid')
     }
 
@@ -85,6 +102,7 @@ export function createTrustedOperatorIdentityResolver(
       claims.aud !== TRUSTED_OPERATOR_TOKEN_AUDIENCE ||
       !Number.isInteger(claims.iat) ||
       !Number.isInteger(claims.exp) ||
+      !isTrustedOperatorTokenId(claims.jti) ||
       claims.exp <= claims.iat ||
       claims.exp - claims.iat > maxLifetimeSeconds
     ) {
@@ -98,6 +116,15 @@ export function createTrustedOperatorIdentityResolver(
     ) {
       throw new Error('Trusted operator token is expired or not active')
     }
+
+    pruneReplayedTokenIds(replayedTokenIds, currentTime)
+    if (replayedTokenIds.has(claims.jti)) {
+      throw new Error('Trusted operator token replay detected')
+    }
+    if (replayedTokenIds.size >= replayCacheSize) {
+      throw new Error('Trusted operator replay cache is full')
+    }
+    replayedTokenIds.set(claims.jti, claims.exp)
     return identity
   }
 }
@@ -127,6 +154,34 @@ function assertTokenWindow(
     clockSkewSeconds > 300
   ) {
     throw new Error('Trusted operator token window is invalid')
+  }
+}
+
+function assertReplayCacheSize(size: number): void {
+  if (
+    !Number.isSafeInteger(size) ||
+    size <= 0 ||
+    size > MAX_REPLAY_CACHE_SIZE
+  ) {
+    throw new Error('Trusted operator replay cache size is invalid')
+  }
+}
+
+function isTrustedOperatorTokenId(value: unknown): value is string {
+  return (
+    typeof value === 'string' &&
+    /^jti_[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(
+      value
+    )
+  )
+}
+
+function pruneReplayedTokenIds(
+  entries: Map<string, number>,
+  currentTime: number
+): void {
+  for (const [jti, expiresAt] of entries) {
+    if (expiresAt <= currentTime) entries.delete(jti)
   }
 }
 

@@ -34,7 +34,10 @@ describe('controlled request metrics exposure boundary', () => {
   it('cannot re-enable the metrics route in production or unknown environments', async () => {
     for (const nodeEnv of ['production', 'staging', 'qa']) {
       process.env.NODE_ENV = nodeEnv
-      const app = buildServer({ requestMetricsEnabled: true })
+      const app = buildServer({
+        requestMetricsEnabled: true,
+        ...(nodeEnv === 'production' ? { durableInbound: true } : {})
+      })
       const response = await app.inject({
         method: 'GET',
         url: '/health/metrics'

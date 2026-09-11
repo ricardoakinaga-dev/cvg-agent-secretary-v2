@@ -1,5 +1,19 @@
 # 0190 — SPEC Validation
 
+## Gate incremental REM-0539 R2 — 2026-09-05
+
+`SPEC_APPROVED_CONTROLLED_BUILD`: [0123_rem0539_r2_contract.md](0123_rem0539_r2_contract.md). REM-08 e a prova PostgreSQL foram fechadas; o usuário autorizou o BUILD local controlado. Integrações externas, dados reais e produção permanecem bloqueados.
+
+## Gate incremental REM-0539 R3/R4/R5 — 2026-09-05
+
+`SPEC_APPROVED_CONTROLLED_BUILD`: [0124_rem0539_r3_contract.md](0124_rem0539_r3_contract.md), [0125_rem0539_r4_integrations_ops.md](0125_rem0539_r4_integrations_ops.md) e [0126_rem0539_r5_qualification.md](0126_rem0539_r5_qualification.md). A autorização cobre somente BUILD/AUDIT controlado com fixtures e adapters locais.
+
+## Gate incremental REM-0539 R1 — 2026-09-05T10:35:31.994051+00:00
+
+`SPEC_APPROVED_CONTROLLED_BUILD`: [0122_rem0539_r1_contract.md](0122_rem0539_r1_contract.md). Execução local autorizada pelo usuário; contratos corretivos registrados antes de BUILD. Não altera gates de dados reais, integração externa ou piloto.
+
+## Histórico anterior
+
 ## Alinhamento com PRD
 
 - [x] Toda decisao tecnica deriva do PRD ou blueprint.

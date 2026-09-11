@@ -1,0 +1,102 @@
+{
+  "program": "REM-0539",
+  "run": "REM-0539-AAA",
+  "round": "R2",
+  "date": "2026-09-05",
+  "scope": "Processamento durável local, tenant-scoped, com fixtures sintéticas e PostgreSQL descartável",
+  "status": "COMPLETED_CONTROLLED",
+  "summary": "REM-10, REM-11 e REM-12 foram implementadas no escopo controlado. O outbox mantém envelope versionado, idempotência por tenant, claim/lease, takeover, retry limitado, dead-letter, requeue in-place, journal de efeitos e auditoria. O aceite inbound e a intenção assíncrona são atômicos; o worker só conclui após ack durável do adapter. PostgreSQL comprova concorrência entre conexões, RLS legado, rollback de auditoria e recuperação. Nenhum broker, provider, canal externo, dado real ou produção foi ativado.",
+  "changes": [
+    "Outbox em memória com tentativas, leases expirados, retry bounded, dead-letter, reprocessamento explícito e redaction.",
+    "Worker processOutboxEvent delega o único efeito ao ack do adapter e encerra em handoff quando takeover está ativo.",
+    "PostgresRuntimeRepository usa transações com conexão do pool, relógio do repositório, journal de efeitos, CAS e filtros de tenant.",
+    "Migração 0010 aditiva classifica legado, preserva quarentena, audita tenant conhecido e restaura FORCE RLS após o backfill.",
+    "Aceite inbound grava mensagem, sessão, conversa e outbox na mesma transação; configurações sem adapter falham fechado."
+  ],
+  "verification": {
+    "full_suite": {
+      "command": "npm test",
+      "result": "148 arquivos passaram; 3 foram omitidos; 634 testes passaram; 23 foram omitidos",
+      "raw_sha256": "7e4d8e2800074ca2167239914ad53c9eb5d5f9fb26902fac6ac34f173eebcac1",
+      "limitations": "Suíte integral executada sem TEST_DATABASE_URL; a prova PostgreSQL separada foi executada com banco local."
+    },
+    "postgres_suite": {
+      "command": "TEST_DATABASE_URL=postgresql://ricardo@127.0.0.1:55439/postgres npm run test:postgres",
+      "result": "9 arquivos passaram; 76 testes passaram",
+      "raw_sha256": "f9aebee4d4dd18c250f12813c3501c2ad1c65c50d0751cb5f4ff5f4510e13cff"
+    },
+    "worker_recovery": {
+      "command": "npx vitest run --no-file-parallelism apps/worker/src/__tests__/outbox-recovery.test.ts apps/api/src/__tests__/durable-inbound.test.ts",
+      "result": "Recuperação, retry, journal único e takeover passaram no worker/API controlados; incluídos na suíte integral.",
+      "status": "PASS",
+      "raw_sha256": "a9860fc086d56806becff1acc9f59b232a75d131f8c36a9ec8777516f82214d1"
+    },
+    "legacy_rls": {
+      "command": "TEST_DATABASE_URL=postgresql://ricardo@127.0.0.1:55439/postgres npx vitest run --no-file-parallelism packages/persistence/src/__tests__/outbox-durability.test.ts -t backfills",
+      "result": "Linha processed legada com FORCE RLS foi classificada, quarentenada e auditada; caso executado como parte da suíte PostgreSQL.",
+      "status": "PASS",
+      "raw_sha256": "5633c334cc096bae18ed44ebbecc74f5e2043402bc269df411c783e6912e3409"
+    },
+    "static_gates": {
+      "commands": [
+        "npm run typecheck -- --pretty false",
+        "npm run lint",
+        "npx prettier --check <fontes TypeScript/TSX modificados>",
+        "git diff --check",
+        "npm run readiness",
+        "npm run test:worker:startup",
+        "npm audit --json",
+        "npx vitest run tests/docs-readiness.test.js tests/construction-readiness.test.js"
+      ],
+      "result": "PASS",
+      "raw_sha256": {
+        "typecheck": "d36574cb9028711b61182e00275db32f0c52838ea8f47c158e94237d04ee0b27",
+        "lint": "55491b719e5b46f007f01ae3b97163a6d85e4eed72ce022a6c9f58f390d5c3c9",
+        "format_before_final_format_pass": "6d83a3564f7f607a548332e41eaafbcd07cb5356c80db107b0460bd253c93ea0",
+        "diff": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "readiness": "6be64b8ff7a496e09db5faad0f712127bc558a3451b1c1388f426d6457057f88",
+        "worker_startup": "7160d3b17b8480d182c28eb768a5bc562514b94d3d91ce8895fa88e66c47a701",
+        "audit": "2c5821a92aec90d9ab7e541e27443e4dbe02fd12d39a86460d81031192d1ea33",
+        "docs": "c9157b40e3e5a0eb08af859b446dae9eb44a977a73e092d49c91f96909bdedd8"
+      }
+    }
+  },
+  "artifacts": [
+    "packages/persistence/src/outbox.ts",
+    "packages/persistence/src/postgres.ts",
+    "packages/persistence/src/schema.ts",
+    "packages/persistence/migrations/0010_outbox_durability.sql",
+    "apps/worker/src/jobs/process-outbox-event.ts",
+    "packages/agent-core/src/commands/receive-inbound-message.ts",
+    "packages/persistence/src/__tests__/outbox-durability.test.ts",
+    "packages/persistence/src/__tests__/outbox-memory.test.ts",
+    "apps/worker/src/__tests__/outbox-recovery.test.ts",
+    "apps/api/src/__tests__/durable-inbound.test.ts"
+  ],
+  "independent_critics": [
+    {
+      "critic_id": "rem0539-r2-memory-worker-builder-i1",
+      "decision": "APPROVE",
+      "finding": "Revisão fresh-context confirmou outbox/worker, redaction, takeover e regressões; não encontrou P0/P1/P2.",
+      "mutation_clean": true,
+      "limitations": "Fixtures locais e PostgreSQL descartável; nenhum broker/provider/canal ou HA real."
+    },
+    {
+      "critic_id": "rem0539-r2-postgres-builder-i1",
+      "decision": "APPROVE",
+      "finding": "Após a correção de FORCE RLS no backfill e do relógio repositoryNow no enqueue, a revisão não encontrou P0/P1/P2.",
+      "mutation_clean": true,
+      "limitations": "Revisão e execução em banco local; não constitui aprovação de produção."
+    }
+  ],
+  "mutation_clean": true,
+  "production_boundary": "NO-GO",
+  "external_gates": {
+    "broker": "NOT_CONNECTED",
+    "provider": "NOT_CONNECTED",
+    "channel": "NOT_CONNECTED",
+    "real_data": "NOT_USED",
+    "deployment": "NOT_PERFORMED"
+  },
+  "next": "Concluir R3/R4/R5 no dossiê final, mantendo todas as integrações externas e produção NO-GO até aprovação humana específica."
+}

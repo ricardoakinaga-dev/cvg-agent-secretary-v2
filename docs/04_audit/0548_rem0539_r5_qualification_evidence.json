@@ -1,0 +1,85 @@
+{
+  "program": "REM-0539",
+  "run": "REM-0539-AAA",
+  "round": "R5",
+  "date": "2026-09-05",
+  "scope": "Qualificação controlada local para carga, operação humana, recuperação e decisão de piloto",
+  "status": "NO_GO_CONTROLLED",
+  "summary": "REM-27 e REM-28 têm medidas locais sintéticas dentro das metas instrumentais e smoke de UI; REM-29 registra NO-GO; REM-30 permanece opcional/deferida por ausência de hotspot mensurado. O resultado não qualifica produção ou piloto: faltam gates externos e decisão humana.",
+  "qualification": {
+    "command": "npx tsx -e <runControlledQualification fixture>",
+    "result": "NO_GO",
+    "raw_sha256": "d9c1f795893fc309128f99324393079a6cb81b1598122c06c3eff302b2c0defa",
+    "metrics": {
+      "persistenceP95Ms": 45,
+      "responseP95Ms": 420,
+      "persistenceSampleCount": 5,
+      "responseSampleCount": 5,
+      "lostMessages": 0,
+      "duplicateEffects": 0
+    },
+    "failedGates": [
+      "external_identity",
+      "provider",
+      "channel",
+      "source_owner",
+      "human_signoff",
+      "rpo_rto"
+    ],
+    "conditions": "Fixtures sintéticas; execução local em 2026-09-05; amostra n=5 por métrica; PostgreSQL descartável; sem provider, canal, fonte ou participante humano autorizado."
+  },
+  "verification": {
+    "full_suite": {
+      "command": "npm test",
+      "result": "148 arquivos passaram; 3 foram omitidos; 634 testes passaram; 23 foram omitidos",
+      "raw_sha256": "7e4d8e2800074ca2167239914ad53c9eb5d5f9fb26902fac6ac34f173eebcac1"
+    },
+    "journey_ui_smoke": {
+      "command": "npx vitest run --no-file-parallelism apps/web/src/features/journeys/journeys.test.tsx apps/api/src/__tests__/journeys-api.test.ts",
+      "result": "UI/API journey smoke included in R3 focused suite; semantic role/label and task/handoff paths pass.",
+      "raw_sha256": "759550440528b859a3a0c381e46216c0afadfc00a27928ccb55ade57b18effb5",
+      "limitations": "Não é estudo com operador nem certificação integral de acessibilidade."
+    },
+    "restore": {
+      "command": "npx vitest run --no-file-parallelism packages/persistence/src/__tests__/restore.test.ts",
+      "result": "Restore digest, tenant ownership, redaction e append-only audit pass; RPO/RTO alvo ainda não foi aprovado.",
+      "raw_sha256": "bd6f0bbcce0a3f4b1f0a3e47c218b12bb6a04d9165a62788949e92356de3f59c"
+    }
+  },
+  "acceptance": {
+    "REM-27": "PASS controlled measurement: p95 persistence 45ms and response 420ms under the registered five-sample local fixture; external SLA gate remains unvalidated.",
+    "REM-28": "PASS controlled smoke: handoff/approval/task affordances and semantic labels exercised; participant and full keyboard/focus assessment pending.",
+    "REM-29": "NO-GO recorded: external identity/provider/channel/source owner, human signoff and approved RPO/RTO are absent.",
+    "REM-30": "DEFERRED_OPTIONAL: no maintenance hotspot measurement authorized; remains outside critical path."
+  },
+  "artifacts": [
+    "docs/00_discovery/0015_rem0539_r5_qualification.md",
+    "docs/01_prd/0026_rem0539_r5_qualification.md",
+    "docs/02_spec/0126_rem0539_r5_qualification.md",
+    "packages/platform/src/qualification.ts",
+    "packages/platform/src/__tests__/qualification.test.ts",
+    "docs/04_audit/0548_rem0539_r5_qualification_evidence.json"
+  ],
+  "independent_critics": [
+    {
+      "critic_id": "rem0539-r5-qualification-critic-i1",
+      "decision": "APPROVE",
+      "finding": "Fresh-context review accepted the conservative NO-GO qualification and found no P0/P1/P2 in the controlled implementation.",
+      "mutation_clean": true,
+      "limitations": "No external provider/channel/identity/source owner, no human participants, no approved RPO/RTO, no production."
+    }
+  ],
+  "mutation_clean": true,
+  "production_boundary": "NO-GO",
+  "external_gates": {
+    "identity": "NOT_CONNECTED",
+    "provider": "NOT_CONNECTED",
+    "channel": "NOT_CONNECTED",
+    "source_owner": "NOT_APPROVED",
+    "human_signoff": "NOT_OBTAINED",
+    "rpo_rto": "NOT_APPROVED",
+    "real_data": "NOT_USED",
+    "deployment": "NOT_PERFORMED"
+  },
+  "next": "Obter RF-011 e decisões externas/humanas, aprovar metas RPO/RTO, repetir carga com perfil aprovado e somente então reavaliar REM-29."
+}

@@ -478,6 +478,7 @@ describe('webhook HMAC API boundary', () => {
     const now = Math.floor(Date.now() / 1000) * 1000
     const input = signingInput({ timestampSeconds: now / 1000 })
     const app = buildServer({
+      durableInbound: true,
       webhookVerifier: new HmacWebhookVerifier({
         secret,
         now: () => now
@@ -531,6 +532,7 @@ describe('webhook HMAC API boundary', () => {
       })
     ).resolves.toBe(true)
     const app = buildServer({
+      durableInbound: true,
       webhookVerifier: new HmacWebhookVerifier({
         secret,
         now: () => now
@@ -564,6 +566,7 @@ describe('webhook HMAC API boundary', () => {
       .mockRejectedValueOnce(new Error('fixture downstream failure'))
       .mockResolvedValue('tenant_00000000-0000-4000-8000-000000000061')
     const app = buildServer({
+      durableInbound: true,
       webhookVerifier: new HmacWebhookVerifier({
         secret,
         now: () => now

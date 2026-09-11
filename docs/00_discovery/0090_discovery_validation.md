@@ -1,5 +1,19 @@
 # 0090 — Discovery Validation
 
+## Gate incremental REM-0539 R2 — 2026-09-05
+
+`DISCOVERY_VALIDATED_CONTROLLED`: [0012_rem0539_r2_durability.md](0012_rem0539_r2_durability.md). O problema de durabilidade está delimitado para PRD/SPEC e BUILD local controlado; integração externa continua fora do gate.
+
+## Gate incremental REM-0539 R3/R4/R5 — 2026-09-05
+
+`DISCOVERY_VALIDATED_CONTROLLED`: [0013_rem0539_r3_journeys.md](0013_rem0539_r3_journeys.md), [0014_rem0539_r4_integrations_ops.md](0014_rem0539_r4_integrations_ops.md) e [0015_rem0539_r5_qualification.md](0015_rem0539_r5_qualification.md). As três ondas permanecem em fixtures, com gates de integração real e piloto separados.
+
+## Gate incremental REM-0539 R1 — 2026-09-05T10:35:31.994051+00:00
+
+`DISCOVERY_VALIDATED_CONTROLLED`: [0011_rem0539_r0_revalidation.md](0011_rem0539_r0_revalidation.md). Execução local autorizada pelo usuário; contratos corretivos registrados antes de BUILD. Não altera gates de dados reais, integração externa ou piloto.
+
+## Histórico anterior
+
 ## Problema
 
 - [x] Claramente definido.

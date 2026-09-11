@@ -210,7 +210,9 @@ describe('api PostgreSQL persistence mode', () => {
       '0006_release_candidate_evidence',
       '0007_audit_evidence_checkpoint',
       '0008_session_agent_version_pin',
-      '0009_release_candidate_validator_integrity'
+      '0009_release_candidate_validator_integrity',
+      '0010_outbox_durability',
+      '0011_outbox_payload_redaction'
     ] as const
     const rows: Array<{
       version: string
@@ -340,7 +342,9 @@ describe('api PostgreSQL persistence mode', () => {
           text.includes("'INSERT'") &&
           text.includes("'UPDATE'") &&
           text.includes("'DELETE'") &&
-          !text.includes("c.relname = 'tenant_isolation_quarantine'")
+          !((values?.[0] as string[] | undefined) ?? []).includes(
+            'tenant_isolation_quarantine'
+          )
         ) {
           const relationNames = (values?.[0] as string[] | undefined) ?? []
           return queryResult(
@@ -356,7 +360,24 @@ describe('api PostgreSQL persistence mode', () => {
             }))
           ) as unknown as QueryResult<T>
         }
-        if (text.includes('FROM pg_class')) {
+        if (
+          text.includes('FROM pg_class') &&
+          ((values?.[0] as string[] | undefined) ?? []).includes(
+            'tenant_isolation_quarantine'
+          )
+        ) {
+          return queryResult(
+            ((values?.[0] as string[] | undefined) ?? []).map(() => ({
+              owner: 'migration_user',
+              can_select: false,
+              can_insert: false,
+              can_update: false,
+              can_delete: false,
+              can_truncate: false
+            }))
+          ) as unknown as QueryResult<T>
+        }
+        if (text.includes('FROM pg_class') && !text.includes('pg_attribute')) {
           return queryResult(
             ((values?.[0] as string[] | undefined) ?? []).map((relname) => ({
               relname,
@@ -578,7 +599,7 @@ describe('api PostgreSQL persistence mode', () => {
         values?: unknown[]
       ): Promise<QueryResult<T>> {
         const names = (values?.[0] as string[] | undefined) ?? []
-        if (text.includes('FROM pg_class')) {
+        if (text.includes('FROM pg_class') && !text.includes('pg_attribute')) {
           return queryResult(
             names.map((relname) => ({
               relname,
@@ -587,16 +608,31 @@ describe('api PostgreSQL persistence mode', () => {
             }))
           ) as unknown as QueryResult<T>
         }
-        if (text.includes('information_schema.columns')) {
+        if (
+          text.includes('information_schema.columns') ||
+          text.includes('pg_attribute')
+        ) {
           return queryResult(
             names.flatMap((table_name) => [
               { table_name, column_name: 'tenant_id' },
-              { table_name, column_name: 'tenant_isolation_quarantined' },
+              ...(table_name === 'outbox_effects' ||
+              table_name === 'outbox_attempts' ||
+              table_name === 'outbox_quarantine'
+                ? []
+                : [
+                    { table_name, column_name: 'tenant_isolation_quarantined' }
+                  ]),
               ...(table_name === 'sessions'
                 ? [
                     { table_name, column_name: 'agent_id' },
                     { table_name, column_name: 'agent_version_id' }
                   ]
+                : []),
+              ...(table_name === 'outbox_events'
+                ? [{ table_name, column_name: 'payload_protection_version' }]
+                : []),
+              ...(table_name === 'outbox_effects'
+                ? [{ table_name, column_name: 'result_protection_version' }]
                 : [])
             ])
           ) as unknown as QueryResult<T>
@@ -621,9 +657,18 @@ describe('api PostgreSQL persistence mode', () => {
             permissive: 'PERMISSIVE',
             roles: '{public}',
             cmd: 'ALL',
-            qual: "tenant_isolation_quarantined = false AND tenant_id = NULLIF(current_setting('cvg.tenant_id', true), '')",
+            qual:
+              tablename === 'outbox_effects' ||
+              tablename === 'outbox_attempts' ||
+              tablename === 'outbox_quarantine'
+                ? "tenant_id = NULLIF(current_setting('cvg.tenant_id', true), '')"
+                : "tenant_isolation_quarantined = false AND tenant_id = NULLIF(current_setting('cvg.tenant_id', true), '')",
             with_check:
-              "tenant_isolation_quarantined = false AND tenant_id = NULLIF(current_setting('cvg.tenant_id', true), '')"
+              tablename === 'outbox_effects' ||
+              tablename === 'outbox_attempts' ||
+              tablename === 'outbox_quarantine'
+                ? "tenant_id = NULLIF(current_setting('cvg.tenant_id', true), '')"
+                : "tenant_isolation_quarantined = false AND tenant_id = NULLIF(current_setting('cvg.tenant_id', true), '')"
           }))
         ) as unknown as QueryResult<T>
       }
@@ -780,6 +825,7 @@ describe('api PostgreSQL persistence mode', () => {
           API_PERSISTENCE_MODE: 'postgres',
           DATABASE_URL: 'postgres://fixture.invalid/cvg',
           POSTGRES_RLS_ENFORCEMENT: 'true',
+          OUTBOX_DURABLE_INBOUND: 'true',
           API_ALLOWED_ORIGINS: 'https://console.example.test',
           API_REQUIRE_HTTPS: 'true',
           API_TRUSTED_PROXY_HOPS: '0'
@@ -797,6 +843,7 @@ describe('api PostgreSQL persistence mode', () => {
         DATABASE_URL: 'postgres://fixture.invalid/cvg',
         INBOUND_TENANT_ID: postgresTenantA,
         POSTGRES_RLS_ENFORCEMENT: 'true',
+        OUTBOX_DURABLE_INBOUND: 'true',
         API_ALLOWED_ORIGINS: 'https://console.example.test',
         API_REQUIRE_HTTPS: 'true',
         API_TRUSTED_PROXY_HOPS: '0'
@@ -1145,6 +1192,7 @@ describe('api PostgreSQL persistence mode', () => {
             INBOUND_TENANT_ID: postgresTenantA,
             INBOUND_AGENT_ID: postgresInboundAgent,
             POSTGRES_RLS_ENFORCEMENT: 'true',
+            OUTBOX_DURABLE_INBOUND: 'true',
             API_ALLOWED_ORIGINS: 'https://console.example.test',
             API_REQUIRE_HTTPS: 'true',
             API_TRUSTED_PROXY_HOPS: '0'
@@ -1185,6 +1233,8 @@ describe('api PostgreSQL persistence mode', () => {
         'audit_events',
         'idempotency',
         'outbox_events',
+        'outbox_effects',
+        'outbox_attempts',
         'platform_agents',
         'platform_agent_versions',
         'platform_test_runs',
@@ -1242,9 +1292,10 @@ describe('api PostgreSQL persistence mode', () => {
             INBOUND_AGENT_ID: postgresInboundAgent,
             POSTGRES_AUTO_MIGRATE: 'true',
             POSTGRES_RLS_ENFORCEMENT: 'true',
+            OUTBOX_DURABLE_INBOUND: 'true',
             API_ALLOWED_ORIGINS: 'https://console.example.test',
             API_REQUIRE_HTTPS: 'true',
-            API_TRUSTED_PROXY_HOPS: '1',
+            API_TRUSTED_PROXY_ADDRESSES: '127.0.0.1',
             POSTGRES_SCHEMA: schemaName
           },
           {

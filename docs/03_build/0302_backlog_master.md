@@ -1,5 +1,9 @@
 # 0302 — Backlog Master
 
+## Planejamento de remediação pós-auditoria — 2026-09-05
+
+Para evolução proposta a partir da auditoria 0539, consultar [0313_backlog_pos_auditoria.md](0313_backlog_pos_auditoria.md) e [plano executivo](0311_plano_executivo_pos_auditoria.md). Os itens abaixo preservam o planejamento original; não representam automaticamente pendências atuais nem aprovação das tasks REM.
+
 ## P0 — Critico
 
 ### P0-01 — Setup monorepo

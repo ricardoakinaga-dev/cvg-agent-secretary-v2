@@ -1,0 +1,92 @@
+{
+  "program": "REM-0539",
+  "run": "REM-0539-AAA",
+  "round": "R7",
+  "date": "2026-09-05",
+  "scope": "Revalidação controlada pós-crítica fresh-context dos limites de outbox, worker PostgreSQL, migração e shell web",
+  "status": "CONDITIONAL_PASS_CONTROLLED_NO_GO_EXTERNAL",
+  "summary": "A implementação local foi revalidada depois dos blockers apontados na crítica R7 preliminar. O outbox agora trata strings não reconhecidas e números como dados opacos, preserva somente identificadores/enumerações com formato controlado, o ack PostgreSQL confirma ownership antes do handler e a migration 0011 mantém trabalho pending roteável enquanto quarentena estados sem isolamento ou rota. O passe permanece limitado a fixtures sintéticas, PostgreSQL descartável e serviços locais; não é autorização de produção ou piloto.",
+  "changes": [
+    "Sanitização de outbox compartilhada entre memória e PostgreSQL: body, sender/external identifiers, segredos, texto arbitrário, status/fixture livres e números não reconhecidos não são persistidos em claro; identificadores internos só passam com formato conhecido.",
+    "Erros duráveis preservam apenas códigos de máquina limitados ou marcadores fixos; o motivo interno de takeover permanece um valor controlado para manter o handoff determinístico.",
+    "Ack PostgreSQL convertido em protocolo at-least-once de duas fases: a transação de ownership faz COMMIT antes do efeito, e a transação final relê lease/journal, grava resultado sanitizado, CAS do evento, tentativa e auditoria.",
+    "Migration 0011 aditiva e rerunnable: relaxa temporariamente checks/RLS apenas para classificar legado, quarentena rows sem tenant/identidade de runtime/tipo controlado, redige payloads/results, restaura FORCE RLS e mantém checks NOT VALID para remediação explícita.",
+    "Idempotência inbound usa digest SHA-256 do identificador externo; o valor do provider não aparece na chave durável. O bridge PostgreSQL exercita o handler controlado real, runtime determinístico e finalização, sem noop nem efeito externo.",
+    "Worker PostgreSQL/controlled é recusado em NODE_ENV=production enquanto os gates externos permanecem ausentes; o caminho local continua bounded e externalEffects=false."
+  ],
+  "verification": {
+    "full_suite": {
+      "command": "npm test -- --reporter=dot",
+      "result": "152 arquivos passaram; 3 foram omitidos; 657 testes passaram; 25 foram omitidos",
+      "status": "PASS",
+      "limitations": "Fixtures sintéticas; skips declarados pelo conjunto de testes."
+    },
+    "postgres_suite": {
+      "command": "TEST_DATABASE_URL=postgresql://postgres@localhost/postgres?host=%2Fhome%2Fricardo%2F.local%2Fshare%2Fcvg-his-v4-runtime%2Frun npm run test:postgres -- --reporter=dot",
+      "result": "10 arquivos passaram; 82 testes passaram; nenhum teste foi omitido",
+      "status": "PASS_CONTROLLED",
+      "limitations": "PostgreSQL local descartável, schema isolado por teste, sem dados reais ou egress externo."
+    },
+    "outbox_and_bridge": {
+      "command": "TEST_DATABASE_URL=... npx vitest run --testTimeout=60000 --no-file-parallelism packages/persistence/src/__tests__/outbox-durability.test.ts apps/worker/src/__tests__/postgres-outbox-bridge.integration.test.ts",
+      "result": "2 arquivos passaram; 8 testes passaram; migration legacy, ack at-least-once, redaction, lease e bridge default real foram exercitados.",
+      "status": "PASS_CONTROLLED"
+    },
+    "coverage": {
+      "command": "npm run test:coverage -- --reporter=dot",
+      "result": "Statements 85.51%; branches 81.02%; functions 91.10%; lines 86.41%",
+      "status": "PASS",
+      "limitations": "Exclusões explícitas da configuração cobrem bootstrap/adapters/browser e gates dedicados; os thresholds continuam 80% e a evidência não é certificação formal."
+    },
+    "static_gates": {
+      "commands": [
+        "npm run typecheck",
+        "npm run lint",
+        "npm run format:check",
+        "npm run build",
+        "npm run readiness",
+        "npm run test:worker:startup",
+        "npm run audit:security",
+        "git diff --check"
+      ],
+      "status": "PASS",
+      "limitations": "Gates locais não substituem signoff humano, identidade/provider/canal/fonte aprovados ou RPO/RTO."
+    },
+    "e2e": {
+      "command": "CVG_WEB_PORT=4201 CVG_API_PORT=3196 npm run test:e2e",
+      "result": "6 testes passaram: HTTP security, session pinning, checkpoint de auditoria, Control Center e shell visual em viewports 375/768/1440.",
+      "status": "PASS_CONTROLLED",
+      "limitations": "Portas livres escolhidas para evitar um servidor local não relacionado; serviços sintéticos, sem canal/destinatário/identidade externa."
+    }
+  },
+  "acceptance": {
+    "REM-10": "PASS controlled revalidation: ownership, lease, ack at-least-once, retry, redaction e bounded drain passaram.",
+    "REM-11": "PASS controlled boundary: inbound aceito permanece investigável, handler real finaliza runtime uma vez e takeover continua suprimindo outbound; broker/provider/canal reais continuam fora do gate.",
+    "REM-12": "PASS controlled revalidation: recovery, migration, idempotência, quarentena e bridge PostgreSQL passaram; exactly-once externo não é afirmado.",
+    "REM-28": "PASS controlled revalidation: shell sem overflow nos viewports exercitados, foco/landmarks/controls verificados; não é certificação WCAG nem estudo com operador.",
+    "REM-29": "NO_GO_CONTROLLED: RF-011, identidade, provider, canal, fonte institucional, signoff humano e RPO/RTO aprovados continuam ausentes.",
+    "REM-30": "DEFERRED_OPTIONAL: refatoração ampla permanece fora do caminho crítico."
+  },
+  "fresh_critic": {
+    "status": "PASS_CONTROLLED",
+    "critic_id": "01a073e0-1d26-7872-a196-3c22d1d39014",
+    "decision": "PASS_CONTROLLED",
+    "blockers": [],
+    "mechanism": "Revisão fresh-context somente leitura dos boundaries de redaction, ack, migration, idempotência, worker e produção; o crítico confirmou os cinco critérios sem P0/P1/P2.",
+    "limitations": "O crítico não repetiu testes; a prova dinâmica está registrada nos gates locais e PostgreSQL desta evidência."
+  },
+  "production_boundary": "NO-GO",
+  "external_gates": {
+    "identity": "NOT_CONNECTED",
+    "provider": "NOT_CONNECTED",
+    "channel": "NOT_CONNECTED",
+    "institutional_source_owner": "NOT_APPROVED",
+    "human_signoff": "NOT_OBTAINED",
+    "rpo_rto": "NOT_APPROVED",
+    "real_data": "NOT_USED",
+    "deployment": "NOT_PERFORMED",
+    "clinical_financial_record_actions": "NOT_EXECUTED"
+  },
+  "mutation_clean": true,
+  "next": "Manter o gate controlado e obter RF-011, responsáveis e aprovações externas/humanas antes de repetir REM-27–29 em ambiente autorizado."
+}

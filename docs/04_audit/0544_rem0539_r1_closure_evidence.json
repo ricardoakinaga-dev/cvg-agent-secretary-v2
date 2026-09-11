@@ -1,0 +1,73 @@
+{
+  "program": "REM-0539",
+  "run": "REM-0539-AAA",
+  "round": "R1-CLOSURE",
+  "date": "2026-09-05",
+  "scope": "Fechamento controlado de segurança e integridade com fixtures sintéticos",
+  "status": "COMPLETED_CONTROLLED",
+  "summary": "REM-04, REM-05, REM-06, REM-07 e REM-08 foram fechadas no escopo controlado. A corrida PostgreSQL de duas conexões e rollback de auditoria passou; a suíte PostgreSQL e a suíte integral passaram. Não há autorização para produção, piloto ou integração externa.",
+  "changes_since_0543": [
+    "Fixture de startup PostgreSQL atualizado de API_TRUSTED_PROXY_HOPS=1 para API_TRUSTED_PROXY_ADDRESSES=127.0.0.1, preservando o contrato de proxy explícito.",
+    "R2 Discovery/PRD/SPEC preparados e criticados separadamente; nenhum código R2 foi iniciado.",
+    "A evidência PostgreSQL que faltava em 0543 foi executada em cluster local descartável PostgreSQL 16.15."
+  ],
+  "verification": {
+    "full_suite": {
+      "command": "TEST_DATABASE_URL=postgresql://ricardo@127.0.0.1:55439/postgres npm test",
+      "result": "135 arquivos; 608 testes passed",
+      "raw_sha256": "fd9f221d58a194ef54da005f3e86ac7f910a5729cce0111a30273582d1a087ce"
+    },
+    "postgres_suite": {
+      "command": "TEST_DATABASE_URL=postgresql://ricardo@127.0.0.1:55439/postgres npm run test:postgres",
+      "result": "8 arquivos; 72 testes passed",
+      "raw_sha256": "9ce4a54aa9432b299893f132d41a183f5eb13fa49884a97fff8025643ba63071"
+    },
+    "attendance_approval_race": {
+      "command": "TEST_DATABASE_URL=postgresql://ricardo@127.0.0.1:55439/postgres npx vitest run --testTimeout=60000 --no-file-parallelism packages/persistence/src/__tests__/attendance-approval-postgres.test.ts",
+      "result": "1 arquivo; 1 teste passed; duas conexões, exatamente um vencedor e rollback do trigger de auditoria verificados",
+      "raw_sha256": "ff6257664d85f7ac40982240d86086b418c86f4c1dfe5f4d54e6e2b33beec085"
+    },
+    "static_gates": {
+      "commands": [
+        "npm run typecheck",
+        "npm run lint",
+        "npx prettier --check <R1 source files>",
+        "git diff --check"
+      ],
+      "result": "PASS",
+      "raw_sha256": {
+        "typecheck": "282603edbd9477dc75dce2d3188890f9ae940fd686c1c7ac258f994ddc0351f7",
+        "lint": "af2569074f1125f2d32c4a723d6be66a9784185048825d8cd0697f4d1314294e",
+        "format": "0836837fe0982de65d95dbba93ebd4d1d0276ffef6024401afb13170cc6a8afd",
+        "diff": "19eaf43821a7660ec323a87c8457bf74823beb296c39f5e01aa8a683aa50f061"
+      }
+    },
+    "docs_r2_preparation": {
+      "command": "npx vitest run --no-file-parallelism tests/docs-readiness.test.js tests/construction-readiness.test.js",
+      "result": "2 arquivos; 11 testes passed; R2 docs parseáveis e links/readiness válidos",
+      "raw_sha256": "e7fb1ebeb07ffe31f1860aa336e3b98685f2d375646586564e1e9f4c4d6d660f"
+    },
+    "dependency_audit": {
+      "command": "npm audit --json",
+      "result": "0 vulnerabilidades (informational, low, moderate, high e critical); Fastify 5.12.3",
+      "raw_sha256": "1e89b41871a8e8b86c1c2863ad0661abf653cf3c015b251192e1bfd8c541a2b6"
+    }
+  },
+  "independent_critics": [
+    {
+      "critic_id": "rem0539-r1-closure-critic-i1",
+      "decision": "APPROVE",
+      "finding": "Revisão fresh-context não encontrou P0/P1/P2 nos invariantes R1; corrida PostgreSQL fornecida confirma duas conexões e rollback de auditoria.",
+      "mutation_clean": true,
+      "limitations": "Revisão controlada em fixtures e banco local; não cobre HA, produção, RLS operacional ou integrações reais."
+    },
+    {
+      "critic_id": "rem0539-r2-doc-critic-i1",
+      "decision": "APPROVE",
+      "finding": "Após correções, SPEC R2 define unicidade/journal, efeito único no ack transacional, tenant explícito, maxAttempts=5, estados elegíveis, requeue in-place, histórico e quarentena legada; BUILD continua condicional.",
+      "mutation_clean": true
+    }
+  ],
+  "production_boundary": "NO-GO",
+  "next": "Gate de BUILD R2 registrado em SPEC 0123; iniciar REM-10/11/12 com PostgreSQL e fixtures locais, sem broker/provider/canal externo."
+}

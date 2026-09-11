@@ -5,6 +5,7 @@
   "references": [
     { "path": "../shared" },
     { "path": "../tools" },
-    { "path": "../policy" }
+    { "path": "../policy" },
+    { "path": "../persistence" }
   ]
 }

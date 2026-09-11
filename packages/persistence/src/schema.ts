@@ -81,6 +81,15 @@ export interface SessionRecord {
   updatedAt: Date
 }
 
+/** Safe pointer used by a worker to reload a committed inbound message. */
+export interface InboundRuntimeContext {
+  message: MessageRecord
+  channel: Channel
+  senderRef: string
+  correlationId: string
+  session: SessionRecord | null
+}
+
 export interface AgentRunRecord {
   id: string
   sessionId: string
@@ -122,6 +131,56 @@ export interface TaskRecord {
   status: TaskStatus
   idempotencyKey: string
   createdAt: Date
+}
+
+export type JourneyDraftStatus = 'draft' | 'linked' | 'expired'
+
+export interface OwnerDraftRecord {
+  tenantId: TenantId
+  id: string
+  conversationId: string | null
+  sessionId: string | null
+  phone: string | null
+  name: string | null
+  candidateIds: string[]
+  status: JourneyDraftStatus
+  idempotencyKey: string
+  createdAt: Date
+  updatedAt: Date
+  expiresAt: Date
+}
+
+export interface PatientDraftRecord {
+  tenantId: TenantId
+  id: string
+  ownerDraftId: string | null
+  ownerCandidateId: string | null
+  conversationId: string | null
+  sessionId: string | null
+  name: string | null
+  species: string | null
+  candidateIds: string[]
+  status: JourneyDraftStatus
+  idempotencyKey: string
+  createdAt: Date
+  updatedAt: Date
+  expiresAt: Date
+}
+
+export interface AppointmentDraftRecord {
+  tenantId: TenantId
+  id: string
+  patientDraftId: string
+  conversationId: string | null
+  sessionId: string | null
+  slot: string
+  sourceVersion: string
+  status: 'proposed' | 'awaiting_approval' | 'expired' | 'cancelled'
+  confirmationBlocked: true
+  idempotencyKey: string
+  createdAt: Date
+  updatedAt: Date
+  expiresAt: Date
 }
 
 export interface AuditEventRecord {
@@ -180,8 +239,54 @@ export interface OutboxEventRecord {
   id: string
   type: string
   payload: unknown
-  status: 'pending' | 'processed' | 'failed'
+  /** Persisted ownership. Optional only for legacy fixtures during migration. */
+  tenantId?: TenantId
+  correlationId?: string
+  idempotencyKey?: string
+  envelopeVersion?: number
+  conversationId?: string | null
+  sessionId?: string | null
+  agentId?: AgentId | null
+  agentVersionId?: AgentVersionId | null
+  inboundMessageId?: string | null
+  status: 'pending' | 'processing' | 'processed' | 'failed' | 'dead_letter'
   createdAt: Date
+  /** All fields below are repository-owned state. */
+  availableAt?: Date
+  attempts?: number
+  leaseOwner?: string | null
+  leaseUntil?: Date | null
+  lastError?: string | null
+  processedAt?: Date | null
+  deadLetteredAt?: Date | null
+  parentEventId?: string | null
+}
+
+export type OutboxAttemptOutcome =
+  | 'claimed'
+  | 'lease_expired'
+  | 'processed'
+  | 'failed'
+  | 'dead_letter'
+  | 'requeued'
+  | 'handoff'
+
+export interface OutboxAttemptRecord {
+  eventId: string
+  attempt: number
+  tenantId: TenantId
+  workerId: string
+  claimedAt: Date
+  outcome: OutboxAttemptOutcome
+  error: string | null
+}
+
+export interface OutboxEffectRecord {
+  tenantId: TenantId
+  idempotencyKey: string
+  eventId: string
+  result: unknown
+  appliedAt: Date
 }
 
 export interface DatabaseState {
@@ -196,4 +301,9 @@ export interface DatabaseState {
   auditEvidenceCheckpoints: AuditEvidenceCheckpointRecord[]
   idempotency: IdempotencyRecord[]
   outbox: OutboxEventRecord[]
+  outboxAttempts: OutboxAttemptRecord[]
+  outboxEffects: OutboxEffectRecord[]
+  ownerDrafts: OwnerDraftRecord[]
+  patientDrafts: PatientDraftRecord[]
+  appointmentDrafts: AppointmentDraftRecord[]
 }

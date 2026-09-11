@@ -1,0 +1,95 @@
+{
+  "program": "REM-0539",
+  "run": "REM-0539-AAA",
+  "round": "R4",
+  "date": "2026-09-05",
+  "scope": "Identidade, adapter de modelo, canal controlado, knowledge catalog, retenção, restore e operação sintética",
+  "status": "COMPLETED_CONTROLLED",
+  "summary": "REM-19 a REM-26 foram executadas no escopo local controlado. Identity jti/replay/rotação, bloqueio de credenciais no adapter de modelo, entrega controlada sem rede, resolução de knowledge aprovado/revogado, retenção redigida, restore tenant-scoped append-only e trilhas de auditoria foram implementados e testados. O gate externo de identidade/provider/canal/fonte não foi conectado.",
+  "changes": [
+    "Contratos Discovery/PRD/SPEC R4 em 0014/0025/0125.",
+    "Identity operator com jti obrigatório, replay bounded e rotação ativa/anterior.",
+    "Model adapter com bloqueio pré/pós-redaction de credenciais e ControlledDeliveryAdapter sem egress.",
+    "Knowledge catalog resolvido no Test Lab, runtime publicado, worker, capability e API.",
+    "Retention ledger e restore redigem payloads, conferem tenant/ownership e preservam auditoria/checkpoints append-only."
+  ],
+  "verification": {
+    "focused_suite": {
+      "command": "npx vitest run --no-file-parallelism apps/api/src/__tests__/trusted-operator-identity.test.ts packages/adapters/src/__tests__/model-adapter.test.ts packages/adapters/src/__tests__/controlled-delivery.test.ts packages/platform/src/__tests__/retention-ledger.test.ts packages/persistence/src/__tests__/restore.test.ts packages/rag/src/__tests__/institutional-rag.test.ts packages/platform/src/__tests__/knowledge-resolver.test.ts apps/api/src/__tests__/knowledge-input-boundary.test.ts apps/worker/src/__tests__/published-worker-knowledge-boundary.test.ts",
+      "result": "9 arquivos passaram; 33 testes passaram",
+      "raw_sha256": "bd6f0bbcce0a3f4b1f0a3e47c218b12bb6a04d9165a62788949e92356de3f59c"
+    },
+    "postgres_suite": {
+      "command": "TEST_DATABASE_URL=postgresql://ricardo@127.0.0.1:55439/postgres npm run test:postgres",
+      "result": "9 arquivos passaram; 76 testes passaram",
+      "raw_sha256": "f9aebee4d4dd18c250f12813c3501c2ad1c65c50d0751cb5f4ff5f4510e13cff"
+    },
+    "full_suite": {
+      "command": "npm test",
+      "result": "148 arquivos passaram; 3 foram omitidos; 634 testes passaram; 23 foram omitidos",
+      "raw_sha256": "7e4d8e2800074ca2167239914ad53c9eb5d5f9fb26902fac6ac34f173eebcac1"
+    },
+    "static_gates": {
+      "commands": [
+        "npm run typecheck -- --pretty false",
+        "npm run lint",
+        "npx prettier --check <fontes alteradas>",
+        "npm run readiness",
+        "npm run test:worker:startup",
+        "npm audit --json",
+        "git diff --check"
+      ],
+      "result": "PASS",
+      "raw_sha256": {
+        "typecheck": "d36574cb9028711b61182e00275db32f0c52838ea8f47c158e94237d04ee0b27",
+        "lint": "55491b719e5b46f007f01ae3b97163a6d85e4eed72ce022a6c9f58f390d5c3c9",
+        "format": "6d83a3564f7f607a548332e41eaafbcd07cb5356c80db107b0460bd253c93ea0",
+        "readiness": "6be64b8ff7a496e09db5faad0f712127bc558a3451b1c1388f426d6457057f88",
+        "worker_startup": "7160d3b17b8480d182c28eb768a5bc562514b94d3d91ce8895fa88e66c47a701",
+        "audit": "2c5821a92aec90d9ab7e541e27443e4dbe02fd12d39a86460d81031192d1ea33",
+        "diff": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+      }
+    }
+  },
+  "acceptance": {
+    "REM-19": "PASS controlled: contracts and external gate separation recorded; no credentials in docs.",
+    "REM-20": "PASS controlled: self-asserted headers rejected; replay/rotation and tenant/role boundaries tested.",
+    "REM-21": "PASS controlled: local adapter timeout/error/output secret boundaries tested; model never grants permission.",
+    "REM-22": "PASS controlled: delivery adapter is local, idempotent and no-network; takeover and retry journal are observable.",
+    "REM-23": "PASS controlled: approved version resolver is wired through API/Test Lab/runtime/worker; missing/revoked source hands off.",
+    "REM-24": "PASS controlled: redacted bounded retention, counters and append-only audit preservation.",
+    "REM-25": "PASS controlled: snapshot digest, ownership, cross-tenant rejection and redacted restore verified.",
+    "REM-26": "PASS controlled: local integration audit distinguishes mock/local from external readiness."
+  },
+  "artifacts": [
+    "docs/00_discovery/0014_rem0539_r4_integrations_ops.md",
+    "docs/01_prd/0025_rem0539_r4_integrations_ops.md",
+    "docs/02_spec/0125_rem0539_r4_integrations_ops.md",
+    "apps/api/src/operator-identity.ts",
+    "packages/adapters/src/model-adapter.ts",
+    "packages/adapters/src/controlled-delivery.ts",
+    "packages/platform/src/retention-ledger.ts",
+    "packages/persistence/src/restore.ts",
+    "packages/rag/src/institutional-rag.ts"
+  ],
+  "independent_critics": [
+    {
+      "critic_id": "rem0539-r4-integrations-critic-i1",
+      "decision": "APPROVE",
+      "finding": "Fresh-context read-only review confirmed the corrected identity, model, delivery, catalog, retention and restore boundaries with no P0/P1/P2 in local scope.",
+      "mutation_clean": true,
+      "limitations": "External IdP/provider/channel/source owner and HA/RPO/RTO approvals remain unconnected."
+    }
+  ],
+  "mutation_clean": true,
+  "production_boundary": "NO-GO",
+  "external_gates": {
+    "identity_provider": "NOT_CONNECTED",
+    "model_provider": "NOT_CONNECTED",
+    "human_channel": "NOT_CONNECTED",
+    "institutional_source_owner": "NOT_APPROVED",
+    "real_data": "NOT_USED",
+    "deployment": "NOT_PERFORMED"
+  },
+  "next": "Run the controlled qualification dossier; obtain human/external gates separately before any pilot decision."
+}

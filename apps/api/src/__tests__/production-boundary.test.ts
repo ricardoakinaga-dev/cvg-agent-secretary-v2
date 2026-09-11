@@ -13,7 +13,7 @@ afterEach(() => {
 describe('production boundary authentication', () => {
   it('rejects self-asserted operator headers when no trusted resolver is configured', async () => {
     vi.stubEnv('NODE_ENV', 'production')
-    const app = buildServer()
+    const app = buildServer({ durableInbound: true })
     const response = await app.inject({
       method: 'GET',
       url: '/v1/tasks',
@@ -31,6 +31,7 @@ describe('production boundary authentication', () => {
   it('accepts a trusted resolver and verifier in controlled production-like tests', async () => {
     vi.stubEnv('NODE_ENV', 'production')
     const app = buildServer({
+      durableInbound: true,
       operatorIdentityResolver: () => ({
         operatorId: 'trusted.production',
         role: 'Supervisor',
@@ -65,7 +66,10 @@ describe('production boundary authentication', () => {
 
   it('does not allow low-level construction to disable production mutation authentication', async () => {
     vi.stubEnv('NODE_ENV', 'production')
-    const app = buildServer({ requireAuthenticatedMutations: false })
+    const app = buildServer({
+      durableInbound: true,
+      requireAuthenticatedMutations: false
+    })
     const response = await app.inject({
       method: 'POST',
       url: '/v1/tasks',
@@ -87,6 +91,16 @@ describe('production boundary authentication', () => {
     })
   })
 
+  it('rejects low-level production construction that leaves inbound execution inline', () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    expect(() => buildServer()).toThrow(
+      'Production requires durable inbound processing'
+    )
+    expect(() => buildServer({ durableInbound: false })).toThrow(
+      'Production requires durable inbound processing'
+    )
+  })
+
   it('rejects an unscoped PostgreSQL client in production construction', () => {
     vi.stubEnv('NODE_ENV', 'production')
     expect(() =>
@@ -101,7 +115,7 @@ describe('production boundary authentication', () => {
 
   it('fails closed outside test mode even when NODE_ENV is not production', async () => {
     vi.stubEnv('NODE_ENV', 'development')
-    const app = buildServer()
+    const app = buildServer({ durableInbound: true })
     const response = await app.inject({
       method: 'POST',
       url: '/v1/tasks',
@@ -125,7 +139,7 @@ describe('production boundary authentication', () => {
 
   it('fails production webhooks closed without a verifier', async () => {
     vi.stubEnv('NODE_ENV', 'production')
-    const app = buildServer()
+    const app = buildServer({ durableInbound: true })
     const response = await app.inject({
       method: 'POST',
       url: '/v1/webhooks/channels/whatsapp/messages',
@@ -147,7 +161,10 @@ describe('production boundary authentication', () => {
 
   it('fails production webhooks closed without a trusted tenant resolver', async () => {
     vi.stubEnv('NODE_ENV', 'production')
-    const app = buildServer({ webhookVerifier: () => true })
+    const app = buildServer({
+      durableInbound: true,
+      webhookVerifier: () => true
+    })
     const response = await app.inject({
       method: 'POST',
       url: '/v1/webhooks/channels/whatsapp/messages',
@@ -170,6 +187,7 @@ describe('production boundary authentication', () => {
   it('binds trusted production identities to the requested tenant', async () => {
     vi.stubEnv('NODE_ENV', 'production')
     const app = buildServer({
+      durableInbound: true,
       operatorIdentityResolver: () => ({
         operatorId: 'trusted.production',
         role: 'Admin',
@@ -184,6 +202,7 @@ describe('production boundary authentication', () => {
       }
     })
     const appWithoutTenantBinding = buildServer({
+      durableInbound: true,
       operatorIdentityResolver: () => ({
         operatorId: 'trusted.without-tenant',
         role: 'Admin'

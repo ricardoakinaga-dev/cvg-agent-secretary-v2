@@ -1,5 +1,13 @@
 # 0412 — Runtime Analysis
 
+## Parecer vigente — AUD-DOC-001 — 2026-09-05T00:54:31-03:00
+
+Runtime: Executor publicado e Test Lab compartilham pipeline determinística. 537 testes e 4 E2E PASS; AUD-F01 reproduz scheduling/low sem handoff diante de sangue em mensagem composta.
+
+Fonte atual: [relatório integral](0539_documentation_implementation_review.md), [inventário](0540_documentation_review_inventory.json) e [evidências](0541_documentation_review_evidence.json). Auditoria solicitada concluída; correções futuras ainda abertas.
+
+## Registro histórico anterior a esta auditoria
+
 ## Estabilidade
 
 Validar se API, worker, banco, policy e adapters permanecem disponiveis durante fluxos principais.

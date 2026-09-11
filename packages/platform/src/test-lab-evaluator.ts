@@ -6,7 +6,11 @@ import {
   type TestLabSuiteResult
 } from './contracts.ts'
 import type { AgentId, AgentVersionId, TenantId } from './ids.ts'
-import { runTestLab, type TestLabInput } from './test-lab.ts'
+import {
+  runTestLab,
+  type ApprovedKnowledgeResolver,
+  type TestLabInput
+} from './test-lab.ts'
 
 export async function evaluateTestLabCase(input: {
   store: ControlPlaneStore
@@ -14,6 +18,7 @@ export async function evaluateTestLabCase(input: {
   agentId: AgentId
   versionId: AgentVersionId
   testCase: TestLabCase
+  resolveApprovedKnowledge?: ApprovedKnowledgeResolver
 }): Promise<TestLabEvaluation> {
   const testCase = TestLabCaseSchema.parse(input.testCase)
   const traceInput: TestLabInput = {
@@ -25,6 +30,9 @@ export async function evaluateTestLabCase(input: {
     history: testCase.history,
     ...(testCase.approvedKnowledge
       ? { approvedKnowledge: testCase.approvedKnowledge }
+      : {}),
+    ...(input.resolveApprovedKnowledge
+      ? { resolveApprovedKnowledge: input.resolveApprovedKnowledge }
       : {})
   }
   const trace = await runTestLab(traceInput)
@@ -62,6 +70,7 @@ export async function evaluateTestLabSuite(input: {
   agentId: AgentId
   versionId: AgentVersionId
   cases: TestLabCase[]
+  resolveApprovedKnowledge?: ApprovedKnowledgeResolver
 }): Promise<TestLabSuiteResult> {
   const cases = input.cases.map((testCase) => TestLabCaseSchema.parse(testCase))
   let results: TestLabEvaluation[] = []

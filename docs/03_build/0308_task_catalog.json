@@ -1671,6 +1671,197 @@
         "evidence": "docs/04_audit/0537_plat-s47_controlled_multi_agent_creation_evidence.md",
         "production": "NO-GO"
       }
+    },
+    {
+      "id": "REM-04",
+      "name": "REM-0539 corrective task REM-04",
+      "phase": "R1",
+      "sprint": "REM-0539-R1",
+      "files_expected": [
+        "packages/platform/src/test-lab.ts",
+        "packages/platform/src/safety-assessment.ts",
+        "packages/platform/src/__tests__/safety-assessment.test.ts"
+      ],
+      "tests_expected": [
+        "packages/platform/src/__tests__/safety-assessment.test.ts"
+      ],
+      "validation_commands": ["npm run typecheck", "npm run lint", "npm test"],
+      "spec": "docs/02_spec/0122_rem0539_r1_contract.md"
+    },
+    {
+      "id": "REM-05",
+      "name": "REM-0539 corrective task REM-05",
+      "phase": "R1",
+      "sprint": "REM-0539-R1",
+      "files_expected": [
+        "packages/platform/src/critical-safety-preflight.ts",
+        "packages/platform/src/__tests__/critical-safety-preflight.test.ts",
+        "packages/agent-core/src/__tests__/published-agent-runtime.test.ts",
+        "apps/worker/src/__tests__/published-worker-runtime.test.ts",
+        "apps/api/src/rem-risk-boundary.test.ts",
+        "apps/api/src/__tests__/platform-control-plane.test.ts"
+      ],
+      "tests_expected": [
+        "packages/platform/src/__tests__/critical-safety-preflight.test.ts",
+        "packages/agent-core/src/__tests__/published-agent-runtime.test.ts",
+        "apps/worker/src/__tests__/published-worker-runtime.test.ts",
+        "apps/api/src/rem-risk-boundary.test.ts",
+        "apps/api/src/__tests__/platform-control-plane.test.ts"
+      ],
+      "validation_commands": ["npm run typecheck", "npm run lint", "npm test"],
+      "spec": "docs/02_spec/0122_rem0539_r1_contract.md"
+    },
+    {
+      "id": "REM-06",
+      "name": "REM-0539 corrective task REM-06",
+      "phase": "R1",
+      "sprint": "REM-0539-R1",
+      "files_expected": [
+        "apps/api/src/http-security.ts",
+        "apps/api/src/http-security.test.ts",
+        "packages/shared/src/env.ts",
+        "packages/shared/src/__tests__/http-security-env.test.ts",
+        "package.json",
+        "package-lock.json"
+      ],
+      "tests_expected": [
+        "apps/api/src/http-security.test.ts",
+        "packages/shared/src/__tests__/http-security-env.test.ts"
+      ],
+      "validation_commands": ["npm run typecheck", "npm run lint", "npm test"],
+      "spec": "docs/02_spec/0122_rem0539_r1_contract.md"
+    },
+    {
+      "id": "REM-07",
+      "name": "REM-0539 corrective task REM-07",
+      "phase": "R1",
+      "sprint": "REM-0539-R1",
+      "files_expected": [
+        "packages/persistence/src/repositories/approval-repository.ts",
+        "packages/persistence/src/postgres.ts",
+        "packages/persistence/src/tenant-scoped-postgres.ts",
+        "packages/persistence/src/schema.ts",
+        "apps/api/src/server.ts",
+        "apps/web/src/App.tsx",
+        "apps/web/src/features/approvals/index.tsx",
+        "packages/persistence/src/__tests__/attendance-approval-atomic.test.ts",
+        "packages/persistence/src/__tests__/attendance-approval-postgres.test.ts",
+        "apps/api/src/__tests__/approval-actions.test.ts",
+        "apps/web/src/__tests__/app.test.tsx"
+      ],
+      "tests_expected": [
+        "packages/persistence/src/__tests__/attendance-approval-atomic.test.ts",
+        "packages/persistence/src/__tests__/attendance-approval-postgres.test.ts",
+        "apps/api/src/__tests__/approval-actions.test.ts",
+        "apps/web/src/__tests__/app.test.tsx"
+      ],
+      "validation_commands": ["npm run typecheck", "npm run lint", "npm test"],
+      "spec": "docs/02_spec/0122_rem0539_r1_contract.md"
+    },
+    {
+      "id": "REM-08",
+      "name": "REM-0539 corrective task REM-08",
+      "phase": "R1",
+      "sprint": "REM-0539-R1",
+      "files_expected": [
+        "docs/04_audit/0543_rem0539_r1_evidence.json",
+        "docs/99_runtime_state.md",
+        "docs/20_master_execution_log.md",
+        "docs/30_backlog_master.md"
+      ],
+      "tests_expected": [
+        "packages/persistence/src/__tests__/attendance-approval-postgres.test.ts"
+      ],
+      "validation_commands": [
+        "npm run typecheck",
+        "npm run lint",
+        "npm test",
+        "npm run test:postgres"
+      ],
+      "spec": "docs/02_spec/0122_rem0539_r1_contract.md"
+    },
+    {
+      "id": "REM-09",
+      "name": "REM-0539 durable processing specification",
+      "phase": "R2",
+      "sprint": "REM-0539-R2",
+      "files_expected": [
+        "docs/00_discovery/0012_rem0539_r2_durability.md",
+        "docs/01_prd/0023_rem0539_r2_durability.md",
+        "docs/02_spec/0123_rem0539_r2_contract.md"
+      ],
+      "tests_expected": ["tests/docs-readiness.test.js"],
+      "validation_commands": [
+        "python3 -m json.tool docs/03_build/0308_task_catalog.json",
+        "npm test"
+      ],
+      "spec": "docs/02_spec/0123_rem0539_r2_contract.md"
+    },
+    {
+      "id": "REM-10",
+      "name": "REM-0539 controlled outbox consumer",
+      "phase": "R2",
+      "sprint": "REM-0539-R2",
+      "files_expected": [
+        "packages/persistence/src/outbox.ts",
+        "packages/persistence/src/postgres.ts",
+        "apps/worker/src/jobs/process-outbox-event.ts"
+      ],
+      "tests_expected": [
+        "packages/persistence/src/__tests__/outbox-durability.test.ts",
+        "apps/worker/src/__tests__/outbox-consumer.test.ts"
+      ],
+      "validation_commands": [
+        "npm run typecheck",
+        "npm run lint",
+        "npm test",
+        "npm run test:postgres"
+      ],
+      "spec": "docs/02_spec/0123_rem0539_r2_contract.md"
+    },
+    {
+      "id": "REM-11",
+      "name": "REM-0539 inbound durable execution integration",
+      "phase": "R2",
+      "sprint": "REM-0539-R2",
+      "files_expected": [
+        "apps/api/src/server.ts",
+        "apps/worker/src/worker.ts",
+        "packages/persistence/src/postgres.ts"
+      ],
+      "tests_expected": [
+        "apps/api/src/__tests__/inbound-durability.test.ts",
+        "apps/worker/src/__tests__/outbox-consumer.test.ts"
+      ],
+      "validation_commands": [
+        "npm run typecheck",
+        "npm run lint",
+        "npm test",
+        "npm run test:postgres"
+      ],
+      "spec": "docs/02_spec/0123_rem0539_r2_contract.md"
+    },
+    {
+      "id": "REM-12",
+      "name": "REM-0539 recovery and replay evidence",
+      "phase": "R2",
+      "sprint": "REM-0539-R2",
+      "files_expected": [
+        "apps/worker/src/jobs/process-outbox-event.ts",
+        "packages/persistence/src/__tests__/attendance-approval-postgres.test.ts",
+        "docs/04_audit"
+      ],
+      "tests_expected": [
+        "packages/persistence/src/__tests__/outbox-durability.test.ts",
+        "apps/worker/src/__tests__/outbox-recovery.test.ts"
+      ],
+      "validation_commands": [
+        "npm run typecheck",
+        "npm run lint",
+        "npm test",
+        "npm run test:postgres"
+      ],
+      "spec": "docs/02_spec/0123_rem0539_r2_contract.md"
     }
   ]
 }

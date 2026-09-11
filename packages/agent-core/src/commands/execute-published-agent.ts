@@ -8,7 +8,8 @@ import {
   type CapabilityApproval,
   type CapabilityApprovalResolver,
   type CapabilityGateway,
-  type PlatformEventBus
+  type PlatformEventBus,
+  type ApprovedKnowledgeResolver
 } from '@cvg/platform'
 import { TraceIdSchema } from '@cvg/platform'
 import { DomainError } from '@cvg/shared'
@@ -24,6 +25,7 @@ export interface PublishedAgentExecutionInput {
   history: string[]
   context?: { conversationId?: string; sessionId?: string }
   approvedKnowledge?: ApprovedKnowledgeForTest
+  resolveApprovedKnowledge?: ApprovedKnowledgeResolver
   capabilityGateway?: CapabilityGateway
   actor?: AgentExecutionActor
   capabilityApproval?: CapabilityApproval
@@ -112,6 +114,9 @@ export async function executePublishedAgent(
     ...(input.context ? { context: input.context } : {}),
     ...(input.approvedKnowledge
       ? { approvedKnowledge: input.approvedKnowledge }
+      : {}),
+    ...(input.resolveApprovedKnowledge
+      ? { resolveApprovedKnowledge: input.resolveApprovedKnowledge }
       : {})
   })
   return { status: 'completed', trace }

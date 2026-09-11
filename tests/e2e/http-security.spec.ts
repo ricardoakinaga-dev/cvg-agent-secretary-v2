@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 const apiBaseUrl = `http://127.0.0.1:${process.env.CVG_API_PORT ?? '3199'}`
-const consoleOrigin = 'http://127.0.0.1:4173'
+const consoleOrigin = `http://127.0.0.1:${process.env.CVG_WEB_PORT ?? '4173'}`
 
 test('API HTTP security boundary enforces origin and preflight policy', async ({
   request

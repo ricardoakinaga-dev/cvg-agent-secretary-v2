@@ -26,9 +26,15 @@ export function TasksPanel({
         <span className="counter">{tasks.length}</span>
       </header>
       <div className="list">
-        {isLoading ? <p className="state">Carregando...</p> : null}
+        {isLoading ? (
+          <p className="state" role="status">
+            Carregando...
+          </p>
+        ) : null}
         {!isLoading && error ? (
-          <p className="state stateError">{error}</p>
+          <p className="state stateError" role="alert">
+            {error}
+          </p>
         ) : null}
         {!isLoading && !error && tasks.length === 0 ? (
           <p className="state">Nenhuma tarefa interna.</p>

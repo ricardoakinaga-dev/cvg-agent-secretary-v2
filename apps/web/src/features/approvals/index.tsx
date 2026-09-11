@@ -5,6 +5,7 @@ export interface ApprovalsPanelProps {
     riskLevel: string
     status: string
   }>
+  message?: string | null
   error?: string | null
   isLoading?: boolean
   actionId?: string | null
@@ -17,6 +18,7 @@ export interface ApprovalsPanelProps {
 
 export function ApprovalsPanel({
   approvals,
+  message = null,
   error = null,
   isLoading = false,
   actionId = null,
@@ -35,9 +37,16 @@ export function ApprovalsPanel({
         </span>
       </header>
       <div className="list">
-        {isLoading ? <p className="state">Carregando...</p> : null}
+        {message ? <p role="status">{message}</p> : null}
+        {isLoading ? (
+          <p className="state" role="status">
+            Carregando...
+          </p>
+        ) : null}
         {!isLoading && error ? (
-          <p className="state stateError">{error}</p>
+          <p className="state stateError" role="alert">
+            {error}
+          </p>
         ) : null}
         {!isLoading && !error && approvals.length === 0 ? (
           <p className="state">Nenhuma aprovacao pendente.</p>

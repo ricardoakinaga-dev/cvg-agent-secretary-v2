@@ -1,3 +1,9 @@
+import {
+  assertApprovalCreation,
+  validateAttendanceDecision,
+  attendanceDecisionAudit,
+  type AttendanceApprovalDecision
+} from './attendance-approval.ts'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { createHash } from 'node:crypto'
@@ -6,8 +12,11 @@ import {
   createCorrelationId,
   createDomainId,
   DomainError,
+  IdempotencyKeySchema,
   redactSensitiveText,
   sanitizeAuditEvidencePayload,
+  sanitizeOutboxError,
+  sanitizeOutboxPayload,
   type Channel,
   type TaskPriority,
   type TaskStatus
@@ -56,11 +65,26 @@ import type {
   ConversationListItem,
   ConversationPage,
   ConversationRecord,
+  InboundRuntimeContext,
   MessageRecord,
   PaginationInput,
+  OutboxEventRecord,
   SessionRecord,
   TaskRecord
 } from './schema.ts'
+import {
+  DEFAULT_OUTBOX_LEASE_MS,
+  DEFAULT_OUTBOX_MAX_ATTEMPTS,
+  DEFAULT_OUTBOX_RETRY_BASE_MS,
+  DEFAULT_OUTBOX_RETRY_MAX_MS,
+  OUTBOX_TAKEOVER_SUPPRESSED_ERROR,
+  type OutboxAckInput as MemoryOutboxAckInput,
+  type OutboxClaimInput,
+  type OutboxEnqueueInput as MemoryOutboxEnqueueInput,
+  type OutboxFailInput,
+  type OutboxRequeueInput as MemoryOutboxRequeueInput,
+  type OutboxTakeoverCheck
+} from './outbox.ts'
 import { createSenderRefFingerprint } from './sender-fingerprint.ts'
 
 export interface PostgresMigrationOptions {
@@ -87,7 +111,9 @@ const defaultPostgresMigrations = [
   '0006_release_candidate_evidence',
   '0007_audit_evidence_checkpoint',
   '0008_session_agent_version_pin',
-  '0009_release_candidate_validator_integrity'
+  '0009_release_candidate_validator_integrity',
+  '0010_outbox_durability',
+  '0011_outbox_payload_redaction'
 ]
 
 export interface PostgresQueryable {
@@ -108,6 +134,8 @@ export interface PostgresTransactionClient extends PostgresQueryable {
 
 export interface PostgresRuntimeRepositoryOptions {
   tenantIsolation?: boolean
+  /** Repository-owned clock; callers cannot override lease/retry decisions. */
+  clock?: () => Date
 }
 
 export interface InboundRuntimeCompletionInput {
@@ -118,6 +146,319 @@ export interface InboundRuntimeCompletionInput {
   trace: TestRunTrace
   toolAuditEvents: PluginAuditEvent[]
   correlationId: string
+}
+
+export type DurableOutboxStatus = OutboxEventRecord['status']
+
+export type DurableOutboxEventRecord = OutboxEventRecord & {
+  tenantId: TenantId
+  correlationId: string
+  idempotencyKey: string
+  envelopeVersion: number
+  conversationId: string | null
+  sessionId: string | null
+  agentId: string | null
+  agentVersionId: string | null
+  inboundMessageId: string | null
+  availableAt: Date
+  attempts: number
+  leaseOwner: string | null
+  leaseUntil: Date | null
+  lastError: string | null
+  processedAt: Date | null
+  deadLetteredAt: Date | null
+  parentEventId: string | null
+}
+
+export type PostgresOutboxEnqueueInput = MemoryOutboxEnqueueInput & {
+  /** Optional deterministic values are used by PostgreSQL integration tests. */
+  createdAt?: Date
+  availableAt?: Date
+}
+
+export type PostgresOutboxAckInput = Omit<MemoryOutboxAckInput, 'effect'> & {
+  effect?: MemoryOutboxAckInput['effect']
+}
+
+export type PostgresOutboxRequeueInput = MemoryOutboxRequeueInput & {
+  now?: Date
+}
+
+export const OUTBOX_MAX_ATTEMPTS = DEFAULT_OUTBOX_MAX_ATTEMPTS
+export const OUTBOX_DEFAULT_LEASE_MS = DEFAULT_OUTBOX_LEASE_MS
+export const OUTBOX_BASE_BACKOFF_MS = DEFAULT_OUTBOX_RETRY_BASE_MS
+export const OUTBOX_MAX_BACKOFF_MS = DEFAULT_OUTBOX_RETRY_MAX_MS
+const OUTBOX_MAX_PAYLOAD_BYTES = 256 * 1024
+const SAFE_LEGACY_OUTBOX_ERRORS = new Set([
+  'legacy_outbox_missing_tenant',
+  'legacy_inbound_missing_runtime_identifiers',
+  'legacy_outbox_event_type_not_controlled',
+  'legacy_outbox_quarantined',
+  'legacy_processed_without_effect_journal',
+  'legacy_failed_without_retry_time'
+])
+
+const outboxSelectColumns = `
+  id, tenant_id, type, envelope_version, correlation_id, idempotency_key,
+  conversation_id, session_id, agent_id, agent_version_id,
+  inbound_message_id, payload, status, created_at, available_at, attempts,
+  lease_owner, lease_until, last_error, processed_at, dead_lettered_at,
+  parent_event_id`
+
+interface DurableOutboxRow {
+  id: string
+  tenant_id: TenantId
+  type: string
+  envelope_version: number
+  correlation_id: string
+  idempotency_key: string
+  conversation_id: string | null
+  session_id: string | null
+  agent_id: string | null
+  agent_version_id: string | null
+  inbound_message_id: string | null
+  payload: unknown
+  status: DurableOutboxStatus
+  created_at: Date
+  available_at: Date
+  attempts: number
+  lease_owner: string | null
+  lease_until: Date | null
+  last_error: string | null
+  processed_at: Date | null
+  dead_lettered_at: Date | null
+  parent_event_id: string | null
+}
+
+function assertOutboxText(value: string, label: string, max = 200): string {
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    throw new DomainError('validation_failed', `${label} is required`)
+  }
+  if (value.length > max) {
+    throw new DomainError('validation_failed', `${label} is too long`)
+  }
+  return value
+}
+
+function assertOutboxDate(value: Date, label: string): Date {
+  if (!(value instanceof Date) || Number.isNaN(value.getTime())) {
+    throw new DomainError('validation_failed', `${label} is invalid`)
+  }
+  return value
+}
+
+function assertOutboxPayload(payload: unknown): unknown {
+  if (payload === undefined) {
+    throw new DomainError('validation_failed', 'Outbox payload is required')
+  }
+  return sanitizeAndValidateOutboxValue(payload, 'Outbox payload')
+}
+
+function assertOutboxResult(result: unknown): unknown {
+  return sanitizeAndValidateOutboxValue(result ?? null, 'Outbox result')
+}
+
+function sanitizeAndValidateOutboxValue(
+  value: unknown,
+  label: string
+): unknown {
+  try {
+    const serialized = JSON.stringify(value)
+    if (serialized === undefined) return null
+    if (Buffer.byteLength(serialized, 'utf8') > OUTBOX_MAX_PAYLOAD_BYTES) {
+      throw new DomainError('payload_too_large', `${label} is too large`)
+    }
+    const sanitized = sanitizeOutboxPayload(value).payload
+    const sanitizedSerialized = JSON.stringify(sanitized) ?? 'null'
+    if (
+      Buffer.byteLength(sanitizedSerialized, 'utf8') > OUTBOX_MAX_PAYLOAD_BYTES
+    ) {
+      throw new DomainError(
+        'payload_too_large',
+        `Sanitized ${label.toLowerCase()} is too large`
+      )
+    }
+    return sanitized
+  } catch (error) {
+    if (error instanceof DomainError) throw error
+    throw new DomainError('validation_failed', `${label} is not JSON`)
+  }
+}
+
+function serializeOutboxJson(value: unknown, label: string): string {
+  try {
+    const serialized = JSON.stringify(value ?? null)
+    if (serialized === undefined) return 'null'
+    return serialized
+  } catch {
+    throw new DomainError('validation_failed', `${label} is not JSON`)
+  }
+}
+
+function redactOutboxError(error: unknown): string {
+  if (error === OUTBOX_TAKEOVER_SUPPRESSED_ERROR) {
+    return OUTBOX_TAKEOVER_SUPPRESSED_ERROR
+  }
+  if (typeof error === 'string' && SAFE_LEGACY_OUTBOX_ERRORS.has(error)) {
+    return error
+  }
+  return sanitizeOutboxError(error)
+}
+
+function createInboundIdempotencyKey(
+  channel: string,
+  externalMessageId: string
+): string {
+  const digest = createHash('sha256')
+    .update(externalMessageId, 'utf8')
+    .digest('hex')
+  return `inbound:${channel}:sha256:${digest}`
+}
+
+async function resolveTakeoverCheck(
+  value: OutboxTakeoverCheck | undefined
+): Promise<boolean> {
+  if (typeof value === 'function') return Boolean(await value())
+  return value === true
+}
+
+function outboxDate(value: Date | string | null | undefined): Date | null {
+  if (value === null || value === undefined) return null
+  const date = value instanceof Date ? value : new Date(value)
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
+function mapDurableOutboxRow(row: DurableOutboxRow): DurableOutboxEventRecord {
+  const tenantId = TenantIdSchema.parse(row.tenant_id)
+  const availableAt = outboxDate(row.available_at)
+  const createdAt = outboxDate(row.created_at)
+  if (!availableAt || !createdAt) {
+    throw new DomainError(
+      'invalid_action',
+      'Outbox event timestamps are invalid'
+    )
+  }
+  return {
+    id: row.id,
+    tenantId,
+    type: row.type,
+    envelopeVersion: row.envelope_version,
+    correlationId: row.correlation_id,
+    idempotencyKey: row.idempotency_key,
+    conversationId: row.conversation_id,
+    sessionId: row.session_id,
+    agentId: row.agent_id,
+    agentVersionId: row.agent_version_id,
+    inboundMessageId: row.inbound_message_id,
+    payload: sanitizeOutboxPayload(row.payload).payload,
+    status: row.status,
+    createdAt,
+    availableAt,
+    attempts: row.attempts,
+    leaseOwner: row.lease_owner,
+    leaseUntil: outboxDate(row.lease_until),
+    lastError: row.last_error ? redactOutboxError(row.last_error) : null,
+    processedAt: outboxDate(row.processed_at),
+    deadLetteredAt: outboxDate(row.dead_lettered_at),
+    parentEventId: row.parent_event_id
+  }
+}
+
+async function withOutboxTransaction<T>(
+  client: PostgresQueryable,
+  operation: () => Promise<T>
+): Promise<T> {
+  await client.query('BEGIN')
+  try {
+    const result = await operation()
+    await client.query('COMMIT')
+    return result
+  } catch (error) {
+    try {
+      await client.query('ROLLBACK')
+    } catch {
+      // Preserve the original database or handler error.
+    }
+    throw error
+  }
+}
+
+function validateOutboxWorker(workerId: string): string {
+  return assertOutboxText(workerId, 'workerId', 120)
+}
+
+function validateOutboxEnvelopeVersion(version: number): number {
+  if (!Number.isSafeInteger(version) || version < 1 || version > 100) {
+    throw new DomainError(
+      'validation_failed',
+      'Outbox envelope version is invalid'
+    )
+  }
+  return version
+}
+
+function validateOutboxLeaseMs(leaseMs: number): number {
+  if (
+    !Number.isSafeInteger(leaseMs) ||
+    leaseMs < 1_000 ||
+    leaseMs > 3_600_000
+  ) {
+    throw new DomainError(
+      'validation_failed',
+      'Outbox lease duration is invalid'
+    )
+  }
+  return leaseMs
+}
+
+function outboxBackoffMs(attempt: number): number {
+  return Math.min(
+    OUTBOX_MAX_BACKOFF_MS,
+    OUTBOX_BASE_BACKOFF_MS * 2 ** Math.max(0, Math.min(attempt - 1, 16))
+  )
+}
+
+async function appendDurableOutboxAudit(
+  client: PostgresQueryable,
+  input: {
+    tenantId: TenantId
+    eventId: string
+    correlationId: string
+    actorId: string
+    action: 'ack' | 'fail' | 'dead_letter' | 'requeue' | 'handoff'
+    attempts: number
+    status: DurableOutboxStatus
+    error?: string | null
+    sessionId?: string | null
+    conversationId?: string | null
+  }
+): Promise<void> {
+  const payload = sanitizeAuditEvidencePayload({
+    tenantId: input.tenantId,
+    eventId: input.eventId,
+    correlationId: input.correlationId,
+    action: input.action,
+    attempts: input.attempts,
+    status: input.status,
+    ...(input.sessionId ? { sessionId: input.sessionId } : {}),
+    ...(input.conversationId ? { conversationId: input.conversationId } : {}),
+    ...(input.error ? { error: input.error } : {})
+  }).payload
+  await client.query(
+    `INSERT INTO audit_events
+       (tenant_id, id, type, actor_type, actor_id, correlation_id, policy_version, payload, created_at)
+     VALUES ($1, $2, 'integration_event', $3, $4, $5, $6, $7::jsonb, $8)`,
+    [
+      input.tenantId,
+      createDomainId('audit'),
+      input.action === 'requeue' ? 'Operator' : 'System',
+      input.actorId,
+      input.correlationId,
+      'outbox-r2',
+      JSON.stringify(payload),
+      new Date()
+    ]
+  )
 }
 
 function assertSafeSchemaName(schemaName: string): void {
@@ -557,12 +898,614 @@ export async function baselineLegacyPostgresMigration(
 
 export class PostgresRuntimeRepository {
   private readonly tenantIsolation: boolean
+  private readonly clock: () => Date
 
   constructor(
     private readonly client: PostgresQueryable,
     options: PostgresRuntimeRepositoryOptions = {}
   ) {
     this.tenantIsolation = options.tenantIsolation ?? false
+    this.clock = options.clock ?? (() => new Date())
+  }
+
+  /**
+   * Enqueues an event using the durable tenant/idempotency boundary. Passing
+   * a transaction client lets the inbound finalizer include this insert in
+   * its existing commit; otherwise this method owns a short transaction.
+   */
+  async enqueue(
+    rawInput: PostgresOutboxEnqueueInput,
+    transactionClient?: PostgresQueryable
+  ): Promise<DurableOutboxEventRecord> {
+    const tenantId = TenantIdSchema.parse(rawInput.tenantId)
+    const type = assertOutboxText(rawInput.type, 'Outbox type', 120)
+    const correlationId = rawInput.correlationId
+      ? CorrelationIdSchema.parse(rawInput.correlationId)
+      : createCorrelationId()
+    const idempotencyKey = IdempotencyKeySchema.parse(rawInput.idempotencyKey)
+    const envelopeVersion = validateOutboxEnvelopeVersion(
+      rawInput.envelopeVersion ?? 1
+    )
+    const eventId =
+      (rawInput.eventId ?? rawInput.id)
+        ? assertOutboxText(rawInput.eventId ?? rawInput.id!, 'eventId', 160)
+        : createDomainId('outbox')
+    const payload = assertOutboxPayload(rawInput.payload)
+    const createdAt = assertOutboxDate(
+      rawInput.createdAt ?? this.repositoryNow(),
+      'createdAt'
+    )
+    const availableAt = assertOutboxDate(
+      rawInput.availableAt ?? createdAt,
+      'availableAt'
+    )
+    const client = transactionClient ?? this.client
+    const operation = async (): Promise<DurableOutboxEventRecord> => {
+      const existing = await client.query<DurableOutboxRow>(
+        `SELECT ${outboxSelectColumns}
+         FROM outbox_events
+         WHERE tenant_id = $1 AND idempotency_key = $2
+         LIMIT 1`,
+        [tenantId, idempotencyKey]
+      )
+      if (existing.rows[0]) return mapDurableOutboxRow(existing.rows[0])
+
+      const insert = await client.query<DurableOutboxRow>(
+        `INSERT INTO outbox_events
+           (id, tenant_id, type, envelope_version, correlation_id, idempotency_key,
+            conversation_id, session_id, agent_id, agent_version_id,
+            inbound_message_id, payload, payload_protection_version, status, created_at, available_at,
+            attempts, lease_owner, lease_until, last_error, processed_at,
+            dead_lettered_at, parent_event_id, tenant_isolation_quarantined)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb,
+                 $13, 'pending', $14, $15, 0, NULL, NULL, NULL, NULL, NULL, $16, false)
+         ON CONFLICT (tenant_id, idempotency_key) DO NOTHING
+         RETURNING ${outboxSelectColumns}`,
+        [
+          eventId,
+          tenantId,
+          type,
+          envelopeVersion,
+          correlationId,
+          idempotencyKey,
+          rawInput.conversationId ?? null,
+          rawInput.sessionId ?? null,
+          rawInput.agentId ?? null,
+          rawInput.agentVersionId ?? null,
+          rawInput.inboundMessageId ?? null,
+          serializeOutboxJson(payload, 'Outbox payload'),
+          'outbox-r6',
+          createdAt,
+          availableAt,
+          rawInput.parentEventId ?? null
+        ]
+      )
+      if (insert.rows[0]) return mapDurableOutboxRow(insert.rows[0])
+
+      // A concurrent insert won the idempotency key. Read the winner in the
+      // same READ COMMITTED command boundary instead of inventing a second id.
+      const winner = await client.query<DurableOutboxRow>(
+        `SELECT ${outboxSelectColumns}
+         FROM outbox_events
+         WHERE tenant_id = $1 AND idempotency_key = $2
+         LIMIT 1`,
+        [tenantId, idempotencyKey]
+      )
+      if (!winner.rows[0]) {
+        throw new DomainError(
+          'conflict',
+          'Outbox idempotency winner could not be read'
+        )
+      }
+      return mapDurableOutboxRow(winner.rows[0])
+    }
+    return transactionClient
+      ? operation()
+      : withOutboxTransaction(this.client, operation)
+  }
+
+  async findOutboxById(
+    rawTenantId: TenantId,
+    eventId: string
+  ): Promise<DurableOutboxEventRecord | null> {
+    const tenantId = TenantIdSchema.parse(rawTenantId)
+    const id = assertOutboxText(eventId, 'eventId', 160)
+    const result = await this.client.query<DurableOutboxRow>(
+      `SELECT ${outboxSelectColumns}
+       FROM outbox_events
+       WHERE tenant_id = $1 AND id = $2
+       LIMIT 1`,
+      [tenantId, id]
+    )
+    return result.rows[0] ? mapDurableOutboxRow(result.rows[0]) : null
+  }
+
+  async claimNext(
+    rawInput: OutboxClaimInput
+  ): Promise<DurableOutboxEventRecord | null> {
+    const tenantId = TenantIdSchema.parse(rawInput.tenantId)
+    const workerId = validateOutboxWorker(rawInput.workerId)
+    const now = this.repositoryNow()
+    const leaseMs = validateOutboxLeaseMs(
+      rawInput.leaseMs ?? OUTBOX_DEFAULT_LEASE_MS
+    )
+    const leaseUntil = new Date(now.getTime() + leaseMs)
+
+    return withOutboxTransaction(this.client, async () => {
+      const candidate = await this.client.query<DurableOutboxRow>(
+        `SELECT ${outboxSelectColumns}
+         FROM outbox_events
+         WHERE tenant_id = $1
+           AND (
+             (status = 'pending' AND available_at <= $2)
+             OR (status = 'failed' AND available_at <= $2)
+             OR (status = 'processing' AND lease_until <= $2)
+           )
+           AND ($3::text IS NULL OR id = $3)
+         ORDER BY available_at ASC, created_at ASC, id ASC
+         FOR UPDATE SKIP LOCKED
+         LIMIT 1`,
+        [tenantId, now, rawInput.eventId ?? null]
+      )
+      const row = candidate.rows[0]
+      if (!row) return null
+
+      if (row.status === 'processing') {
+        await this.client.query(
+          `UPDATE outbox_attempts
+           SET outcome = COALESCE(outcome, 'lease_expired'),
+               error = COALESCE(error, 'outbox_error:lease_expired')
+           WHERE tenant_id = $1 AND event_id = $2 AND outcome IS NULL`,
+          [tenantId, row.id]
+        )
+      }
+
+      const claimed = await this.client.query<DurableOutboxRow>(
+        `UPDATE outbox_events
+         SET status = 'processing',
+             attempts = attempts + 1,
+             lease_owner = $3,
+             lease_until = $4,
+             available_at = $2,
+             last_error = NULL
+         WHERE tenant_id = $1 AND id = $5
+           AND (
+             status = 'pending'
+             OR (status = 'failed' AND available_at <= $2)
+             OR (status = 'processing' AND lease_until <= $2)
+           )
+         RETURNING ${outboxSelectColumns}`,
+        [tenantId, now, workerId, leaseUntil, row.id]
+      )
+      const claimedRow = claimed.rows[0]
+      if (!claimedRow) return null
+      await this.client.query(
+        `INSERT INTO outbox_attempts
+           (tenant_id, event_id, attempt, worker_id, claimed_at, outcome, error)
+         VALUES ($1, $2, $3, $4, $5, NULL, NULL)`,
+        [tenantId, claimedRow.id, claimedRow.attempts, workerId, now]
+      )
+      return mapDurableOutboxRow(claimedRow)
+    })
+  }
+
+  async ack(
+    rawInput: PostgresOutboxAckInput
+  ): Promise<DurableOutboxEventRecord> {
+    const tenantId = TenantIdSchema.parse(rawInput.tenantId)
+    const eventId = assertOutboxText(rawInput.eventId, 'eventId', 160)
+    const workerId = validateOutboxWorker(rawInput.workerId)
+    const now = this.repositoryNow()
+
+    /**
+     * Claim/ack is intentionally at-least-once. The first transaction only
+     * validates ownership and observes the journal; it must commit before a
+     * handler can touch the runtime repository through another pool
+     * connection. The final transaction performs the compare-and-swap and
+     * journals the sanitized result. Controlled handlers are idempotent, so a
+     * crash between the handler and this final transaction is safe to retry.
+     */
+    const prepared = await withOutboxTransaction(this.client, async () => {
+      const selected = await this.client.query<DurableOutboxRow>(
+        `SELECT ${outboxSelectColumns}
+         FROM outbox_events
+         WHERE tenant_id = $1 AND id = $2
+         FOR UPDATE`,
+        [tenantId, eventId]
+      )
+      const event = selected.rows[0]
+      if (!event)
+        throw new DomainError('invalid_action', 'Outbox event not found')
+      if (event.status !== 'processing' && event.status !== 'processed') {
+        throw new DomainError('conflict', 'Outbox lease is not owned by worker')
+      }
+      if (
+        event.status === 'processing' &&
+        (event.lease_owner !== workerId ||
+          !event.lease_until ||
+          new Date(event.lease_until).getTime() <= now.getTime())
+      ) {
+        throw new DomainError('conflict', 'Outbox lease is not owned by worker')
+      }
+
+      const journal = await this.client.query<{
+        result: unknown
+        event_id: string
+      }>(
+        `SELECT result, event_id
+         FROM outbox_effects
+         WHERE tenant_id = $1 AND idempotency_key = $2
+         FOR UPDATE`,
+        [tenantId, event.idempotency_key]
+      )
+      if (journal.rows[0] && journal.rows[0].event_id !== event.id) {
+        throw new DomainError(
+          'invalid_action',
+          'Outbox effect journal points to another event'
+        )
+      }
+      if (event.status === 'processed') {
+        if (!journal.rows[0] || journal.rows[0].event_id !== event.id) {
+          throw new DomainError(
+            'invalid_action',
+            'Processed outbox event has no matching effect journal'
+          )
+        }
+        return {
+          kind: 'processed' as const,
+          event: mapDurableOutboxRow(event)
+        }
+      }
+      if (
+        await this.isOutboxTakeoverActive(
+          tenantId,
+          event,
+          rawInput.takeoverActive
+        )
+      ) {
+        return { kind: 'takeover' as const, event }
+      }
+      return {
+        kind: 'execute' as const,
+        event,
+        hasJournal: Boolean(journal.rows[0]),
+        journalResult: journal.rows[0]
+          ? assertOutboxResult(journal.rows[0].result)
+          : undefined
+      }
+    })
+
+    if (prepared.kind === 'processed') return prepared.event
+    if (prepared.kind === 'takeover') {
+      return withOutboxTransaction(this.client, () =>
+        this.suppressOutboxForTakeover(
+          prepared.event,
+          tenantId,
+          workerId,
+          this.repositoryNow()
+        )
+      )
+    }
+
+    let result = prepared.journalResult
+    if (!prepared.hasJournal) {
+      if (rawInput.effect) {
+        // The handler receives only the durable event envelope. It runs after
+        // the validation transaction has committed, so it may use the same
+        // PostgreSQL pool for tenant-scoped finalization without deadlocking
+        // on the outbox row held above.
+        result = await rawInput.effect(mapDurableOutboxRow(prepared.event))
+      } else if (rawInput.result !== undefined) {
+        result = rawInput.result
+      } else {
+        throw new DomainError(
+          'validation_failed',
+          'A local effect or result is required before ack'
+        )
+      }
+    }
+
+    return withOutboxTransaction(this.client, async () => {
+      const ackNow = this.repositoryNow()
+      const selected = await this.client.query<DurableOutboxRow>(
+        `SELECT ${outboxSelectColumns}
+         FROM outbox_events
+         WHERE tenant_id = $1 AND id = $2
+         FOR UPDATE`,
+        [tenantId, eventId]
+      )
+      const event = selected.rows[0]
+      if (!event)
+        throw new DomainError('invalid_action', 'Outbox event not found')
+      if (event.status !== 'processing' && event.status !== 'processed') {
+        throw new DomainError('conflict', 'Outbox lease is not owned by worker')
+      }
+      if (
+        event.status === 'processing' &&
+        (event.lease_owner !== workerId ||
+          !event.lease_until ||
+          new Date(event.lease_until).getTime() <= ackNow.getTime())
+      ) {
+        throw new DomainError('conflict', 'Outbox lease is not owned by worker')
+      }
+
+      const journal = await this.client.query<{
+        result: unknown
+        event_id: string
+      }>(
+        `SELECT result, event_id
+         FROM outbox_effects
+         WHERE tenant_id = $1 AND idempotency_key = $2
+         FOR UPDATE`,
+        [tenantId, event.idempotency_key]
+      )
+      if (journal.rows[0] && journal.rows[0].event_id !== event.id) {
+        throw new DomainError(
+          'invalid_action',
+          'Outbox effect journal points to another event'
+        )
+      }
+      if (event.status === 'processed') {
+        if (!journal.rows[0] || journal.rows[0].event_id !== event.id) {
+          throw new DomainError(
+            'invalid_action',
+            'Processed outbox event has no matching effect journal'
+          )
+        }
+        return mapDurableOutboxRow(event)
+      }
+      if (
+        await this.isOutboxTakeoverActive(
+          tenantId,
+          event,
+          rawInput.takeoverActive
+        )
+      ) {
+        return this.suppressOutboxForTakeover(event, tenantId, workerId, ackNow)
+      }
+
+      if (!journal.rows[0]) {
+        const safeResult = assertOutboxResult(result)
+        await this.client.query(
+          `INSERT INTO outbox_effects
+             (tenant_id, idempotency_key, event_id, result,
+              result_protection_version, applied_at)
+           VALUES ($1, $2, $3, $4::jsonb, 'outbox-r6', $5)
+           ON CONFLICT (tenant_id, idempotency_key) DO NOTHING`,
+          [
+            tenantId,
+            event.idempotency_key,
+            event.id,
+            serializeOutboxJson(safeResult, 'Outbox result'),
+            ackNow
+          ]
+        )
+      }
+
+      const persisted = await this.client.query<{ result: unknown }>(
+        `SELECT result
+         FROM outbox_effects
+         WHERE tenant_id = $1 AND idempotency_key = $2
+         FOR UPDATE`,
+        [tenantId, event.idempotency_key]
+      )
+      if (!persisted.rows[0]) {
+        throw new DomainError(
+          'invalid_action',
+          'Outbox effect journal could not be persisted'
+        )
+      }
+      const safePersistedResult = assertOutboxResult(persisted.rows[0].result)
+      await this.client.query(
+        `UPDATE outbox_effects
+         SET result = $3::jsonb,
+             result_protection_version = 'outbox-r6'
+         WHERE tenant_id = $1 AND idempotency_key = $2`,
+        [
+          tenantId,
+          event.idempotency_key,
+          serializeOutboxJson(safePersistedResult, 'Outbox result')
+        ]
+      )
+
+      const updated = await this.client.query<DurableOutboxRow>(
+        `UPDATE outbox_events
+         SET status = 'processed',
+             processed_at = $3,
+             lease_owner = NULL,
+             lease_until = NULL,
+             last_error = NULL,
+             available_at = $3
+         WHERE tenant_id = $1 AND id = $2 AND status = 'processing'
+           AND lease_owner = $4
+         RETURNING ${outboxSelectColumns}`,
+        [tenantId, event.id, ackNow, workerId]
+      )
+      const updatedRow = updated.rows[0]
+      if (!updatedRow)
+        throw new DomainError('conflict', 'Outbox ack lost its lease')
+      await this.client.query(
+        `UPDATE outbox_attempts
+         SET outcome = 'processed', error = NULL
+         WHERE tenant_id = $1 AND event_id = $2 AND worker_id = $3
+           AND outcome IS NULL`,
+        [tenantId, event.id, workerId]
+      )
+      await appendDurableOutboxAudit(this.client, {
+        tenantId,
+        eventId: event.id,
+        correlationId: event.correlation_id,
+        actorId: workerId,
+        action: 'ack',
+        attempts: updatedRow.attempts,
+        status: updatedRow.status
+      })
+      // Keep the result in the durable journal; the event record deliberately
+      // does not duplicate arbitrary handler output.
+      return mapDurableOutboxRow(updatedRow)
+    })
+  }
+
+  async fail(rawInput: OutboxFailInput): Promise<DurableOutboxEventRecord> {
+    const tenantId = TenantIdSchema.parse(rawInput.tenantId)
+    const eventId = assertOutboxText(rawInput.eventId, 'eventId', 160)
+    const workerId = validateOutboxWorker(rawInput.workerId)
+    const now = this.repositoryNow()
+    const error = redactOutboxError(rawInput.error)
+
+    return withOutboxTransaction(this.client, async () => {
+      const selected = await this.client.query<DurableOutboxRow>(
+        `SELECT ${outboxSelectColumns}
+         FROM outbox_events
+         WHERE tenant_id = $1 AND id = $2
+         FOR UPDATE`,
+        [tenantId, eventId]
+      )
+      const event = selected.rows[0]
+      if (!event)
+        throw new DomainError('invalid_action', 'Outbox event not found')
+      if (
+        event.status !== 'processing' ||
+        event.lease_owner !== workerId ||
+        !event.lease_until ||
+        new Date(event.lease_until).getTime() <= now.getTime()
+      ) {
+        throw new DomainError('conflict', 'Outbox lease is not owned by worker')
+      }
+      const terminal =
+        rawInput.handoff === true ||
+        rawInput.terminal === true ||
+        event.attempts >= OUTBOX_MAX_ATTEMPTS
+      const status: DurableOutboxStatus = terminal ? 'dead_letter' : 'failed'
+      const availableAt = terminal
+        ? now
+        : new Date(now.getTime() + outboxBackoffMs(event.attempts))
+      const updated = await this.client.query<DurableOutboxRow>(
+        `UPDATE outbox_events
+         SET status = $3,
+             available_at = $4,
+             last_error = $5,
+             lease_owner = NULL,
+             lease_until = NULL,
+             dead_lettered_at = CASE WHEN $3 = 'dead_letter' THEN $6::timestamptz ELSE NULL END
+         WHERE tenant_id = $1 AND id = $2 AND status = 'processing'
+           AND lease_owner = $7
+         RETURNING ${outboxSelectColumns}`,
+        [tenantId, event.id, status, availableAt, error, now, workerId]
+      )
+      const updatedRow = updated.rows[0]
+      if (!updatedRow)
+        throw new DomainError('conflict', 'Outbox failure lost its lease')
+      if (rawInput.handoff && event.session_id) {
+        await this.markOutboxSessionHandoff(tenantId, event.session_id, now)
+      }
+      await this.client.query(
+        `UPDATE outbox_attempts
+         SET outcome = $4, error = $5
+         WHERE tenant_id = $1 AND event_id = $2 AND worker_id = $3
+           AND outcome IS NULL`,
+        [
+          tenantId,
+          event.id,
+          workerId,
+          rawInput.handoff ? 'handoff' : status,
+          error
+        ]
+      )
+      await appendDurableOutboxAudit(this.client, {
+        tenantId,
+        eventId: event.id,
+        correlationId: event.correlation_id,
+        actorId: workerId,
+        action: rawInput.handoff
+          ? 'handoff'
+          : terminal
+            ? 'dead_letter'
+            : 'fail',
+        attempts: updatedRow.attempts,
+        status: updatedRow.status,
+        ...(rawInput.handoff && event.session_id
+          ? { sessionId: event.session_id }
+          : {}),
+        ...(rawInput.handoff && event.conversation_id
+          ? { conversationId: event.conversation_id }
+          : {}),
+        error
+      })
+      return mapDurableOutboxRow(updatedRow)
+    })
+  }
+
+  async requeueDeadLetter(
+    rawInput: PostgresOutboxRequeueInput
+  ): Promise<DurableOutboxEventRecord> {
+    const tenantId = TenantIdSchema.parse(rawInput.tenantId)
+    const eventId = assertOutboxText(rawInput.eventId, 'eventId', 160)
+    const operatorId = assertOutboxText(rawInput.operatorId, 'operatorId', 160)
+    const correlationId = CorrelationIdSchema.parse(rawInput.correlationId)
+    const now = this.repositoryNow()
+
+    return withOutboxTransaction(this.client, async () => {
+      const selected = await this.client.query<DurableOutboxRow>(
+        `SELECT ${outboxSelectColumns}
+         FROM outbox_events
+         WHERE tenant_id = $1 AND id = $2
+         FOR UPDATE`,
+        [tenantId, eventId]
+      )
+      const event = selected.rows[0]
+      if (!event)
+        throw new DomainError('invalid_action', 'Outbox event not found')
+      if (event.status !== 'dead_letter') {
+        throw new DomainError(
+          'conflict',
+          'Only dead-letter events can be requeued'
+        )
+      }
+      const updated = await this.client.query<DurableOutboxRow>(
+        `UPDATE outbox_events
+         SET status = 'pending',
+             attempts = 0,
+             available_at = $3,
+             lease_owner = NULL,
+             lease_until = NULL,
+             last_error = NULL,
+             processed_at = NULL,
+             dead_lettered_at = NULL
+         WHERE tenant_id = $1 AND id = $2 AND status = 'dead_letter'
+         RETURNING ${outboxSelectColumns}`,
+        [tenantId, event.id, now]
+      )
+      const updatedRow = updated.rows[0]
+      if (!updatedRow)
+        throw new DomainError(
+          'conflict',
+          'Outbox requeue lost its compare-and-swap'
+        )
+      await this.client.query(
+        `INSERT INTO outbox_attempts
+           (tenant_id, event_id, attempt, worker_id, claimed_at, outcome, error)
+         VALUES ($1, $2, $3, $4, $5, 'requeued', $6)`,
+        [
+          tenantId,
+          event.id,
+          Math.max(1, event.attempts ?? 0),
+          operatorId,
+          now,
+          event.last_error ? redactOutboxError(event.last_error) : null
+        ]
+      )
+      await appendDurableOutboxAudit(this.client, {
+        tenantId,
+        eventId: event.id,
+        correlationId,
+        actorId: operatorId,
+        action: 'requeue',
+        attempts: updatedRow.attempts,
+        status: updatedRow.status
+      })
+      return mapDurableOutboxRow(updatedRow)
+    })
   }
 
   async findByExternalMessage(
@@ -604,22 +1547,29 @@ export class PostgresRuntimeRepository {
     }
   }
 
-  async createWithSession(input: {
-    tenantId: TenantId
-    channel: Channel
-    senderRef: string
-    externalMessageId: string
-    body: string
-    conversationId?: string | undefined
-    sessionId?: string | undefined
-  }): Promise<{
+  async createWithSession(
+    input: {
+      tenantId: TenantId
+      channel: Channel
+      senderRef: string
+      externalMessageId: string
+      body: string
+      conversationId?: string | undefined
+      sessionId?: string | undefined
+    },
+    durableOutbox?: PostgresOutboxEnqueueInput
+  ): Promise<{
     conversation: ConversationRecord
     session: SessionRecord
     message: MessageRecord
+    outbox?: DurableOutboxEventRecord
   }> {
     const tenantId = TenantIdSchema.parse(input.tenantId)
     const now = new Date()
-    const idempotencyKey = `inbound:${input.channel}:${input.externalMessageId}`
+    const idempotencyKey = createInboundIdempotencyKey(
+      input.channel,
+      input.externalMessageId
+    )
     let conversation: ConversationRecord
     let session: SessionRecord
     let message: MessageRecord
@@ -832,13 +1782,57 @@ export class PostgresRuntimeRepository {
           ]
         )
       }
+      const outbox = durableOutbox
+        ? await this.enqueue(
+            {
+              ...durableOutbox,
+              tenantId,
+              correlationId:
+                durableOutbox.correlationId ?? conversation.correlationId,
+              conversationId: conversation.id,
+              sessionId: session.id,
+              inboundMessageId: message.id,
+              payload: mergeOutboxPayload(durableOutbox.payload, {
+                conversationId: conversation.id,
+                sessionId: session.id,
+                messageId: message.id
+              })
+            },
+            this.client
+          )
+        : undefined
       await this.client.query('COMMIT')
+      if (outbox) return { conversation, session, message, outbox }
     } catch (error) {
       await this.client.query('ROLLBACK')
       throw error
     }
 
     return { conversation, session, message }
+  }
+
+  async createWithSessionAndOutbox(
+    input: Parameters<PostgresRuntimeRepository['createWithSession']>[0],
+    outbox: PostgresOutboxEnqueueInput
+  ): Promise<{
+    conversation: ConversationRecord
+    session: SessionRecord
+    message: MessageRecord
+    outbox: DurableOutboxEventRecord
+  }> {
+    const created = await this.createWithSession(input, outbox)
+    if (!created.outbox) {
+      throw new DomainError(
+        'invalid_action',
+        'Inbound outbox intent was not committed'
+      )
+    }
+    return {
+      conversation: created.conversation,
+      session: created.session,
+      message: created.message,
+      outbox: created.outbox
+    }
   }
 
   async bindSessionAgentVersion(
@@ -1025,6 +2019,104 @@ export class PostgresRuntimeRepository {
           [messageId]
         )
     return result.rows.length > 0
+  }
+
+  async findInboundRuntimeContext(
+    rawTenantId: TenantId,
+    conversationId: string,
+    sessionId: string | null,
+    messageId: string
+  ): Promise<InboundRuntimeContext | null> {
+    const tenantId = TenantIdSchema.parse(rawTenantId)
+    const sessionAgentColumns = this.tenantIsolation
+      ? 'sessions.agent_id, sessions.agent_version_id'
+      : 'NULL::text AS agent_id, NULL::text AS agent_version_id'
+    const result = await this.client.query<{
+      message_id: string
+      conversation_id: string
+      external_message_id: string
+      direction: 'inbound' | 'outbound'
+      body: string
+      runtime_status: 'pending' | 'completed'
+      message_created_at: Date
+      channel: Channel
+      sender_ref: string
+      correlation_id: string
+      session_id: string | null
+      session_status: SessionRecord['status'] | null
+      session_takeover_state: HumanTakeoverState | null
+      agent_id: string | null
+      agent_version_id: string | null
+      session_created_at: Date | null
+      session_updated_at: Date | null
+    }>(
+      `SELECT messages.id AS message_id,
+              messages.conversation_id,
+              messages.external_message_id,
+              messages.direction,
+              messages.body,
+              messages.runtime_status,
+              messages.created_at AS message_created_at,
+              conversations.channel,
+              conversations.sender_ref,
+              conversations.correlation_id,
+              sessions.id AS session_id,
+              sessions.status AS session_status,
+              sessions.takeover_state AS session_takeover_state,
+              ${sessionAgentColumns},
+              sessions.created_at AS session_created_at,
+              sessions.updated_at AS session_updated_at
+       FROM messages
+       INNER JOIN conversations
+         ON conversations.id = messages.conversation_id
+       LEFT JOIN sessions
+         ON sessions.conversation_id = conversations.id
+        AND sessions.id = $3
+       WHERE messages.id = $1
+         AND messages.conversation_id = $2
+         AND messages.direction = 'inbound'
+         AND conversations.tenant_id = $4
+       LIMIT 1`,
+      [messageId, conversationId, sessionId, tenantId]
+    )
+    const row = result.rows[0]
+    if (!row || (sessionId !== null && row.session_id !== sessionId)) {
+      return null
+    }
+    const message: MessageRecord = {
+      id: row.message_id,
+      conversationId: row.conversation_id,
+      externalMessageId: row.external_message_id,
+      direction: row.direction,
+      body: redactSensitiveText(row.body),
+      runtimeStatus: row.runtime_status,
+      createdAt: row.message_created_at
+    }
+    const session = row.session_id
+      ? {
+          id: row.session_id,
+          conversationId: row.conversation_id,
+          status: row.session_status as SessionRecord['status'],
+          takeoverState: row.session_takeover_state as HumanTakeoverState,
+          ...(row.agent_id
+            ? { agentId: AgentIdSchema.parse(row.agent_id) }
+            : {}),
+          ...(row.agent_version_id
+            ? {
+                agentVersionId: AgentVersionIdSchema.parse(row.agent_version_id)
+              }
+            : {}),
+          createdAt: row.session_created_at as Date,
+          updatedAt: row.session_updated_at as Date
+        }
+      : null
+    return {
+      message,
+      channel: row.channel,
+      senderRef: redactSensitiveText(row.sender_ref),
+      correlationId: CorrelationIdSchema.parse(row.correlation_id),
+      session
+    }
   }
 
   async transitionTakeover(
@@ -1993,19 +3085,17 @@ export class PostgresRuntimeRepository {
     request: ApprovalRequestRecord,
     rawTenantId?: TenantId
   ): Promise<ApprovalRequestRecord> {
+    assertApprovalCreation(request)
     const tenantId = rawTenantId ? TenantIdSchema.parse(rawTenantId) : undefined
     if (this.tenantIsolation && !tenantId) {
       throw new DomainError('invalid_action', 'Tenant scope is required')
     }
     if (tenantId) await this.assertSessionTenant(request.sessionId, tenantId)
     if (this.tenantIsolation) {
-      await this.client.query(
+      const result = await this.client.query(
         `INSERT INTO approval_requests (tenant_id, id, session_id, proposed_action, summary, risk_level, status, decided_by, decided_at, created_at)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-         ON CONFLICT (id) DO UPDATE SET
-           status = EXCLUDED.status,
-           decided_by = EXCLUDED.decided_by,
-           decided_at = EXCLUDED.decided_at`,
+         ON CONFLICT (id) DO NOTHING RETURNING id`,
         [
           tenantId,
           request.id,
@@ -2019,14 +3109,13 @@ export class PostgresRuntimeRepository {
           request.createdAt
         ]
       )
+      if (!result.rows.length)
+        throw new DomainError('conflict', 'Approval request already exists')
     } else {
-      await this.client.query(
+      const result = await this.client.query(
         `INSERT INTO approval_requests (id, session_id, proposed_action, summary, risk_level, status, decided_by, decided_at, created_at)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-         ON CONFLICT (id) DO UPDATE SET
-           status = EXCLUDED.status,
-           decided_by = EXCLUDED.decided_by,
-           decided_at = EXCLUDED.decided_at`,
+         ON CONFLICT (id) DO NOTHING RETURNING id`,
         [
           request.id,
           request.sessionId,
@@ -2039,8 +3128,61 @@ export class PostgresRuntimeRepository {
           request.createdAt
         ]
       )
+      if (!result.rows.length)
+        throw new DomainError('conflict', 'Approval request already exists')
     }
     return request
+  }
+
+  async decideApprovalWithAudit(
+    input: AttendanceApprovalDecision,
+    rawTenantId?: TenantId
+  ): Promise<ApprovalRequestRecord> {
+    input = validateAttendanceDecision(input)
+    const tenantId = rawTenantId ? TenantIdSchema.parse(rawTenantId) : undefined
+    if (this.tenantIsolation && !tenantId)
+      throw new DomainError('invalid_action', 'Tenant scope is required')
+    await this.client.query('BEGIN')
+    try {
+      // The conditional update is the authority; any earlier read is only for scoped existence.
+      const current = await this.findApprovalById(
+        input.approvalRequestId,
+        tenantId
+      )
+      if (!current)
+        throw new DomainError('invalid_action', 'Approval request not found')
+      const decidedAt = new Date()
+      const result = await this.client.query(
+        `UPDATE approval_requests SET status = $2, decided_by = $3, decided_at = $4
+         WHERE id = $1 AND status = 'pending'
+         ${tenantId ? 'AND session_id IN (SELECT sessions.id FROM sessions INNER JOIN conversations ON conversations.id = sessions.conversation_id WHERE conversations.tenant_id = $5)' : ''}
+         RETURNING id`,
+        [
+          input.approvalRequestId,
+          input.decision,
+          input.operatorId,
+          decidedAt,
+          ...(tenantId ? [tenantId] : [])
+        ]
+      )
+      if (!result.rows.length)
+        throw new DomainError(
+          'conflict',
+          'Approval request is no longer pending'
+        )
+      const decided: ApprovalRequestRecord = {
+        ...current,
+        status: input.decision,
+        decidedBy: input.operatorId,
+        decidedAt
+      }
+      await this.appendAudit(attendanceDecisionAudit(decided, input, tenantId))
+      await this.client.query('COMMIT')
+      return decided
+    } catch (error) {
+      await this.client.query('ROLLBACK')
+      throw error
+    }
   }
 
   async findApprovalById(
@@ -2104,6 +3246,122 @@ export class PostgresRuntimeRepository {
       tenantId ? [tenantId] : undefined
     )
     return result.rows.map((row) => this.mapApproval(row))
+  }
+
+  private async markOutboxSessionHandoff(
+    tenantId: TenantId,
+    sessionId: string,
+    now: Date
+  ): Promise<void> {
+    const updated = this.tenantIsolation
+      ? await this.client.query<{ conversation_id: string }>(
+          `UPDATE sessions
+           SET takeover_state = 'HANDOFF_REQUESTED', updated_at = $3
+           WHERE id = $1 AND tenant_id = $2 AND takeover_state = 'BOT_ACTIVE'
+           RETURNING conversation_id`,
+          [sessionId, tenantId, now]
+        )
+      : await this.client.query<{ conversation_id: string }>(
+          `UPDATE sessions
+           SET takeover_state = 'HANDOFF_REQUESTED', updated_at = $2
+           WHERE id = $1 AND takeover_state = 'BOT_ACTIVE'
+           RETURNING conversation_id`,
+          [sessionId, now]
+        )
+    const conversationId = updated.rows[0]?.conversation_id
+    if (!conversationId) return
+    await this.client.query(
+      `UPDATE conversations
+       SET status = 'waiting_human', updated_at = $2
+       WHERE id = $1${this.tenantIsolation ? ' AND tenant_id = $3' : ''}`,
+      this.tenantIsolation
+        ? [conversationId, now, tenantId]
+        : [conversationId, now]
+    )
+  }
+
+  private async isOutboxTakeoverActive(
+    tenantId: TenantId,
+    event: DurableOutboxRow,
+    configuredCheck: OutboxTakeoverCheck | undefined
+  ): Promise<boolean> {
+    if (event.session_id) {
+      const session = await this.client.query<{
+        takeover_state: HumanTakeoverState
+      }>(
+        `SELECT sessions.takeover_state
+         FROM sessions
+         INNER JOIN conversations ON conversations.id = sessions.conversation_id
+         WHERE sessions.id = $1 AND conversations.tenant_id = $2
+         FOR UPDATE`,
+        [event.session_id, tenantId]
+      )
+      if (!session.rows[0] || session.rows[0].takeover_state !== 'BOT_ACTIVE') {
+        return true
+      }
+    }
+    return resolveTakeoverCheck(configuredCheck)
+  }
+
+  private async suppressOutboxForTakeover(
+    event: DurableOutboxRow,
+    tenantId: TenantId,
+    workerId: string,
+    now: Date
+  ): Promise<DurableOutboxEventRecord> {
+    const updated = await this.client.query<DurableOutboxRow>(
+      `UPDATE outbox_events
+       SET status = 'dead_letter',
+           available_at = $3,
+           last_error = $4,
+           lease_owner = NULL,
+           lease_until = NULL,
+           dead_lettered_at = $3
+       WHERE tenant_id = $1 AND id = $2 AND status = 'processing'
+         AND lease_owner = $5
+       RETURNING ${outboxSelectColumns}`,
+      [tenantId, event.id, now, OUTBOX_TAKEOVER_SUPPRESSED_ERROR, workerId]
+    )
+    const updatedRow = updated.rows[0]
+    if (!updatedRow) {
+      throw new DomainError('conflict', 'Outbox takeover lost its lease')
+    }
+    if (event.session_id) {
+      await this.markOutboxSessionHandoff(tenantId, event.session_id, now)
+    }
+    await this.client.query(
+      `UPDATE outbox_attempts
+       SET outcome = 'handoff', error = $4
+       WHERE tenant_id = $1 AND event_id = $2 AND worker_id = $3
+         AND outcome IS NULL`,
+      [tenantId, event.id, workerId, OUTBOX_TAKEOVER_SUPPRESSED_ERROR]
+    )
+    await appendDurableOutboxAudit(this.client, {
+      tenantId,
+      eventId: event.id,
+      correlationId: event.correlation_id,
+      actorId: workerId,
+      action: 'handoff',
+      attempts: updatedRow.attempts,
+      status: updatedRow.status,
+      ...(event.session_id ? { sessionId: event.session_id } : {}),
+      ...(event.conversation_id
+        ? { conversationId: event.conversation_id }
+        : {}),
+      error: OUTBOX_TAKEOVER_SUPPRESSED_ERROR
+    })
+    return mapDurableOutboxRow(updatedRow)
+  }
+
+  private repositoryNow(): Date {
+    const value = new Date(this.clock())
+    if (!Number.isFinite(value.getTime())) {
+      throw new DomainError(
+        'validation_failed',
+        'Outbox repository clock returned an invalid date'
+      )
+    }
+    return value
   }
 
   private mapTask(row: {
@@ -2383,4 +3641,18 @@ function readPayloadTenantId(payload: unknown): TenantId | null {
   }
   const parsed = TenantIdSchema.safeParse(payload.tenantId)
   return parsed.success ? parsed.data : null
+}
+
+function mergeOutboxPayload(
+  payload: unknown,
+  context: { conversationId: string; sessionId: string; messageId: string }
+): unknown {
+  if (
+    typeof payload === 'object' &&
+    payload !== null &&
+    !Array.isArray(payload)
+  ) {
+    return { ...(payload as Record<string, unknown>), ...context }
+  }
+  return { value: payload, ...context }
 }

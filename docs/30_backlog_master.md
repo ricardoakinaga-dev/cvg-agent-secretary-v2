@@ -1,4 +1,104 @@
+# AUD-20260911-001 — backlog derivado da auditoria atual — 2026-09-11
+
+- status: `COMPLETED_WITH_OPEN_FINDINGS`; fase: `AUDIT`; veredicto: `CONDITIONAL_PASS_CONTROLLED_NO_GO_EXTERNAL`.
+- evidência: [relatório 0556](04_audit/0556_project_audit_2026-09-11.md) e [evidência 0557](04_audit/0557_project_audit_evidence_2026-09-11.json).
+- notas: consolidada `65/100`; controlado `74/100`; produto real `43/100`; prontidão para piloto/produção `20/100`.
+- gates executados: unit 152/657 com 3/25 skips; coverage 85,51/81,02/91,10/86,41; build 159 módulos; E2E 6/6; PostgreSQL incompleto 8/58 com 2/24 skips; `format:check`/`verify` passaram; audit moderado falhou com 3 vulnerabilidades.
+- próximos itens: `AUD-20260911-F01` caminho de produção; `F02` journeys no factory PostgreSQL; `F03` worker contínuo; `F04` RAG/integrações; `F05` evidência PostgreSQL; `F06` política de dependências; `F07` safety semântico; `F08` release/documentação; `F09` feature flags sem consumidor.
+- decisão: nenhuma integração real ou BUILD de produto é liberada por esta auditoria; produção, piloto real, dados reais e automações sensíveis continuam `NO-GO`.
+
+# AUD-20260905-001 — parecer integral atual — 2026-09-05T21:14:49-03:00
+
+- status: `COMPLETED_WITH_OPEN_FINDINGS`; relatório: `docs/04_audit/0554_project_full_audit_2026-09-05.md`; evidência: `0555_project_full_audit_evidence_2026-09-05.json`.
+- notas: consolidada `73/100`; técnico controlado `80/100`; produto real `64/100`; produção/piloto `25/100`.
+- findings abertos: `AUD-20260905-F01` caminho de produção; `F02` worker contínuo; `F03` RAG/jornadas reais; `F04` operação/RPO-RTO; `F05` drift/higiene; `F06` limites de evidência; `F07` generalização semântica do safety.
+- decisão: manter `REM-29` `NO_GO_CONTROLLED` e não abrir BUILD de integração sem RF-011, owners, identidade/provider/canal/fonte aprovados, signoff humano e RPO/RTO.
+- próxima ação autorizada: registrar os gates externos/humanos e repetir REM-27–29 em ambiente aprovado; nenhum dado real, deploy ou efeito externo.
+
+# REM-0539 — backlog pós-R7 — 2026-09-05T20:24:19-03:00
+
+- R7 fechou tecnicamente os blockers de redaction/ack/migration/bridge em escopo controlado; REM-10–12 e REM-28 permanecem `COMPLETED_CONTROLLED_REVALIDATED`.
+- Evidência: `docs/04_audit/0552_rem0539_r7_revalidation_evidence.json`; dossiê: `docs/04_audit/0553_rem0539_r7_final_dossier.md`; crítico fresh-context `01a073e0-1d26-7872-a196-3c22d1d39014` capturado com `PASS_CONTROLLED`.
+- Gates locais passaram: suíte 152/657, PostgreSQL local 10/82, coverage acima de 80%, E2E 6/6 e gates estáticos/worker pass.
+- REM-29 continua `NO_GO_CONTROLLED`: faltam RF-011, identidade/provider/canal, fonte institucional aprovada, signoff humano e RPO/RTO. Produção/piloto real e ações sensíveis continuam bloqueados.
+- Próxima ação autorizada: registrar o parecer independente R7 e aguardar gates externos/humanos antes de repetir REM-27–29 em ambiente aprovado.
+
+# REM-0539 — backlog pós-R6 — 2026-09-05T17:46:53-03:00
+
+- Estado: REM-01/03 implementadas; REM-04–28 `COMPLETED_CONTROLLED` após revalidação aplicável; REM-29 `NO_GO_CONTROLLED`; REM-02 `PENDING_HUMAN_DECISION`; REM-30 `DEFERRED_OPTIONAL`.
+- R6 revalidou consumer fechado do worker, sanitização de outbox, boundary PostgreSQL e shell web responsiva/semântica em ambiente local. Evidência: `docs/04_audit/0550_rem0539_r6_revalidation_evidence.json`; dossiê: `0551_rem0539_r6_final_dossier.md`.
+- Gates automatizados: suíte 150/638 pass com 3/23 skips; E2E 6/6 pass; visual 375/768/1440 pass; PostgreSQL final 7/54 pass com 2/22 skips por ausência de `TEST_DATABASE_URL`.
+- Próxima ação: capturar crítica R6, registrar RF-011 e aprovar identidade/provider/canal/fonte institucional, signoff humano e RPO/RTO; só então repetir REM-27–29. Produção, dado real e ações sensíveis continuam bloqueados.
+
+# REM-0539 — backlog após BUILD/AUDIT controlado — 2026-09-05T11:40:00-03:00
+
+- Estado: REM-01/03 implementadas; REM-04–28 `COMPLETED_CONTROLLED`; REM-29 `NO_GO_CONTROLLED`; REM-02 `PENDING_HUMAN_DECISION`; REM-30 `DEFERRED_OPTIONAL`.
+- Qualificação: R5 local mediu 45 ms/420 ms p95, zero perda e zero duplicação, mas não concede piloto.
+- Evidências: `docs/04_audit/0546_rem0539_r3_evidence.json`, `0547_rem0539_r4_evidence.json`, `0548_rem0539_r5_qualification_evidence.json`; backlog detalhado em `docs/03_build/0313_backlog_pos_auditoria.md`.
+- Próxima ação: registrar RF-011 e aprovar gates externos/humanos/RPO-RTO antes de repetir REM-27–29. Produção, dado real e ações sensíveis continuam bloqueados.
+
+# REM-0539 — estado executável R1 — 2026-09-05T08:17:03-03:00
+
+- REM-04, REM-05 e REM-06: `COMPLETED` com evidência em `docs/04_audit/0543_rem0539_r1_evidence.json`.
+- REM-07: `CONDITIONAL`; memória/API e estrutura transacional passam, mas a corrida real PostgreSQL e rollback por trigger aguardam `TEST_DATABASE_URL` isolada.
+- REM-08: `BLOCKED` até REM-07 fechar; REM-09 em diante permanecem `PENDING` por regra de gate.
+- A implementação usa apenas fixtures e observabilidade sintética. Nenhum dado real, canal/provider/RAG, deploy ou piloto foi executado.
+
+# REM-0539 / R2 — preparação documental e gate controlado — 2026-09-05
+
+- REM-09: `COMPLETED_CONTROLLED`; Discovery/PRD/SPEC aprovados para BUILD local.
+- REM-10/11/12: `READY_FOR_BUILD`; execução seguirá em fixtures e PostgreSQL local, sem broker/provider/canal externo.
+
+# REM-0539 / R1-CLOSURE — 2026-09-05
+
+- REM-07 e REM-08: `COMPLETED_CONTROLLED`, com evidência em `docs/04_audit/0544_rem0539_r1_closure_evidence.json`.
+- A corrida PostgreSQL e as suítes integral/PostgreSQL passaram; R2 tem Discovery/PRD/SPEC aprovados e BUILD controlado liberado.
+
 # BACKLOG MASTER — CVG
+
+## REM-0539 — execução autorizada em andamento — 2026-09-05T10:35:31.994051+00:00
+
+- status: IN_PROGRESS; engine: BUILD; fase: R1; tasks REM-04..07.
+- autorização: usuário solicitou implementar integralmente 0311/0312/0313 com Gauntlet/orchestrate. Os contratos R1 foram registrados e validados antes do BUILD; nenhum aceite de produção é inferido.
+- evidência de baseline: `docs/04_audit/0542_rem0539_r0_evidence.json`; tracking: `docs/03_build/tracking/rem0539_execution.json`; SPEC: `docs/02_spec/0122_rem0539_r1_contract.md`.
+- quality bar: `.gauntlet/bar.json`, 30 tasks + qualidade integrada obrigatórias. Histórico Gauntlet PLAT-S48 preservado por hash em `.gauntlet/legacy/PLAT-S48`.
+- próximos passos: RED/GREEN risco, proxy e approvals; crítica independente fresca e integração. REM-02 e demais ondas continuam no escopo, não concluídas.
+- limites: fixtures, sem dado real, canal/provider externo, RAG institucional, deploy ou piloto. Decisões externas/humanas permanecem requisitos pendentes, não critérios removidos.
+
+## PLAN-0539-001 — Planejamento executivo pós-auditoria — 2026-09-05T01:07:40-03:00
+
+- status: `COMPLETED` (entrega documental); programa REM-0539 proposto, execução não iniciada.
+- autorização: usuário solicitou plano executivo, roadmap e backlog com base em 0539.
+- entregas: [plano executivo](03_build/0311_plano_executivo_pos_auditoria.md), [roadmap](03_build/0312_roadmap_pos_auditoria.md), [30 tasks REM](03_build/0313_backlog_pos_auditoria.md).
+- próximo passo: revalidar baseline (REM-01) e submeter contratos corretivos (REM-03); conciliar arquitetura/documentação em REM-02.
+- limites: nenhum achado fechado, código/lockfile alterado ou gate de BUILD/produção concedido; F01/F05/F07 continuam abertos.
+
+## AUD-DOC-001 — Revisão integral solicitada pelo usuário
+
+- id: `AUD-DOC-001_FULL_DOCUMENTATION_IMPLEMENTATION_REVIEW`
+- status: `COMPLETED`
+- fase: `AUDIT`
+- escopo: leitura dos 227 arquivos originais de docs, confronto com código/runtime e relatório com notas 0–100 por item
+- gate: auditoria autorizada pelo usuário; nenhum BUILD de produto
+- aceite: inventário de leitura completo, evidência atual, notas justificadas, gaps e remediação
+- evidência: `docs/04_audit/0539_documentation_implementation_review.md`
+- achado novo: `AUD-F01`, P1, precedência de scheduling oculta triagem high-risk em mensagem composta; reprodução controlada confirmada; correção depende de lane DISCOVERY/PRD/SPEC própria
+- limite: fixtures somente, sem provider/canal real, RAG real, dados reais ou deploy
+
+## Remediações derivadas de AUD-DOC-001 — abertas
+
+| Item    | Prioridade                  | Estado             | Próximo gate / aceite                                                                                                   |
+| ------- | --------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| AUD-F07 | P2                          | DISCOVERY_REQUIRED | Approval de atendimento: CAS pending→decisão e teste de snapshots concorrentes; não confundir com capability approval   |
+| AUD-F01 | P1                          | DISCOVERY_REQUIRED | Risco independente da intenção; caso consulta+sangue deve solicitar handoff high e não executar tool; ampliar preflight |
+| AUD-F05 | P2                          | DISCOVERY_REQUIRED | Atualizar Fastify e substituir proxy numérico; provar rejeição de HTTPS forjado por origem direta                       |
+| AUD-F04 | P2 documental               | OPEN               | Conciliar autoridades, caminhos de código, migrations e estados históricos; índices de audit atualizados nesta rodada   |
+| AUD-F02 | P2 produto                  | SPEC_REQUIRED      | Worker/outbox com claim/ack/retry/recuperação e prova de não perda em fixture                                           |
+| AUD-F03 | P2 produto                  | SPEC_REQUIRED      | Cadastro/agenda duráveis e integrações por lanes próprias; gates reais continuam obrigatórios                           |
+| AUD-F06 | P2 operação / P3 manutenção | SPEC_REQUIRED      | Evidenciar carga/p95, restore, observabilidade, identidade e operação antes de piloto                                   |
+
+Detalhes, provas e owners sugeridos: `docs/04_audit/0539_documentation_implementation_review.md`.
+O JSON de readiness de construção mede o baseline histórico de debug; seu 100 não é nota atual de produto ou encerramento destes achados. Nenhuma remediação de código foi iniciada ou aprovada por este registro.
 
 ## PLAT-S48 — Controlled Baseline Determinism
 

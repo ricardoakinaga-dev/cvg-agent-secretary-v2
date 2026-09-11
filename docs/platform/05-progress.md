@@ -1,5 +1,19 @@
 # Progress — CVG Agent Platform
 
+## Planejamento pós-auditoria — PLAN-0539-001 — 2026-09-05T01:07:40-03:00
+
+Plano executivo, roadmap e 30 tasks REM foram entregues em `docs/03_build/0311_plano_executivo_pos_auditoria.md`, `0312_roadmap_pos_auditoria.md` e `0313_backlog_pos_auditoria.md`. Horizonte estimado 14–20 semanas sob hipóteses explícitas; sem aprovação de execução. Próximo passo REM-01/03, com REM-02 para decisão de arquitetura. Achados da auditoria permanecem abertos e produção NO-GO.
+
+Atualização final AUD-DOC-001: AUD-F07 (P2) registrado após prova de sobrescrita por snapshot obsoleto no repositório de approval de atendimento; não houve dupla decisão reproduzida na tentativa HTTP em memória. Relatório/evidências 0539/0541 distinguem essa fila de capability approval. Gate de remediação pendente.
+
+## Parecer vigente — AUD-DOC-001 — 2026-09-05T00:54:31-03:00
+
+Auditoria integral concluída: 227 documentos, código/runtime, 39 RF, 9 UC e 31 RNF. Nota geral **69/100**, plataforma controlada **85/100**, operação real **25/100**. Verify/PG/E2E PASS, mas AUD-F01 (P1, risco composto) e AUD-F05 (P2, HTTPS/proxy condicional) permanecem abertos. `AUDIT_COMPLETED_WITH_OPEN_FINDINGS`; produção `NO-GO`.
+
+Fonte atual: [relatório integral](../04_audit/0539_documentation_implementation_review.md), [inventário](../04_audit/0540_documentation_review_inventory.json), [evidências](../04_audit/0541_documentation_review_evidence.json). S48 e os vereditos abaixo são históricos, não aprovação dos achados novos. Próximo passo: discovery/PRD/SPEC de remediação, sem BUILD nesta rodada.
+
+## Histórico anterior
+
 ## S48 — auditoria e fechamento controlado — 2026-09-02
 
 O clock do `CapabilityGateway` agora é injetável com default real; o fixture

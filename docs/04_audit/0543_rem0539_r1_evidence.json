@@ -1,0 +1,68 @@
+{
+  "program": "REM-0539",
+  "run": "REM-0539-AAA",
+  "round": "R1",
+  "date": "2026-09-05",
+  "scope": "Segurança e integridade em fixtures sintéticos",
+  "status": "CONDITIONAL",
+  "summary": "REM-04, REM-05 e REM-06 passaram; REM-07 passou em memória/API e permanece condicionado à execução PostgreSQL com duas conexões. REM-08 não é promovido enquanto essa evidência de concorrência não existir.",
+  "changes": [
+    "Avaliação independente de segurança antes da política e do planejamento de tools; risco alto/crítico impede planejamento, approval lookup e execução.",
+    "Preflight ampliado para dez casos, com observadores próprios de planejamento e verificações de risco, resposta, handoff e externalCall.",
+    "Histórico HTTP avaliado antes do recorte de contexto; marcador sintético preserva risco antigo sem reter texto bruto.",
+    "Proxy numérico legado rejeitado; Fastify usa lista explícita de IPs, com CORS/HTTPS/HSTS e dependência Fastify 5.12.3 verificadas.",
+    "Decisão de approval de atendimento usa CAS pending→terminal, auditoria na mesma transação e conflito 409; capability approval não foi alterada."
+  ],
+  "verification": {
+    "integrated_tests": {
+      "command": "npx vitest run --no-file-parallelism apps/api/src/http-security.test.ts packages/shared/src/__tests__/http-security-env.test.ts packages/platform/src/__tests__/safety-assessment.test.ts packages/platform/src/__tests__/critical-safety-preflight.test.ts packages/platform/src/__tests__/platform-foundation.test.ts packages/agent-core/src/__tests__/published-agent-runtime.test.ts apps/worker/src/__tests__/published-worker-runtime.test.ts apps/api/src/rem-risk-boundary.test.ts apps/api/src/__tests__/platform-control-plane.test.ts apps/api/src/__tests__/attendance-approval-atomic.test.ts packages/persistence/src/__tests__/attendance-approval-atomic.test.ts packages/persistence/src/__tests__/persistence-schema.test.ts packages/persistence/src/__tests__/postgres-migration-smoke.test.ts",
+      "result": "13 arquivos; 121 passed; 1 skipped",
+      "raw_sha256": "4c06c1f2d303225d446e036a2f66ef2ca25d494b9f6af2c07b4f66146cc6b707"
+    },
+    "typecheck": { "command": "npm run typecheck", "result": "PASS" },
+    "lint": { "command": "npm run lint", "result": "PASS" },
+    "format": {
+      "command": "npx prettier --check <R1-files>",
+      "result": "PASS after formatting safety-assessment.ts"
+    },
+    "diff_check": { "command": "git diff --check", "result": "PASS" },
+    "dependency_audit": {
+      "command": "npm audit --json",
+      "result": "0 vulnerabilities; Fastify 5.12.3",
+      "raw_sha256": "1e89b41871a8e8b86c1c2863ad0661abf653cf3c015b251192e1bfd8c541a2b6"
+    },
+    "postgres_concurrency": {
+      "command": "npx vitest run --no-file-parallelism packages/persistence/src/__tests__/attendance-approval-postgres.test.ts",
+      "result": "NOT RUN: TEST_DATABASE_URL absent; test is skipped",
+      "status": "BLOCKED",
+      "limitation": "Structural transaction review passed, but two-connection CAS race, tenant isolation and audit-trigger rollback are not claimed as executed."
+    }
+  },
+  "independent_critics": [
+    {
+      "critic_id": "rem0539-r1-critic-safety-i1",
+      "decision": "REJECT",
+      "finding": "Initial critic found preflight medication assertion, long-history preservation and negation/routine phrase gaps; all three were remediated and retested.",
+      "mutation_clean": true
+    },
+    {
+      "critic_id": "rem0539-r1-quick-critic-i1",
+      "decision": "APPROVE",
+      "finding": "Post-remediation focused tests 36/36; no P1/P2; medication, history and lexical boundaries confirmed.",
+      "mutation_clean": true
+    },
+    {
+      "critic_id": "rem0539-r1-critic-integrity-i1",
+      "decision": "BLOCKED",
+      "finding": "HTTP, memory/API and SQL structure pass; PostgreSQL two-connection evidence remains unavailable in this environment.",
+      "mutation_clean": true
+    }
+  ],
+  "artifact_fingerprints": {
+    "pre_final_critic": "486e09fc3e579367029b385b649da670150cd1e3c7b9cec8c81e558e5c976817",
+    "post_final_critic": "0079e56765f8b67a90ed7ac67110fa2e21030b31984c2d152224fbf32aa5206e",
+    "source_diff_pre_post": "3a377ff15c4089dc184e0fbd688afe65a609f46a810d5a06c96d75e31aa935ad"
+  },
+  "production_boundary": "NO-GO",
+  "next": "Disponibilizar TEST_DATABASE_URL isolada para executar attendance-approval-postgres.test.ts; depois fechar REM-08. Enquanto isso, somente preparar SPEC/documentação de R2, sem promover processamento durável a BUILD."
+}

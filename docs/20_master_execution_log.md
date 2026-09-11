@@ -1,4 +1,113 @@
+# AUD-20260911-001 — auditoria integral atual — 2026-09-11
+
+- status: `COMPLETED_WITH_OPEN_FINDINGS`; engine: `AUDIT`; escopo: API, worker, runtime, persistência, segurança, governança, RAG, integrações, UI, CI e operação.
+- ação: leitura dos gates/documentos obrigatórios, inspeção read-only do código atual, execução de typecheck, lint, build, readiness, worker smoke, suíte unitária, coverage, E2E, audit de dependências, teste PostgreSQL condicionado e `git diff --check`.
+- resultado: nota consolidada `65/100`; controlado `74/100`; produto real `43/100`; prontidão `20/100`; veredicto `CONDITIONAL_PASS_CONTROLLED_NO_GO_EXTERNAL`.
+- verificação: 152 arquivos/657 testes pass com 3/25 skips; coverage 85,51/81,02/91,10/86,41; build Vite 159 módulos; E2E 6/6; PostgreSQL incompleto em 8 arquivos/58 testes pass e 2/24 skips por ausência de banco; `format:check` e `verify` passam após a formatação do 0554; audit estrito encontra 3 vulnerabilidades moderadas.
+- achado adicional: o factory da API retorna `journeys: null` para PostgreSQL, fazendo as rotas `/v1/journeys/*` recusarem operação nesse modo.
+- evidência: `docs/04_audit/0556_project_audit_2026-09-11.md` e `docs/04_audit/0557_project_audit_evidence_2026-09-11.json`.
+- limites: sem dados reais, provider/canal/IdP/RAG institucional, broker, deploy, PostgreSQL disponível ou side effect; nenhum código foi alterado nesta auditoria.
+- decisão: manter produção, piloto real, dados reais e ações sensíveis bloqueados; abrir nova lane somente após gates humanos/externos e Discovery/PRD/SPEC específicos.
+
+# AUD-20260905-001 — auditoria integral atual — 2026-09-05T21:14:49-03:00
+
+- status: `COMPLETED_WITH_OPEN_FINDINGS`; escopo: API, worker, runtime, persistência, segurança, governança, RAG, integrações, UI, CI e operação.
+- ação: inspeção read-only mais execução de typecheck, lint, format, build, readiness, audit, worker smoke, suíte unitária, PostgreSQL descartável, coverage e E2E; snapshots visuais 375/768/1440 também foram inspecionados.
+- resultado: 152/657 testes pass com 3/25 skips; PostgreSQL 10/82; E2E 6/6; coverage 85,51/81,02/91,10/86,41; nota consolidada 73/100; produção 25/100 e `NO-GO`.
+- evidência: `docs/04_audit/0554_project_full_audit_2026-09-05.md` e `0555_project_full_audit_evidence_2026-09-05.json`.
+- limites: fixtures e serviços locais; sem dados reais, provider/canal/IdP/RAG institucional, broker, deploy ou side effect; a auditoria é self-review e não substitui signoff humano.
+- próxima ação: registrar os gates externos/humanos pendentes e repetir qualificação somente em ambiente autorizado; não iniciar integração real a partir da nota.
+
+# REM-0539 / R7 — revalidação final controlada — 2026-09-05T20:24:19-03:00
+
+- Reaberto o ciclo `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT` apenas para fechar os blockers da crítica fresh-context R7; nenhuma ação externa foi autorizada.
+- Endurecido o sanitizer de outbox: apenas IDs com formato conhecido e enumerações operacionais passam; `status`/`fixture` livres, números não reconhecidos, body, texto clínico, sender/external IDs e segredos viram marcadores.
+- Corrigido o ack PostgreSQL para confirmar ownership em `COMMIT` antes do handler e fazer journal/CAS/auditoria em transação posterior at-least-once; a ponte agora exercita o handler controlado real e finalização runtime.
+- `0011_outbox_payload_redaction.sql` foi validada em PostgreSQL local: rows não roteáveis vão para quarentena/dead-letter, pending roteável sobrevive redigido e FORCE RLS/checks retornam; idempotência inbound usa SHA-256.
+- Gates finais: 152/657 pass com 3/25 skips; PostgreSQL 10/82 pass; coverage 85,51/81,02/91,10/86,41%; E2E 6/6; build, typecheck, lint, format, readiness, worker smoke, audit e diff pass.
+- Evidência: `docs/04_audit/0552_rem0539_r7_revalidation_evidence.json`; dossiê: `docs/04_audit/0553_rem0539_r7_final_dossier.md`. O crítico fresh-context `01a073e0-1d26-7872-a196-3c22d1d39014` retornou `PASS_CONTROLLED`, sem P0/P1/P2.
+- Parecer controlado: `CONDITIONAL_PASS_CONTROLLED_NO_GO_EXTERNAL`; produção, piloto, dado real e ações sensíveis seguem bloqueados até os gates humanos/externos.
+
+# REM-0539 / R6 — revalidação pós-correções — 2026-09-05T17:46:53-03:00
+
+- R6 fechou a revalidação controlada de durabilidade, consumer, redaction e web shell. O consumer positivo é explícito, bounded e limitado ao adapter `controlled-memory`; nenhum efeito externo foi liberado.
+- A sanitização agora é centralizada antes da persistência de outbox em memória/PostgreSQL; o callback de ack não recebe query/client arbitrário. A interface web recebeu skip link, landmarks, estados semânticos, foco, navegação e breakpoints exercitados.
+- Verificação final registrada em `docs/04_audit/0550_rem0539_r6_revalidation_evidence.json`: `npm test` 150/638 pass com 3/23 skips; worker smoke positivo/negativo pass; `CVG_WEB_PORT=4175 npm run test:e2e` 6/6 pass; gates estáticos pass.
+- `npm run test:postgres` teve 7 arquivos/54 testes pass e 2/22 skips porque a execução final não recebeu `TEST_DATABASE_URL`; não é prova de banco real nesta rodada.
+- Parecer: `CONDITIONAL_PASS_CONTROLLED_NO_GO_EXTERNAL`. RF-011, identidade/provider/canal/fonte, signoff humano e RPO/RTO permanecem pendentes; produção, piloto e ações sensíveis seguem bloqueados.
+- Dossiê: `docs/04_audit/0551_rem0539_r6_final_dossier.md`. Próximo passo autorizado: capturar a crítica fresh-context R6 e, somente após os gates externos/humanos, repetir REM-27–29.
+
+# REM-0539 / fechamento R1–R5 — 2026-09-05T11:40:00-03:00
+
+- R1–R4 foram executadas e auditadas em ambiente local controlado, cobrindo safety, approval atômico, outbox/worker durável, jornadas, identidade, modelo, delivery, knowledge catalog, retenção e restore.
+- R5 executou `runControlledQualification` com fixtures sintéticas: p95 persistência 45 ms, resposta 420 ms, zero perda e zero efeito duplicado; o resultado foi `NO_GO` por gates externos/humanos ausentes.
+- Evidências: `docs/04_audit/0546_rem0539_r3_evidence.json`, `0547_rem0539_r4_evidence.json` e `0548_rem0539_r5_qualification_evidence.json`.
+- Crítica independente final e registros Gauntlet permanecem obrigatórios antes do encerramento do run; o parecer de produção é `NO-GO`.
+- Decisões pendentes: RF-011, identidade/provider/canal/fonte, signoff humano e RPO/RTO. REM-30 não entra no caminho crítico sem hotspot mensurado.
+
+# REM-0539 / R1 — 2026-09-05T08:17:03-03:00
+
+- REM-04/05/06 implementadas e verificadas: risco independente, preflight com observadores, histórico conservador, proxy por IP explícito e Fastify 5.12.3 sem vulnerabilidades no `npm audit`.
+- REM-07 implementada localmente: CAS pending→terminal, auditoria atômica, 409 e recuperação de UI; teste PostgreSQL de duas conexões criado, porém bloqueado pela ausência de `TEST_DATABASE_URL`.
+- Primeiro crítico fresco registrou FAIL por três gaps; após correção, crítico fresco registrou PASS nos casos de safety. Integridade permaneceu CONDITIONAL exclusivamente pela prova PostgreSQL não executada.
+- Evidência: `docs/04_audit/0543_rem0539_r1_evidence.json`; produção continua NO-GO. Próxima ação é disponibilizar banco sintético isolado e repetir a auditoria R1 antes de R2.
+
+# REM-0539 / R2 — preparação documental e gate controlado — 2026-09-05
+
+- Discovery, PRD e SPEC de durabilidade foram preparados em `0012_rem0539_r2_durability.md`, `0023_rem0539_r2_durability.md` e `0123_rem0539_r2_contract.md`.
+- O contrato cobre aceite durável, claim/lease, ack, retry, dead-letter, idempotência, takeover e matriz de crash, sempre em fixtures locais.
+- REM-08 foi fechada e a SPEC R2 foi aprovada para BUILD local controlado; REM-10/11/12 estão prontas para execução. Broker, provider, canal e produção seguem fora do gate.
+
+# REM-0539 / R1-CLOSURE — 2026-09-05
+
+- REM-07 e REM-08 foram fechadas no escopo controlado após `attendance-approval-postgres.test.ts` passar com duas conexões e rollback de auditoria.
+- `npm test` passou com 135 arquivos/608 testes; `npm run test:postgres` passou com 8 arquivos/72 testes; typecheck, lint, format, diff e audit de dependências passaram.
+- Evidência: `docs/04_audit/0544_rem0539_r1_closure_evidence.json`; produção e piloto continuam NO-GO.
+- O gate R2 está registrado em `docs/02_spec/0123_rem0539_r2_contract.md`; não há broker/provider/canal externo.
+
 # MASTER EXECUTION LOG — CVG
+
+## REM-0539 — execução autorizada em andamento — 2026-09-05T10:35:31.994051+00:00
+
+- status: IN_PROGRESS; engine: BUILD; fase: R1; tasks REM-04..07.
+- autorização: usuário solicitou implementar integralmente 0311/0312/0313 com Gauntlet/orchestrate. Os contratos R1 foram registrados e validados antes do BUILD; nenhum aceite de produção é inferido.
+- evidência de baseline: `docs/04_audit/0542_rem0539_r0_evidence.json`; tracking: `docs/03_build/tracking/rem0539_execution.json`; SPEC: `docs/02_spec/0122_rem0539_r1_contract.md`.
+- quality bar: `.gauntlet/bar.json`, 30 tasks + qualidade integrada obrigatórias. Histórico Gauntlet PLAT-S48 preservado por hash em `.gauntlet/legacy/PLAT-S48`.
+- próximos passos: RED/GREEN risco, proxy e approvals; crítica independente fresca e integração. REM-02 e demais ondas continuam no escopo, não concluídas.
+- limites: fixtures, sem dado real, canal/provider externo, RAG institucional, deploy ou piloto. Decisões externas/humanas permanecem requisitos pendentes, não critérios removidos.
+
+## 2026-09-05T01:07:40-03:00 — PLAN-0539-001 — Planejamento executivo pós-auditoria — 2026-09-05T01:07:40-03:00
+
+- status: `COMPLETED` (entrega documental); programa REM-0539 proposto, execução não iniciada.
+- verificação: Validação documental de PLAN-0539-001: 30 IDs únicos, dependências existentes e sem ciclos, sete achados mapeados, links locais válidos, Prettier e git diff --check PASS; testes docs-readiness/construction-readiness: 2 arquivos e 11 testes PASS. Nenhum gate de produto foi reexecutado ou aprovado por esses checks.
+- autorização: usuário solicitou plano executivo, roadmap e backlog com base em 0539.
+- entregas: [plano executivo](03_build/0311_plano_executivo_pos_auditoria.md), [roadmap](03_build/0312_roadmap_pos_auditoria.md), [30 tasks REM](03_build/0313_backlog_pos_auditoria.md).
+- próximo passo: revalidar baseline (REM-01) e submeter contratos corretivos (REM-03); conciliar arquitetura/documentação em REM-02.
+- limites: nenhum achado fechado, código/lockfile alterado ou gate de BUILD/produção concedido; F01/F05/F07 continuam abertos.
+
+Atualização final AUD-DOC-001: AUD-F07 (P2) registrado após prova de sobrescrita por snapshot obsoleto no repositório de approval de atendimento; não houve dupla decisão reproduzida na tentativa HTTP em memória. Relatório/evidências 0539/0541 distinguem essa fila de capability approval. Gate de remediação pendente.
+
+## 2026-09-05T00:54:31-03:00 — AUD-DOC-001 concluída
+
+- Escopo: leitura integral dos 227 arquivos originais de docs, incluindo ocultos; inspeção de código e runtime; 39 RF, 9 UC e 31 RNF avaliados com notas e justificativas.
+- Resultado: nota geral 69/100; RF 61,4; plataforma controlada 85; operação real 25. `AUDIT_COMPLETED_WITH_OPEN_FINDINGS`, produção `NO-GO`.
+- Evidência: verify PASS (537 testes/19 skips, coverage 84,87/80,12/84,98/85,98), PostgreSQL16 efêmero 8/72 PASS sem skips, Playwright 4/4 PASS e smoke de falha segura do worker.
+- Achados: AUD-F01 P1 risco composto; AUD-F05 P2 proxy/HTTPS reproduzido e Fastify moderado; F02/F03/F04/F06 lacunas de produto/documentação/operação. Gate audit high passa com uma dependência moderada; não foi alegado audit zero.
+- Entregáveis: `docs/04_audit/0539_documentation_implementation_review.md`, `0540_documentation_review_inventory.json`, `0541_documentation_review_evidence.json`; índices de audit, runtime, backlog e platform progress atualizados.
+- Limites: nenhum código/lockfile alterado, nenhum deploy/push/provider/canal/dado real/ação sensível. PostgreSQL efêmero encerrado. Sem revisão independente por subagente nesta rodada.
+- Próxima ação: discovery/PRD/SPEC de F01 e F05; correções não fazem parte desta auditoria concluída.
+
+## Histórico anterior
+
+## AUD-DOC-001 — auditoria integral em andamento — 2026-09-05T00:33:13-03:00
+
+- engine: `AUDIT`
+- task: `AUD-DOC-001_FULL_DOCUMENTATION_IMPLEMENTATION_REVIEW`
+- action: inventário de 227 documentos, leitura de PRD/SPEC e históricos operacionais, instalação hermética, verify e reprodução adicional de intenção composta
+- result: verify exit 0, 537 pass/19 skipped, coverage 84.87/80.12/84.98/85.98; audit possui 1 moderada no Fastify; AUD-F01 reproduz risco alto convertido em scheduling baixo sem handoff
+- status: `IN_PROGRESS`; leitura restante, E2E/PostgreSQL e relatório com notas pendentes
+- evidence: `docs/04_audit/0539_documentation_implementation_review.md` e `docs/04_audit/0540_documentation_review_inventory.json`
+- decision: somente auditoria; nenhum código de produto, dado real, provider/canal, RAG ou deploy alterado
 
 ## AUDIT / FECHAMENTO CONTROLADO PLAT-S48 — 2026-09-02T07:32:00-03:00
 

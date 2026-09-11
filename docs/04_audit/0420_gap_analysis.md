@@ -1,5 +1,15 @@
 # 0420 — Gap Analysis
 
+## Parecer vigente — AUD-DOC-001 — 2026-09-05T00:54:31-03:00
+
+Gaps atuais: AUD-F01 risco; F02 worker/outbox; F03 integrações/stubs; F04 drift documental; F05 proxy/dependência; F06 evidência operacional/manutenção. Classificação e provas no relatório integral.
+
+Fonte atual: [relatório integral](0539_documentation_implementation_review.md), [inventário](0540_documentation_review_inventory.json) e [evidências](0541_documentation_review_evidence.json). Auditoria solicitada concluída; correções futuras ainda abertas.
+
+AUD-F07 (P2) adicional: repositório de approval de atendimento aceita escrita de snapshot obsoleto; consumo único de capability approval não prova CAS nessa fila. Reprodução e limites no relatório 0539; remediação futura por gate próprio.
+
+## Registro histórico anterior a esta auditoria
+
 ## Gaps criticos
 
 ### GAP-C01 — Implementacao inexistente

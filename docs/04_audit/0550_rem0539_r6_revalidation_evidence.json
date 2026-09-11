@@ -1,0 +1,95 @@
+{
+  "program": "REM-0539",
+  "run": "REM-0539-AAA",
+  "round": "R6",
+  "date": "2026-09-05",
+  "scope": "Revalidação controlada pós-correções de worker, redaction, UX, foco e responsividade",
+  "status": "CONDITIONAL_PASS_CONTROLLED_NO_GO_EXTERNAL",
+  "summary": "A implementação local foi revalidada após a crítica R5: o worker agora possui uma composição controlada explícita e bounded, o outbox sanitiza o envelope antes de persistir, a web shell recebeu semântica/foco/responsividade reforçados e os gates automatizados passaram. O resultado é um passe condicional somente para fixtures sintéticas e ambiente local; não constitui conexão de produção, aprovação externa, certificação de acessibilidade ou autorização de piloto.",
+  "changes": [
+    "Consumidor controlado do worker com registry fechado para inbound.process/message.outbound, limite de drain, lease/takeover e efeitos injetados explicitamente; o entrypoint positivo é controlado-memory e sem efeitos externos.",
+    "Sanitização centralizada do payload do outbox compartilhada por memória e PostgreSQL, preservando correlação segura e removendo senderRef, externalMessageId, body sensível e segredos antes da persistência.",
+    "Boundary PostgreSQL reduzido a efeitos de domínio sem expor query/client ao callback de ack; o consumer não recebe acesso arbitrário ao banco.",
+    "Web shell atualizada com skip link, landmarks, estados semânticos, aria-pressed, labels, foco visível, controles de 40px, navegação de console, layout responsivo e ausência de overflow horizontal nos viewports exercitados.",
+    "Smoke de processo do worker e matriz visual Playwright adicionados ao conjunto de regressão controlada."
+  ],
+  "verification": {
+    "full_suite": {
+      "command": "npm test",
+      "result": "150 arquivos passaram; 3 foram omitidos; 638 testes passaram; 23 foram omitidos",
+      "status": "PASS",
+      "limitations": "Fixtures sintéticas; testes de PostgreSQL dependem de TEST_DATABASE_URL separado."
+    },
+    "postgres_suite": {
+      "command": "npm run test:postgres",
+      "result": "7 arquivos passaram; 2 foram omitidos; 54 testes passaram; 22 foram omitidos",
+      "status": "PASS_WITH_SKIPS",
+      "limitations": "Execução final sem TEST_DATABASE_URL; os casos dependentes de banco foram omitidos. Não declarar PostgreSQL real validado por esta execução."
+    },
+    "worker_runtime": {
+      "commands": [
+        "npm run test:worker:startup",
+        "npx vitest run --no-file-parallelism apps/worker/src/__tests__/published-worker-runtime.test.ts apps/worker/src/__tests__/controlled-worker.test.ts tests/worker-startup-smoke.test.js tests/worker-controlled-smoke.test.js"
+      ],
+      "result": "Falha segura sem adapter/tenant e caminho positivo controlled-memory passaram; smoke de processo processou 1 evento sintético com durable=false e externalEffects=false; 4 arquivos e 13 testes passaram na verificação focada.",
+      "status": "PASS_CONTROLLED",
+      "limitations": "O caminho controlado não conecta o worker publicado à infraestrutura PostgreSQL/broker/provider/canal de produção."
+    },
+    "static_gates": {
+      "commands": [
+        "npm run typecheck -- --pretty false",
+        "npm run lint",
+        "npm run build",
+        "npm run readiness",
+        "npm run format:check",
+        "npm run audit:security",
+        "git diff --check"
+      ],
+      "status": "PASS",
+      "limitations": "Gates estáticos não substituem aprovação humana, identidade externa, RPO/RTO ou ensaio operacional autorizado."
+    },
+    "e2e": {
+      "command": "CVG_WEB_PORT=4175 npm run test:e2e",
+      "result": "6 testes passaram, cobrindo segurança HTTP, pinning de sessão, checkpoint de auditoria, Control Center e shell visual.",
+      "status": "PASS_CONTROLLED",
+      "limitations": "Serviços locais/sintéticos; nenhum canal, destinatário ou identidade externa foi usado."
+    },
+    "visual_matrix": {
+      "command": "tests/e2e/visual-shell.spec.ts",
+      "result": "Viewports 375, 768 e 1440 sem overflow horizontal; controles e ações com altura mínima exercitada; foco visível verificado; admin narrow exercitado.",
+      "status": "PASS_CONTROLLED",
+      "limitations": "Não é avaliação WCAG/ATAG formal nem estudo com operador participante; screenshots foram inspecionados localmente."
+    },
+    "dependency_audit": {
+      "command": "npm audit --json",
+      "result": "0 vulnerabilidades reportadas",
+      "status": "PASS"
+    }
+  },
+  "acceptance": {
+    "REM-10": "PASS controlled revalidation: outbox/lease/ack/retry e consumer bounded foram exercitados; a prova positiva do adapter controlado agora coexiste com a falha segura do adapter ausente.",
+    "REM-11": "PASS controlled boundary: aceite e efeitos controlados permanecem investigáveis e o consumer usa composição fechada; integração publicada com PostgreSQL, broker e provider externo continua fora deste gate.",
+    "REM-12": "PASS controlled revalidation: recuperação, takeover, redaction e smoke do entrypoint passaram; zero perda/efeito duplicado só é afirmado para as fixtures executadas.",
+    "REM-28": "PASS controlled revalidation: semântica, foco, navegação e responsividade local foram reforçados e exercitados; não há certificação integral nem aprovação de participante humano.",
+    "REM-29": "NO-GO_CONTROLLED: identidade, provider, canal, fonte institucional, signoff humano e RPO/RTO aprovados continuam ausentes.",
+    "REM-30": "DEFERRED_OPTIONAL: nenhum hotspot mensurado autorizou refatoração ampla; permanece fora do caminho crítico."
+  },
+  "fresh_critic": {
+    "status": "PENDING_CAPTURE",
+    "note": "Parecer independente R6 será anexado após a leitura fresh-context; nenhum parecer é presumido."
+  },
+  "production_boundary": "NO-GO",
+  "external_gates": {
+    "identity": "NOT_CONNECTED",
+    "provider": "NOT_CONNECTED",
+    "channel": "NOT_CONNECTED",
+    "institutional_source_owner": "NOT_APPROVED",
+    "human_signoff": "NOT_OBTAINED",
+    "rpo_rto": "NOT_APPROVED",
+    "real_data": "NOT_USED",
+    "deployment": "NOT_PERFORMED",
+    "clinical_financial_record_actions": "NOT_EXECUTED"
+  },
+  "mutation_clean": true,
+  "next": "Capturar o parecer independente R6; obter RF-011, responsáveis e aprovações de identidade/provider/canal/fonte, signoff humano e RPO/RTO; somente então repetir REM-27–29 em perfil autorizado."
+}

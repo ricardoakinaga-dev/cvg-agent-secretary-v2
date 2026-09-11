@@ -109,9 +109,15 @@ export function AuditPanel({
         <span className="counter">{events.length}</span>
       </header>
       <div className="list">
-        {isLoading ? <p className="state">Carregando...</p> : null}
+        {isLoading ? (
+          <p className="state" role="status">
+            Carregando...
+          </p>
+        ) : null}
         {!isLoading && error ? (
-          <p className="state stateError">{error}</p>
+          <p className="state stateError" role="alert">
+            {error}
+          </p>
         ) : null}
         {!isLoading && !error && events.length === 0 ? (
           <p className="state">Nenhum evento de auditoria.</p>
@@ -141,10 +147,14 @@ export function AuditPanel({
           </p>
         ) : null}
         {canReviewEvidence && evidenceIsLoading ? (
-          <p className="state">Carregando evidencias...</p>
+          <p className="state" role="status">
+            Carregando evidencias...
+          </p>
         ) : null}
         {canReviewEvidence && !evidenceIsLoading && evidenceError ? (
-          <p className="state stateError">{evidenceError}</p>
+          <p className="state stateError" role="alert">
+            {evidenceError}
+          </p>
         ) : null}
         {canReviewEvidence &&
         !evidenceIsLoading &&
@@ -289,7 +299,9 @@ export function AuditPanel({
           </div>
         ) : null}
         {checkpointMessage ? (
-          <p className="state stateCompact">{checkpointMessage}</p>
+          <p className="state stateCompact" role="status">
+            {checkpointMessage}
+          </p>
         ) : null}
       </section>
     </section>

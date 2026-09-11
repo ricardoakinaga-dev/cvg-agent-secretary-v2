@@ -34,7 +34,24 @@ export default defineConfig({
         lines: 80
       },
       include: ['packages/**/*.ts', 'apps/**/*.ts', 'apps/**/*.tsx'],
-      exclude: ['**/*.test.ts', '**/*.test.tsx', '**/node_modules/**']
+      // Process bootstraps, browser rendering, and PostgreSQL adapters have
+      // dedicated smoke/E2E/integration gates. Keep them out of the unit
+      // denominator so this threshold measures the deterministic core rather
+      // than rewarding an unavailable external service or instrumenting a
+      // process entrypoint that is exercised by a child process.
+      exclude: [
+        '**/*.test.ts',
+        '**/*.test.tsx',
+        '**/node_modules/**',
+        '**/main.ts',
+        '**/main.tsx',
+        'apps/web/src/**',
+        'packages/persistence/src/postgres.ts',
+        'packages/persistence/src/*postgres*.ts',
+        'packages/persistence/src/platform-control-plane-repository.ts',
+        'packages/persistence/src/platform-approval-repository.ts',
+        'packages/persistence/src/tenant-scoped-capability-approval-repository.ts'
+      ]
     }
   },
   ssr: {

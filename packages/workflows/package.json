@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "dependencies": {
+    "@cvg/persistence": "1.0.0",
     "@cvg/shared": "1.0.0",
     "@cvg/tools": "1.0.0",
     "@cvg/policy": "1.0.0"

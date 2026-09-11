@@ -1,3 +1,4 @@
+import type { AttendanceApprovalDecision } from './attendance-approval.ts'
 import { DomainError } from '@cvg/shared'
 import {
   TenantIdSchema,
@@ -39,10 +40,18 @@ import type {
   AuditEvidenceQuery,
   AuditEvidenceSummary,
   ConversationPage,
+  InboundRuntimeContext,
   MessageRecord,
   SessionRecord,
   TaskRecord
 } from './schema.ts'
+import type {
+  OutboxAckInput,
+  OutboxClaimInput,
+  OutboxEnqueueInput,
+  OutboxFailInput,
+  OutboxRequeueInput
+} from './outbox.ts'
 import type {
   AuditEvidenceCheckpointCreateInput,
   AuditEvidenceCheckpointRecord,
@@ -50,6 +59,7 @@ import type {
 } from './audit-evidence-checkpoint.ts'
 import {
   PostgresRuntimeRepository,
+  type DurableOutboxEventRecord,
   type InboundRuntimeCompletionInput,
   type PostgresQueryable
 } from './postgres.ts'
@@ -139,6 +149,39 @@ export async function withTenantContext<T>(
 export class TenantScopedPostgresRuntimeRepository {
   constructor(private readonly pool: PostgresPoolLike) {}
 
+  enqueue(input: OutboxEnqueueInput): Promise<DurableOutboxEventRecord> {
+    return this.run(input.tenantId, (repository) => repository.enqueue(input))
+  }
+
+  findOutboxById(
+    tenantId: TenantId,
+    eventId: string
+  ): Promise<DurableOutboxEventRecord | null> {
+    return this.run(tenantId, (repository) =>
+      repository.findOutboxById(tenantId, eventId)
+    )
+  }
+
+  claimNext(input: OutboxClaimInput): Promise<DurableOutboxEventRecord | null> {
+    return this.run(input.tenantId, (repository) => repository.claimNext(input))
+  }
+
+  ack(input: OutboxAckInput): Promise<DurableOutboxEventRecord> {
+    return this.run(input.tenantId, (repository) => repository.ack(input))
+  }
+
+  fail(input: OutboxFailInput): Promise<DurableOutboxEventRecord> {
+    return this.run(input.tenantId, (repository) => repository.fail(input))
+  }
+
+  requeueDeadLetter(
+    input: OutboxRequeueInput
+  ): Promise<DurableOutboxEventRecord> {
+    return this.run(input.tenantId, (repository) =>
+      repository.requeueDeadLetter(input)
+    )
+  }
+
   findByExternalMessage(
     tenantId: TenantId,
     channel: Channel,
@@ -156,6 +199,17 @@ export class TenantScopedPostgresRuntimeRepository {
   > {
     return this.run(input.tenantId, (repository) =>
       repository.createWithSession(input)
+    )
+  }
+
+  createWithSessionAndOutbox(
+    input: Parameters<PostgresRuntimeRepository['createWithSession']>[0],
+    outbox: OutboxEnqueueInput
+  ): Promise<
+    Awaited<ReturnType<PostgresRuntimeRepository['createWithSessionAndOutbox']>>
+  > {
+    return this.run(input.tenantId, (repository) =>
+      repository.createWithSessionAndOutbox(input, outbox)
     )
   }
 
@@ -191,6 +245,22 @@ export class TenantScopedPostgresRuntimeRepository {
   ): Promise<boolean> {
     return this.run(tenantId, (repository) =>
       repository.markInboundRuntimeCompleted(messageId, tenantId)
+    )
+  }
+
+  findInboundRuntimeContext(
+    tenantId: TenantId,
+    conversationId: string,
+    sessionId: string | null,
+    messageId: string
+  ): Promise<InboundRuntimeContext | null> {
+    return this.run(tenantId, (repository) =>
+      repository.findInboundRuntimeContext(
+        tenantId,
+        conversationId,
+        sessionId,
+        messageId
+      )
     )
   }
 
@@ -360,6 +430,16 @@ export class TenantScopedPostgresRuntimeRepository {
     const scope = requireTenantId(tenantId)
     return this.run(scope, (repository) =>
       repository.saveApproval(request, scope)
+    )
+  }
+
+  decideApprovalWithAudit(
+    input: AttendanceApprovalDecision,
+    tenantId?: TenantId
+  ): Promise<ApprovalRequestRecord> {
+    const scope = requireTenantId(tenantId)
+    return this.run(scope, (repository) =>
+      repository.decideApprovalWithAudit(input, scope)
     )
   }
 

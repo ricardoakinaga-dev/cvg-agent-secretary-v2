@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { buildServer } from './server.ts'
 import {
+  TRUSTED_PROXY_HOPS_MIGRATION_ERROR,
   normalizeHttpSecurityOptions,
   normalizeOrigin,
   parseAllowedOrigins,
@@ -8,6 +9,8 @@ import {
 } from './http-security.ts'
 
 const allowedOrigin = 'https://console.example.test'
+const trustedProxyAddress = '127.0.0.1'
+const untrustedRemoteAddress = '203.0.113.7'
 
 describe('HTTP security boundary', () => {
   it('normalizes exact origins and rejects unsafe origin forms', () => {
@@ -45,10 +48,93 @@ describe('HTTP security boundary', () => {
     expect(normalizeHttpSecurityOptions()).toMatchObject({
       allowedOrigins: [],
       enforceHttps: false,
+      trustedProxyAddresses: [],
+      trustedProxyHops: 0
+    })
+    expect(
+      normalizeHttpSecurityOptions({
+        trustedProxyAddresses: [trustedProxyAddress, '::1', trustedProxyAddress]
+      })
+    ).toMatchObject({
+      trustedProxyAddresses: [trustedProxyAddress, '::1'],
       trustedProxyHops: 0
     })
     expect(() => normalizeHttpSecurityOptions({ trustedProxyHops: 5 })).toThrow(
-      /trustedProxyHops/
+      TRUSTED_PROXY_HOPS_MIGRATION_ERROR
+    )
+    expect(() =>
+      normalizeHttpSecurityOptions({
+        trustedProxyHops: '0' as unknown as number
+      })
+    ).toThrow(TRUSTED_PROXY_HOPS_MIGRATION_ERROR)
+    expect(() =>
+      normalizeHttpSecurityOptions({ trustedProxyAddresses: ['localhost'] })
+    ).toThrow(/trusted proxy address/i)
+    expect(() =>
+      normalizeHttpSecurityOptions({ trustedProxyAddresses: ['0.0.0.0'] })
+    ).toThrow(/trusted proxy address/i)
+    expect(() =>
+      normalizeHttpSecurityOptions({ trustedProxyAddresses: ['::'] })
+    ).toThrow(/trusted proxy address/i)
+    expect(() =>
+      normalizeHttpSecurityOptions({
+        trustedProxyAddresses: Array.from(
+          { length: 33 },
+          () => trustedProxyAddress
+        )
+      })
+    ).toThrow(/trusted proxy address/i)
+    expect(() =>
+      normalizeHttpSecurityOptions({
+        trustedProxyAddresses: '127.0.0.1' as unknown as readonly string[]
+      })
+    ).toThrow(/trusted proxy address/i)
+    expect(() =>
+      normalizeHttpSecurityOptions({
+        trustedProxyAddresses: ['127.0.0.1/32']
+      })
+    ).toThrow(/trusted proxy address/i)
+    expect(() =>
+      normalizeHttpSecurityOptions({
+        trustedProxyAddresses: ['127.0.0.1', '127.0.0.1,::1']
+      })
+    ).toThrow(/trusted proxy address/i)
+    expect(() =>
+      parseHttpSecurityEnv({
+        NODE_ENV: 'test',
+        API_TRUSTED_PROXY_HOPS: 'invalid'
+      })
+    ).toThrow(TRUSTED_PROXY_HOPS_MIGRATION_ERROR)
+    expect(() =>
+      parseHttpSecurityEnv({
+        NODE_ENV: 'test',
+        API_TRUSTED_PROXY_ADDRESSES: '127.0.0.1, ::1, 127.0.0.1'
+      })
+    ).not.toThrow()
+    expect(
+      parseHttpSecurityEnv({
+        NODE_ENV: 'test',
+        API_TRUSTED_PROXY_ADDRESSES: '127.0.0.1, ::1, 127.0.0.1'
+      })
+    ).toMatchObject({
+      trustedProxyAddresses: [trustedProxyAddress, '::1'],
+      trustedProxyHops: 0
+    })
+    expect(() =>
+      parseHttpSecurityEnv({
+        NODE_ENV: 'test',
+        API_TRUSTED_PROXY_HOPS: '1'
+      })
+    ).toThrow(TRUSTED_PROXY_HOPS_MIGRATION_ERROR)
+    expect(() =>
+      parseHttpSecurityEnv({
+        NODE_ENV: 'test',
+        API_TRUSTED_PROXY_HOPS: '0',
+        API_TRUSTED_PROXY_ADDRESSES: '127.0.0.1'
+      })
+    ).not.toThrow()
+    expect(() => normalizeHttpSecurityOptions({ trustedProxyHops: 5 })).toThrow(
+      TRUSTED_PROXY_HOPS_MIGRATION_ERROR
     )
     expect(() =>
       normalizeHttpSecurityOptions({ hstsMaxAgeSeconds: 299 })
@@ -71,14 +157,16 @@ describe('HTTP security boundary', () => {
           NODE_ENV: 'test',
           API_ALLOWED_ORIGINS: allowedOrigin,
           API_REQUIRE_HTTPS: 'true',
-          API_TRUSTED_PROXY_HOPS: '1'
+          API_TRUSTED_PROXY_HOPS: '0',
+          API_TRUSTED_PROXY_ADDRESSES: trustedProxyAddress
         },
         { hstsMaxAgeSeconds: 600 }
       )
     ).toMatchObject({
       allowedOrigins: [allowedOrigin],
       enforceHttps: true,
-      trustedProxyHops: 1,
+      trustedProxyAddresses: [trustedProxyAddress],
+      trustedProxyHops: 0,
       hstsMaxAgeSeconds: 600
     })
   })
@@ -111,12 +199,14 @@ describe('HTTP security boundary', () => {
         NODE_ENV: 'production',
         API_ALLOWED_ORIGINS: ` ${allowedOrigin},${allowedOrigin}/`,
         API_REQUIRE_HTTPS: 'true',
-        API_TRUSTED_PROXY_HOPS: '2'
+        API_TRUSTED_PROXY_HOPS: '0',
+        API_TRUSTED_PROXY_ADDRESSES: trustedProxyAddress
       })
     ).toMatchObject({
       allowedOrigins: [allowedOrigin],
       enforceHttps: true,
-      trustedProxyHops: 2
+      trustedProxyAddresses: [trustedProxyAddress],
+      trustedProxyHops: 0
     })
   })
 
@@ -265,20 +355,32 @@ describe('HTTP security boundary', () => {
       httpSecurity: {
         allowedOrigins: [allowedOrigin],
         enforceHttps: true,
-        trustedProxyHops: 1
+        trustedProxyAddresses: [trustedProxyAddress]
       }
     })
 
     const insecure = await app.inject({ method: 'GET', url: '/health' })
+    const spoofedFromUntrustedRemote = await app.inject({
+      method: 'GET',
+      url: '/health',
+      remoteAddress: untrustedRemoteAddress,
+      headers: { 'x-forwarded-proto': 'https' }
+    })
     const secure = await app.inject({
       method: 'GET',
       url: '/health',
+      remoteAddress: trustedProxyAddress,
       headers: { 'x-forwarded-proto': 'https' }
     })
     await app.close()
 
     expect(insecure.statusCode).toBe(426)
     expect(insecure.json()).toMatchObject({
+      success: false,
+      error: { code: 'secure_transport_required' }
+    })
+    expect(spoofedFromUntrustedRemote.statusCode).toBe(426)
+    expect(spoofedFromUntrustedRemote.json()).toMatchObject({
       success: false,
       error: { code: 'secure_transport_required' }
     })

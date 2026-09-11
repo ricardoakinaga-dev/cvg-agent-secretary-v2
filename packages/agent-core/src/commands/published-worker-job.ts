@@ -4,7 +4,8 @@ import {
   AgentVersionIdSchema,
   ApprovedKnowledgeForTestSchema,
   TenantIdSchema,
-  type ControlPlaneStore
+  type ControlPlaneStore,
+  type ApprovedKnowledgeResolver
 } from '@cvg/platform'
 import { z } from 'zod'
 
@@ -27,6 +28,7 @@ export type PublishedAgentJob = z.infer<typeof PublishedAgentJobSchema>
 
 export interface PublishedAgentJobDependencies {
   platform: ControlPlaneStore
+  resolveApprovedKnowledge?: ApprovedKnowledgeResolver
 }
 
 export function parsePublishedAgentJob(rawInput: unknown): PublishedAgentJob {

@@ -311,6 +311,64 @@ export interface TaskView {
   status: string
 }
 
+export interface JourneyCandidateView {
+  id: string
+  displayName: string
+  kind: 'owner' | 'patient'
+  ownerId?: string
+}
+
+export interface JourneyOwnerDraftView {
+  id: string
+  conversationId: string | null
+  sessionId: string | null
+  phone: string | null
+  name: string | null
+  candidateIds: string[]
+  status: 'draft' | 'linked' | 'expired'
+  idempotencyKey: string
+  createdAt: string
+  updatedAt: string
+  expiresAt: string
+}
+
+export interface JourneyPatientDraftView {
+  id: string
+  ownerDraftId: string | null
+  ownerCandidateId: string | null
+  conversationId: string | null
+  sessionId: string | null
+  name: string | null
+  species: string | null
+  candidateIds: string[]
+  status: 'draft' | 'linked' | 'expired'
+  idempotencyKey: string
+  createdAt: string
+  updatedAt: string
+  expiresAt: string
+}
+
+export interface JourneySlotView {
+  id: string
+  startsAt: string
+  sourceVersion: string
+}
+
+export interface JourneyAppointmentDraftView {
+  id: string
+  patientDraftId: string
+  conversationId: string | null
+  sessionId: string | null
+  slot: string
+  sourceVersion: string
+  status: 'proposed' | 'awaiting_approval' | 'expired' | 'cancelled'
+  confirmationBlocked: true
+  idempotencyKey: string
+  createdAt: string
+  updatedAt: string
+  expiresAt: string
+}
+
 export type TaskStatus = 'open' | 'in_progress' | 'done' | 'canceled'
 
 export interface AuditEventView {
@@ -476,6 +534,159 @@ export const apiClient = {
         ...operatorHeaders(input.identity)
       },
       body: JSON.stringify({ status: input.status })
+    })
+  },
+
+  async searchJourneyOwners(
+    identity: OperatorIdentity,
+    phone: string
+  ): Promise<{ matches: JourneyCandidateView[] }> {
+    return request(
+      `/v1/journeys/owners/search?phone=${encodeURIComponent(phone)}`,
+      operatorInit(identity)
+    )
+  },
+
+  async createJourneyOwnerDraft(input: {
+    identity: OperatorIdentity
+    phone: string
+    name?: string
+    idempotencyKey: string
+  }): Promise<JourneyOwnerDraftView> {
+    return request('/v1/journeys/owner-drafts', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        ...operatorHeaders(input.identity)
+      },
+      body: JSON.stringify({
+        phone: input.phone,
+        ...(input.name ? { name: input.name } : {}),
+        idempotencyKey: input.idempotencyKey
+      })
+    })
+  },
+
+  async listJourneyOwnerDrafts(
+    identity: OperatorIdentity
+  ): Promise<JourneyOwnerDraftView[]> {
+    return request('/v1/journeys/owner-drafts', operatorInit(identity))
+  },
+
+  async searchJourneyPatients(input: {
+    identity: OperatorIdentity
+    ownerDraftId?: string
+    ownerCandidateId?: string
+    name?: string
+  }): Promise<{ matches: JourneyCandidateView[] }> {
+    const params = new URLSearchParams()
+    if (input.ownerDraftId) params.set('ownerDraftId', input.ownerDraftId)
+    if (input.ownerCandidateId)
+      params.set('ownerCandidateId', input.ownerCandidateId)
+    if (input.name) params.set('name', input.name)
+    const suffix = params.toString() ? `?${params.toString()}` : ''
+    return request(
+      `/v1/journeys/patients/search${suffix}`,
+      operatorInit(input.identity)
+    )
+  },
+
+  async createJourneyPatientDraft(input: {
+    identity: OperatorIdentity
+    ownerDraftId: string
+    ownerCandidateId: string
+    name: string
+    species?: string
+    idempotencyKey: string
+  }): Promise<JourneyPatientDraftView> {
+    return request('/v1/journeys/patient-drafts', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        ...operatorHeaders(input.identity)
+      },
+      body: JSON.stringify({
+        ownerDraftId: input.ownerDraftId,
+        ownerCandidateId: input.ownerCandidateId,
+        name: input.name,
+        ...(input.species ? { species: input.species } : {}),
+        idempotencyKey: input.idempotencyKey
+      })
+    })
+  },
+
+  async listJourneyPatientDrafts(
+    identity: OperatorIdentity
+  ): Promise<{ drafts: JourneyPatientDraftView[] }> {
+    return request('/v1/journeys/patient-drafts', operatorInit(identity))
+  },
+
+  async linkJourneyPatient(input: {
+    identity: OperatorIdentity
+    patientDraftId: string
+    candidateId: string
+  }): Promise<JourneyPatientDraftView> {
+    return request(`/v1/journeys/patient-drafts/${input.patientDraftId}/link`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        ...operatorHeaders(input.identity)
+      },
+      body: JSON.stringify({ candidateId: input.candidateId })
+    })
+  },
+
+  async listJourneySlots(
+    identity: OperatorIdentity
+  ): Promise<{ slots: JourneySlotView[] }> {
+    return request('/v1/journeys/slots', operatorInit(identity))
+  },
+
+  async createJourneyAppointmentDraft(input: {
+    identity: OperatorIdentity
+    patientDraftId: string
+    slot: string
+    idempotencyKey: string
+  }): Promise<JourneyAppointmentDraftView> {
+    return request('/v1/journeys/appointment-drafts', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        ...operatorHeaders(input.identity)
+      },
+      body: JSON.stringify({
+        patientDraftId: input.patientDraftId,
+        slot: input.slot,
+        idempotencyKey: input.idempotencyKey
+      })
+    })
+  },
+
+  async listJourneyAppointmentDrafts(
+    identity: OperatorIdentity
+  ): Promise<{ drafts: JourneyAppointmentDraftView[] }> {
+    return request('/v1/journeys/appointment-drafts', operatorInit(identity))
+  },
+
+  async createJourneyTask(input: {
+    identity: OperatorIdentity
+    sessionId: string
+    title: string
+    description: string
+    idempotencyKey: string
+  }): Promise<TaskView> {
+    return request('/v1/journeys/tasks', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        ...operatorHeaders(input.identity)
+      },
+      body: JSON.stringify({
+        sessionId: input.sessionId,
+        title: input.title,
+        description: input.description,
+        idempotencyKey: input.idempotencyKey
+      })
     })
   },
 

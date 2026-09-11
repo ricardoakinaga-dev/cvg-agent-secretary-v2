@@ -6,6 +6,7 @@ import {
 } from '@cvg/persistence'
 import {
   createHandoffSummary,
+  createInboundIdempotencyKey,
   createInternalTask,
   getConversationTimeline,
   isSessionOpen,
@@ -28,6 +29,17 @@ function messageInput(overrides: Record<string, unknown> = {}) {
 }
 
 describe('agent-core commands', () => {
+  it('hashes opaque provider identifiers before durable key construction', () => {
+    const key = createInboundIdempotencyKey(
+      'whatsapp',
+      'owner@example.com/+5511999999999'
+    )
+
+    expect(key).toMatch(/^inbound:whatsapp:sha256:[a-f0-9]{64}$/)
+    expect(key).not.toContain('owner@example.com')
+    expect(key).not.toContain('+5511999999999')
+  })
+
   it('receives inbound messages idempotently and exposes timeline', async () => {
     const conversations = new ConversationRepository(new InMemoryDatabase())
     const first = await receiveInboundMessage({ conversations }, messageInput())

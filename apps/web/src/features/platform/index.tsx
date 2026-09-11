@@ -969,7 +969,11 @@ export function PlatformPanel({ identity }: PlatformPanelProps) {
   const safeTraceSpans = trace && Array.isArray(trace.spans) ? trace.spans : []
 
   return (
-    <section className="panel platformPanel" aria-label="Control Center">
+    <section
+      className="panel platformPanel"
+      id="platform-panel"
+      aria-label="Control Center"
+    >
       <div className="panelHeader">
         <div>
           <h2>Control Center</h2>
@@ -977,6 +981,13 @@ export function PlatformPanel({ identity }: PlatformPanelProps) {
         </div>
         <span className="status">{identity.tenantId}</span>
       </div>
+      <nav className="platformNav" aria-label="Atalhos do Control Center">
+        <a href="#platform-editor">Editor</a>
+        <a href="#platform-test-lab">Test Lab</a>
+        <a href="#platform-catalogs">Catálogos</a>
+        <a href="#platform-release">Release ledger</a>
+        <a href="#platform-traces">Traces</a>
+      </nav>
       <div className="platformBody">
         <div className="platformAgents">
           <h3>Agentes</h3>
@@ -987,6 +998,7 @@ export function PlatformPanel({ identity }: PlatformPanelProps) {
           {agents.map((agent) => (
             <button
               className="row rowButton"
+              aria-pressed={selectedAgent?.id === agent.id}
               disabled={isSaving}
               key={agent.id}
               type="button"
@@ -997,7 +1009,7 @@ export function PlatformPanel({ identity }: PlatformPanelProps) {
             </button>
           ))}
         </div>
-        <div className="platformEditor">
+        <div className="platformEditor" id="platform-editor">
           <h3>Novo agente / configuração</h3>
           <div className="platformFields">
             <label>
@@ -1314,6 +1326,7 @@ export function PlatformPanel({ identity }: PlatformPanelProps) {
           </button>
           <section
             className="platformSuiteCatalog"
+            id="platform-test-lab"
             aria-label="Catálogo de suites do Test Lab"
           >
             <div className="panelHeader">
@@ -1395,6 +1408,7 @@ export function PlatformPanel({ identity }: PlatformPanelProps) {
           </section>
           <section
             className="platformPluginCatalog"
+            id="platform-catalogs"
             aria-label="Catálogo declarativo de plugins"
           >
             <div className="panelHeader">
@@ -1571,6 +1585,7 @@ export function PlatformPanel({ identity }: PlatformPanelProps) {
           </section>
           <section
             className="platformReleaseCandidates"
+            id="platform-release"
             aria-label="Ledger de release candidates"
           >
             <div className="panelHeader">
@@ -1759,7 +1774,11 @@ export function PlatformPanel({ identity }: PlatformPanelProps) {
               </span>
             </div>
           ) : null}
-          <section className="platformTraceViewer" aria-label="Trace Viewer">
+          <section
+            className="platformTraceViewer"
+            id="platform-traces"
+            aria-label="Trace Viewer"
+          >
             <div className="panelHeader">
               <div>
                 <h3>Trace Viewer</h3>
@@ -1796,8 +1815,16 @@ export function PlatformPanel({ identity }: PlatformPanelProps) {
               </div>
             )}
           </section>
-          {statusMessage ? <p>{statusMessage}</p> : null}
-          {error ? <p className="stateError">{error}</p> : null}
+          {statusMessage ? (
+            <p role="status" aria-live="polite">
+              {statusMessage}
+            </p>
+          ) : null}
+          {error ? (
+            <p className="stateError" role="alert">
+              {error}
+            </p>
+          ) : null}
         </div>
       </div>
     </section>

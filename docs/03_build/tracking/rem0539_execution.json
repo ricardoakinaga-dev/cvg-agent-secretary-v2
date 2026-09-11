@@ -1,0 +1,291 @@
+{
+  "program": "REM-0539",
+  "goal": "$gauntlet-loop $orchestrate implemente todo o conteudo do plano: \n  1. Plano executivo (docs/03_build/0311_plano_executivo_pos_auditoria.md) — objetivos, recursos, indicadores, riscos e decisões.\n  2. Roadmap (docs/03_build/0312_roadmap_pos_auditoria.md) — seis ondas, dependências e gates.\n  3. Backlog (docs/03_build/0313_backlog_pos_auditoria.md) — 30 tarefas, com prioridades, responsáveis sugeridos e critérios de aceite.\n\n  A sequência proposta é: corrigir segurança e integridade → garantir processamento durável → completar jornadas → preparar integrações\n  e operação → qualificar para decisão de piloto.\n\n  Horizonte preliminar: 14–20 semanas, condicionado à equipe e aos gates. A execução de piloto real está fora dessa estimativa. Quero um agente State of Art, Triplo AAA de qualidade. Comece agora e só pare quando tiver terminado tudo.",
+  "authorization": "User explicitly requested implementing entire 0311/0312/0313; local BUILD authorized after documented contracts, no real-data/deploy/pilot authority.",
+  "status": "IN_PROGRESS",
+  "tasks": [
+    {
+      "id": "REM-01",
+      "title": "Revalidar achados e fixar baseline",
+      "status": "IMPLEMENTED_CONTROLLED",
+      "acceptance": "Três reproduções documentadas; distinguir snapshot obsoleto de corrida HTTP; lista de regressões do próximo gate definida.",
+      "evidence": ["docs/04_audit/0542_rem0539_r0_evidence.json"]
+    },
+    {
+      "id": "REM-02",
+      "title": "Conciliar PRD, SPEC e autoridade documental",
+      "status": "PENDING_HUMAN_DECISION",
+      "acceptance": "Decisão de RF-011 registrada e validada pelo responsável; matriz dos 39 RF atualizada; cada assunto possui fonte vigente; decisão não implica reescrita automática.",
+      "evidence": []
+    },
+    {
+      "id": "REM-03",
+      "title": "Detalhar e submeter contratos das três correções",
+      "status": "IMPLEMENTED_CONTROLLED",
+      "acceptance": "Discovery/PRD/SPEC aprovados pelos respectivos gates e revisão humana de BUILD registrada; sem aprovação, tarefas de código ficam bloqueadas.",
+      "evidence": [
+        "docs/02_spec/0122_rem0539_r1_contract.md",
+        "docs/02_spec/0123_rem0539_r2_contract.md",
+        "docs/02_spec/0124_rem0539_r3_contract.md",
+        "docs/02_spec/0125_rem0539_r4_integrations_ops.md",
+        "docs/02_spec/0126_rem0539_r5_qualification.md"
+      ]
+    },
+    {
+      "id": "REM-04",
+      "title": "Separar risco da intenção administrativa",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Consulta+sangue gera handoff high e nenhuma tool; casos de medicamento continuam bloqueados; corpus benigno não sofre regressão indevida; justificativa de risco no trace.",
+      "evidence": [
+        "docs/04_audit/0543_rem0539_r1_evidence.json",
+        "docs/04_audit/0544_rem0539_r1_closure_evidence.json"
+      ]
+    },
+    {
+      "id": "REM-05",
+      "title": "Ampliar preflight e regressões de risco",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Todos os casos críticos do corpus aprovado passam; regressão de risco impede publish/rollback; nenhum caso crítico planeja tool; evidência de API e handler worker.",
+      "evidence": [
+        "docs/04_audit/0543_rem0539_r1_evidence.json",
+        "docs/04_audit/0544_rem0539_r1_closure_evidence.json"
+      ]
+    },
+    {
+      "id": "REM-06",
+      "title": "Corrigir dependência e confiança no proxy",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Origem não confiável com X-Forwarded-Proto=https recebe rejeição; proxy permitido funciona; CORS/HTTPS e configuração legada cobertos; audit atual e impacto da atualização registrados.",
+      "evidence": [
+        "docs/04_audit/0543_rem0539_r1_evidence.json",
+        "docs/04_audit/0544_rem0539_r1_closure_evidence.json"
+      ]
+    },
+    {
+      "id": "REM-07",
+      "title": "Tornar decisão de atendimento atômica",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Snapshots A/B: exatamente uma transição vence; a segunda recebe conflito e não sobrescreve; barreira de leitura força corrida em PostgreSQL; ator/data/audit consistentes; capability approval preservada.",
+      "evidence": [
+        "docs/04_audit/0543_rem0539_r1_evidence.json",
+        "docs/04_audit/0544_rem0539_r1_closure_evidence.json"
+      ]
+    },
+    {
+      "id": "REM-08",
+      "title": "Auditar fechamento da estabilização",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "F01/F05/F07 fechados por evidência específica; zero P0/P1 aberto no escopo; ressalvas e ausência de revisão independente declaradas; produção continua NO-GO.",
+      "evidence": [
+        "docs/04_audit/0543_rem0539_r1_evidence.json",
+        "docs/04_audit/0544_rem0539_r1_closure_evidence.json"
+      ]
+    },
+    {
+      "id": "REM-09",
+      "title": "Especificar processamento durável",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "SPEC/gate aprovados; matriz crash antes/depois do commit/efeito/ack; política explícita para entrega at-least-once e deduplicação; sem promessa de exactly-once externo.",
+      "evidence": ["docs/04_audit/0545_rem0539_r2_evidence.json"]
+    },
+    {
+      "id": "REM-10",
+      "title": "Implementar outbox e consumidor controlados",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Reinício recupera pendentes; dois consumidores não processam simultaneamente o mesmo lease válido; expiração recuperável; estado processed exige resultado durável, não retorno de stub.",
+      "evidence": [
+        "docs/04_audit/0545_rem0539_r2_evidence.json",
+        "docs/04_audit/0550_rem0539_r6_revalidation_evidence.json",
+        "docs/04_audit/0552_rem0539_r7_revalidation_evidence.json"
+      ]
+    },
+    {
+      "id": "REM-11",
+      "title": "Integrar aceite inbound e execução assíncrona",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Mensagem aceita permanece investigável após crash; retry não duplica efeito controlado; continuidade usa versão pinned; takeover impede resposta mesmo com job já enfileirado.",
+      "evidence": [
+        "docs/04_audit/0545_rem0539_r2_evidence.json",
+        "docs/04_audit/0550_rem0539_r6_revalidation_evidence.json",
+        "docs/04_audit/0552_rem0539_r7_revalidation_evidence.json"
+      ]
+    },
+    {
+      "id": "REM-12",
+      "title": "Provar recuperação, replay e falhas de entrega",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Zero perda e zero efeito duplicado na matriz controlada; dead-letter/reprocessamento auditáveis; desligamento e recuperação documentados; gate R2 auditado.",
+      "evidence": [
+        "docs/04_audit/0545_rem0539_r2_evidence.json",
+        "docs/04_audit/0550_rem0539_r6_revalidation_evidence.json",
+        "docs/04_audit/0552_rem0539_r7_revalidation_evidence.json"
+      ]
+    },
+    {
+      "id": "REM-13",
+      "title": "Especificar domínio tutor/pet/agenda e jornadas",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "PRD/SPEC/gate aprovados; drafts não equivalem a cadastro definitivo ou consulta confirmada; critérios de confiança e decisão humana explícitos.",
+      "evidence": ["docs/04_audit/0546_rem0539_r3_evidence.json"]
+    },
+    {
+      "id": "REM-14",
+      "title": "Persistir busca e drafts de tutor/pet",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Criar, reiniciar e recuperar drafts; busca por identificador sintético; isolamento cross-tenant; nenhum vínculo quando ambíguo; vínculo autorizado rastreável à conversa.",
+      "evidence": ["docs/04_audit/0546_rem0539_r3_evidence.json"]
+    },
+    {
+      "id": "REM-15",
+      "title": "Construir coleta estruturada e handoff completo",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Retomada mantém dados; risco prevalece sobre coleta; resumo contém intenção, dados disponíveis, risco, pendências e próximo passo; operador assume e bot silencia.",
+      "evidence": ["docs/04_audit/0546_rem0539_r3_evidence.json"]
+    },
+    {
+      "id": "REM-16",
+      "title": "Persistir sugestões e drafts de agenda",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Sem slots fixos vencidos; draft recuperável após reinício; conflito/expiração tratados; aprovação não executa confirmação/cancelamento/reagendamento real.",
+      "evidence": ["docs/04_audit/0546_rem0539_r3_evidence.json"]
+    },
+    {
+      "id": "REM-17",
+      "title": "Completar tarefa e UX da jornada operacional",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Browser cobre identificar→triagem→draft→approval/handoff→tarefa; teclado e foco nos fluxos críticos verificados; referências pessoais redigidas; nenhuma ação sensível implícita.",
+      "evidence": ["docs/04_audit/0546_rem0539_r3_evidence.json"]
+    },
+    {
+      "id": "REM-18",
+      "title": "Auditar secretária completa em fixtures",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Matriz indica entregue/parcial/ausente sem contar stub como integração; retomada, ambiguidade, erro de agenda e takeover passam; corpus safety sem regressão; gate R3 fechado.",
+      "evidence": ["docs/04_audit/0546_rem0539_r3_evidence.json"]
+    },
+    {
+      "id": "REM-19",
+      "title": "Definir identidade, privacidade e contratos externos",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Decisões de arquitetura/negócio e SPEC registradas; gate externo separado do BUILD local; responsável por fonte e operação definido; nenhuma credencial material em docs.",
+      "evidence": ["docs/04_audit/0547_rem0539_r4_evidence.json"]
+    },
+    {
+      "id": "REM-20",
+      "title": "Implementar identidade e gestão de secrets",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Headers autoafirmados não autenticam; cross-tenant/role negativa bloqueados; logout/expiração tratados na UI; rotação testada sem vazamento; IdP externo exige autorização separada.",
+      "evidence": ["docs/04_audit/0547_rem0539_r4_evidence.json"]
+    },
+    {
+      "id": "REM-21",
+      "title": "Implementar adapter de modelo com avaliação",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Simulador local cobre timeout/erro/saída maliciosa; nenhum modelo concede permissão; sandbox externo só após gate; avaliação separa fixture de inferência efetiva e mede qualidade do corpus.",
+      "evidence": ["docs/04_audit/0547_rem0539_r4_evidence.json"]
+    },
+    {
+      "id": "REM-22",
+      "title": "Implementar canal e entrega humana controlados",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Replay/timeout/crash não duplicam efeito no mock; decisão humana registra ator; takeover impede envio tardio; sandbox real, destinatários e teto de tráfego dependem de gate externo.",
+      "evidence": ["docs/04_audit/0547_rem0539_r4_evidence.json"]
+    },
+    {
+      "id": "REM-23",
+      "title": "Implementar ciclo de conteúdo institucional",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Sem fonte válida há handoff; resposta cita fonte/versão; revogação e mudança invalidam uso; conteúdo recuperado não altera policy; fonte institucional real exige aprovação do responsável antes de ingestão/resposta.",
+      "evidence": ["docs/04_audit/0547_rem0539_r4_evidence.json"]
+    },
+    {
+      "id": "REM-24",
+      "title": "Implementar observabilidade e retenção",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Alerta disparado por falha injetada; correlação fim a fim sem payload sensível; purge atende política aprovada; limiter/replay ensaiados entre duas instâncias; trilha necessária preservada.",
+      "evidence": ["docs/04_audit/0547_rem0539_r4_evidence.json"]
+    },
+    {
+      "id": "REM-25",
+      "title": "Preparar artefato, restore e rollback",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Restore e rollback executados com integridade/tenant conferidos; RPO/RTO medidos versus metas aprovadas; nenhuma migration real feita; scan só é declarado após artefato existir.",
+      "evidence": ["docs/04_audit/0547_rem0539_r4_evidence.json"]
+    },
+    {
+      "id": "REM-26",
+      "title": "Auditar integrações e operação em ambiente sintético",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Gate R4 diferencia integração local, sandbox aprovado e operação real; segredos/redaction/isolamento/falhas passam; mocks não contam como readiness externa.",
+      "evidence": ["docs/04_audit/0547_rem0539_r4_evidence.json"]
+    },
+    {
+      "id": "REM-27",
+      "title": "Medir carga, disponibilidade e SLAs",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "p95 persistência ≤2s e resposta ≤10s sob condições registradas; meta externa só validada com provider saudável autorizado; zero perda/dupla decisão no ensaio; RPO/RTO atendidos ou gap registrado.",
+      "evidence": ["docs/04_audit/0548_rem0539_r5_qualification_evidence.json"]
+    },
+    {
+      "id": "REM-28",
+      "title": "Validar operação humana e acessibilidade",
+      "status": "COMPLETED_CONTROLLED",
+      "acceptance": "Operador consegue assumir, decidir, investigar e recuperar erro; nenhum bloqueio grave de acessibilidade no escopo declarado; falhas viram backlog; não alegar certificação integral sem avaliação correspondente.",
+      "evidence": [
+        "docs/04_audit/0548_rem0539_r5_qualification_evidence.json",
+        "docs/04_audit/0550_rem0539_r6_revalidation_evidence.json",
+        "docs/04_audit/0552_rem0539_r7_revalidation_evidence.json"
+      ]
+    },
+    {
+      "id": "REM-29",
+      "title": "Emitir parecer de qualificação e decisão de piloto",
+      "status": "NO_GO_CONTROLLED",
+      "acceptance": "Sem P0/P1 e sem F05/F07 abertos; gates de dados/fonte/canal/identidade aprovados para qualquer piloto real; decisão humana registrada. Se negar ou faltar evidência, manter NO-GO e backlog explícito.",
+      "evidence": [
+        "docs/04_audit/0548_rem0539_r5_qualification_evidence.json",
+        "docs/04_audit/0552_rem0539_r7_revalidation_evidence.json"
+      ]
+    },
+    {
+      "id": "REM-30",
+      "title": "Refatorar hotspots conforme evidência de manutenção",
+      "status": "DEFERRED_OPTIONAL",
+      "acceptance": "Diff limitado, contratos e regressão preservados; benefício demonstrado em revisão; não há reescrita ampla nem substituição automática da arquitetura.",
+      "evidence": ["docs/04_audit/0548_rem0539_r5_qualification_evidence.json"]
+    }
+  ],
+  "sources": {
+    "docs/03_build/0311_plano_executivo_pos_auditoria.md": "cc4edb8cebd27571e5517b1886a56dc97061d2c0b484a822c94b1cb1f942ff42",
+    "docs/03_build/0312_roadmap_pos_auditoria.md": "18eeabd7d078237317a3f866c22943b58d36533b6e07eaba1608d899690a8eed",
+    "docs/03_build/0313_backlog_pos_auditoria.md": "3edf5a6ea2b9ba2bfaaa8edc3623024c18e1bc99178a56c5b970ac5fb97a5da8",
+    "docs/00_discovery/0012_rem0539_r2_durability.md": "fbad5cfc4e362860fc95584da63663153240d17451d490f0a614275fde0b7549",
+    "docs/01_prd/0023_rem0539_r2_durability.md": "e798d3622db00c393b9e7ac07389355290c25442fbc39dae4e5d3fb79311317e",
+    "docs/02_spec/0123_rem0539_r2_contract.md": "7067a95ae7fe6440e341ac769623b2487ed6f00df2ff1da6f88a5aee94d26f1c",
+    "docs/04_audit/0546_rem0539_r3_evidence.json": "826c6bc0caa6c8aa78533e6d1712b1ff814d470dafad6db092d1fd1c543a5589",
+    "docs/04_audit/0547_rem0539_r4_evidence.json": "edcb70811c87236342ea4c04f6c016e4c68622c9b9c061b9a726b14b5ccc7125",
+    "docs/04_audit/0548_rem0539_r5_qualification_evidence.json": "44bd2e83da3fff4ef28974944faa28b64d29c31a9e39b4ad6dbcf68c44d47c6f",
+    "docs/04_audit/0549_rem0539_final_dossier.md": "c1948f242476cb4e2abb485342915980fe6075b5d6be03063ba00d9056070bc1",
+    "docs/04_audit/0550_rem0539_r6_revalidation_evidence.json": "14ebe3e88eec5bc51b61f9d45781338ecfcb0edb7c1faaf4fad2c71deb4aa462",
+    "docs/04_audit/0551_rem0539_r6_final_dossier.md": "f9e0874c96af5b12522bb8efa3c9be1d7ca24ad258f795ee912fb21e63eb96d2",
+    "docs/04_audit/0552_rem0539_r7_revalidation_evidence.json": "bab2ecd01ab135214e85283efd177d48beaf7b6475f6d103386d31f232598a2d",
+    "docs/04_audit/0553_rem0539_r7_final_dossier.md": "7119fb1346857bb069d4e3506ba5d452b8a7e93174c44539c7dc0a6bebbb0bd4"
+  },
+  "current_phase": "R7_REVALIDATION_CONTROLLED",
+  "current_tasks": ["REM-29"],
+  "gate": "docs/02_spec/0126_rem0539_r5_qualification.md",
+  "last_update": "2026-09-05T20:24:19-03:00",
+  "program_verdict": "CONDITIONAL_PASS_CONTROLLED_NO_GO_EXTERNAL",
+  "production_boundary": "NO-GO",
+  "external_gates": {
+    "identity": "NOT_CONNECTED",
+    "provider": "NOT_CONNECTED",
+    "channel": "NOT_CONNECTED",
+    "institutional_source_owner": "NOT_APPROVED",
+    "human_signoff": "NOT_OBTAINED",
+    "rpo_rto": "NOT_APPROVED",
+    "real_data": "NOT_USED",
+    "deployment": "NOT_PERFORMED"
+  },
+  "next_action": "Capturar o parecer independente R6; obter RF-011, identidade/provider/canal/fonte aprovados, signoff humano e metas RPO/RTO; repetir REM-27–29 em ambiente autorizado antes de qualquer piloto."
+}

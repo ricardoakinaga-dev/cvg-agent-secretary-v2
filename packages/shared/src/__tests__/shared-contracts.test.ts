@@ -15,6 +15,7 @@ import {
   requirePermission,
   redactSensitiveText,
   sanitizeAuditEvidencePayload,
+  sanitizeOutboxPayload,
   roleHasPermission,
   toSafeError,
   withCorrelation
@@ -306,5 +307,63 @@ describe('shared contracts', () => {
         externalExportRequiresApproval: true
       }
     })
+  })
+
+  it('keeps durable envelopes correlatable without persisting inbound content', () => {
+    const sanitized = sanitizeOutboxPayload({
+      tenantId: 'tenant_00000000-0000-4000-8000-000000000174',
+      conversationId: 'conv_00000000-0000-4000-8000-000000000174',
+      senderRef: 'fixture-sender',
+      externalMessageId: 'external-message-fixture',
+      body: 'Meu nome é Ana e meu telefone é +5511999999999.',
+      metadata: {
+        accessToken: 'fixture-secret',
+        status: 'Paciente Ana tem diagnóstico de asma'
+      }
+    })
+
+    expect(sanitized.payload).toEqual({
+      tenantId: 'tenant_00000000-0000-4000-8000-000000000174',
+      conversationId: 'conv_00000000-0000-4000-8000-000000000174',
+      senderRef: '[redacted-sender-ref]',
+      externalMessageId: '[redacted-external-message-id]',
+      body: '[redacted-outbox-body]',
+      metadata: {
+        accessToken: '[redacted-secret]',
+        status: '[redacted-outbox-text]'
+      }
+    })
+    expect(sanitized.redactedFields).toEqual([
+      'senderRef',
+      'externalMessageId',
+      'body',
+      'metadata.accessToken',
+      'metadata.status'
+    ])
+  })
+
+  it('turns mixed clinical, identity and secret free text into an opaque marker', () => {
+    const sanitized = sanitizeOutboxPayload({
+      body: 'Diagnóstico: asma; paciente: Ana Silva; email ana@example.test; token=secret-fixture',
+      result: {
+        text: 'Consulta sobre hipertensão para João Silva',
+        status: 'controlled'
+      },
+      fixture: 'Paciente Ana tem diagnóstico de asma',
+      correlationId: 'corr_00000000-0000-4000-8000-000000000174'
+    })
+
+    expect(sanitized.payload).toEqual({
+      body: '[redacted-outbox-body]',
+      result: {
+        text: '[redacted-outbox-text]',
+        status: '[redacted-outbox-text]'
+      },
+      fixture: '[redacted-outbox-text]',
+      correlationId: 'corr_00000000-0000-4000-8000-000000000174'
+    })
+    expect(JSON.stringify(sanitized.payload)).not.toContain('asma')
+    expect(JSON.stringify(sanitized.payload)).not.toContain('Ana Silva')
+    expect(JSON.stringify(sanitized.payload)).not.toContain('secret-fixture')
   })
 })

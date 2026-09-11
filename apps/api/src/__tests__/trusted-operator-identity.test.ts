@@ -35,6 +35,7 @@ function validClaims(overrides: Record<string, unknown> = {}) {
     aud: 'cvg-api',
     iat: NOW_SECONDS,
     exp: NOW_SECONDS + 300,
+    jti: 'jti_00000000-0000-4000-8000-000000000001',
     ...overrides
   }
 }
@@ -71,6 +72,84 @@ describe('trusted operator identity tokens', () => {
     expect(resolve({ 'x-cvg-operator-token': token })).toEqual(IDENTITY)
   })
 
+  it('accepts the previous secret only during an explicit rotation window', () => {
+    const previous = 'previous-operator-secret-2026-long-enough-xxxxxxxx'
+    const active = 'active-operator-secret-2026-long-enough-yyyyyyyy'
+    const token = createTrustedOperatorIdentityToken(
+      IDENTITY,
+      previous,
+      () => NOW_MS
+    )
+    const resolve = createTrustedOperatorIdentityResolver({
+      secret: [active, previous],
+      now: () => NOW_MS
+    })
+    expect(resolve({ 'x-cvg-operator-token': token })).toEqual(IDENTITY)
+    expect(() => createTrustedOperatorIdentityResolver({ secret: [] })).toThrow(
+      /secret/
+    )
+  })
+
+  it('rejects a replayed token while accepting a distinct token ID', () => {
+    const resolve = createTrustedOperatorIdentityResolver({
+      secret: SECRET,
+      now: () => NOW_MS
+    })
+    const token = createTrustedOperatorIdentityToken(
+      IDENTITY,
+      SECRET,
+      () => NOW_MS
+    )
+
+    expect(resolve({ 'x-cvg-operator-token': token })).toEqual(IDENTITY)
+    expect(() => resolve({ 'x-cvg-operator-token': token })).toThrow(/replay/i)
+
+    const distinctToken = createTrustedOperatorIdentityToken(
+      IDENTITY,
+      SECRET,
+      () => NOW_MS
+    )
+    expect(resolve({ 'x-cvg-operator-token': distinctToken })).toEqual(IDENTITY)
+  })
+
+  it('expires replay entries and fails closed when the bounded cache is full', () => {
+    let now = NOW_MS
+    const resolve = createTrustedOperatorIdentityResolver({
+      secret: SECRET,
+      now: () => now,
+      replayCacheSize: 1
+    })
+    const first = createTrustedOperatorIdentityToken(
+      IDENTITY,
+      SECRET,
+      () => now,
+      1
+    )
+    const second = createTrustedOperatorIdentityToken(
+      IDENTITY,
+      SECRET,
+      () => now,
+      1
+    )
+
+    expect(resolve({ 'x-cvg-operator-token': first })).toEqual(IDENTITY)
+    expect(() => resolve({ 'x-cvg-operator-token': second })).toThrow(/full/i)
+
+    now += 2_000
+    const postExpiryToken = createTrustedOperatorIdentityToken(
+      IDENTITY,
+      SECRET,
+      () => now,
+      1
+    )
+    expect(resolve({ 'x-cvg-operator-token': postExpiryToken })).toEqual(
+      IDENTITY
+    )
+    expect(() => resolve({ 'x-cvg-operator-token': postExpiryToken })).toThrow(
+      /replay/i
+    )
+  })
+
   it('rejects weak or placeholder signing secrets', () => {
     expect(() =>
       createTrustedOperatorIdentityToken(IDENTITY, 'too-short')
@@ -105,6 +184,12 @@ describe('trusted operator identity tokens', () => {
         clockSkewSeconds: -1
       })
     ).toThrow(/token window/)
+    expect(() =>
+      createTrustedOperatorIdentityResolver({
+        secret: SECRET,
+        replayCacheSize: 0
+      })
+    ).toThrow(/replay cache/)
   })
 
   it('rejects missing, malformed, and tampered headers', () => {
@@ -171,6 +256,11 @@ describe('trusted operator identity tokens', () => {
         )
       })
     ).toThrow(/tenant/)
+    expect(() =>
+      resolve({
+        'x-cvg-operator-token': signedToken(validClaims({ jti: undefined }))
+      })
+    ).toThrow(/claims/)
   })
 
   it('rejects invalid audience, time claims, future tokens, and expired tokens', () => {

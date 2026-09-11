@@ -1,0 +1,83 @@
+{
+  "program": "REM-0539",
+  "run": "REM-0539-AAA",
+  "round": "R3",
+  "date": "2026-09-05",
+  "scope": "Jornadas tutor/pet/agenda em fixtures sintéticas, persistência tenant-scoped e UX operacional",
+  "status": "COMPLETED_CONTROLLED",
+  "summary": "REM-13 a REM-18 foram implementadas e auditadas localmente. O domínio persistente cobre drafts de tutor/pet, vínculo explícito, coleta com handoff, sugestões de agenda expiráveis, tarefas e retomada; API, worker e painel propagam a fronteira de segurança. As jornadas não confirmam, cancelam ou reagendam consulta real. A decisão documental RF-011 continua pendente de responsável humano e não foi inferida.",
+  "changes": [
+    "Contratos Discovery/PRD/SPEC R3 em 0013/0024/0124.",
+    "Jornadas persistentes em packages/persistence/src/journeys.ts, tools locais e workflows duráveis.",
+    "API de jornadas, painel web de tarefa/handoff e testes de retomada, ambiguidade, expiração e isolamento.",
+    "Fonte de conhecimento aprovada é resolvida por catálogo versionado; ausência ou revogação gera handoff."
+  ],
+  "verification": {
+    "focused_suite": {
+      "command": "npx vitest run --no-file-parallelism packages/persistence/src/__tests__/journeys.test.ts packages/tools/src/__tests__/journey-tools.test.ts packages/workflows/src/__tests__/persistent-journey.flow.test.ts apps/api/src/__tests__/journeys-api.test.ts apps/web/src/features/journeys/journeys.test.tsx",
+      "result": "5 arquivos passaram; 7 testes passaram",
+      "raw_sha256": "759550440528b859a3a0c381e46216c0afadfc00a27928ccb55ade57b18effb5"
+    },
+    "full_suite": {
+      "command": "npm test",
+      "result": "148 arquivos passaram; 3 foram omitidos; 634 testes passaram; 23 foram omitidos",
+      "raw_sha256": "7e4d8e2800074ca2167239914ad53c9eb5d5f9fb26902fac6ac34f173eebcac1",
+      "limitations": "Fixtures e banco local descartável; não é validação de participantes ou integração real."
+    },
+    "static_gates": {
+      "commands": [
+        "npm run typecheck -- --pretty false",
+        "npm run lint",
+        "npx prettier --check <fontes alteradas>",
+        "git diff --check",
+        "npx vitest run tests/docs-readiness.test.js tests/construction-readiness.test.js"
+      ],
+      "result": "PASS",
+      "raw_sha256": {
+        "typecheck": "d36574cb9028711b61182e00275db32f0c52838ea8f47c158e94237d04ee0b27",
+        "lint": "55491b719e5b46f007f01ae3b97163a6d85e4eed72ce022a6c9f58f390d5c3c9",
+        "format": "6d83a3564f7f607a548332e41eaafbcd07cb5356c80db107b0460bd253c93ea0",
+        "diff": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "docs": "c9157b40e3e5a0eb08af859b446dae9eb44a977a73e092d49c91f96909bdedd8"
+      }
+    }
+  },
+  "acceptance": {
+    "REM-13": "PASS controlled: contracts and state boundaries registered; drafts remain non-definitive.",
+    "REM-14": "PASS controlled: synthetic search, drafts, restart recovery and cross-tenant rejection.",
+    "REM-15": "PASS controlled: structured collection, risk precedence, summary and takeover silence.",
+    "REM-16": "PASS controlled: relative synthetic slots, expiry/conflict and no real confirmation.",
+    "REM-17": "PASS controlled: API/browser journey and task/handoff affordances; keyboard/focus evidence is DOM smoke only.",
+    "REM-18": "PASS controlled: journey matrix and safety regressions pass; source-less knowledge remains handoff."
+  },
+  "artifacts": [
+    "docs/00_discovery/0013_rem0539_r3_journeys.md",
+    "docs/01_prd/0024_rem0539_r3_journeys.md",
+    "docs/02_spec/0124_rem0539_r3_contract.md",
+    "packages/persistence/src/journeys.ts",
+    "packages/tools/src/local/create-journey-task.ts",
+    "packages/tools/src/local/link-patient.ts",
+    "packages/workflows/src/journeys",
+    "apps/api/src/__tests__/journeys-api.test.ts",
+    "apps/web/src/features/journeys"
+  ],
+  "independent_critics": [
+    {
+      "critic_id": "rem0539-r3-journeys-critic-i1",
+      "decision": "APPROVE",
+      "finding": "Fresh-context review of journey contracts, persistence, API and UI found no P0/P1/P2 in the controlled scope.",
+      "mutation_clean": true,
+      "limitations": "No participant study, real scheduler, real channel or institutional source owner approval."
+    }
+  ],
+  "mutation_clean": true,
+  "production_boundary": "NO-GO",
+  "external_gates": {
+    "scheduler": "NOT_CONNECTED",
+    "channel": "NOT_CONNECTED",
+    "institutional_source": "NOT_APPROVED",
+    "real_data": "NOT_USED",
+    "deployment": "NOT_PERFORMED"
+  },
+  "next": "Keep RF-011 pending for human decision; close R4 external identity/provider/channel/source/retention gates before any pilot consideration."
+}

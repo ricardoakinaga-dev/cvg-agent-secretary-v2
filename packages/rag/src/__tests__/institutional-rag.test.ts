@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { answerFromInstitutionalSource, noopRagSource } from '../index.ts'
+import {
+  answerFromInstitutionalSource,
+  noopRagSource,
+  VersionedKnowledgeCatalog
+} from '../index.ts'
 
 describe('institutional RAG safety', () => {
   it('hands off when source is missing or question is clinical', () => {
@@ -33,5 +37,37 @@ describe('institutional RAG safety', () => {
       source: 'manual-cvg',
       version: 'v1'
     })
+  })
+
+  it('requires publication and hands off after revocation', () => {
+    const catalog = new VersionedKnowledgeCatalog()
+    const tenantId = 'tenant_00000000-0000-0000-0000-000000000501' as const
+    const source = catalog.add({
+      tenantId,
+      version: 'fixture-v1',
+      question: 'horário',
+      answer: 'Resposta administrativa',
+      source: 'fixture-manual'
+    })
+    expect(catalog.answer(tenantId, 'Qual o horário?')).toEqual({
+      status: 'handoff',
+      reason: 'approved_source_missing'
+    })
+    catalog.publish(tenantId, source.id)
+    expect(catalog.answer(tenantId, 'Qual o horário?')).toMatchObject({
+      status: 'answered',
+      version: 'fixture-v1'
+    })
+    catalog.revoke(tenantId, source.id)
+    expect(catalog.answer(tenantId, 'Qual o horário?')).toEqual({
+      status: 'handoff',
+      reason: 'approved_source_missing'
+    })
+    expect(
+      catalog.answer(
+        'tenant_00000000-0000-0000-0000-000000000502',
+        'Qual o horário?'
+      )
+    ).toEqual({ status: 'handoff', reason: 'approved_source_missing' })
   })
 })

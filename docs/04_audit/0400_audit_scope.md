@@ -1,5 +1,13 @@
 # 0400 — Audit Scope
 
+## Parecer vigente — AUD-DOC-001 — 2026-09-05T00:54:31-03:00
+
+Escopo: 227 documentos originais lidos integralmente; código/runtime confrontados com 39 RF, 9 UC, 31 RNF, plataforma e operação.
+
+Fonte atual: [relatório integral](0539_documentation_implementation_review.md), [inventário](0540_documentation_review_inventory.json) e [evidências](0541_documentation_review_evidence.json). Auditoria solicitada concluída; correções futuras ainda abertas.
+
+## Registro histórico anterior a esta auditoria
+
 ## Sistema auditado
 
 `cvg-agent-secretary-v2`, Esmeralda V2.

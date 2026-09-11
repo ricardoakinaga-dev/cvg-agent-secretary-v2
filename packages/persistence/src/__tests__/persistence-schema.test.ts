@@ -271,11 +271,20 @@ describe('persistence repositories', () => {
       decidedAt: null,
       createdAt: new Date()
     })
-    approvals.save({
-      ...approval,
-      status: 'approved',
-      decidedBy: 'op_1',
-      decidedAt: new Date()
+    expect(() =>
+      approvals.save({
+        ...approval,
+        status: 'approved',
+        decidedBy: 'op_1',
+        decidedAt: new Date()
+      })
+    ).toThrow('Approval creation must be pending')
+    approvals.decideWithAudit({
+      approvalRequestId: approval.id,
+      decision: 'approved',
+      operatorId: 'op_1',
+      role: 'Approver',
+      correlationId: 'corr_00000000-0000-4000-8000-000000000002'
     })
 
     const event = audit.append({
@@ -291,7 +300,16 @@ describe('persistence repositories', () => {
     idempotency.save('key-1', 'different')
 
     expect(approvals.findById(approval.id)?.status).toBe('approved')
-    expect(audit.listBySession('sess_1')).toEqual([event])
+    expect(audit.listBySession('sess_1')).toEqual([
+      expect.objectContaining({
+        actorId: 'op_1',
+        payload: expect.objectContaining({
+          approvalRequestId: approval.id,
+          status: 'approved'
+        })
+      }),
+      event
+    ])
     expect(outbox.pending()).toEqual([queued])
     expect(idempotency.find('key-1')).toBe(queued.id)
   })

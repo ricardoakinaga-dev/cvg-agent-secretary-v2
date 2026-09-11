@@ -33,9 +33,15 @@ export function ConversationsPanel({
         <span className="counter">{conversations.length}</span>
       </header>
       <div className="list">
-        {isLoading ? <p className="state">Carregando...</p> : null}
+        {isLoading ? (
+          <p className="state" role="status">
+            Carregando...
+          </p>
+        ) : null}
         {!isLoading && error ? (
-          <p className="state stateError">{error}</p>
+          <p className="state stateError" role="alert">
+            {error}
+          </p>
         ) : null}
         {!isLoading && !error && conversations.length === 0 ? (
           <p className="state">Nenhuma conversa carregada.</p>
@@ -50,6 +56,7 @@ export function ConversationsPanel({
                 }
                 key={conversation.id}
                 type="button"
+                aria-pressed={conversation.id === selectedConversationId}
                 onClick={() => onSelectConversation(conversation)}
               >
                 <strong>{conversation.senderRef}</strong>
@@ -62,7 +69,11 @@ export function ConversationsPanel({
           : null}
         {!isLoading && !error && conversations.length > 0 ? (
           <div className="timeline" aria-label="Timeline selecionada">
-            {isTimelineLoading ? <p className="state">Carregando...</p> : null}
+            {isTimelineLoading ? (
+              <p className="state" role="status">
+                Carregando...
+              </p>
+            ) : null}
             {!isTimelineLoading && messages.length === 0 ? (
               <p className="state">Nenhuma mensagem na conversa.</p>
             ) : null}

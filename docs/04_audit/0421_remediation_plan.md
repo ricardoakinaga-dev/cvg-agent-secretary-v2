@@ -1,5 +1,15 @@
 # 0421 — Remediation Plan
 
+## Parecer vigente — AUD-DOC-001 — 2026-09-05T00:54:31-03:00
+
+Remediação: Priorizar discovery/PRD/SPEC para F01 e F05. Aceites: intenção composta gera handoff sem tool; HTTP direto não pode afirmar HTTPS. Demais capacidades exigem lanes próprias. Nenhum BUILD iniciado.
+
+Fonte atual: [relatório integral](0539_documentation_implementation_review.md), [inventário](0540_documentation_review_inventory.json) e [evidências](0541_documentation_review_evidence.json). Auditoria solicitada concluída; correções futuras ainda abertas.
+
+AUD-F07 (P2) adicional: repositório de approval de atendimento aceita escrita de snapshot obsoleto; consumo único de capability approval não prova CAS nessa fila. Reprodução e limites no relatório 0539; remediação futura por gate próprio.
+
+## Registro histórico anterior a esta auditoria
+
 ## R-01 — Executar build faseado
 
 - GAP relacionado: GAP-C01.

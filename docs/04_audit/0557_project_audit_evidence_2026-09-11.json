@@ -1,0 +1,266 @@
+{
+  "auditId": "AUD-20260911-001_PROJECT_FULL_CURRENT",
+  "date": "2026-09-11",
+  "scope": "Auditoria integral read-only do estado atual do CVG Agent Secretary V2",
+  "head": "0674f0a60f64e6e4029496435bba5ac36800ca9d",
+  "branch": "main",
+  "status": "COMPLETED_WITH_OPEN_FINDINGS",
+  "verdict": "CONDITIONAL_PASS_CONTROLLED_NO_GO_EXTERNAL",
+  "scores": {
+    "consolidatedCurrentState": 65,
+    "controlledTechnicalMaturity": 74,
+    "realProductCompleteness": 43,
+    "productionOrPilotReadiness": 20,
+    "calculation": "Média simples das 26 notas por item: 65,08, arredondada para 65. Os blockers de produção permanecem independentes da média."
+  },
+  "worktree": {
+    "statusEntries": 190,
+    "modified": 101,
+    "deleted": 1,
+    "untracked": 88,
+    "diffFiles": 102,
+    "cleanReleaseCandidate": false,
+    "originMatchesHead": true,
+    "measurement": "Capturado antes da criação dos artefatos 0556 e 0557."
+  },
+  "environment": {
+    "node": "v24.20.0",
+    "npm": "11.19.0",
+    "ciNodeDeclared": "22",
+    "testDatabaseUrl": "unset",
+    "pgIsReady": "unavailable",
+    "dockerDaemon": "unavailable",
+    "podman": "unavailable",
+    "postgresBinary": "unavailable",
+    "realData": false,
+    "externalSideEffects": false
+  },
+  "scoreItems": [
+    { "id": "architecture", "name": "Arquitetura e modularidade", "score": 84 },
+    {
+      "id": "traceability",
+      "name": "Discovery, PRD, SPEC e rastreabilidade",
+      "score": 78
+    },
+    { "id": "http_api", "name": "API e contratos HTTP", "score": 80 },
+    {
+      "id": "agent_runtime",
+      "name": "Runtime do agente e autonomia",
+      "score": 62
+    },
+    {
+      "id": "secretary_function",
+      "name": "Cobertura funcional da secretária",
+      "score": 58
+    },
+    { "id": "inbound", "name": "Inbound, webhook e idempotência", "score": 80 },
+    {
+      "id": "worker_outbox",
+      "name": "Worker, outbox e assíncrono",
+      "score": 64
+    },
+    {
+      "id": "persistence_rls",
+      "name": "Persistência, migrations e RLS",
+      "score": 68
+    },
+    { "id": "multi_tenant", "name": "Isolamento multi-tenant", "score": 80 },
+    { "id": "auth_rbac", "name": "Autenticação e RBAC", "score": 78 },
+    {
+      "id": "http_security",
+      "name": "Segurança HTTP e dependências",
+      "score": 76
+    },
+    { "id": "privacy", "name": "Privacidade e redaction", "score": 86 },
+    { "id": "safety", "name": "Safety, approval e handoff", "score": 84 },
+    { "id": "rag", "name": "RAG e conhecimento institucional", "score": 38 },
+    {
+      "id": "tools_workflows",
+      "name": "Tools e workflows de negócio",
+      "score": 55
+    },
+    {
+      "id": "providers_channels",
+      "name": "Providers, canais e delivery",
+      "score": 18
+    },
+    {
+      "id": "observability",
+      "name": "Observabilidade e auditoria",
+      "score": 75
+    },
+    {
+      "id": "reliability",
+      "name": "Confiabilidade, recuperação e performance",
+      "score": 52
+    },
+    { "id": "testing", "name": "Testes e verificação", "score": 84 },
+    { "id": "ux_visual", "name": "UX e qualidade visual", "score": 80 },
+    { "id": "accessibility", "name": "Acessibilidade", "score": 72 },
+    {
+      "id": "governance_docs",
+      "name": "Documentação e governança",
+      "score": 62
+    },
+    { "id": "ci_release", "name": "CI, release e deploy", "score": 58 },
+    {
+      "id": "feature_flags",
+      "name": "Gestão de configuração e feature flags",
+      "score": 55
+    },
+    {
+      "id": "data_governance",
+      "name": "Governança de dados e retenção",
+      "score": 45
+    },
+    {
+      "id": "production_readiness",
+      "name": "Prontidão para piloto/produção",
+      "score": 20
+    }
+  ],
+  "verification": {
+    "unit": {
+      "command": "npm test -- --reporter=dot",
+      "status": "PASS",
+      "filesPassed": 152,
+      "testsPassed": 657,
+      "filesSkipped": 3,
+      "testsSkipped": 25
+    },
+    "coverage": {
+      "command": "npm run test:coverage -- --reporter=dot",
+      "status": "PASS",
+      "statements": 85.51,
+      "branches": 81.02,
+      "functions": 91.1,
+      "lines": 86.41,
+      "filesPassed": 152,
+      "testsPassed": 657,
+      "testsSkipped": 25,
+      "limitations": "A configuração exclui web, entrypoints e adapters PostgreSQL do denominador."
+    },
+    "postgres": {
+      "command": "npm run test:postgres -- --reporter=dot",
+      "status": "INCOMPLETE_NO_DATABASE",
+      "exitCode": 0,
+      "filesPassed": 8,
+      "testsPassed": 58,
+      "filesSkipped": 2,
+      "testsSkipped": 24,
+      "reason": "TEST_DATABASE_URL ausente; pg_isready, PostgreSQL, Docker daemon e Podman indisponíveis."
+    },
+    "e2e": {
+      "command": "CVG_WEB_PORT=4211 CVG_API_PORT=3211 npm run test:e2e",
+      "status": "PASS_CONTROLLED",
+      "testsPassed": 6,
+      "viewports": [375, 768, 1440],
+      "limitations": "Não inclui axe/WCAG formal, leitor de tela, operador real ou integrações externas."
+    },
+    "typecheck": { "command": "npm run typecheck", "status": "PASS" },
+    "lint": { "command": "npm run lint", "status": "PASS" },
+    "build": {
+      "command": "npm run build",
+      "status": "PASS",
+      "viteModules": 159
+    },
+    "readiness": {
+      "command": "npm run readiness",
+      "status": "PASS",
+      "filesPassed": 1,
+      "testsPassed": 4
+    },
+    "workerSmoke": {
+      "command": "npm run test:worker:startup",
+      "status": "PASS",
+      "details": "startup fail-closed sem adapter e smoke controlled-memory positivo"
+    },
+    "format": {
+      "command": "npm run format:check",
+      "status": "PASS",
+      "details": "0554_project_full_audit_2026-09-05.md formatado durante a preparação do commit"
+    },
+    "verify": {
+      "command": "npm run verify",
+      "status": "PASS",
+      "details": "format, typecheck, lint, build, suíte, coverage e audit com limiar high concluídos"
+    },
+    "securityAudit": {
+      "command": "npm run audit:security",
+      "status": "PASS_THRESHOLD_HIGH_BUT_FINDINGS",
+      "exitCode": 0,
+      "findings": "3 vulnerabilidades moderadas na cadeia @vitest/mocker/Vitest"
+    },
+    "securityAuditStrict": {
+      "command": "npm audit --audit-level=moderate",
+      "status": "FAIL",
+      "exitCode": 1,
+      "findings": "3 vulnerabilidades moderadas; correção disponível"
+    },
+    "diffCheck": { "command": "git diff --check", "status": "PASS" }
+  },
+  "findings": [
+    {
+      "id": "AUD-20260911-F01",
+      "priority": "P1",
+      "status": "OPEN_RELEASE_BLOCKER",
+      "summary": "Caminho de produção não está operacional"
+    },
+    {
+      "id": "AUD-20260911-F02",
+      "priority": "P1",
+      "status": "OPEN_FUNCTIONAL_BLOCKER",
+      "summary": "Jornadas são null no factory PostgreSQL"
+    },
+    {
+      "id": "AUD-20260911-F03",
+      "priority": "P1",
+      "status": "OPEN_OPERATIONAL_BLOCKER",
+      "summary": "Worker bounded/run-once sem operação contínua"
+    },
+    {
+      "id": "AUD-20260911-F04",
+      "priority": "P1",
+      "status": "OPEN_PRODUCT_BLOCKER",
+      "summary": "RAG institucional e integrações reais não conectados"
+    },
+    {
+      "id": "AUD-20260911-F05",
+      "priority": "P1",
+      "status": "OPEN_EVIDENCE_BLOCKER",
+      "summary": "Evidência PostgreSQL atual incompleta"
+    },
+    {
+      "id": "AUD-20260911-F06",
+      "priority": "P2",
+      "status": "OPEN_DEPENDENCY_POLICY",
+      "summary": "Audit estrito aponta dependências vulneráveis"
+    },
+    {
+      "id": "AUD-20260911-F07",
+      "priority": "P1",
+      "status": "OPEN_SAFETY_EVIDENCE_LIMITATION",
+      "summary": "Generalização semântica de safety não provada"
+    },
+    {
+      "id": "AUD-20260911-F08",
+      "priority": "P2",
+      "status": "OPEN_GOVERNANCE",
+      "summary": "Checkout e documentação não formam candidato limpo"
+    },
+    {
+      "id": "AUD-20260911-F09",
+      "priority": "P2",
+      "status": "OPEN_CONFIGURATION",
+      "summary": "Feature flags reais não controlam capacidades"
+    }
+  ],
+  "limitations": [
+    "Sem dados reais, provider, canal, IdP, RAG institucional, broker externo, deploy ou side effect.",
+    "Sem TEST_DATABASE_URL nesta execução; a suíte PostgreSQL foi parcial e não é prova de RLS, migration, durabilidade ou restore atuais.",
+    "Não é pentest, certificação WCAG, validação clínica, benchmark de carga ou aprovação humana.",
+    "A revisão é self-audit read-only; o histórico de auditorias anteriores foi usado como contexto, não como evidência atual.",
+    "O checkout contém alterações locais prévias e não é um commit de release limpo."
+  ],
+  "evidenceRef": "docs/04_audit/0556_project_audit_2026-09-11.md"
+}

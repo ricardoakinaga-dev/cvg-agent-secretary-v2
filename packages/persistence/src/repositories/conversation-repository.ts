@@ -16,11 +16,14 @@ import {
   type TenantId
 } from '@cvg/platform'
 import type { InMemoryDatabase } from '../db.ts'
+import { OutboxRepository } from '../outbox.ts'
+import type { OutboxEnqueueInput } from '../outbox.ts'
 import { createSenderRefFingerprint } from '../sender-fingerprint.ts'
 import type {
   ConversationListItem,
   ConversationPage,
   ConversationRecord,
+  InboundRuntimeContext,
   MessageRecord,
   PaginationInput,
   SessionRecord
@@ -28,6 +31,53 @@ import type {
 
 export class ConversationRepository {
   constructor(private readonly db: InMemoryDatabase) {}
+
+  createWithSessionAndOutbox(
+    input: Parameters<ConversationRepository['createWithSession']>[0],
+    outboxInput: OutboxEnqueueInput
+  ): ReturnType<ConversationRepository['createWithSession']> & {
+    outbox: import('../schema.ts').OutboxEventRecord
+  } {
+    const snapshot = {
+      conversations: this.db.state.conversations,
+      sessions: this.db.state.sessions,
+      messages: this.db.state.messages,
+      outbox: this.db.state.outbox,
+      outboxAttempts: this.db.state.outboxAttempts,
+      outboxEffects: this.db.state.outboxEffects,
+      auditEvents: this.db.state.auditEvents
+    }
+    try {
+      const created = this.createWithSession(input)
+      const outbox = new OutboxRepository(this.db).enqueue({
+        ...outboxInput,
+        correlationId:
+          outboxInput.correlationId ?? created.conversation.correlationId,
+        conversationId: created.conversation.id,
+        sessionId: created.session.id,
+        inboundMessageId: created.message.id,
+        payload: {
+          ...(typeof outboxInput.payload === 'object' &&
+          outboxInput.payload !== null
+            ? outboxInput.payload
+            : { value: outboxInput.payload }),
+          conversationId: created.conversation.id,
+          sessionId: created.session.id,
+          messageId: created.message.id
+        }
+      })
+      return { ...created, outbox }
+    } catch (error) {
+      this.db.state.conversations = snapshot.conversations
+      this.db.state.sessions = snapshot.sessions
+      this.db.state.messages = snapshot.messages
+      this.db.state.outbox = snapshot.outbox
+      this.db.state.outboxAttempts = snapshot.outboxAttempts
+      this.db.state.outboxEffects = snapshot.outboxEffects
+      this.db.state.auditEvents = snapshot.auditEvents
+      throw error
+    }
+  }
 
   findByExternalMessage(
     tenantId: TenantId,
@@ -252,6 +302,41 @@ export class ConversationRepository {
         : message
     )
     return true
+  }
+
+  findInboundRuntimeContext(
+    tenantId: TenantId,
+    conversationId: string,
+    sessionId: string | null,
+    messageId: string
+  ): InboundRuntimeContext | null {
+    const scope = TenantIdSchema.parse(tenantId)
+    const conversation = this.db.state.conversations.find(
+      (candidate) =>
+        candidate.id === conversationId && candidate.tenantId === scope
+    )
+    const message = this.db.state.messages.find(
+      (candidate) =>
+        candidate.id === messageId &&
+        candidate.conversationId === conversationId &&
+        candidate.direction === 'inbound'
+    )
+    if (!conversation || !message) return null
+    const session = sessionId
+      ? (this.db.state.sessions.find(
+          (candidate) =>
+            candidate.id === sessionId &&
+            candidate.conversationId === conversationId
+        ) ?? null)
+      : null
+    if (sessionId && !session) return null
+    return {
+      message: { ...message },
+      channel: conversation.channel,
+      senderRef: conversation.senderRef,
+      correlationId: conversation.correlationId,
+      session
+    }
   }
 
   transitionTakeover(

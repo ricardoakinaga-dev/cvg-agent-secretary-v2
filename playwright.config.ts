@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test'
 
 const apiPort = process.env.CVG_API_PORT ?? '3199'
+const webPort = process.env.CVG_WEB_PORT ?? '4173'
+const consoleOrigin = `http://127.0.0.1:${webPort}`
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -13,7 +15,7 @@ export default defineConfig({
     ? [['line'], ['junit', { outputFile: 'playwright-results.xml' }]]
     : [['list']],
   use: {
-    baseURL: process.env.BASE_URL ?? 'http://127.0.0.1:4173',
+    baseURL: process.env.BASE_URL ?? consoleOrigin,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -23,14 +25,14 @@ export default defineConfig({
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: [
     {
-      command: `NODE_ENV=test API_ALLOWED_ORIGINS=http://127.0.0.1:4173 PORT=${apiPort} npm run dev:api`,
+      command: `NODE_ENV=test API_ALLOWED_ORIGINS=${consoleOrigin} PORT=${apiPort} npm run dev:api`,
       url: `http://127.0.0.1:${apiPort}/health`,
       reuseExistingServer: !process.env.CI,
       timeout: 120000
     },
     {
-      command: `CVG_API_PORT=${apiPort} npm run dev:web -- --port 4173`,
-      url: 'http://127.0.0.1:4173',
+      command: `CVG_API_PORT=${apiPort} npm run dev:web -- --port ${webPort}`,
+      url: consoleOrigin,
       reuseExistingServer: !process.env.CI,
       timeout: 120000
     }

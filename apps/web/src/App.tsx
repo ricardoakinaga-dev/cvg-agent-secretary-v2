@@ -3,9 +3,11 @@ import { AuditPanel } from './features/audit/index.tsx'
 import { ApprovalsPanel } from './features/approvals/index.tsx'
 import { ConversationsPanel } from './features/conversations/index.tsx'
 import { TasksPanel } from './features/tasks/index.tsx'
+import { JourneysPanel } from './features/journeys/index.tsx'
 import { PlatformPanel } from './features/platform/index.tsx'
 import {
   apiClient,
+  isApiConflict,
   type ApprovalDecision,
   type ApprovalView,
   type AuditEvidenceCheckpointView,
@@ -85,6 +87,7 @@ export function App() {
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
     null
   )
+  const [approvalMessage, setApprovalMessage] = useState<string | null>(null)
   const [approvalActionId, setApprovalActionId] = useState<string | null>(null)
   const [taskActionId, setTaskActionId] = useState<string | null>(null)
   const [operatorIdentity, setOperatorIdentity] = useState<OperatorIdentity>({
@@ -150,6 +153,7 @@ export function App() {
       setSelectedConversationId(null)
       setSelectedSessionId(null)
       setApprovalActionId(null)
+      setApprovalMessage(null)
       setTaskActionId(null)
       setIsManagingAuditEvidenceCheckpoint(false)
       setIsRequestingAuditEvidenceExport(false)
@@ -170,6 +174,7 @@ export function App() {
     setSelectedConversationId(null)
     setSelectedSessionId(null)
     setApprovalActionId(null)
+    setApprovalMessage(null)
     setTaskActionId(null)
     setIsManagingAuditEvidenceCheckpoint(false)
     setIsRequestingAuditEvidenceExport(false)
@@ -556,6 +561,7 @@ export function App() {
       setApprovals(failed(approvals.data))
       return
     }
+    setApprovalMessage(null)
     setApprovalActionId(approvalRequestId)
     try {
       await apiClient.decideApproval({
@@ -568,9 +574,22 @@ export function App() {
       await refreshApprovals(scope)
       await refreshAudit(scope)
       await refreshAuditEvidence(scope)
-    } catch {
+    } catch (error) {
       if (!isCurrentViewScope(scope)) return
-      setApprovals(failed(approvals.data))
+      if (isApiConflict(error)) {
+        try {
+          await refreshApprovals(scope)
+          await refreshAudit(scope)
+          if (isCurrentViewScope(scope))
+            setApprovalMessage(
+              'Esta aprovacao ja foi decidida. A fila foi atualizada.'
+            )
+        } catch {
+          if (isCurrentViewScope(scope)) setApprovals(failed(approvals.data))
+        }
+      } else {
+        setApprovals(failed(approvals.data))
+      }
     } finally {
       if (isCurrentViewScope(scope)) setApprovalActionId(null)
     }
@@ -611,9 +630,13 @@ export function App() {
 
   return (
     <main className="shell">
-      <header className="topbar">
-        <div>
-          <h1>CVG Agent Secretary</h1>
+      <a className="skipLink" href="#console-operacional">
+        Pular para o console operacional
+      </a>
+      <header className="topbar" aria-labelledby="console-title">
+        <div className="topbarIntro">
+          <p className="eyebrow">OPERAÇÃO CONTROLADA · CVG</p>
+          <h1 id="console-title">CVG Agent Secretary</h1>
           <p>
             Operacao assistida com aprovacoes, auditoria e acoes sensiveis
             bloqueadas.
@@ -662,9 +685,38 @@ export function App() {
             />
           </label>
           <span className="status">{operatorIdentity.role}</span>
+          <span
+            className="scopeSummary"
+            title={tenantId.trim() || 'Tenant não definido'}
+          >
+            <span>Escopo</span>
+            <code>{tenantId.trim() || 'Não definido'}</code>
+          </span>
+          <button
+            type="button"
+            className="sessionButton"
+            onClick={() => {
+              setOperatorIdentity({ operatorId: '', role: 'Operator' })
+              setTenantId('')
+            }}
+          >
+            Encerrar sessão
+          </button>
         </form>
       </header>
-      <section className="grid" aria-label="Console operacional">
+      <nav className="sectionNav" aria-label="Seções do console">
+        <a href="#console-operacional">Operação</a>
+        <a href="#journeys-panel">Jornadas</a>
+        {operatorIdentity.role === 'Admin' ? (
+          <a href="#platform-panel">Admin console</a>
+        ) : null}
+      </nav>
+      <section
+        className="grid"
+        id="console-operacional"
+        aria-label="Console operacional"
+        tabIndex={-1}
+      >
         <ConversationsPanel
           conversations={conversations.data}
           selectedConversationId={selectedConversationId}
@@ -675,6 +727,7 @@ export function App() {
           onSelectConversation={selectConversation}
         />
         <ApprovalsPanel
+          message={approvalMessage}
           approvals={approvals.data}
           actionId={approvalActionId}
           error={approvals.error}
@@ -742,6 +795,10 @@ export function App() {
           }
         />
       </section>
+      <JourneysPanel
+        identity={currentOperatorIdentity()}
+        selectedSessionId={selectedSessionId}
+      />
       {operatorIdentity.role === 'Admin' &&
       /^tenant_[0-9a-f-]{36}$/.test(tenantId.trim()) ? (
         <PlatformPanel

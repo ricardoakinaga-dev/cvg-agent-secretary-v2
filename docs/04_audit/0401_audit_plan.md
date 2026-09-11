@@ -1,5 +1,13 @@
 # 0401 — Audit Plan
 
+## Parecer vigente — AUD-DOC-001 — 2026-09-05T00:54:31-03:00
+
+Plano executado: Inventário/hashes, leitura integral, inspeção do caminho publicado, verify, PostgreSQL efêmero, 4 E2E e probes de risco/proxy concluídos. Sem BUILD de produto.
+
+Fonte atual: [relatório integral](0539_documentation_implementation_review.md), [inventário](0540_documentation_review_inventory.json) e [evidências](0541_documentation_review_evidence.json). Auditoria solicitada concluída; correções futuras ainda abertas.
+
+## Registro histórico anterior a esta auditoria
+
 ## Areas auditadas
 
 - Runtime.

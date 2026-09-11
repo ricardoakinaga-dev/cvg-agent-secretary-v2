@@ -1,9 +1,121 @@
+# AUD-20260911-001 — auditoria integral atual — 2026-09-11
+
+- status: `COMPLETED_WITH_OPEN_FINDINGS`; engine: `AUDIT`; fase: auditoria integral read-only do estado atual.
+- resultado: nota consolidada `65/100`; maturidade técnica controlada `74/100`; completude do produto real `43/100`; prontidão para piloto/produção `20/100`.
+- verificação: suíte 152/657 pass com 3/25 skips; coverage 85,51/81,02/91,10/86,41; build 159 módulos; E2E 6/6; typecheck, lint, readiness, worker smoke, format, verify e diff pass; audit estrito de dependências encontra 3 vulnerabilidades moderadas.
+- evidência PostgreSQL: incompleta nesta rodada; `TEST_DATABASE_URL`, `pg_isready`, PostgreSQL, Docker daemon e Podman indisponíveis; 8 arquivos/58 testes pass e 2 arquivos/24 testes skipped.
+- achados: `AUD-20260911-F01` a `F05` bloqueiam produção, função real ou evidência; `F06` a `F09` permanecem gaps de dependência, safety, governança e configuração.
+- evidência: [relatório](04_audit/0556_project_audit_2026-09-11.md), [evidência estruturada](04_audit/0557_project_audit_evidence_2026-09-11.json); nenhuma alteração de código, integração real, dado real, deploy ou side effect foi executada nesta auditoria.
+- decisão: `CONDITIONAL_PASS_CONTROLLED_NO_GO_EXTERNAL`; produção, piloto real, RAG externo, canais externos e automações sensíveis continuam bloqueados.
+- próxima ação: limpar o candidato e fechar o gate PostgreSQL; corrigir journeys no caminho PostgreSQL e definir consumer contínuo; só então abrir Discovery/PRD/SPEC próprios para provider, canal, identidade, fonte institucional, operação e safety semântico.
+
+# AUD-20260905-001 — auditoria integral atual — 2026-09-05T21:14:49-03:00
+
+- status: `COMPLETED_WITH_OPEN_FINDINGS`; engine: `AUDIT`; fase: auditoria integral read-only do estado controlado atual.
+- resultado: nota consolidada `73/100`; maturidade técnica controlada `80/100`; completude do produto real `64/100`; prontidão real `25/100`.
+- verificação: suíte 152/657 pass com 3/25 skips; PostgreSQL local 10/82 pass sem skips; coverage 85,51/81,02/91,10/86,41; E2E 6/6; gates estáticos, build, readiness, worker smoke, audit de dependências e diff pass.
+- achados: `AUD-20260905-F01` a `F04` blockers de produto/operação; `F05` a `F07` gaps de governança/evidência/safety semântico; nenhum P0/P1/P2 observado no slice específico R7 não transforma produção em GO.
+- evidência: [relatório](04_audit/0554_project_full_audit_2026-09-05.md), [evidência estruturada](04_audit/0555_project_full_audit_evidence_2026-09-05.json); revisão atual é self-audit read-only.
+- decisão: `CONDITIONAL_PASS_CONTROLLED_NO_GO_EXTERNAL`; nenhuma mudança de código, integração real, dado real, deploy ou side effect foi executada.
+- próxima ação: obter RF-011, identidade/provider/canal/fonte institucional, signoff humano e RPO/RTO; depois repetir qualificação em ambiente aprovado.
+
+# REM-0539 — R7 revalidação controlada — 2026-09-05T20:24:19-03:00
+
+- status: `IN_PROGRESS`; engine: `AUDIT`; fase: R7 revalidação controlada concluída com parecer fresh-context `PASS_CONTROLLED`.
+- resultado técnico: sanitizer de outbox endurecido contra strings livres/números; ack PostgreSQL em duas fases sem lock durante handler; migration 0011 preserva pending roteável, quarentena legado não seguro e restaura FORCE RLS; bridge usa handler PostgreSQL real; worker PostgreSQL continua bloqueado em produção.
+- verificação atual: `npm test` 152 arquivos/657 testes pass (3/25 skips); `TEST_DATABASE_URL` local `npm run test:postgres` 10 arquivos/82 testes pass; coverage 85,51% statements / 81,02% branches / 91,10% functions / 86,41% lines; build, typecheck, lint, format, readiness, worker smoke, audit e diff pass; E2E 6/6 em portas livres 4199/3197.
+- evidência: [R7](04_audit/0552_rem0539_r7_revalidation_evidence.json), [dossiê](04_audit/0553_rem0539_r7_final_dossier.md); crítica preliminar R7 foi `BLOCK_CONTROLLED`, seus achados foram corrigidos e o crítico fresh-context `01a073e0-1d26-7872-a196-3c22d1d39014` retornou `PASS_CONTROLLED` sem P0/P1/P2.
+- decisão: `CONDITIONAL_PASS_CONTROLLED_NO_GO_EXTERNAL`; REM-29 permanece `NO_GO_CONTROLLED`; REM-02 aguarda RF-011; REM-30 segue `DEFERRED_OPTIONAL`.
+- limites: fixtures, PostgreSQL local descartável e serviços locais; sem dado real, deploy, broker/provider/canal/IdP externo, fonte institucional aprovada, signoff humano ou ação clínica/financeira/prontuário; produção e piloto real continuam `NO-GO`.
+
+# REM-0539 — R6 revalidação controlada — 2026-09-05T17:46:53-03:00
+
+- status: `IN_PROGRESS`; engine: `AUDIT`; fase: R6 revalidação controlada concluída com `CONDITIONAL_PASS_CONTROLLED_NO_GO_EXTERNAL`.
+- resultado: REM-10–12 e REM-28 revalidadas após correções de consumer, sanitização do outbox, boundary PostgreSQL e web shell; REM-29 permanece `NO_GO_CONTROLLED`; REM-02 aguarda RF-011; REM-30 segue `DEFERRED_OPTIONAL`.
+- evidências: [R6](04_audit/0550_rem0539_r6_revalidation_evidence.json), [dossiê final](04_audit/0551_rem0539_r6_final_dossier.md), [tracking](03_build/tracking/rem0539_execution.json).
+- verificação: `npm test` 150 arquivos/638 testes pass (3/23 skips); `npm run test:postgres` 7 arquivos/54 testes pass (2/22 skips por ausência de `TEST_DATABASE_URL`); worker startup positivo/negativo, E2E 6/6 e gates estáticos pass.
+- UX: matriz visual controlada em 375/768/1440 sem overflow horizontal, foco visível e controles mínimos exercitados; sem certificação formal ou estudo com operador.
+- próximo passo: capturar o parecer independente R6; obter RF-011, identidade/provider/canal/fonte aprovados, signoff humano e RPO/RTO; repetir REM-27–29 em ambiente autorizado.
+- limites: fixtures e processos locais; sem dado real, deploy, broker/provider/canal/IdP externo, fonte institucional aprovada, participante humano ou ação clínica/financeira/prontuário; produção e piloto real continuam `NO-GO`.
+
+# REM-0539 — fechamento controlado R1–R5 — 2026-09-05T11:40:00-03:00
+
+- status: IN_PROGRESS; engine: AUDIT; fase: R5 qualificação controlada concluída com `NO-GO`.
+- resultado: REM-01 e REM-03 implementadas; REM-04–28 concluídas no escopo controlado; REM-29 registrou `NO_GO_CONTROLLED`; REM-30 ficou `DEFERRED_OPTIONAL`; REM-02 aguarda decisão humana sobre RF-011.
+- evidências: [R3](04_audit/0546_rem0539_r3_evidence.json), [R4](04_audit/0547_rem0539_r4_evidence.json), [R5](04_audit/0548_rem0539_r5_qualification_evidence.json), [tracking](03_build/tracking/rem0539_execution.json).
+- verificação: `npm test` 148 arquivos/634 testes pass (3/23 skips); PostgreSQL 9 arquivos/76 testes pass; typecheck, lint, format, readiness, worker startup, audit, docs-readiness e diff pass.
+- qualificação local: p95 persistência 45 ms, resposta 420 ms, perda 0, duplicação 0; faltam identidade externa, provider, canal, fonte institucional, signoff humano e metas RPO/RTO aprovadas.
+- próximo passo: obter RF-011 e gates externos/humanos; repetir R5 com perfil, metas e responsáveis aprovados.
+- limites: fixtures e PostgreSQL descartável; sem dado real, deploy, provider/canal/RAG externo, participante humano ou ação clínica/financeira/prontuário; produção e piloto real permanecem `NO-GO`.
+
+# REM-0539 — fechamento condicional da onda R1 — 2026-09-05T08:17:03-03:00
+
+- status: IN_PROGRESS; engine: BUILD/AUDIT; fase: R1; REM-04, REM-05 e REM-06 concluídas; REM-07 condicional; REM-08 bloqueada.
+- evidência: [0543_rem0539_r1_evidence.json](04_audit/0543_rem0539_r1_evidence.json); testes integrados 13 arquivos/121 pass/1 skip; typecheck, lint, format e diff pass.
+- revisão: criticidade inicial rejeitou três lacunas de safety; correções foram retestadas por crítico fresco com PASS. Crítico de integridade confirmou HTTP/memória/API e estrutura SQL, mas não houve TEST_DATABASE_URL para a corrida PostgreSQL de duas conexões.
+- próximo passo: executar `packages/persistence/src/__tests__/attendance-approval-postgres.test.ts` em PostgreSQL isolado; só então fechar REM-08 e abrir gate R2. Enquanto isso, preparar apenas Discovery/PRD/SPEC de durabilidade.
+- limites: somente fixtures e dados sintéticos; produção, piloto, provider/canal/RAG externo, deploy e ações clínicas/financeiras/prontuário permanecem NO-GO.
+
+# REM-0539 — preparação documental R2 — 2026-09-05
+
+- status: IN_PROGRESS; engine: BUILD; fase: R2; REM-09 concluída; REM-10/11/12 prontas para BUILD controlado.
+- last_completed_action: Discovery 0012, PRD 0023 e SPEC 0123 preparados para durabilidade local.
+- next_action: executar REM-10 com outbox/consumer local, testes de lease/retry/idempotência e migração PostgreSQL; depois REM-11/12.
+- limites: somente fixtures e banco local descartável; sem broker, provider, canal, dado real, deploy ou piloto; `processed` ainda não é uma garantia de entrega durável.
+
+# REM-0539 — closure R1 e preparação R2 — 2026-09-05
+
+- status: IN_PROGRESS; engine: AUDIT→SPEC; fase: R1 fechada / R2 documental condicional.
+- last_completed_action: REM-07/08 fechadas com prova PostgreSQL; Discovery/PRD/SPEC R2 criticados e corrigidos.
+- evidence: `docs/04_audit/0544_rem0539_r1_closure_evidence.json`.
+- next_action: iniciar REM-10 no BUILD controlado conforme SPEC 0123; REM-11/12 dependem da evidência de consumer.
+- limites: fixtures e banco local descartável; sem dado real, broker/provider/canal, deploy ou piloto; produção NO-GO.
+
 # RUNTIME STATE — CVG
+
+## REM-0539 — execução autorizada em andamento — 2026-09-05T10:35:31.994051+00:00
+
+- status: IN_PROGRESS; engine: BUILD; fase: R1; tasks REM-04..07.
+- autorização: usuário solicitou implementar integralmente 0311/0312/0313 com Gauntlet/orchestrate. Os contratos R1 foram registrados e validados antes do BUILD; nenhum aceite de produção é inferido.
+- evidência de baseline: `docs/04_audit/0542_rem0539_r0_evidence.json`; tracking: `docs/03_build/tracking/rem0539_execution.json`; SPEC: `docs/02_spec/0122_rem0539_r1_contract.md`.
+- quality bar: `.gauntlet/bar.json`, 30 tasks + qualidade integrada obrigatórias. Histórico Gauntlet PLAT-S48 preservado por hash em `.gauntlet/legacy/PLAT-S48`.
+- próximos passos: RED/GREEN risco, proxy e approvals; crítica independente fresca e integração. REM-02 e demais ondas continuam no escopo, não concluídas.
+- limites: fixtures, sem dado real, canal/provider externo, RAG institucional, deploy ou piloto. Decisões externas/humanas permanecem requisitos pendentes, não critérios removidos.
+
+## Estado vigente — PLAN-0539-001 — 2026-09-05T01:07:40-03:00
+
+- current_engine: `AUDIT` (planejamento de remediação; sem avanço para BUILD)
+- current_phase: `AUDIT`
+- current_sprint: `PLAN-0539`
+- current_task: `PLAN-0539-001`
+- task_status: `COMPLETED`
+- status: `READY_FOR_NEXT_STEP`
+- evidence: `docs/03_build/0311_plano_executivo_pos_auditoria.md`, `0312_roadmap_pos_auditoria.md`, `0313_backlog_pos_auditoria.md`
+- next_action: REM-01/03 e decisão REM-02 conforme roadmap; validar gates antes de código
+- human_decision_required: `no` para a entrega documental concluída; gates específicos exigidos para execução futura
+- production_boundary: `NO-GO`; nenhum achado corrigido nesta rodada
+
+Os registros AUD-DOC-001 e anteriores abaixo permanecem históricos.
+
+Atualização final AUD-DOC-001: AUD-F07 (P2) registrado após prova de sobrescrita por snapshot obsoleto no repositório de approval de atendimento; não houve dupla decisão reproduzida na tentativa HTTP em memória. Relatório/evidências 0539/0541 distinguem essa fila de capability approval. Gate de remediação pendente.
 
 ## CONTEXTO
 
 - project: cvg-agent-secretary-v2
 - current_engine: AUDIT
+
+## AUDITORIA INTEGRAL DA DOCUMENTAÇÃO — concluída 2026-09-05T00:54:31-03:00
+
+- current_engine: `AUDIT`
+- current_phase: `AUDIT`
+- current_sprint: `AUD-DOC-001`
+- current_task: `AUD-DOC-001_FULL_DOCUMENTATION_IMPLEMENTATION_REVIEW`
+- status: `COMPLETED`
+- evidence: `docs/04_audit/0539_documentation_implementation_review.md`
+- verdict: `AUDIT_COMPLETED_WITH_OPEN_FINDINGS`; nota geral 69/100
+- task_status: `COMPLETED`
+- historical_sections: os registros S48 e anteriores abaixo são históricos; não substituem este parecer
+- limits: auditoria com fixtures; nenhum BUILD de produto ou produção real
 
 ## AUDIT CONTROLADO PLAT-S48 — 2026-09-02T07:32:00-03:00
 
@@ -41,37 +153,31 @@
 ## POSICAO ATUAL
 
 - current_phase: AUDIT
-- current_sprint: PLAT-S48_CONTROLLED_BASELINE_DETERMINISM
-- current_task: PLAT-S48_CONTROLLED_BASELINE_DETERMINISM
+- current_sprint: AUD-20260911
+- current_task: AUD-20260911-001_PROJECT_FULL_CURRENT
 
 ## STATUS
 
-- status: READY_FOR_NEXT_STEP
+- status: COMPLETED_WITH_OPEN_FINDINGS
 
 ## PROGRESSO
 
-- last_completed_action: auditoria S48 fechou os dois REDs, a regressão e todos
-  os gates controlados; a evidência foi publicada em
-  `docs/04_audit/0538_plat-s48_controlled_deterministic_clock_and_test_contract_evidence.md`.
-- next_action: iniciar nova `DISCOVERY -> PRD -> SPEC` controlada; nenhum deploy,
-  rollout, RAG, provider externo, canal, dado real ou ação sensível está
-  autorizado.
+- last_completed_action: AUD-20260911-001 concluída; auditoria integral com 26 notas, 9 achados e evidência de testes, build, E2E, cobertura, limites e estado do worktree; nenhum BUILD de produto nesta rodada
+- next_action: fechar o gate PostgreSQL e a higiene do release; corrigir persistência de jornadas, consumer contínuo e flags sem consumidor; manter integrações reais condicionadas a Discovery/PRD/SPEC e decisão humana
 
 ## BLOQUEIOS
 
-- blockers: nenhum bloqueio para o MVP controlado; produção real permanece bloqueada por IdP/tenant binding, backfill e rollout do data plane legado sob change control, role/secrets operacionais, limiter e replay store distribuídos, CSRF/CORS/HTTPS/CSP do host, retenção/PII, auditoria de side effects, coordenação distribuída multioperador além do compare-and-swap controlado e decisões humanas de RAG, cargos, canais, providers e ações sensíveis
+- blockers: `AUD-20260911-F01` a `F05` impedem produção/piloto; `F06` a `F09` impedem um release limpo e ampliam a incerteza de segurança, governança e configuração; produção real permanece NO-GO
 
 ## DECISAO HUMANA
 
 - human_decision_required: no
 - human_decision_required_for_real_release: yes
-- decision_description: o gate controlado foi fechado; qualquer piloto real,
-  produção, dado real, RAG, agenda, financeiro, clínico, prontuário, canal ou
-  automação sensível exige decisão humana e infraestrutura aprovada
+- decision_description: auditoria solicitada está autorizada; nenhum piloto real, provider/canal, RAG, dado real, deploy ou ação sensível foi autorizado
 
 ## TIMESTAMP
 
-- last_update: 2026-09-02T07:32:00-03:00
+- last_update: 2026-09-05T01:07:40-03:00
 
 ## AUDIT CORRETIVO CONTROLADO PLAT-S47 — 2026-08-26T15:59:02-03:00
 

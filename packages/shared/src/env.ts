@@ -1,17 +1,17 @@
 import { z } from 'zod'
 
+export const TRUSTED_PROXY_HOPS_MIGRATION_ERROR =
+  'API_TRUSTED_PROXY_HOPS is deprecated; configure API_TRUSTED_PROXY_ADDRESSES with explicit IP addresses'
+
 const EnvBooleanSchema = z
   .union([z.boolean(), z.enum(['true', 'false'])])
   .default(false)
   .transform((value) => value === true || value === 'true')
 
-const EnvTrustedProxyHopsSchema = z
-  .preprocess(
-    (value) => (value === undefined ? '0' : value),
-    z.union([z.number().int(), z.string().regex(/^\d+$/)])
-  )
-  .transform((value) => Number(value))
-  .pipe(z.number().int().min(0).max(4))
+const EnvTrustedProxyHopsSchema = z.preprocess((value) => {
+  if (value === undefined || value === '0' || value === 0) return 0
+  throw new Error(TRUSTED_PROXY_HOPS_MIGRATION_ERROR)
+}, z.literal(0))
 
 export const EnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']),
@@ -23,6 +23,7 @@ export const EnvSchema = z.object({
   WEBHOOK_SIGNING_SECRET: z.string().min(1).optional(),
   API_ALLOWED_ORIGINS: z.string().optional(),
   API_REQUIRE_HTTPS: EnvBooleanSchema,
+  API_TRUSTED_PROXY_ADDRESSES: z.string().optional(),
   API_TRUSTED_PROXY_HOPS: EnvTrustedProxyHopsSchema,
   POSTGRES_AUTO_MIGRATE: EnvBooleanSchema,
   POSTGRES_RLS_ENFORCEMENT: EnvBooleanSchema,

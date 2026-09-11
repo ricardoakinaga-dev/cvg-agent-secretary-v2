@@ -1,5 +1,9 @@
 # 0301 — Roadmap
 
+## Planejamento de remediação pós-auditoria — 2026-09-05
+
+Para evolução proposta a partir da auditoria 0539, consultar [0312_roadmap_pos_auditoria.md](0312_roadmap_pos_auditoria.md) e [plano executivo](0311_plano_executivo_pos_auditoria.md). Os itens abaixo preservam o planejamento original; não representam automaticamente pendências atuais nem aprovação das tasks REM.
+
 Este roadmap e somente a visao macro. A execucao deterministica esta em `0306_phase_sprint_plan.json` e `0308_task_catalog.json`.
 
 ## Phase 0 — Fundacao

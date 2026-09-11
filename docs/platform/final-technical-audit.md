@@ -1,5 +1,15 @@
 # Auditoria técnica final — CVG Agent Platform controlada
 
+Atualização final AUD-DOC-001: AUD-F07 (P2) registrado após prova de sobrescrita por snapshot obsoleto no repositório de approval de atendimento; não houve dupla decisão reproduzida na tentativa HTTP em memória. Relatório/evidências 0539/0541 distinguem essa fila de capability approval. Gate de remediação pendente.
+
+## Parecer vigente — AUD-DOC-001 — 2026-09-05T00:54:31-03:00
+
+Auditoria integral concluída: 227 documentos, código/runtime, 39 RF, 9 UC e 31 RNF. Nota geral **69/100**, plataforma controlada **85/100**, operação real **25/100**. Verify/PG/E2E PASS, mas AUD-F01 (P1, risco composto) e AUD-F05 (P2, HTTPS/proxy condicional) permanecem abertos. `AUDIT_COMPLETED_WITH_OPEN_FINDINGS`; produção `NO-GO`.
+
+Fonte atual: [relatório integral](../04_audit/0539_documentation_implementation_review.md), [inventário](../04_audit/0540_documentation_review_inventory.json), [evidências](../04_audit/0541_documentation_review_evidence.json). S48 e os vereditos abaixo são históricos, não aprovação dos achados novos. Próximo passo: discovery/PRD/SPEC de remediação, sem BUILD nesta rodada.
+
+## Histórico anterior
+
 ## Identificação
 
 - data da auditoria: `2026-09-02`

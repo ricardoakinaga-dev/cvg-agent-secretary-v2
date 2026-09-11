@@ -50,9 +50,12 @@
         "tsconfig.json",
         "src/main.ts",
         "src/worker.ts",
+        "src/postgres-controlled.ts",
         "src/jobs/process-agent-turn.ts",
         "src/jobs/process-outbox-event.ts",
-        "src/__tests__/worker.test.ts"
+        "src/__tests__/worker.test.ts",
+        "src/__tests__/postgres-controlled.test.ts",
+        "src/__tests__/postgres-outbox-bridge.integration.test.ts"
       ],
       "allowed_dependencies": [
         "@cvg/shared",
@@ -61,7 +64,8 @@
         "@cvg/tools",
         "@cvg/policy",
         "@cvg/memory",
-        "@cvg/persistence"
+        "@cvg/persistence",
+        "pg"
       ],
       "forbidden_imports": ["@cvg/web", "apps/web"]
     },

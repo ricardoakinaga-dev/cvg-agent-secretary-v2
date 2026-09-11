@@ -6,6 +6,7 @@ test-results/
 playwright-report/
 playwright-results.xml
 blob-report/
+.gauntlet/*.lock
 .env
 .env.local
 .env.*

@@ -1,4 +1,9 @@
 import { DomainError, redactSensitiveText } from '@cvg/shared'
+import {
+  assessConversationSafety,
+  normalizeSafetyText,
+  type SafetyAssessment
+} from './safety-assessment.ts'
 import type { ControlPlaneStore } from './control-plane-store.ts'
 import type {
   AgentConfig,
@@ -44,6 +49,7 @@ export interface TestLabInput {
   message: string
   history: string[]
   approvedKnowledge?: ApprovedKnowledgeForTest
+  resolveApprovedKnowledge?: ApprovedKnowledgeResolver
   capabilityGateway?: CapabilityGateway
   actor?: AgentExecutionActor
   capabilityApproval?: CapabilityApproval
@@ -54,6 +60,19 @@ export interface TestLabInput {
   context?: { conversationId?: string; sessionId?: string }
   monotonicClock?: () => number
 }
+
+export interface ApprovedKnowledgeResolverInput {
+  tenantId: TenantId
+  question: string
+}
+
+export type ApprovedKnowledgeResolver = (
+  input: ApprovedKnowledgeResolverInput
+) =>
+  | ApprovedKnowledgeForTest
+  | null
+  | undefined
+  | Promise<ApprovedKnowledgeForTest | null | undefined>
 
 export interface ControlledTraceTiming {
   measure<T>(name: TraceSpanName, operation: () => T): T
@@ -177,13 +196,12 @@ export async function executeConfiguredAgent(
   }
   const normalizedInput = timing.measure('normalize', () => ({
     message: validateMessage(input.message),
-    history: input.history.map(validateHistoryItem).map(redactTestMessage)
+    history: validateHistory(input.history)
+      .map(validateHistoryItem)
+      .map(redactTestMessage)
   }))
   const message = normalizedInput.message
   const history = normalizedInput.history
-  const approvedKnowledge = timing.measure('knowledge', () =>
-    validateApprovedKnowledge(input.approvedKnowledge)
-  )
   const config = version.config
   const modelProvider = resolveControlledModelProvider(config.model)
   const promptProfile = createPromptProfileSnapshot(version)
@@ -218,8 +236,21 @@ export async function executeConfiguredAgent(
   await emitPlatformEvent(executionInput, 'intent.before', {
     messageLength: message.length
   })
+  const safety = assessConversationSafety(message, history)
   const intent = timing.measure('intent', () => classifyForDryRun(message))
   await emitPlatformEvent(executionInput, 'intent.after', intent)
+  const approvedKnowledge = await timing.measureAsync('knowledge', async () => {
+    const candidate =
+      input.resolveApprovedKnowledge && intent.name === 'institutional_question'
+        ? await input.resolveApprovedKnowledge({
+            tenantId: input.tenantId,
+            question: message
+          })
+        : input.resolveApprovedKnowledge
+          ? undefined
+          : input.approvedKnowledge
+    return validateApprovedKnowledge(candidate ?? undefined)
+  })
   const { action, policy } = timing.measure('policy', () => {
     const nextAction = actionForMessage(message, intent.name)
     const nextPolicy = evaluatePlatformPolicy({
@@ -227,7 +258,7 @@ export async function executeConfiguredAgent(
       confidence: intent.confidence,
       config,
       clarificationCount: history.length,
-      riskLevel: riskForIntent(intent.name).level
+      riskLevel: safety.level
     })
     return { action: nextAction, policy: nextPolicy }
   })
@@ -247,7 +278,7 @@ export async function executeConfiguredAgent(
       reason: policy.reason
     })
   }
-  const risk = riskForIntent(intent.name, policy)
+  const risk = riskForSafety(safety, policy)
   await emitPlatformEvent(executionInput, 'knowledge.before', {
     intent: intent.name,
     configuredBindings: config.knowledge.length
@@ -257,17 +288,22 @@ export async function executeConfiguredAgent(
   )
   await emitPlatformEvent(executionInput, 'knowledge.after', knowledge.trace)
   const handoffRequested =
+    safety.level !== 'low' ||
     policy.decision === 'handoff' ||
     policy.decision === 'requires_approval' ||
     intent.name === 'medication_advice' ||
     knowledge.trace.status === 'approved_source_missing' ||
     knowledge.trace.status === 'handoff'
   const handoffReason = handoffRequested
-    ? policy.decision === 'handoff' || policy.decision === 'requires_approval'
-      ? policy.reason
-      : intent.name === 'medication_advice'
-        ? 'veterinary_evaluation_required'
-        : 'approved_source_missing'
+    ? safety.level !== 'low' &&
+      policy.decision === 'blocked' &&
+      intent.name !== 'medication_advice'
+      ? safety.reason
+      : policy.decision === 'handoff' || policy.decision === 'requires_approval'
+        ? policy.reason
+        : intent.name === 'medication_advice'
+          ? 'veterinary_evaluation_required'
+          : 'approved_source_missing'
     : null
   const response = timing.measure('response', () =>
     buildResponse({
@@ -384,7 +420,9 @@ export async function executeConfiguredAgent(
     })
   }
   const tools = await timing.measureAsync('tool', () =>
-    output.decision === 'rewritten'
+    output.decision === 'rewritten' ||
+    risk.level === 'high' ||
+    risk.level === 'critical'
       ? []
       : executePlannedTools({
           input: executionInput,
@@ -501,6 +539,16 @@ function resolveHandoffPriority(
   return configuredPriority ?? 'medium'
 }
 
+function validateHistory(history: string[]): string[] {
+  if (!Array.isArray(history) || history.length > 50) {
+    throw new DomainError(
+      'validation_failed',
+      'Test history must contain at most 50 items'
+    )
+  }
+  return history
+}
+
 function validateHistoryItem(rawItem: string): string {
   if (typeof rawItem !== 'string' || rawItem.length > 4000) {
     throw new DomainError('validation_failed', 'Test history item is invalid')
@@ -537,7 +585,7 @@ function classifyForDryRun(message: string): {
   name: string
   confidence: number
 } {
-  const text = message.toLowerCase()
+  const text = normalizeSafetyText(message)
   if (
     /dipirona|ibuprofeno|paracetamol|medicamento|medica[cç][aã]o|rem[eé]dio|antibi[oó]tico|medication|medicine|drug/.test(
       text
@@ -551,14 +599,14 @@ function classifyForDryRun(message: string): {
   if (/consulta|hor[aá]rio|agenda/.test(text)) {
     return { name: 'scheduling', confidence: 0.92 }
   }
-  if (/vomit|sangue|dor|convuls|desmaio/.test(text)) {
+  if (assessConversationSafety(message, []).level === 'high') {
     return { name: 'triage', confidence: 0.96 }
   }
   return { name: 'unknown', confidence: 0.32 }
 }
 
 function actionForMessage(message: string, intent: string): string {
-  const text = message.toLowerCase()
+  const text = normalizeSafetyText(message)
   if (/send_external|enviar.*extern|canal real|provider real/.test(text)) {
     return 'send_external'
   }
@@ -662,23 +710,15 @@ function buildResponse(input: {
   }
 }
 
-function riskForIntent(
-  intent: string,
-  policy?: ReturnType<typeof evaluatePlatformPolicy>
+function riskForSafety(
+  safety: SafetyAssessment,
+  policy: ReturnType<typeof evaluatePlatformPolicy>
 ): { level: 'low' | 'medium' | 'high' | 'critical'; reason: string } {
-  if (intent === 'medication_advice') {
-    return {
-      level: 'critical',
-      reason: 'hard_safety_medication_request'
-    }
-  }
-  if (intent === 'triage') {
-    return { level: 'high', reason: 'high_risk_triage_request' }
-  }
-  if (policy?.layer === 'hard_safety' && policy.decision === 'blocked') {
+  if (safety.level !== 'low') return safety
+  if (policy.layer === 'hard_safety' && policy.decision === 'blocked') {
     return { level: 'critical', reason: policy.reason }
   }
-  return { level: 'low', reason: 'controlled_low_risk_request' }
+  return safety
 }
 
 function estimateTokenCount(text: string): number {

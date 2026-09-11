@@ -1,0 +1,103 @@
+{
+  "auditId": "AUD-20260905-001_PROJECT_FULL_CURRENT",
+  "date": "2026-09-05",
+  "scope": "Auditoria integral read-only do estado controlado atual do CVG Agent Secretary V2",
+  "head": "0674f0a60f64e6e4029496435bba5ac36800ca9d",
+  "status": "CONDITIONAL_PASS_CONTROLLED_NO_GO_EXTERNAL",
+  "scores": {
+    "consolidated_current_state": 73,
+    "controlled_technical_maturity": 80,
+    "real_product_completeness": 64,
+    "production_or_pilot_readiness": 25
+  },
+  "verification": {
+    "unit": {
+      "status": "PASS",
+      "filesPassed": 152,
+      "testsPassed": 657,
+      "filesSkipped": 3,
+      "testsSkipped": 25
+    },
+    "postgres": {
+      "status": "PASS_CONTROLLED",
+      "filesPassed": 10,
+      "testsPassed": 82,
+      "testsSkipped": 0,
+      "environment": "PostgreSQL local descartável via socket Unix"
+    },
+    "coverage": {
+      "status": "PASS",
+      "statements": 85.51,
+      "branches": 81.02,
+      "functions": 91.1,
+      "lines": 86.41,
+      "limitations": "A configuração exclui web, entrypoints e parte dos adapters PostgreSQL; não é certificação de produto."
+    },
+    "e2e": {
+      "status": "PASS_CONTROLLED",
+      "testsPassed": 6,
+      "viewports": [375, 768, 1440],
+      "environment": "Serviços locais sintéticos em portas 4201/3196"
+    },
+    "static": {
+      "typecheck": "PASS",
+      "lint": "PASS",
+      "format": "PASS",
+      "build": "PASS",
+      "readiness": "PASS",
+      "securityAudit": "PASS_ZERO_VULNERABILITIES",
+      "workerSmoke": "PASS",
+      "diffCheck": "PASS"
+    }
+  },
+  "findings": [
+    {
+      "id": "AUD-20260905-F01",
+      "priority": "P1",
+      "status": "OPEN_RELEASE_BLOCKER",
+      "summary": "Caminho de produção não está operacional"
+    },
+    {
+      "id": "AUD-20260905-F02",
+      "priority": "P1",
+      "status": "OPEN",
+      "summary": "Worker bounded/run-once sem operação contínua"
+    },
+    {
+      "id": "AUD-20260905-F03",
+      "priority": "P1",
+      "status": "OPEN",
+      "summary": "Jornadas reais e RAG institucional ausentes"
+    },
+    {
+      "id": "AUD-20260905-F04",
+      "priority": "P1",
+      "status": "OPEN",
+      "summary": "Operação real não demonstrada"
+    },
+    {
+      "id": "AUD-20260905-F05",
+      "priority": "P2",
+      "status": "OPEN",
+      "summary": "Higiene de release e documentação com drift"
+    },
+    {
+      "id": "AUD-20260905-F06",
+      "priority": "P2",
+      "status": "OPEN_EVIDENCE_LIMITATION",
+      "summary": "Coverage e ambiente não equivalem à produção"
+    },
+    {
+      "id": "AUD-20260905-F07",
+      "priority": "P1",
+      "status": "OPEN_SAFETY_EVIDENCE_LIMITATION",
+      "summary": "Generalização semântica do safety não provada"
+    }
+  ],
+  "limits": [
+    "Sem dados reais, provider, canal, IdP, RAG institucional, broker externo, deploy ou side effect.",
+    "Não é pentest, certificação WCAG, validação clínica, benchmark de carga ou aprovação humana.",
+    "A revisão é read-only e autoexecutada; a crítica fresh-context R7 cobriu somente boundaries específicos."
+  ],
+  "evidenceRef": "docs/04_audit/0554_project_full_audit_2026-09-05.md"
+}
