@@ -16,12 +16,14 @@
         "packages/agent-runtime/src/runtime.ts",
         "packages/agent-runtime/src/composition.ts",
         "packages/policy-engine/src",
-        "apps/worker/src/kernel-composition.ts"
+        "apps/worker/src/kernel-composition.ts",
+        "packages/agent-runtime/src/orchestration.ts"
       ],
       "tests": [
         "packages/agent-runtime/src/__tests__",
         "packages/policy-engine/src/__tests__",
-        "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts"
+        "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts",
+        "apps/worker/src/__tests__/kernel-composition-state.test.ts"
       ],
       "evidence": [
         "docs/02_spec/aaa_composition_contract.md",
@@ -38,15 +40,21 @@
       "implementation": [
         "packages/agent-runtime/src/contracts.ts",
         "packages/agent-runtime/src/runtime.ts",
-        "packages/agent-runtime/src/limits.ts"
+        "packages/agent-runtime/src/orchestration.ts",
+        "packages/persistence/src/orchestrator-postgres.ts",
+        "packages/persistence/migrations/0019_orchestrator_state.sql"
       ],
       "tests": [
         "packages/agent-runtime/src/__tests__/runtime-kernel-coverage.test.ts",
-        "packages/agent-runtime/src/__tests__/runtime-limits.test.ts"
+        "packages/agent-runtime/src/__tests__/runtime-limits.test.ts",
+        "packages/agent-runtime/src/__tests__/orchestration.test.ts",
+        "packages/persistence/src/__tests__/orchestrator-postgres.test.ts"
       ],
       "evidence": [
         "docs/02_spec/aaa21_build_execution_contract_20260914.md",
-        "docs/04_audit/evidence/AAA/AAA-21/CHECKS.md"
+        "docs/02_spec/aaa21_durable_orchestration_20260915.md",
+        "docs/04_audit/evidence/AAA/AAA-21/CHECKS.md",
+        "docs/04_audit/evidence/AAA/AAA-21/ORCHESTRATOR-BUILD-20260915.md"
       ],
       "gates": ["unit", "coverage", "phase10_current_verification"],
       "status": "PARTIAL",
@@ -63,13 +71,18 @@
         "packages/persistence/migrations/0013_runtime_effect_journal.sql",
         "packages/persistence/migrations/0015_runtime_approval_store.sql",
         "packages/persistence/migrations/0017_runtime_audit_chain.sql",
-        "packages/persistence/migrations/0018_outbox_lease_fencing.sql"
+        "packages/persistence/migrations/0018_outbox_lease_fencing.sql",
+        "packages/persistence/migrations/0019_orchestrator_state.sql",
+        "packages/persistence/src/orchestrator-postgres.ts"
       ],
       "tests": [
         "packages/persistence/src/__tests__/outbox-durability.test.ts",
         "packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
         "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
-        "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts"
+        "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts",
+        "packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
+        "apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts",
+        "apps/worker/src/__tests__/kernel-composition-state.test.ts"
       ],
       "evidence": [
         "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json",
@@ -87,12 +100,17 @@
         "packages/persistence/src/outbox.ts",
         "packages/persistence/src/runtime-approval-store.ts",
         "apps/worker/src/continuous-worker.ts",
-        "apps/web/src"
+        "apps/web/src",
+        "packages/agent-runtime/src/orchestration.ts",
+        "packages/persistence/src/orchestrator-postgres.ts"
       ],
       "tests": [
         "apps/worker/src/__tests__/continuous-worker-postgres.integration.test.ts",
         "packages/chaos/src/__tests__",
-        "apps/web/src/__tests__"
+        "apps/web/src/__tests__",
+        "packages/agent-runtime/src/__tests__/orchestration.test.ts",
+        "packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
+        "apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts"
       ],
       "evidence": [
         "certification/restore-report.json",
@@ -111,11 +129,14 @@
         "apps/api/src/server.ts",
         "apps/worker/src/kernel-composition.ts",
         "apps/worker/src/continuous-worker.ts",
-        "packages/agent-core/src/commands/receive-inbound-message.ts"
+        "packages/agent-core/src/commands/receive-inbound-message.ts",
+        "packages/agent-runtime/src/orchestration.ts",
+        "packages/persistence/src/orchestrator-postgres.ts"
       ],
       "tests": [
         "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
-        "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts"
+        "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts",
+        "apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts"
       ],
       "evidence": [
         "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json",
@@ -133,12 +154,15 @@
         "packages/observability/src",
         "apps/api/src/request-metrics.ts",
         "apps/api/src/server.ts",
-        "apps/web/src"
+        "apps/web/src",
+        "packages/agent-runtime/src/orchestration.ts",
+        "packages/persistence/src/orchestrator-postgres.ts"
       ],
       "tests": [
         "packages/observability/src/__tests__",
         "apps/api/src/__tests__/correlation.test.ts",
-        "apps/web/src/__tests__"
+        "apps/web/src/__tests__",
+        "packages/agent-runtime/src/__tests__/orchestration.test.ts"
       ],
       "evidence": [
         "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json",
@@ -156,12 +180,14 @@
         "apps/api/src/http-security.ts",
         "apps/api/src/server.ts",
         "packages/persistence/migrations/0001_tenant_isolation.sql",
-        "packages/shared/src/auth.ts"
+        "packages/shared/src/auth.ts",
+        "packages/persistence/migrations/0019_orchestrator_state.sql"
       ],
       "tests": [
         "apps/api/src/__tests__/tenant-inbound-isolation.test.ts",
         "apps/api/src/__tests__/server-boundary-envelope.test.ts",
-        "apps/worker/src/__tests__/postgres-role-preflight.test.ts"
+        "apps/worker/src/__tests__/postgres-role-preflight.test.ts",
+        "packages/persistence/src/__tests__/orchestrator-postgres.test.ts"
       ],
       "evidence": [
         "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json",
@@ -178,7 +204,7 @@
       "implementation": [
         "apps/web/src/App.tsx",
         "apps/web/src/styles.css",
-        "apps/web/src/api.ts"
+        "apps/web/src/api/client.ts"
       ],
       "tests": ["apps/web/src/__tests__", "tests/e2e"],
       "evidence": [
@@ -201,13 +227,15 @@
         "scripts/lib/phase11-rules.mjs"
       ],
       "tests": [
-        "scripts/phase10-verify.mjs --self-test",
+        "scripts/phase10-verify.mjs",
         "scripts/phase11-verify.mjs",
         "tests/phase11-certification.test.js"
       ],
       "evidence": [
         "certification/phase11-result.json",
-        "certification/phase11-manifest.json"
+        "certification/phase11-manifest.json",
+        "docs/02_spec/aaa21_durable_orchestration_20260915.md",
+        "docs/04_audit/evidence/AAA/AAA-21/ORCHESTRATOR-BUILD-20260915.md"
       ],
       "gates": [
         "prompt_integrity",

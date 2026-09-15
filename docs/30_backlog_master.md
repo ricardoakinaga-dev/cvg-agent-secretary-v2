@@ -1,5 +1,27 @@
+# AAA-21 — backlog atualizado após BUILD de orquestração — 2026-09-15
+
+## Concluído neste incremento
+
+- [x] Criar contrato durável de Goal/Plan/Step com estados de aprovação, handoff, espera externa, incerteza, budget e loop.
+- [x] Validar DAG, dependências, capacidades, risco, timeout e fingerprint antes da ativação.
+- [x] Persistir Goal/Plan/Step/Attempt/Observation/Evaluation em PostgreSQL com tenant, RLS, versão e fencing.
+- [x] Executar fixture controlada pelo kernel governado e provar approval pendente/restart sem duplicação.
+- [x] Expor inbound opt-in com `CVG_DURABLE_KERNEL_ORCHESTRATOR=true` e retomar aprovação com CAS persistido.
+- [x] Registrar testes e evidências sem dados reais.
+
+## Próximos itens bloqueantes
+
+- [ ] Conectar o inbound público ao orquestrador com flag de rollout controlada e handoff explícito.
+- [ ] Persistir `goal_id`, `plan_id` e `step_id` no effect journal, outbox e audit chain.
+- [ ] Adicionar métricas, spans, read model e ações da console para pending/approval/recovery/uncertain.
+- [ ] Registrar reconciliadores para efeitos externos e prova de restart/crash com RPO/RTO físico.
+- [ ] Validar provider, canal, identidade, RAG institucional, piloto supervisionado e signoff humano em ambiente autorizado.
+
+Os artefatos `certification/` anteriores ficaram stale após os commits deste BUILD. O veredito corrente aguarda nova execução candidate-bound e continua com produção `NO-GO`; nenhum item externo foi inferido como concluído.
+
 # AAA-21-PHASE11-FINAL-20260915 — certificação controlada encerrada — 2026-09-15
 
+- validade: `HISTORICAL`; supersedido pelo BUILD de orquestração e pelo commit `b02a493`; não certifica o candidato atual.
 - status: `CONDITIONAL_GO` / `AAA_CONTROLLED`; produção `NO-GO`.
 - concluído: o candidato commit-bound atual foi certificado sob Node `22.23.2`, com identidade e hashes registrados nos manifestos correntes; Phase 10 e Phase 11 passaram todos os gates locais e os verificadores pós-run. PostgreSQL descartável foi encerrado.
 - próxima ação: revisão independente fresca, fechar adjudicação dos requisitos `PARTIAL` e executar somente em ambientes autorizados os gates de provider, canal, IdP, piloto, RPO/RTO físico e signoff humano. Não promover `AAA_CONTROLLED` a produção.

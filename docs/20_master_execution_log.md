@@ -1,5 +1,16 @@
+# AAA-21-ORCHESTRATOR-BUILD-20260915 — execução durável controlada
+
+- **Pipeline:** BUILD, com auditoria local preparada; produção `NO-GO`.
+- **Commits:** `bf1c17b` (`feat(orchestrator): add durable goal plan execution`), `6d91b31` (`feat(orchestrator): resume governed inbound goals`) e `b02a493` (`feat(orchestrator): bind durable goals to inbound identity`).
+- **Entrega:** `packages/agent-runtime/src/orchestration.ts` implementa Goal/Plan/Step, DAG, orçamento, O-E-R, replan, fencing e estados seguros; `0019_orchestrator_state.sql` e `PostgresGoalPlanStore` persistem o estado; `PostgresKernelRuntime.runDurableGoal()` liga uma fixture sintética ao kernel governado; `CVG_DURABLE_KERNEL_ORCHESTRATOR=true` ativa o inbound controlado e a retomada de aprovação por `inbound_message_id`.
+- **Verificação:** `npm test` passou com 247 arquivos/1.735 testes e 114 skips condicionais; `npm run test:postgres` passou com 23 arquivos/197 testes; typecheck, ESLint e Prettier do incremento passaram. A integração HTTP → outbox → worker durável → aprovação → continuation também passou.
+- **Decisão:** incremento aceito como BUILD local. A matriz continua `PARTIAL`/`BLOCKED` onde a evidência ainda não existe. Os artefatos de certificação anteriores ficaram stale após os commits deste BUILD; o candidato atual aguarda nova execução candidate-bound. Nada foi promovido para `STATE_OF_ART_TRIPLE_AAA`.
+- **Limitações:** inbound público ainda usa o caminho anterior por padrão e a flag é opt-in; provider/canal/IdP/RAG, piloto, RPO/RTO físico, telemetria/read model completos e signoff humano continuam pendentes. Nenhum dado real ou efeito externo foi usado.
+- **Evidência:** [especificação](02_spec/aaa21_durable_orchestration_20260915.md) e [relatório do BUILD](04_audit/evidence/AAA/AAA-21/ORCHESTRATOR-BUILD-20260915.md).
+
 # AAA-21-PHASE11-FINAL-20260915 — certificação controlada encerrada — 2026-09-15
 
+- validade: `HISTORICAL`; supersedido pelo BUILD de orquestração e pelo commit `b02a493`; não certifica o candidato atual.
 - pipeline: `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`; fase atual `AUDIT`; produção `NO-GO`.
 - ação concluída: o candidato commit-bound atual foi selado sob Node `22.23.2`, com identidade e hashes registrados nos manifestos correntes; Phase 10 `CONDITIONAL_GO`/`AAA_CONTROLLED` e Phase 11 `CONDITIONAL_GO`/`AAA_CONTROLLED` passaram pelos verificadores candidate-bound. Todos os gates locais Phase 11 passaram, inclusive `phase10_current_verification`, `candidate_clean` e `node_target`.
 - próximo passo: revisão independente fresca, adjudicação dos requisitos P11 ainda `PARTIAL` e validação separada dos gates externos/humanos; produção, provider/canal/IdP/RAG institucional, dados reais e efeitos externos continuam bloqueados.

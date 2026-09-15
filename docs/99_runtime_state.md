@@ -1,5 +1,14 @@
+# AAA-21-ORCHESTRATOR-BUILD-20260915 — núcleo durável Goal/Plan/Step — 2026-09-15
+
+- current_engine: `AUDIT`; task: `AAA-21` / Phase 11; status: `REVIEW`; o selo anterior não cobre os commits atuais; produção `NO-GO`.
+- last_completed_action: commits locais `bf1c17b`, `6d91b31` e `b02a493` adicionaram estados explícitos de Goal/Plan/Step, DAG validado, orçamento, observe-evaluate-replan, leases com fencing, recovery, ledgers de attempts/observations/evaluations, retomada CAS de aprovação, vínculo único por `inbound_message_id`, migration PostgreSQL `0019_orchestrator_state`, `runDurableGoal()` e a flag opt-in `CVG_DURABLE_KERNEL_ORCHESTRATOR`. `npm test` (247 arquivos/1.735 testes/114 skips condicionais), PostgreSQL (23/197), typecheck, lint, Prettier e a integração HTTP → outbox → worker → approval → continuation passaram.
+- next_action: executar Phase 10/11 em candidato limpo sob Node 22 e publicar somente o veredito que os manifestos correntes sustentarem; carregar lineage em journal/outbox/audit e manter a flag opt-in fora de produção.
+- blockers: provider, canal, identidade externa, RAG institucional, piloto, RPO/RTO físico e signoff humano não validados; requisitos de governança, orquestração, recovery, vertical público, observabilidade, segurança e UX continuam `PARTIAL`; produção continua bloqueada.
+- evidência: [`aaa21_durable_orchestration_20260915.md`](02_spec/aaa21_durable_orchestration_20260915.md), [`ORCHESTRATOR-BUILD-20260915.md`](04_audit/evidence/AAA/AAA-21/ORCHESTRATOR-BUILD-20260915.md), [`requirements-matrix.json`](11_phase11/requirements-matrix.json).
+
 # AAA-21-PHASE11-FINAL-20260915 — certificação controlada encerrada — 2026-09-15
 
+- validade: `HISTORICAL`; supersedido pelos commits `bf1c17b`, `6d91b31` e `b02a493`; não certifica o candidato atual.
 - current_engine: `AUDIT`; task: `AAA-21` / Phase 11; status: `CONDITIONAL_GO` / `AAA_CONTROLLED`; produção `NO-GO`.
 - last_completed_action: o candidato commit-bound atual foi certificado sob Node `22.23.2`; sua identidade está vinculada nos manifestos correntes. Phase 10 e Phase 11 passaram todos os gates locais, os verificadores pós-selo passaram e o PostgreSQL descartável foi encerrado.
 - next_action: revisão independente fresca e avaliação humana dos requisitos parciais; validar provider/canal/IdP, piloto, RPO/RTO físico e signoff somente em ambientes autorizados. Nenhuma promoção de produção é permitida.
