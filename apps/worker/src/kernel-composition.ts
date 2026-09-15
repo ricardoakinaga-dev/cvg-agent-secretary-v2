@@ -475,6 +475,8 @@ export function createPostgresKernelRuntime(
                 tenantId,
                 context: context.context,
                 envelope: context.envelope,
+                planVersion:
+                  previousPlan === null ? 1 : previousPlan.version + 1,
                 ...(context.traceContext !== undefined
                   ? { traceContext: context.traceContext }
                   : {})
@@ -620,10 +622,14 @@ export function createPostgresKernelRuntime(
     goalInput: DurableKernelGoalInput
   ): Promise<OrchestrationRunResult> => {
     const correlationId = CorrelationIdSchema.parse(goalInput.correlationId)
-    let goal = await goalStore.getGoalByCorrelation(tenantId, correlationId)
+    let goal = await goalStore.getGoalByInboundMessage(
+      tenantId,
+      goalInput.context.message.id
+    )
     if (goal === null) {
       goal = await goalStore.createGoal({
         tenantId,
+        inboundMessageId: goalInput.context.message.id,
         ...(goalInput.context.session !== null
           ? { sessionId: goalInput.context.session.id }
           : {}),
@@ -948,10 +954,11 @@ function durableStepDraft(input: {
   tenantId: TenantId
   context: InboundRuntimeContext
   envelope: KernelTurnEnvelope
+  planVersion: number
   traceContext?: TraceContext
 }): PlanStepDraft {
   return {
-    id: 'durable-kernel-step',
+    id: `durable-kernel-step:${input.context.message.id}:${input.planVersion}`,
     type: 'governed_kernel_turn',
     description: input.envelope.action,
     dependencies: [],
@@ -1219,6 +1226,14 @@ export function createPostgresKernelHandlers(
         }
         if (context.session && !canBotRespond(context.session.takeoverState)) {
           return { status: 'paused_human_takeover', externalEffects: false }
+        }
+        if (
+          context.message.runtimeStatus === 'waiting_approval' &&
+          context.message.runtimeApprovalId !== continuation?.approvalId
+        ) {
+          throw new Error(
+            'Durable orchestrator approval continuation does not match the inbound waiting marker'
+          )
         }
         const parsedEnvelope = parseKernelTurnEnvelope(context.message.body)
         const envelope = continuation

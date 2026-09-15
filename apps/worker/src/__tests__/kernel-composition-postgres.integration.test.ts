@@ -602,8 +602,14 @@ describe('AAA-21 composed kernel path over API → outbox → worker (PostgreSQL
   let kernelRuntime2: PostgresKernelRuntime
   let worker1: ReturnType<typeof createPostgresControlledWorker> | undefined
   let worker2: ReturnType<typeof createPostgresControlledWorker> | undefined
+  let durableWorker:
+    | ReturnType<typeof createPostgresControlledWorker>
+    | undefined
 
-  function kernelEnv(workerId: string): NodeJS.ProcessEnv {
+  function kernelEnv(
+    workerId: string,
+    durableOrchestrator = false
+  ): NodeJS.ProcessEnv {
     return {
       DATABASE_URL: testDatabaseUrl as string,
       POSTGRES_SCHEMA: schemaName,
@@ -612,7 +618,10 @@ describe('AAA-21 composed kernel path over API → outbox → worker (PostgreSQL
       CVG_WORKER_TENANT_ID: TENANT,
       CVG_WORKER_AGENT_ID: AGENT,
       CVG_WORKER_RUNTIME: KERNEL_WORKER_RUNTIME,
-      CVG_WORKER_ID: workerId
+      CVG_WORKER_ID: workerId,
+      ...(durableOrchestrator
+        ? { CVG_DURABLE_KERNEL_ORCHESTRATOR: 'true' }
+        : {})
     }
   }
 
@@ -744,6 +753,11 @@ describe('AAA-21 composed kernel path over API → outbox → worker (PostgreSQL
       kernelEnv('worker-kernel-2'),
       createPostgresKernelHandlers(env, kernelRuntime2)
     )
+    const durableEnv = kernelEnv('worker-kernel-durable', true)
+    durableWorker = createPostgresControlledWorker(
+      durableEnv,
+      createPostgresKernelHandlers(durableEnv, kernelRuntime1)
+    )
     await kernelRuntime1.preflight()
     await kernelRuntime2.preflight()
   })
@@ -752,6 +766,7 @@ describe('AAA-21 composed kernel path over API → outbox → worker (PostgreSQL
     await app?.close()
     await worker1?.pool.end()
     await worker2?.pool.end()
+    await durableWorker?.pool.end()
     await kernelPool1?.end()
     await kernelPool2?.end()
     await apiPool?.end()
@@ -1074,6 +1089,92 @@ describe('AAA-21 composed kernel path over API → outbox → worker (PostgreSQL
       Number(journalUncertain[0]!.revision)
     )
   })
+
+  itWithPostgres(
+    'routes the API outbox through the opt-in durable orchestrator and resumes the same Goal after approval',
+    async () => {
+      const beforeToolCount = kernelRuntime1.toolInvocations.length
+      const inbound = await injectInbound({
+        externalMessageId: 'kernel-msg-durable-orchestrator',
+        body: envelopeBody({ idempotencyKey: 'kernel-op-durable-orchestrator' })
+      })
+
+      const processed = await durableWorker!.worker.processNext(
+        inbound.data.outbox.id
+      )
+      expect(processed).toMatchObject({
+        type: 'inbound.process',
+        status: 'processed'
+      })
+
+      const waitingContext =
+        await durableWorker!.adapter.findInboundRuntimeContext(
+          TENANT,
+          inbound.data.outbox.conversationId,
+          inbound.data.outbox.sessionId,
+          inbound.data.outbox.inboundMessageId
+        )
+      expect(waitingContext?.message.runtimeStatus).toBe('waiting_approval')
+
+      const waitingGoal =
+        await kernelRuntime1.goalStore.getGoalByInboundMessage(
+          TENANT,
+          inbound.data.outbox.inboundMessageId
+        )
+      expect(waitingGoal).toMatchObject({
+        inboundMessageId: inbound.data.outbox.inboundMessageId,
+        status: 'WAITING_APPROVAL'
+      })
+
+      const approval = (
+        await kernelRuntime1.approvals.list(TENANT, 'REQUESTED')
+      ).find(
+        (candidate) => candidate.correlationId === inbound.data.correlationId
+      )
+      expect(approval).toBeDefined()
+
+      const decision = await app!.inject({
+        method: 'POST',
+        url: `/v1/runtime-approvals/${approval!.approvalId}/decision`,
+        headers: {
+          'x-operator-id': 'op_synthetic_durable_approver',
+          'x-operator-role': 'Supervisor',
+          'x-tenant-id': TENANT
+        },
+        payload: {
+          decision: 'approve',
+          reason: 'synthetic durable integration review'
+        }
+      })
+      expect(decision.statusCode).toBe(200)
+      const continuationEventId = decision.json().data.continuationEventId
+      expect(continuationEventId).toBeTruthy()
+
+      const resumed =
+        await durableWorker!.worker.processNext(continuationEventId)
+      expect(resumed).toMatchObject({
+        type: 'inbound.process',
+        status: 'processed'
+      })
+
+      const completedContext =
+        await durableWorker!.adapter.findInboundRuntimeContext(
+          TENANT,
+          inbound.data.outbox.conversationId,
+          inbound.data.outbox.sessionId,
+          inbound.data.outbox.inboundMessageId
+        )
+      expect(completedContext?.message.runtimeStatus).toBe('completed')
+
+      const completedGoal =
+        await kernelRuntime1.goalStore.getGoalByInboundMessage(
+          TENANT,
+          inbound.data.outbox.inboundMessageId
+        )
+      expect(completedGoal?.status).toBe('COMPLETED')
+      expect(kernelRuntime1.toolInvocations).toHaveLength(beforeToolCount + 1)
+    }
+  )
 
   itWithPostgres(
     'composes kernel handlers when the runtime kind is selected',

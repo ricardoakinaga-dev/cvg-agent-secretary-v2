@@ -204,6 +204,7 @@ export interface ExecutionSnapshot {
 export interface Goal {
   id: string
   tenantId: OrchestrationTenantId
+  inboundMessageId: string | null
   sessionId: string | null
   conversationId: string | null
   objective: string
@@ -387,6 +388,7 @@ export interface EvaluationRecord {
 
 export interface CreateGoalInput {
   tenantId: OrchestrationTenantId
+  inboundMessageId?: string
   sessionId?: string
   conversationId?: string
   objective: string
@@ -486,6 +488,10 @@ export interface GoalPlanStore {
   getGoalByCorrelation(
     tenantId: OrchestrationTenantId,
     correlationId: string
+  ): Promise<Goal | null>
+  getGoalByInboundMessage(
+    tenantId: OrchestrationTenantId,
+    inboundMessageId: string
   ): Promise<Goal | null>
   listRunnableGoals(tenantId?: OrchestrationTenantId): Promise<Goal[]>
   transitionGoal(input: TransitionGoalInput): Promise<Goal>
@@ -950,6 +956,23 @@ function statusForExecutionOutcome(
   }
 }
 
+function goalStatusForExecutionOutcome(
+  outcome: StepExecutionResult['outcome']
+): GoalStatus | null {
+  switch (outcome) {
+    case 'approval_required':
+      return 'WAITING_APPROVAL'
+    case 'waiting_external':
+      return 'WAITING_EXTERNAL'
+    case 'human_handoff':
+      return 'HUMAN_HANDOFF'
+    case 'uncertain':
+      return 'UNCERTAIN'
+    default:
+      return null
+  }
+}
+
 function goalReasonForStepStatus(status: PlanStepStatus): GoalStatus | null {
   switch (status) {
     case 'WAITING_APPROVAL':
@@ -985,6 +1008,15 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
     if (input.objective.trim().length === 0 || input.objective.length > 8_000) {
       throw new OrchestrationError('invalid_plan', 'Goal objective is invalid')
     }
+    if (
+      input.inboundMessageId !== undefined &&
+      (!input.inboundMessageId.trim() || input.inboundMessageId.length > 200)
+    ) {
+      throw new OrchestrationError(
+        'invalid_plan',
+        'Inbound message id is invalid'
+      )
+    }
     const createdAt = this.clock()
     const executionSnapshot: ExecutionSnapshot = {
       agentVersion: input.executionSnapshot?.agentVersion ?? null,
@@ -996,6 +1028,7 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
     const goal: Goal = {
       id: createDomainId('goal'),
       tenantId,
+      inboundMessageId: input.inboundMessageId ?? null,
       sessionId: input.sessionId ?? null,
       conversationId: input.conversationId ?? null,
       objective: input.objective,
@@ -1044,13 +1077,42 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
     )
   }
 
+  async getGoalByInboundMessage(
+    tenantId: OrchestrationTenantId,
+    inboundMessageId: string
+  ): Promise<Goal | null> {
+    const scope = validateTenant(tenantId)
+    if (!inboundMessageId.trim() || inboundMessageId.length > 200) {
+      throw new OrchestrationError(
+        'invalid_plan',
+        'Inbound message id is invalid'
+      )
+    }
+    return (
+      [...this.goals.values()]
+        .filter(
+          (goal) =>
+            goal.tenantId === scope &&
+            goal.inboundMessageId === inboundMessageId
+        )
+        .sort(
+          (left, right) => right.createdAt.getTime() - left.createdAt.getTime()
+        )
+        .map((goal) => clone(goal))[0] ?? null
+    )
+  }
+
   async listRunnableGoals(tenantId?: OrchestrationTenantId): Promise<Goal[]> {
-    const scope = tenantId ? validateTenant(tenantId) : undefined
+    if (tenantId === undefined) {
+      throw new OrchestrationError(
+        'tenant_violation',
+        'InMemoryGoalPlanStore requires an explicit tenant for runnable goal recovery'
+      )
+    }
+    const scope = validateTenant(tenantId)
     return [...this.goals.values()]
       .filter(
-        (goal) =>
-          (scope === undefined || goal.tenantId === scope) &&
-          !isTerminalGoalStatus(goal.status)
+        (goal) => goal.tenantId === scope && !isTerminalGoalStatus(goal.status)
       )
       .sort((left, right) => left.id.localeCompare(right.id))
       .map((goal) => clone(goal))
@@ -1110,6 +1172,21 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
       )
     }
     const planId = createDomainId('plan')
+    if (input.parentPlanId !== null) {
+      const parent = this.plans.get(this.key(tenantId, input.parentPlanId))
+      if (!parent || parent.goalId !== input.goalId) {
+        throw new OrchestrationError(
+          'invalid_plan',
+          'Parent plan must belong to the same Goal and tenant'
+        )
+      }
+      if (parent.version >= input.planVersion) {
+        throw new OrchestrationError(
+          'invalid_plan',
+          'Plan version must be greater than its parent plan version'
+        )
+      }
+    }
     const graph = validatePlanGraph(
       {
         id: planId,
@@ -1457,6 +1534,12 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
         `Lease lost for step ${step.id}`
       )
     }
+    if (!step.leaseUntil || step.leaseUntil <= input.now) {
+      throw new OrchestrationError(
+        'lease_lost',
+        `Lease expired for step ${step.id}`
+      )
+    }
     if (goal.version !== input.lease.goalVersion)
       throw new OrchestrationError(
         'conflict',
@@ -1487,8 +1570,13 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
     usage.modelCalls += input.modelCalls
     usage.toolCalls += input.toolCalls
     usage.costUsd += input.costUsd
+    const nextGoalStatus = goalStatusForExecutionOutcome(input.outcome)
+    if (nextGoalStatus !== null && goal.status !== nextGoalStatus) {
+      assertGoalTransition(goal.status, nextGoalStatus)
+    }
     const updatedGoal: Goal = {
       ...clone(goal),
+      status: nextGoalStatus ?? goal.status,
       version: goal.version + 1,
       updatedAt: new Date(input.now),
       lastReason: `step_settled:${step.id}:${target}`,

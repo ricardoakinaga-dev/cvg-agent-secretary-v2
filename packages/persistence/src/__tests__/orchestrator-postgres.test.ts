@@ -18,9 +18,13 @@ const TENANT = 'tenant_00000000-0000-4000-8000-0000000000a1'
 const OTHER_TENANT = 'tenant_00000000-0000-4000-8000-0000000000a2'
 const CORRELATION = 'corr_00000000-0000-4000-8000-0000000000a1'
 
-function createGoalInput(tenantId = TENANT): CreateGoalInput {
+function createGoalInput(
+  tenantId = TENANT,
+  inboundMessageId?: string
+): CreateGoalInput {
   return {
     tenantId,
+    ...(inboundMessageId !== undefined ? { inboundMessageId } : {}),
     objective: 'Synthetic durable orchestration fixture',
     successCriteria: [
       {
@@ -106,8 +110,13 @@ describeWithPostgres('durable orchestrator PostgreSQL store', () => {
   it('applies the orchestrator migration and preserves tenant-scoped Goal/Plan/Step lineage', async () => {
     const migration = await readPostgresMigrationSql('0019_orchestrator_state')
     expect(migration).toContain('orchestrator_goals')
-    const goal = await store.createGoal(createGoalInput())
+    const goal = await store.createGoal(
+      createGoalInput(TENANT, 'msg_orchestrator_pg_1')
+    )
     expect((await store.getGoal(TENANT, goal.id))?.id).toBe(goal.id)
+    expect(
+      (await store.getGoalByInboundMessage(TENANT, 'msg_orchestrator_pg_1'))?.id
+    ).toBe(goal.id)
     expect(await store.getGoal(OTHER_TENANT, goal.id)).toBeNull()
     expect(await store.listRunnableGoals(OTHER_TENANT)).toEqual([])
 

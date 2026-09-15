@@ -474,6 +474,19 @@ describe('durable Goal/Plan/Step orchestration', () => {
     })
     expect(firstClaim).not.toBeNull()
     now = new Date(NOW.getTime() + 101)
+    await expect(
+      store.settleStep({
+        lease: firstClaim!.lease,
+        outcome: 'succeeded',
+        resultDigest: 'expired-stale',
+        reason: 'expired worker',
+        approvalId: null,
+        now,
+        modelCalls: 0,
+        toolCalls: 1,
+        costUsd: 0
+      })
+    ).rejects.toMatchObject({ code: 'lease_lost' })
     const recovered = await store.recoverExpiredLease({
       tenantId: TENANT,
       stepId: 'leased',

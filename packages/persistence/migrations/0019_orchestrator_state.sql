@@ -8,6 +8,7 @@
 CREATE TABLE IF NOT EXISTS orchestrator_goals (
   tenant_id text NOT NULL,
   id text NOT NULL,
+  inbound_message_id text,
   session_id text,
   conversation_id text,
   objective text NOT NULL CHECK (length(objective) BETWEEN 1 AND 8000),
@@ -32,7 +33,8 @@ CREATE TABLE IF NOT EXISTS orchestrator_goals (
   version bigint NOT NULL DEFAULT 1 CHECK (version > 0),
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
-  PRIMARY KEY (tenant_id, id)
+  PRIMARY KEY (tenant_id, id),
+  CHECK (inbound_message_id IS NULL OR length(inbound_message_id) BETWEEN 1 AND 200)
 );
 
 CREATE TABLE IF NOT EXISTS orchestrator_plans (
@@ -185,6 +187,9 @@ CREATE INDEX IF NOT EXISTS idx_orchestrator_goals_runnable
   ON orchestrator_goals (tenant_id, status, updated_at);
 CREATE INDEX IF NOT EXISTS idx_orchestrator_goals_correlation
   ON orchestrator_goals (tenant_id, correlation_id, created_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_orchestrator_goals_inbound_message
+  ON orchestrator_goals (tenant_id, inbound_message_id)
+  WHERE inbound_message_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_orchestrator_plans_goal_version
   ON orchestrator_plans (tenant_id, goal_id, version DESC);
 CREATE INDEX IF NOT EXISTS idx_orchestrator_steps_ready

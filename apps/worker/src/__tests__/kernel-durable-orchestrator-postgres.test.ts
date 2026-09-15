@@ -103,6 +103,26 @@ describeWithPostgres('durable worker Goal orchestration', () => {
       await runtime.goalStore.listAttempts(TENANT, result.steps[0]!.id)
     ).toHaveLength(1)
 
+    const second = await runtime.runDurableGoal({
+      ...input,
+      context: {
+        ...input.context,
+        message: {
+          ...input.context.message,
+          id: 'msg_durable_goal_2'
+        }
+      },
+      envelope: {
+        ...input.envelope,
+        resource: {
+          type: 'appointment_draft',
+          id: 'draft_durable_goal_2'
+        }
+      }
+    })
+    expect(second.goal.id).not.toBe(result.goal.id)
+    expect(second.goal.status).toBe('WAITING_APPROVAL')
+
     const restarted = createPostgresKernelRuntime({
       pool,
       tenantId: TENANT,

@@ -46,6 +46,7 @@ import {
 interface GoalRow extends QueryResultRow {
   tenant_id: string
   id: string
+  inbound_message_id: string | null
   session_id: string | null
   conversation_id: string | null
   objective: string
@@ -184,6 +185,7 @@ function toGoal(row: GoalRow): Goal {
   return {
     id: row.id,
     tenantId: tenantId(row.tenant_id),
+    inboundMessageId: row.inbound_message_id,
     sessionId: row.session_id,
     conversationId: row.conversation_id,
     objective: row.objective,
@@ -323,6 +325,23 @@ function executionStatus(
   }
 }
 
+function goalStatusForExecutionOutcome(
+  outcome: SettleStepInput['outcome']
+): GoalStatus | null {
+  switch (outcome) {
+    case 'approval_required':
+      return 'WAITING_APPROVAL'
+    case 'waiting_external':
+      return 'WAITING_EXTERNAL'
+    case 'human_handoff':
+      return 'HUMAN_HANDOFF'
+    case 'uncertain':
+      return 'UNCERTAIN'
+    default:
+      return null
+  }
+}
+
 async function one<T extends QueryResultRow>(
   client: PostgresPoolClient,
   text: string,
@@ -344,6 +363,15 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
   async createGoal(input: CreateGoalInput): Promise<Goal> {
     const scope = tenantId(input.tenantId)
     const correlationId = CorrelationIdSchema.parse(input.correlationId)
+    if (
+      input.inboundMessageId !== undefined &&
+      (!input.inboundMessageId.trim() || input.inboundMessageId.length > 200)
+    ) {
+      throw new OrchestrationError(
+        'invalid_plan',
+        'Inbound message id is invalid'
+      )
+    }
     const createdAt = this.clock()
     const budget = createExecutionBudget(input.budget)
     const id = createDomainId('goal')
@@ -358,16 +386,17 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
       const row = await one<GoalRow>(
         client,
         `INSERT INTO orchestrator_goals
-           (tenant_id, id, session_id, conversation_id, objective,
+           (tenant_id, id, inbound_message_id, session_id, conversation_id, objective,
             success_criteria, status, budget, budget_usage, deadline,
             correlation_id, execution_snapshot, replan_fingerprints,
             version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6::jsonb, 'OBSERVING', $7::jsonb,
-                 $8::jsonb, $9, $10, $11::jsonb, '[]'::jsonb, 1, $12, $12)
+         VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, 'OBSERVING', $8::jsonb,
+                 $9::jsonb, $10, $11, $12::jsonb, '[]'::jsonb, 1, $13, $13)
          RETURNING *`,
         [
           scope,
           id,
+          input.inboundMessageId ?? null,
           input.sessionId ?? null,
           input.conversationId ?? null,
           input.objective,
@@ -411,6 +440,29 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
           ORDER BY created_at DESC, id DESC
           LIMIT 1`,
         [scope, parsedCorrelationId]
+      )
+      return result.rows[0] ? toGoal(result.rows[0]) : null
+    })
+  }
+
+  async getGoalByInboundMessage(
+    tenant: OrchestrationTenantId,
+    inboundMessageId: string
+  ): Promise<Goal | null> {
+    const scope = tenantId(tenant)
+    if (!inboundMessageId.trim() || inboundMessageId.length > 200) {
+      throw new OrchestrationError(
+        'invalid_plan',
+        'Inbound message id is invalid'
+      )
+    }
+    return withTenantContext(this.pool, scope, async (client) => {
+      const result = await client.query<GoalRow>(
+        `SELECT * FROM orchestrator_goals
+          WHERE tenant_id = $1 AND inbound_message_id = $2
+          ORDER BY created_at DESC, id DESC
+          LIMIT 1`,
+        [scope, inboundMessageId]
       )
       return result.rows[0] ? toGoal(result.rows[0]) : null
     })
@@ -500,6 +552,33 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
         throw new OrchestrationError(
           'budget_exhausted',
           'Goal replan budget is exhausted'
+        )
+      }
+      if (input.parentPlanId !== null) {
+        const parent = toPlan(
+          await one<PlanRow>(
+            client,
+            'SELECT * FROM orchestrator_plans WHERE tenant_id = $1 AND id = $2 FOR UPDATE',
+            [scope, input.parentPlanId]
+          )
+        )
+        if (parent.goalId !== input.goalId) {
+          throw new OrchestrationError(
+            'invalid_plan',
+            'Parent plan must belong to the same Goal and tenant'
+          )
+        }
+        if (parent.version >= input.planVersion) {
+          throw new OrchestrationError(
+            'invalid_plan',
+            'Plan version must be greater than its parent plan version'
+          )
+        }
+      }
+      if (input.steps.some((step) => step.intent.structuredOutput !== null)) {
+        throw new OrchestrationError(
+          'invalid_plan',
+          'PostgreSQL durable plans require registry-backed structured output with structuredOutput=null'
         )
       }
       const planId = createDomainId('plan')
@@ -1015,18 +1094,18 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
   async settleStep(input: SettleStepInput): Promise<SettledStep> {
     const scope = tenantId(input.lease.tenantId)
     return withTenantTransaction(this.pool, scope, async (client) => {
-      const current = toStep(
-        await one<StepRow>(
-          client,
-          'SELECT * FROM orchestrator_steps WHERE tenant_id = $1 AND id = $2 FOR UPDATE',
-          [scope, input.lease.stepId]
-        )
-      )
       const goal = toGoal(
         await one<GoalRow>(
           client,
           'SELECT * FROM orchestrator_goals WHERE tenant_id = $1 AND id = $2 FOR UPDATE',
           [scope, input.lease.goalId]
+        )
+      )
+      const current = toStep(
+        await one<StepRow>(
+          client,
+          'SELECT * FROM orchestrator_steps WHERE tenant_id = $1 AND id = $2 FOR UPDATE',
+          [scope, input.lease.stepId]
         )
       )
       if (
@@ -1037,6 +1116,11 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
           'lease_lost',
           `Lease lost for step ${current.id}`
         )
+      if (!current.leaseUntil || current.leaseUntil <= input.now)
+        throw new OrchestrationError(
+          'lease_lost',
+          `Lease expired for step ${current.id}`
+        )
       if (goal.version !== input.lease.goalVersion)
         throw new OrchestrationError(
           'conflict',
@@ -1044,6 +1128,10 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
         )
       assertPlanStepTransition(current.status, executionStatus(input.outcome))
       const target = executionStatus(input.outcome)
+      const targetGoalStatus = goalStatusForExecutionOutcome(input.outcome)
+      if (targetGoalStatus !== null && goal.status !== targetGoalStatus) {
+        assertGoalTransition(goal.status, targetGoalStatus)
+      }
       const updatedStep = toStep(
         await one<StepRow>(
           client,
@@ -1077,13 +1165,14 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
         await one<GoalRow>(
           client,
           `UPDATE orchestrator_goals
-          SET budget_usage = $3::jsonb, last_reason = $4,
-              last_error = $5, version = version + 1, updated_at = $6
-        WHERE tenant_id = $1 AND id = $2 AND version = $7
+          SET status = $3, budget_usage = $4::jsonb, last_reason = $5,
+              last_error = $6, version = version + 1, updated_at = $7
+        WHERE tenant_id = $1 AND id = $2 AND version = $8
         RETURNING *`,
           [
             scope,
             goal.id,
+            targetGoalStatus ?? goal.status,
             JSON.stringify(usage),
             `step_settled:${current.id}:${target}`,
             target === 'FAILED' || target === 'UNCERTAIN'
@@ -1131,18 +1220,23 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
   ): Promise<SettledStep> {
     const scope = tenantId(input.tenantId)
     return withTenantTransaction(this.pool, scope, async (client) => {
-      const current = toStep(
-        await one<StepRow>(
-          client,
-          'SELECT * FROM orchestrator_steps WHERE tenant_id = $1 AND id = $2 FOR UPDATE',
-          [scope, input.stepId]
-        )
+      const stepReference = await one<StepRow>(
+        client,
+        'SELECT * FROM orchestrator_steps WHERE tenant_id = $1 AND id = $2',
+        [scope, input.stepId]
       )
       const goal = toGoal(
         await one<GoalRow>(
           client,
           'SELECT * FROM orchestrator_goals WHERE tenant_id = $1 AND id = $2 FOR UPDATE',
-          [scope, current.goalId]
+          [scope, stepReference.goal_id]
+        )
+      )
+      const current = toStep(
+        await one<StepRow>(
+          client,
+          'SELECT * FROM orchestrator_steps WHERE tenant_id = $1 AND id = $2 FOR UPDATE',
+          [scope, input.stepId]
         )
       )
       if (!current.leaseUntil || current.leaseUntil > input.now)

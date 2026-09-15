@@ -448,12 +448,7 @@ describe('governed kernel durable continuation state', () => {
     )
     expect(
       runtime.conversations.markInboundRuntimeWaitingForApproval
-    ).toHaveBeenCalledWith(
-      messageId,
-      tenantId,
-      'appr_synthetic',
-      traceId
-    )
+    ).toHaveBeenCalledWith(messageId, tenantId, 'appr_synthetic', traceId)
     expect(runtime.runTurn).not.toHaveBeenCalled()
   })
 
