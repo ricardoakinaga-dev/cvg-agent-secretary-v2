@@ -2,7 +2,7 @@
 
 ## Estado da especificação
 
-Esta especificação registra o primeiro BUILD executável do runtime de orquestração exigido pelos prompts 6 e 14. O código foi selado nos commits locais `bf1c17b` (`feat(orchestrator): add durable goal plan execution`), `6d91b31` (`feat(orchestrator): resume governed inbound goals`) e `b02a493` (`feat(orchestrator): bind durable goals to inbound identity`). O resultado é um incremento controlado: a matriz Phase 11 continua `PARTIAL` e o candidato atual aguarda nova certificação candidate-bound.
+Esta especificação registra o primeiro BUILD executável do runtime de orquestração exigido pelos prompts 6 e 14. O código foi selado nos commits locais `bf1c17b` (`feat(orchestrator): add durable goal plan execution`), `6d91b31` (`feat(orchestrator): resume governed inbound goals`) e `b02a493` (`feat(orchestrator): bind durable goals to inbound identity`). O resultado é um incremento controlado: a matriz Phase 11 continua `PARTIAL` e a certificação candidate-bound permanece `CONDITIONAL_GO / AAA_CONTROLLED`, com produção `NO-GO`.
 
 Nenhum dado real, provider externo, canal real, identidade externa, fonte RAG institucional ou efeito clínico/financeiro foi usado.
 

@@ -17,7 +17,7 @@
 - [ ] Registrar reconciliadores para efeitos externos e prova de restart/crash com RPO/RTO físico.
 - [ ] Validar provider, canal, identidade, RAG institucional, piloto supervisionado e signoff humano em ambiente autorizado.
 
-Os artefatos `certification/` anteriores ficaram stale após os commits deste BUILD. O veredito corrente aguarda nova execução candidate-bound e continua com produção `NO-GO`; nenhum item externo foi inferido como concluído.
+Os manifestos candidate-bound correntes registram `CONDITIONAL_GO / AAA_CONTROLLED` após a execução sob Node `22.23.2`. Nenhum item externo foi inferido como concluído; produção continua `NO-GO`.
 
 # AAA-21-PHASE11-FINAL-20260915 — certificação controlada encerrada — 2026-09-15
 
