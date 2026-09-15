@@ -65,6 +65,7 @@ import {
 import type { ControlledWorkerHandlers } from './controlled-worker.ts'
 
 export const WORKER_RUNTIME_ENV = 'CVG_WORKER_RUNTIME'
+export const DURABLE_KERNEL_ORCHESTRATOR_ENV = 'CVG_DURABLE_KERNEL_ORCHESTRATOR'
 export const KERNEL_WORKER_RUNTIME = 'kernel'
 export const PUBLISHED_AGENT_WORKER_RUNTIME = 'published-agent'
 
@@ -252,6 +253,7 @@ export interface DurableKernelGoalInput {
   envelope: KernelTurnEnvelope
   correlationId: string
   traceContext?: TraceContext
+  approvalDecision?: 'approve' | 'reject'
 }
 
 function createControlledModelGateway(): ModelGateway {
@@ -472,7 +474,10 @@ export function createPostgresKernelRuntime(
               durableStepDraft({
                 tenantId,
                 context: context.context,
-                envelope: context.envelope
+                envelope: context.envelope,
+                ...(context.traceContext !== undefined
+                  ? { traceContext: context.traceContext }
+                  : {})
               })
             ]
           }
@@ -567,7 +572,7 @@ export function createPostgresKernelRuntime(
         }
         const input =
           step.input !== null && typeof step.input === 'object'
-            ? (step.input as { messageId?: unknown })
+            ? (step.input as { messageId?: unknown; traceId?: unknown })
             : {}
         const governedEnvelope: GovernedTurnEnvelope = {
           operatorId: 'op_synthetic_kernel',
@@ -583,6 +588,21 @@ export function createPostgresKernelRuntime(
             goal.executionSnapshot.modelProfile === 'fast' ? 'fast' : 'fast',
           ...(typeof input.messageId === 'string'
             ? { inboundMessageId: input.messageId }
+            : {}),
+          ...(typeof input.traceId === 'string'
+            ? {
+                traceContext: createTraceContextWithTraceId({
+                  traceId: RuntimeTraceIdSchema.parse(input.traceId),
+                  tenantId,
+                  conversationId:
+                    goal.conversationId ?? 'durable-goal-conversation',
+                  ...(goal.sessionId !== null
+                    ? { sessionId: goal.sessionId }
+                    : {}),
+                  correlationId: goal.correlationId,
+                  agentId
+                })
+              }
             : {}),
           ...(step.approvalId !== null ? { approvalId: step.approvalId } : {})
         }
@@ -600,35 +620,99 @@ export function createPostgresKernelRuntime(
     goalInput: DurableKernelGoalInput
   ): Promise<OrchestrationRunResult> => {
     const correlationId = CorrelationIdSchema.parse(goalInput.correlationId)
-    const created = await goalStore.createGoal({
-      tenantId,
-      ...(goalInput.context.session !== null
-        ? { sessionId: goalInput.context.session.id }
-        : {}),
-      conversationId: goalInput.context.message.conversationId,
-      objective: goalInput.envelope.task ?? goalInput.envelope.message,
-      successCriteria: [
-        {
-          kind: 'EVENT',
-          eventType: 'controlled.governed_turn.evidence',
-          source: 'outbox',
-          correlationId
+    let goal = await goalStore.getGoalByCorrelation(tenantId, correlationId)
+    if (goal === null) {
+      goal = await goalStore.createGoal({
+        tenantId,
+        ...(goalInput.context.session !== null
+          ? { sessionId: goalInput.context.session.id }
+          : {}),
+        conversationId: goalInput.context.message.conversationId,
+        objective: goalInput.envelope.task ?? goalInput.envelope.message,
+        successCriteria: [
+          {
+            kind: 'EVENT',
+            eventType: 'controlled.governed_turn.evidence',
+            source: 'outbox',
+            correlationId
+          }
+        ],
+        correlationId,
+        executionSnapshot: {
+          agentVersion: goalInput.envelope.agentVersion,
+          promptVersion: CONTROLLED_KERNEL_PROMPT_VERSION,
+          policyVersion: `${CONTROLLED_KERNEL_POLICY_ID}@${CONTROLLED_KERNEL_POLICY_VERSION}`,
+          modelProfile: goalInput.envelope.modelProfile,
+          toolVersions: { 'controlled-kernel-tool': '1.0.0' }
         }
-      ],
-      correlationId,
-      executionSnapshot: {
-        agentVersion: goalInput.envelope.agentVersion,
-        promptVersion: CONTROLLED_KERNEL_PROMPT_VERSION,
-        policyVersion: `${CONTROLLED_KERNEL_POLICY_ID}@${CONTROLLED_KERNEL_POLICY_VERSION}`,
-        modelProfile: goalInput.envelope.modelProfile,
-        toolVersions: { 'controlled-kernel-tool': '1.0.0' }
-      }
-    })
-    durableContexts.set(created.id, goalInput)
+      })
+    }
+    if (
+      !['COMPLETED', 'BLOCKED', 'FAILED', 'CANCELLED'].includes(goal.status)
+    ) {
+      durableContexts.set(goal.id, goalInput)
+    }
     try {
-      return await orchestrator.run(tenantId, created.id)
+      if (
+        goal.status === 'WAITING_APPROVAL' &&
+        goalInput.envelope.approvalId !== undefined &&
+        goalInput.approvalDecision !== undefined
+      ) {
+        const activePlan = await goalStore.getActivePlan(tenantId, goal.id)
+        const waitingStep = activePlan
+          ? (await goalStore.listSteps(tenantId, activePlan.id)).find(
+              (step) =>
+                step.status === 'WAITING_APPROVAL' &&
+                step.approvalId === goalInput.envelope.approvalId
+            )
+          : undefined
+        if (!activePlan || !waitingStep) {
+          throw new Error(
+            'durable approval continuation does not match a waiting plan step'
+          )
+        }
+        const approval = await approvals.get(
+          tenantId,
+          goalInput.envelope.approvalId
+        )
+        if (goalInput.approvalDecision === 'reject') {
+          if (approval.status !== 'REJECTED') {
+            throw new Error(
+              'durable approval rejection does not match the persisted decision'
+            )
+          }
+          await goalStore.resolveWaitingApproval({
+            tenantId,
+            goalId: goal.id,
+            planId: activePlan.id,
+            stepId: waitingStep.id,
+            expectedGoalVersion: goal.version,
+            expectedStepVersion: waitingStep.version,
+            approvalId: goalInput.envelope.approvalId,
+            target: 'CANCELLED',
+            reason: 'durable_approval_rejected',
+            now: new Date()
+          })
+        } else if (
+          ['APPROVED', 'RESERVED', 'EXECUTING'].includes(approval.status)
+        ) {
+          await goalStore.resolveWaitingApproval({
+            tenantId,
+            goalId: goal.id,
+            planId: activePlan.id,
+            stepId: waitingStep.id,
+            expectedGoalVersion: goal.version,
+            expectedStepVersion: waitingStep.version,
+            approvalId: goalInput.envelope.approvalId,
+            target: 'READY',
+            reason: 'durable_approval_granted',
+            now: new Date()
+          })
+        }
+      }
+      return await orchestrator.run(tenantId, goal.id)
     } finally {
-      durableContexts.delete(created.id)
+      durableContexts.delete(goal.id)
     }
   }
 
@@ -864,6 +948,7 @@ function durableStepDraft(input: {
   tenantId: TenantId
   context: InboundRuntimeContext
   envelope: KernelTurnEnvelope
+  traceContext?: TraceContext
 }): PlanStepDraft {
   return {
     id: 'durable-kernel-step',
@@ -880,7 +965,10 @@ function durableStepDraft(input: {
     input: {
       messageId: input.context.message.id,
       action: input.envelope.action,
-      resourceType: input.envelope.resource.type
+      resourceType: input.envelope.resource.type,
+      ...(input.traceContext !== undefined
+        ? { traceId: input.traceContext.traceId }
+        : {})
     },
     expectedOutcome: {
       governedRuntime: 'executed',
@@ -999,6 +1087,64 @@ function kernelOutcomeStatus(outcome: GovernedTurnResult['outcome']): string {
   }
 }
 
+function durableOrchestratorEnabled(env: NodeJS.ProcessEnv): boolean {
+  return env[DURABLE_KERNEL_ORCHESTRATOR_ENV]?.trim().toLowerCase() === 'true'
+}
+
+function durableGoalOutcome(
+  result: OrchestrationRunResult,
+  traceId: string,
+  correlationId: string
+): Record<string, unknown> {
+  const approvalStep = result.steps.find(
+    (step) => step.status === 'WAITING_APPROVAL'
+  )
+  if (result.goal.status === 'WAITING_APPROVAL') {
+    if (!approvalStep?.approvalId) {
+      throw new Error(
+        'durable orchestrator requested approval without an approval id'
+      )
+    }
+    return {
+      status: 'approval_required',
+      runtimeStatus: 'approval_required',
+      reason: result.reason,
+      approvalId: approvalStep.approvalId,
+      externalEffects: false,
+      traceId,
+      correlationId
+    }
+  }
+  if (result.goal.status === 'COMPLETED') {
+    return {
+      status: 'completed',
+      runtimeStatus: 'completed',
+      reason: result.reason,
+      externalEffects: false,
+      traceId,
+      correlationId
+    }
+  }
+  if (['CANCELLED', 'FAILED', 'BLOCKED'].includes(result.goal.status)) {
+    return {
+      status: result.goal.status.toLowerCase(),
+      runtimeStatus: 'completed',
+      reason: result.reason,
+      externalEffects: false,
+      traceId,
+      correlationId
+    }
+  }
+  return {
+    status: result.goal.status.toLowerCase(),
+    runtimeStatus: 'pending',
+    reason: result.reason,
+    externalEffects: false,
+    traceId,
+    correlationId
+  }
+}
+
 /**
  * Inbound composition for the governed kernel. It mirrors the published-agent
  * handler's context loading and fail-closed statuses, converts the synthetic
@@ -1057,6 +1203,87 @@ export function createPostgresKernelHandlers(
         throw new Error(
           'Inbound runtime trace does not match the persisted conversation'
         )
+      }
+      if (durableOrchestratorEnabled(env)) {
+        const continuation = parseKernelContinuationPayload(event.payload)
+        if (
+          continuation?.traceId !== undefined &&
+          continuation.traceId !== traceId
+        ) {
+          throw new Error(
+            'Inbound runtime continuation trace does not match the durable event trace'
+          )
+        }
+        if (context.message.runtimeStatus === 'completed') {
+          return { status: 'already_completed', externalEffects: false }
+        }
+        if (context.session && !canBotRespond(context.session.takeoverState)) {
+          return { status: 'paused_human_takeover', externalEffects: false }
+        }
+        const parsedEnvelope = parseKernelTurnEnvelope(context.message.body)
+        const envelope = continuation
+          ? { ...parsedEnvelope, approvalId: continuation.approvalId }
+          : parsedEnvelope
+        const traceContext = createTraceContextWithTraceId({
+          traceId,
+          correlationId,
+          tenantId,
+          conversationId,
+          ...(sessionId !== null ? { sessionId } : {}),
+          agentId: runtime.agentId
+        })
+        const durableResult = await runtime.runDurableGoal({
+          context,
+          envelope,
+          correlationId,
+          ...(traceContext !== undefined ? { traceContext } : {}),
+          ...(continuation !== null
+            ? { approvalDecision: continuation.decision }
+            : {})
+        })
+        const response = durableGoalOutcome(
+          durableResult,
+          traceId,
+          correlationId
+        )
+        await runtime.conversations.appendAudit(
+          {
+            type: 'integration_event',
+            actorType: 'System',
+            actorId: 'agent-runtime-orchestrator',
+            tenantId,
+            correlationId,
+            policyVersion: `${CONTROLLED_KERNEL_POLICY_ID}@${CONTROLLED_KERNEL_POLICY_VERSION}`,
+            payload: {
+              tenantId,
+              conversationId,
+              sessionId,
+              inboundMessageId,
+              runtimePath: 'durable-orchestrator',
+              goalId: durableResult.goal.id,
+              planId: durableResult.plan?.id ?? null,
+              stepIds: durableResult.steps.map((step) => step.id),
+              status: durableResult.goal.status,
+              reason: durableResult.reason,
+              traceId
+            }
+          },
+          tenantId
+        )
+        if (response.status === 'approval_required') {
+          await runtime.conversations.markInboundRuntimeWaitingForApproval(
+            inboundMessageId,
+            tenantId,
+            response.approvalId as string,
+            traceId
+          )
+        } else if (response.runtimeStatus === 'completed') {
+          await runtime.conversations.markInboundRuntimeCompleted(
+            inboundMessageId,
+            tenantId
+          )
+        }
+        return response
       }
       let continuation = parseKernelContinuationPayload(event.payload)
       if (

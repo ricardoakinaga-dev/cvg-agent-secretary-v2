@@ -1,7 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { GovernedTurnResult } from '@cvg/agent-runtime'
 import { TenantIdSchema } from '@cvg/platform'
-import { createPostgresKernelHandlers } from '../kernel-composition.ts'
+import {
+  createPostgresKernelHandlers,
+  DURABLE_KERNEL_ORCHESTRATOR_ENV
+} from '../kernel-composition.ts'
 
 const tenantId = TenantIdSchema.parse(
   'tenant_00000000-0000-4000-8000-0000000002a1'
@@ -397,6 +400,61 @@ describe('governed kernel durable continuation state', () => {
     expect(
       runtime.conversations.findInboundRuntimeContext
     ).not.toHaveBeenCalled()
+  })
+
+  it('routes the public inbound seam through the durable orchestrator only when explicitly enabled', async () => {
+    const runDurableGoal = vi.fn().mockResolvedValue({
+      goal: { id: 'goal_synthetic', status: 'WAITING_APPROVAL' },
+      plan: { id: 'plan_synthetic' },
+      steps: [
+        {
+          id: 'step_synthetic',
+          status: 'WAITING_APPROVAL',
+          approvalId: 'appr_synthetic'
+        }
+      ],
+      reason: 'approval required',
+      executedStepIds: ['step_synthetic']
+    })
+    const runtime = {
+      ...runtimeFor(
+        {
+          id: messageId,
+          body: turnEnvelope(),
+          runtimeStatus: 'pending'
+        },
+        vi.fn().mockResolvedValue(result('executed'))
+      ),
+      runDurableGoal
+    }
+    const handlers = createPostgresKernelHandlers(
+      { [DURABLE_KERNEL_ORCHESTRATOR_ENV]: 'true' },
+      runtime as never
+    )
+
+    const outcome = await handlers.inboundProcess(baseEvent())
+
+    expect(outcome).toMatchObject({
+      status: 'approval_required',
+      runtimeStatus: 'approval_required',
+      approvalId: 'appr_synthetic',
+      externalEffects: false
+    })
+    expect(runDurableGoal).toHaveBeenCalledWith(
+      expect.objectContaining({
+        correlationId,
+        envelope: expect.objectContaining({ capability: 'appointment.modify' })
+      })
+    )
+    expect(
+      runtime.conversations.markInboundRuntimeWaitingForApproval
+    ).toHaveBeenCalledWith(
+      messageId,
+      tenantId,
+      'appr_synthetic',
+      traceId
+    )
+    expect(runtime.runTurn).not.toHaveBeenCalled()
   })
 
   it('rejects a controlled inbound event without a durable trace root', async () => {

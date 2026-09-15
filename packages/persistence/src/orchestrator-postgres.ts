@@ -30,6 +30,7 @@ import {
   type PlanStatus,
   type PlanStep,
   type RecoverExpiredLeaseInput,
+  type ResolveWaitingApprovalInput,
   type SettleStepInput,
   type SettledStep,
   type StepLease,
@@ -397,6 +398,24 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
     })
   }
 
+  async getGoalByCorrelation(
+    tenant: OrchestrationTenantId,
+    correlationId: string
+  ): Promise<Goal | null> {
+    const scope = tenantId(tenant)
+    const parsedCorrelationId = CorrelationIdSchema.parse(correlationId)
+    return withTenantContext(this.pool, scope, async (client) => {
+      const result = await client.query<GoalRow>(
+        `SELECT * FROM orchestrator_goals
+          WHERE tenant_id = $1 AND correlation_id = $2
+          ORDER BY created_at DESC, id DESC
+          LIMIT 1`,
+        [scope, parsedCorrelationId]
+      )
+      return result.rows[0] ? toGoal(result.rows[0]) : null
+    })
+  }
+
   async listRunnableGoals(tenant?: OrchestrationTenantId): Promise<Goal[]> {
     const scopes = tenant ? [tenantId(tenant)] : undefined
     if (!scopes) {
@@ -719,6 +738,99 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
         [scope, stepId]
       )
       return result.rows[0] ? toStep(result.rows[0]) : null
+    })
+  }
+
+  async resolveWaitingApproval(
+    input: ResolveWaitingApprovalInput
+  ): Promise<SettledStep> {
+    const scope = tenantId(input.tenantId)
+    return withTenantTransaction(this.pool, scope, async (client) => {
+      const goal = toGoal(
+        await one<GoalRow>(
+          client,
+          'SELECT * FROM orchestrator_goals WHERE tenant_id = $1 AND id = $2 FOR UPDATE',
+          [scope, input.goalId]
+        )
+      )
+      const plan = toPlan(
+        await one<PlanRow>(
+          client,
+          'SELECT * FROM orchestrator_plans WHERE tenant_id = $1 AND id = $2 FOR UPDATE',
+          [scope, input.planId]
+        )
+      )
+      const step = toStep(
+        await one<StepRow>(
+          client,
+          'SELECT * FROM orchestrator_steps WHERE tenant_id = $1 AND id = $2 FOR UPDATE',
+          [scope, input.stepId]
+        )
+      )
+      if (
+        goal.version !== input.expectedGoalVersion ||
+        step.version !== input.expectedStepVersion
+      ) {
+        throw new OrchestrationError(
+          'conflict',
+          'Goal or step changed while resolving approval'
+        )
+      }
+      if (
+        goal.activePlanId !== plan.id ||
+        plan.status !== 'ACTIVE' ||
+        step.goalId !== goal.id ||
+        step.planId !== plan.id ||
+        step.status !== 'WAITING_APPROVAL' ||
+        step.approvalId !== input.approvalId
+      ) {
+        throw new OrchestrationError(
+          'conflict',
+          'Approval resolution does not match the durable waiting step'
+        )
+      }
+      const targetGoal = input.target === 'READY' ? 'GOVERNING' : 'CANCELLED'
+      assertPlanStepTransition(step.status, input.target)
+      assertGoalTransition(goal.status, targetGoal)
+      const updatedStep = toStep(
+        await one<StepRow>(
+          client,
+          `UPDATE orchestrator_steps
+              SET status = $3, last_error = $4, completed_at = $5,
+                  version = version + 1, updated_at = $6
+            WHERE tenant_id = $1 AND id = $2 AND version = $7
+            RETURNING *`,
+          [
+            scope,
+            step.id,
+            input.target,
+            input.target === 'CANCELLED' ? input.reason : null,
+            input.target === 'CANCELLED' ? input.now : null,
+            input.now,
+            input.expectedStepVersion
+          ]
+        )
+      )
+      const updatedGoal = toGoal(
+        await one<GoalRow>(
+          client,
+          `UPDATE orchestrator_goals
+              SET status = $3, last_reason = $4, last_error = $5,
+                  version = version + 1, updated_at = $6
+            WHERE tenant_id = $1 AND id = $2 AND version = $7
+            RETURNING *`,
+          [
+            scope,
+            goal.id,
+            targetGoal,
+            input.reason,
+            input.target === 'CANCELLED' ? input.reason : null,
+            input.now,
+            input.expectedGoalVersion
+          ]
+        )
+      )
+      return { goal: updatedGoal, step: updatedStep }
     })
   }
 

@@ -115,5 +115,24 @@ describeWithPostgres('durable worker Goal orchestration', () => {
     const resumed = await restarted.orchestrator.run(TENANT, result.goal.id)
     expect(resumed.goal.status).toBe('WAITING_APPROVAL')
     expect(resumed.executedStepIds).toEqual([])
+
+    const approvalId = result.steps[0]!.approvalId!
+    const approved = await restarted.approvals.decideAndEnqueueContinuation({
+      tenantId: TENANT,
+      approvalId,
+      decision: 'approve',
+      approverId: 'op_synthetic_approver',
+      actorType: 'Supervisor',
+      requestCorrelationId: CORRELATION
+    })
+    expect(approved.approval.status).toBe('APPROVED')
+    const afterApproval = await restarted.runDurableGoal({
+      ...input,
+      envelope: { ...input.envelope, approvalId },
+      approvalDecision: 'approve'
+    })
+    expect(afterApproval.goal.status).toBe('COMPLETED')
+    expect(afterApproval.steps[0]?.status).toBe('SUCCEEDED')
+    expect(restarted.toolInvocations).toHaveLength(1)
   })
 })

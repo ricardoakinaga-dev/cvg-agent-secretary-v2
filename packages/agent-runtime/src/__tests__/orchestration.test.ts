@@ -189,6 +189,89 @@ describe('durable Goal/Plan/Step orchestration', () => {
     ).not.toThrow()
   })
 
+  it('resumes or cancels a waiting approval with goal and step CAS', async () => {
+    const store = new InMemoryGoalPlanStore({ clock: () => NOW })
+    const goal = await buildGoal(store)
+    const activated = await activateInitialPlan(store, goal, [step('approval')])
+    let governing = await store.transitionGoal({
+      tenantId: TENANT,
+      goalId: goal.id,
+      expectedVersion: activated.goal.version,
+      target: 'UNDERSTANDING',
+      reason: 'approval setup'
+    })
+    governing = await store.transitionGoal({
+      tenantId: TENANT,
+      goalId: goal.id,
+      expectedVersion: governing.version,
+      target: 'PLANNING',
+      reason: 'approval setup'
+    })
+    governing = await store.transitionGoal({
+      tenantId: TENANT,
+      goalId: goal.id,
+      expectedVersion: governing.version,
+      target: 'GOVERNING',
+      reason: 'approval setup'
+    })
+    const claimed = await store.claimStep({
+      tenantId: TENANT,
+      goalId: goal.id,
+      planId: activated.plan.id,
+      stepId: 'approval',
+      workerId: 'approval-worker',
+      expectedGoalVersion: governing.version,
+      now: NOW,
+      leaseMs: 1_000
+    })
+    const waiting = await store.settleStep({
+      lease: claimed!.lease,
+      outcome: 'approval_required',
+      resultDigest: 'approval-digest',
+      reason: 'human approval required',
+      approvalId: 'approval_1',
+      now: NOW,
+      modelCalls: 0,
+      toolCalls: 0,
+      costUsd: 0
+    })
+    const waitingGoal = await store.transitionGoal({
+      tenantId: TENANT,
+      goalId: goal.id,
+      expectedVersion: waiting.goal.version,
+      target: 'WAITING_APPROVAL',
+      reason: 'approval is pending'
+    })
+    const resumed = await store.resolveWaitingApproval({
+      tenantId: TENANT,
+      goalId: goal.id,
+      planId: activated.plan.id,
+      stepId: 'approval',
+      expectedGoalVersion: waitingGoal.version,
+      expectedStepVersion: waiting.step.version,
+      approvalId: 'approval_1',
+      target: 'READY',
+      reason: 'approval granted',
+      now: NOW
+    })
+    expect(resumed.goal.status).toBe('GOVERNING')
+    expect(resumed.step.status).toBe('READY')
+    await expect(
+      store.resolveWaitingApproval({
+        tenantId: TENANT,
+        goalId: goal.id,
+        planId: activated.plan.id,
+        stepId: 'approval',
+        expectedGoalVersion: resumed.goal.version - 1,
+        expectedStepVersion: resumed.step.version,
+        approvalId: 'approval_1',
+        target: 'CANCELLED',
+        reason: 'stale rejection',
+        now: NOW
+      })
+    ).rejects.toMatchObject({ code: 'conflict' })
+  })
+
   it('executes a multi-step DAG and completes only after verified evaluation evidence', async () => {
     const store = new InMemoryGoalPlanStore({ clock: () => NOW })
     const goal = await buildGoal(store)

@@ -459,6 +459,19 @@ export interface SettledStep {
   step: PlanStep
 }
 
+export interface ResolveWaitingApprovalInput {
+  tenantId: OrchestrationTenantId
+  goalId: string
+  planId: string
+  stepId: string
+  expectedGoalVersion: number
+  expectedStepVersion: number
+  approvalId: string
+  target: 'READY' | 'CANCELLED'
+  reason: string
+  now: Date
+}
+
 export interface RecoverExpiredLeaseInput {
   tenantId: OrchestrationTenantId
   stepId: string
@@ -470,6 +483,10 @@ export interface RecoverExpiredLeaseInput {
 export interface GoalPlanStore {
   createGoal(input: CreateGoalInput): Promise<Goal>
   getGoal(tenantId: OrchestrationTenantId, goalId: string): Promise<Goal | null>
+  getGoalByCorrelation(
+    tenantId: OrchestrationTenantId,
+    correlationId: string
+  ): Promise<Goal | null>
   listRunnableGoals(tenantId?: OrchestrationTenantId): Promise<Goal[]>
   transitionGoal(input: TransitionGoalInput): Promise<Goal>
   activatePlan(input: ActivatePlanInput): Promise<ActivatePlanResult>
@@ -493,6 +510,9 @@ export interface GoalPlanStore {
     tenantId: OrchestrationTenantId,
     stepId: string
   ): Promise<PlanStep | null>
+  resolveWaitingApproval(
+    input: ResolveWaitingApprovalInput
+  ): Promise<SettledStep>
   claimStep(input: ClaimStepInput): Promise<ClaimedStep | null>
   heartbeatStep(input: {
     lease: StepLease
@@ -1005,6 +1025,25 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
     return goal ? clone(goal) : null
   }
 
+  async getGoalByCorrelation(
+    tenantId: OrchestrationTenantId,
+    correlationId: string
+  ): Promise<Goal | null> {
+    const scope = validateTenant(tenantId)
+    CorrelationIdSchema.parse(correlationId)
+    return (
+      [...this.goals.values()]
+        .filter(
+          (goal) =>
+            goal.tenantId === scope && goal.correlationId === correlationId
+        )
+        .sort(
+          (left, right) => right.createdAt.getTime() - left.createdAt.getTime()
+        )
+        .map((goal) => clone(goal))[0] ?? null
+    )
+  }
+
   async listRunnableGoals(tenantId?: OrchestrationTenantId): Promise<Goal[]> {
     const scope = tenantId ? validateTenant(tenantId) : undefined
     return [...this.goals.values()]
@@ -1216,6 +1255,66 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
   ): Promise<PlanStep | null> {
     const step = this.steps.get(this.key(validateTenant(tenantId), stepId))
     return step ? clone(step) : null
+  }
+
+  async resolveWaitingApproval(
+    input: ResolveWaitingApprovalInput
+  ): Promise<SettledStep> {
+    const scope = validateTenant(input.tenantId)
+    const goal = this.goals.get(this.key(scope, input.goalId))
+    const plan = this.plans.get(this.key(scope, input.planId))
+    const step = this.steps.get(this.key(scope, input.stepId))
+    if (!goal || !plan || !step) {
+      throw new OrchestrationError(
+        'not_found',
+        'Goal, plan or approval-waiting step not found'
+      )
+    }
+    if (
+      goal.version !== input.expectedGoalVersion ||
+      step.version !== input.expectedStepVersion
+    ) {
+      throw new OrchestrationError(
+        'conflict',
+        'Goal or step changed while resolving approval'
+      )
+    }
+    if (
+      goal.activePlanId !== plan.id ||
+      plan.status !== 'ACTIVE' ||
+      step.goalId !== goal.id ||
+      step.planId !== plan.id ||
+      step.status !== 'WAITING_APPROVAL' ||
+      step.approvalId !== input.approvalId
+    ) {
+      throw new OrchestrationError(
+        'conflict',
+        'Approval resolution does not match the durable waiting step'
+      )
+    }
+    const targetGoal = input.target === 'READY' ? 'GOVERNING' : 'CANCELLED'
+    assertPlanStepTransition(step.status, input.target)
+    assertGoalTransition(goal.status, targetGoal)
+    const updatedAt = new Date(input.now)
+    const updatedStep: PlanStep = {
+      ...clone(step),
+      status: input.target,
+      lastError: input.target === 'CANCELLED' ? input.reason : null,
+      completedAt: input.target === 'CANCELLED' ? updatedAt : null,
+      version: step.version + 1,
+      updatedAt
+    }
+    const updatedGoal: Goal = {
+      ...clone(goal),
+      status: targetGoal,
+      version: goal.version + 1,
+      updatedAt,
+      lastReason: input.reason,
+      lastError: input.target === 'CANCELLED' ? input.reason : null
+    }
+    this.steps.set(this.key(scope, step.id), clone(updatedStep))
+    this.goals.set(this.key(scope, goal.id), clone(updatedGoal))
+    return { goal: clone(updatedGoal), step: clone(updatedStep) }
   }
 
   async claimStep(input: ClaimStepInput): Promise<ClaimedStep | null> {
