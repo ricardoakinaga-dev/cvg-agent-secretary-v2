@@ -502,6 +502,31 @@ describe('conversation repository behavior', () => {
     ).toBeTruthy()
   })
 
+  it('uses insertion order to break equal activity timestamps', () => {
+    const { repository, db } = fixture()
+    const first = createConversation(repository)
+    const second = repository.createWithSession({
+      tenantId: tenantA,
+      channel: 'web',
+      senderRef: 'second@example.test',
+      externalMessageId: 'external-conversation-tie',
+      body: 'second'
+    })
+    const tieAt = new Date('2026-09-15T00:00:00.000Z')
+
+    db.state.messages = db.state.messages.map((message) => ({
+      ...message,
+      createdAt: tieAt
+    }))
+
+    const items = repository.listPage(tenantA, { limit: 10, offset: 0 }).items
+
+    expect(items.map((item) => item.id)).toEqual([
+      second.conversation.id,
+      first.conversation.id
+    ])
+  })
+
   it('resolves external message lookups by tenant and channel', () => {
     const { repository } = fixture()
     const created = createConversation(repository)
