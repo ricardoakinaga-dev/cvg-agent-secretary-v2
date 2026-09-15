@@ -1,3 +1,22 @@
+# GIT-SYNC-20260915 — versionamento autorizado e push concluído — 2026-09-15
+
+- pipeline: `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`; fase atual `AUDIT`;
+  produção `NO-GO`.
+- autorização: solicitação explícita do usuário para sincronizar
+  `https://github.com/ricardoakinaga-dev/cvg-agent-secretary-v2`.
+- ação concluída: `git fetch --prune origin` confirmou `origin/main`; os 10
+  commits locais pendentes e o commit `07ed0459690e62b5c1a501d3e9f1e57cd4d031fe`
+  dos artefatos de certificação foram enviados com sucesso para `main`.
+- verificação: remoto avançou de `22b0887` para `07ed045`; JSONs modificados
+  foram validados, não há arquivos não rastreados ou acima de 20 MiB e a
+  divergência após o push foi `0 0`. Testes não foram reexecutados nesta
+  rodada de versionamento.
+- decisão: nenhuma tarefa de produto foi promovida; AAA-21 permanece
+  `CONDITIONAL_GO / AAA_CONTROLLED`, com produção `NO_GO` e gates externos e
+  humanos ainda pendentes.
+- evidência: `git status`, `git rev-list --left-right --count HEAD...origin/main`,
+  `git ls-remote origin refs/heads/main` e o commit `07ed045`.
+
 # AAA-21-HARDEN-20260915 — integridade, recovery, lineage e certificação — 2026-09-15
 
 - **Pipeline:** `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`; fase atual `AUDIT`; produção `NO-GO`.

@@ -1,3 +1,19 @@
+# GIT-SYNC-20260915 — versionamento autorizado e push concluído — 2026-09-15
+
+- task: `GIT-SYNC-20260915`; status: `COMPLETED`.
+- autorização: commit e push solicitados explicitamente para
+  `https://github.com/ricardoakinaga-dev/cvg-agent-secretary-v2`.
+- entrega: 10 commits locais pendentes e o commit
+  `07ed0459690e62b5c1a501d3e9f1e57cd4d031fe` dos artefatos de certificação
+  foram publicados em `origin/main`.
+- evidência: remoto avançou de `22b0887` para `07ed045`; os JSONs alterados
+  são válidos, não há arquivos não rastreados ou acima de 20 MiB e a árvore
+  ficou sincronizada (`HEAD...origin/main = 0 0`) antes deste registro.
+- next_action: retomar a revisão independente e os gates externos/humanos de
+  AAA-21; produção permanece `NO-GO`.
+- limite: nenhum deploy, integração real, dado real ou efeito externo foi
+  autorizado nesta tarefa; testes não foram reexecutados.
+
 # AAA-21-HARDEN-20260915 — backlog após hardening de recovery e lineage — 2026-09-15
 
 ## Concluído nesta rodada
