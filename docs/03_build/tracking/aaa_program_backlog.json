@@ -1846,7 +1846,7 @@
           "executionId": "AAA-21-PHASE11-HARDEN-20260915",
           "phase": "AUDIT",
           "result": "CERTIFICATION_INTEGRITY_HARDENED_NODE22_FORMAT_ACTIVE_PASS",
-          "evidence": "tests/phase11-certification.test.ts",
+          "evidence": "tests/phase11-certification.test.js",
           "productionGateChanged": false,
           "externalGateChanged": false,
           "humanReleaseGateChanged": false

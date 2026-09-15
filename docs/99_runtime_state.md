@@ -4,7 +4,7 @@
 - last_completed_action: runtime Node `22.23.2` localizado e usado em uma execução completa; `node_target` passou, assim como unit, coverage, PostgreSQL, E2E, build, lint, security e startup. O format ativo agora passa após separar evidência histórica imutável; a cadeia candidate-bound passou a exigir commit/manifest/dirty state coerentes e recebeu regressões.
 - next_action: selar os bytes atuais em commit local, executar Phase 10 e Phase 11 sob Node 22 com PostgreSQL descartável, verificar os manifests no mesmo candidato e encerrar o banco.
 - blockers: gates provider/canal/IdP/humanos, piloto, durabilidade física/RPO-RTO e produção permanecem bloqueados; `phase10_current_verification` será recalculada após o novo selo. Nenhum dado real ou efeito externo é permitido.
-- evidência: [`phase11_execution_contract.md`](11_phase11/phase11_execution_contract.md), [`requirements-matrix.json`](11_phase11/requirements-matrix.json), [`phase11-certification.test.ts`](../tests/phase11-certification.test.ts) e artefatos atuais em `certification/`.
+- evidência: [`phase11_execution_contract.md`](11_phase11/phase11_execution_contract.md), [`requirements-matrix.json`](11_phase11/requirements-matrix.json), [`phase11-certification.test.js`](../tests/phase11-certification.test.js) e artefatos atuais em `certification/`.
 
 # AAA-21-PHASE11-CERT-20260915 — certificação candidate-bound final — 2026-09-15
 

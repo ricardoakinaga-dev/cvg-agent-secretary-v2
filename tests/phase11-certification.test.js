@@ -24,7 +24,7 @@ function gates() {
   return PHASE11_REQUIRED_GATES.map((id) => ({
     id,
     command: `fixture:${id}`,
-    status: 'PASS' as const,
+    status: 'PASS',
     exitCode: 0,
     durationMs: 1
   }))
@@ -40,7 +40,7 @@ function requirements() {
       tests: ['test'],
       evidence: ['test'],
       gates: ['unit'],
-      status: 'IMPLEMENTED' as const,
+      status: 'IMPLEMENTED',
       blocking: false
     }
   ]

@@ -203,7 +203,7 @@
       "tests": [
         "scripts/phase10-verify.mjs --self-test",
         "scripts/phase11-verify.mjs",
-        "tests/phase11-certification.test.ts"
+        "tests/phase11-certification.test.js"
       ],
       "evidence": [
         "certification/phase11-result.json",

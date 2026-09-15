@@ -3,7 +3,7 @@
 - status: `REVIEW`; produção `NO-GO`; Node 22.23.2 e format ativo qualificados localmente.
 - concluído: cadeia de certificação agora compara commit/manifest/candidate head e estado dirty real; outputs gerados não contaminam o candidato; regressões de dirty candidate e manifest sem commit passaram.
 - próxima ação: criar o commit do candidato, executar Phase 10 e Phase 11 completos sob Node 22, validar evidência e preservar gates externos/humanos como bloqueios explícitos.
-- evidência: `tests/phase11-certification.test.ts`, `scripts/lib/certification-rules.mjs`, `scripts/phase10-verify.mjs`, `scripts/phase11-verify.mjs` e `docs/11_phase11/phase11_execution_contract.md`.
+- evidência: `tests/phase11-certification.test.js`, `scripts/lib/certification-rules.mjs`, `scripts/phase10-verify.mjs`, `scripts/phase11-verify.mjs` e `docs/11_phase11/phase11_execution_contract.md`.
 
 # AAA-21-PHASE11-CERT-20260915 — estado após certificação final — 2026-09-15
 
