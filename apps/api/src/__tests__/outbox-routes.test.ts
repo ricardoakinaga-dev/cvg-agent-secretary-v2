@@ -37,6 +37,7 @@ describe('controlled outbox dead-letter routes', () => {
       tenantId,
       eventId: event.id,
       workerId: 'worker_dlq_2c1',
+      leaseToken: claimed?.leaseToken ?? undefined,
       error: new Error('synthetic handler failure'),
       terminal: true
     })
@@ -50,16 +51,16 @@ describe('controlled outbox dead-letter routes', () => {
       sessionId: 'sess_dlq_2c2',
       inboundMessageId: 'msg_dlq_2c2'
     })
-    expect(
-      outbox.claimNext({
-        tenantId: foreignTenantId,
-        workerId: 'worker_dlq_2c2'
-      })?.id
-    ).toBe(foreignEvent.id)
+    const foreignClaimed = outbox.claimNext({
+      tenantId: foreignTenantId,
+      workerId: 'worker_dlq_2c2'
+    })
+    expect(foreignClaimed?.id).toBe(foreignEvent.id)
     outbox.fail({
       tenantId: foreignTenantId,
       eventId: foreignEvent.id,
       workerId: 'worker_dlq_2c2',
+      leaseToken: foreignClaimed?.leaseToken ?? undefined,
       error: new Error('foreign synthetic handler failure'),
       terminal: true
     })
@@ -156,13 +157,16 @@ describe('controlled outbox dead-letter routes', () => {
       sessionId: 'sess_admin_dlq_2c1',
       inboundMessageId: 'msg_admin_dlq_2c1'
     })
-    expect(
-      outbox.claimNext({ tenantId, workerId: 'worker_admin_dlq_2c1' })?.id
-    ).toBe(event.id)
+    const claimed = outbox.claimNext({
+      tenantId,
+      workerId: 'worker_admin_dlq_2c1'
+    })
+    expect(claimed?.id).toBe(event.id)
     outbox.fail({
       tenantId,
       eventId: event.id,
       workerId: 'worker_admin_dlq_2c1',
+      leaseToken: claimed?.leaseToken ?? undefined,
       error: new Error('admin synthetic terminal failure'),
       terminal: true
     })

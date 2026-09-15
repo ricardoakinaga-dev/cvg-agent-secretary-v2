@@ -122,7 +122,8 @@ const defaultPostgresMigrations = [
   '0014_journeys',
   '0015_runtime_approval_store',
   '0016_runtime_continuation_trace',
-  '0017_runtime_audit_chain'
+  '0017_runtime_audit_chain',
+  '0018_outbox_lease_fencing'
 ]
 
 export interface PostgresQueryable {
@@ -185,6 +186,7 @@ export type DurableOutboxEventRecord = OutboxEventRecord & {
   availableAt: Date
   attempts: number
   leaseOwner: string | null
+  leaseToken: string | null
   leaseUntil: Date | null
   lastError: string | null
   processedAt: Date | null
@@ -225,7 +227,7 @@ const outboxSelectColumns = `
   trace_id,
   conversation_id, session_id, agent_id, agent_version_id,
   inbound_message_id, payload, status, created_at, available_at, attempts,
-  lease_owner, lease_until, last_error, processed_at, dead_lettered_at,
+  lease_owner, lease_token, lease_until, last_error, processed_at, dead_lettered_at,
   parent_event_id`
 
 interface DurableOutboxRow {
@@ -247,6 +249,7 @@ interface DurableOutboxRow {
   available_at: Date
   attempts: number
   lease_owner: string | null
+  lease_token: string | null
   lease_until: Date | null
   last_error: string | null
   processed_at: Date | null
@@ -453,6 +456,7 @@ function mapDurableOutboxRow(row: DurableOutboxRow): DurableOutboxEventRecord {
     availableAt,
     attempts: row.attempts,
     leaseOwner: row.lease_owner,
+    leaseToken: row.lease_token,
     leaseUntil: outboxDate(row.lease_until),
     lastError: row.last_error ? redactOutboxError(row.last_error) : null,
     processedAt: outboxDate(row.processed_at),
@@ -482,6 +486,10 @@ async function withOutboxTransaction<T>(
 
 function validateOutboxWorker(workerId: string): string {
   return assertOutboxText(workerId, 'workerId', 120)
+}
+
+function validateOutboxLeaseToken(leaseToken: string | undefined): string {
+  return assertOutboxText(leaseToken ?? '', 'leaseToken', 160)
 }
 
 function validateOutboxEnvelopeVersion(version: number): number {
@@ -1053,10 +1061,10 @@ export class PostgresRuntimeRepository {
             trace_id,
             conversation_id, session_id, agent_id, agent_version_id,
             inbound_message_id, payload, payload_protection_version, status, created_at, available_at,
-            attempts, lease_owner, lease_until, last_error, processed_at,
+            attempts, lease_owner, lease_token, lease_until, last_error, processed_at,
             dead_lettered_at, parent_event_id, tenant_isolation_quarantined)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13::jsonb,
-                 $14, 'pending', $15, $16, 0, NULL, NULL, NULL, NULL, NULL, $17, false)
+                 $14, 'pending', $15, $16, 0, NULL, NULL, NULL, NULL, NULL, NULL, $17, false)
          ON CONFLICT (tenant_id, idempotency_key) DO NOTHING
          RETURNING ${outboxSelectColumns}`,
         [
@@ -1151,6 +1159,7 @@ export class PostgresRuntimeRepository {
       rawInput.leaseMs ?? OUTBOX_DEFAULT_LEASE_MS
     )
     const leaseUntil = new Date(now.getTime() + leaseMs)
+    const leaseToken = createDomainId('lease')
 
     return withOutboxTransaction(this.client, async () => {
       const candidate = await this.client.query<DurableOutboxRow>(
@@ -1186,17 +1195,18 @@ export class PostgresRuntimeRepository {
          SET status = 'processing',
              attempts = attempts + 1,
              lease_owner = $3,
-             lease_until = $4,
+             lease_token = $4,
+             lease_until = $5,
              available_at = $2,
              last_error = NULL
-         WHERE tenant_id = $1 AND id = $5
+         WHERE tenant_id = $1 AND id = $6
            AND (
              status = 'pending'
              OR (status = 'failed' AND available_at <= $2)
              OR (status = 'processing' AND lease_until <= $2)
            )
          RETURNING ${outboxSelectColumns}`,
-        [tenantId, now, workerId, leaseUntil, row.id]
+        [tenantId, now, workerId, leaseToken, leaseUntil, row.id]
       )
       const claimedRow = claimed.rows[0]
       if (!claimedRow) return null
@@ -1216,6 +1226,7 @@ export class PostgresRuntimeRepository {
     const tenantId = TenantIdSchema.parse(rawInput.tenantId)
     const eventId = assertOutboxText(rawInput.eventId, 'eventId', 160)
     const workerId = validateOutboxWorker(rawInput.workerId)
+    const leaseToken = validateOutboxLeaseToken(rawInput.leaseToken)
     const now = this.repositoryNow()
     const leaseMs = validateOutboxLeaseMs(rawInput.leaseMs)
     const leaseUntil = new Date(now.getTime() + leaseMs)
@@ -1223,14 +1234,15 @@ export class PostgresRuntimeRepository {
     return withOutboxTransaction(this.client, async () => {
       const renewed = await this.client.query<DurableOutboxRow>(
         `UPDATE outbox_events
-            SET lease_until = $4
+            SET lease_until = $5
           WHERE tenant_id = $1
             AND id = $2
             AND status = 'processing'
             AND lease_owner = $3
-            AND lease_until > $5
+            AND lease_token = $4
+            AND lease_until > $6
           RETURNING ${outboxSelectColumns}`,
-        [tenantId, eventId, workerId, leaseUntil, now]
+        [tenantId, eventId, workerId, leaseToken, leaseUntil, now]
       )
       return renewed.rows[0] ? mapDurableOutboxRow(renewed.rows[0]) : null
     })
@@ -1242,6 +1254,7 @@ export class PostgresRuntimeRepository {
     const tenantId = TenantIdSchema.parse(rawInput.tenantId)
     const eventId = assertOutboxText(rawInput.eventId, 'eventId', 160)
     const workerId = validateOutboxWorker(rawInput.workerId)
+    const leaseToken = validateOutboxLeaseToken(rawInput.leaseToken)
     const now = this.repositoryNow()
 
     /**
@@ -1269,6 +1282,7 @@ export class PostgresRuntimeRepository {
       if (
         event.status === 'processing' &&
         (event.lease_owner !== workerId ||
+          event.lease_token !== leaseToken ||
           !event.lease_until ||
           new Date(event.lease_until).getTime() <= now.getTime())
       ) {
@@ -1370,6 +1384,7 @@ export class PostgresRuntimeRepository {
       if (
         event.status === 'processing' &&
         (event.lease_owner !== workerId ||
+          event.lease_token !== leaseToken ||
           !event.lease_until ||
           new Date(event.lease_until).getTime() <= ackNow.getTime())
       ) {
@@ -1460,13 +1475,15 @@ export class PostgresRuntimeRepository {
          SET status = 'processed',
              processed_at = $3,
              lease_owner = NULL,
+             lease_token = NULL,
              lease_until = NULL,
              last_error = NULL,
              available_at = $3
          WHERE tenant_id = $1 AND id = $2 AND status = 'processing'
            AND lease_owner = $4
+           AND lease_token = $5
          RETURNING ${outboxSelectColumns}`,
-        [tenantId, event.id, ackNow, workerId]
+        [tenantId, event.id, ackNow, workerId, leaseToken]
       )
       const updatedRow = updated.rows[0]
       if (!updatedRow)
@@ -1497,6 +1514,7 @@ export class PostgresRuntimeRepository {
     const tenantId = TenantIdSchema.parse(rawInput.tenantId)
     const eventId = assertOutboxText(rawInput.eventId, 'eventId', 160)
     const workerId = validateOutboxWorker(rawInput.workerId)
+    const leaseToken = validateOutboxLeaseToken(rawInput.leaseToken)
     const now = this.repositoryNow()
     const error = redactOutboxError(rawInput.error)
 
@@ -1514,6 +1532,7 @@ export class PostgresRuntimeRepository {
       if (
         event.status !== 'processing' ||
         event.lease_owner !== workerId ||
+        event.lease_token !== leaseToken ||
         !event.lease_until ||
         new Date(event.lease_until).getTime() <= now.getTime()
       ) {
@@ -1533,12 +1552,23 @@ export class PostgresRuntimeRepository {
              available_at = $4,
              last_error = $5,
              lease_owner = NULL,
+             lease_token = NULL,
              lease_until = NULL,
              dead_lettered_at = CASE WHEN $3 = 'dead_letter' THEN $6::timestamptz ELSE NULL END
          WHERE tenant_id = $1 AND id = $2 AND status = 'processing'
            AND lease_owner = $7
+           AND lease_token = $8
          RETURNING ${outboxSelectColumns}`,
-        [tenantId, event.id, status, availableAt, error, now, workerId]
+        [
+          tenantId,
+          event.id,
+          status,
+          availableAt,
+          error,
+          now,
+          workerId,
+          leaseToken
+        ]
       )
       const updatedRow = updated.rows[0]
       if (!updatedRow)
@@ -1615,6 +1645,7 @@ export class PostgresRuntimeRepository {
              attempts = 0,
              available_at = $3,
              lease_owner = NULL,
+             lease_token = NULL,
              lease_until = NULL,
              last_error = NULL,
              processed_at = NULL,
@@ -2634,8 +2665,9 @@ export class PostgresRuntimeRepository {
     if (this.tenantIsolation) {
       await this.client.query(
         `INSERT INTO audit_events (tenant_id, id, type, actor_type, actor_id, correlation_id, policy_version, payload, created_at)
-         VALUES (NULLIF(current_setting('cvg.tenant_id', true), ''), $1, $2, $3, $4, $5, $6, $7::jsonb, $8)`,
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9)`,
         [
+          tenantId?.data,
           event.id,
           event.type,
           event.actorType,
@@ -3797,12 +3829,21 @@ export class PostgresRuntimeRepository {
            available_at = $3,
            last_error = $4,
            lease_owner = NULL,
+           lease_token = NULL,
            lease_until = NULL,
            dead_lettered_at = $3
        WHERE tenant_id = $1 AND id = $2 AND status = 'processing'
          AND lease_owner = $5
+         AND lease_token = $6
        RETURNING ${outboxSelectColumns}`,
-      [tenantId, event.id, now, OUTBOX_TAKEOVER_SUPPRESSED_ERROR, workerId]
+      [
+        tenantId,
+        event.id,
+        now,
+        OUTBOX_TAKEOVER_SUPPRESSED_ERROR,
+        workerId,
+        event.lease_token
+      ]
     )
     const updatedRow = updated.rows[0]
     if (!updatedRow) {

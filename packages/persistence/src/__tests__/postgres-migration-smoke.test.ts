@@ -6,7 +6,8 @@ import { describe, expect, it } from 'vitest'
 import {
   PostgresRuntimeRepository,
   readPostgresMigrationSql,
-  runInitialPostgresMigration
+  runInitialPostgresMigration,
+  runPostgresMigrations
 } from '../postgres.ts'
 import { createSenderRefFingerprint } from '../sender-fingerprint.ts'
 
@@ -37,6 +38,11 @@ describe('postgres migration smoke', () => {
     expect(audit).toContain('FORCE ROW LEVEL SECURITY')
     expect(audit).toContain("current_setting('cvg.tenant_id', true)")
     expect(audit).toContain('REVOKE ALL ON runtime_audit_events FROM PUBLIC')
+
+    const fencing = await readPostgresMigrationSql('0018_outbox_lease_fencing')
+    expect(fencing).toContain('ADD COLUMN IF NOT EXISTS lease_token')
+    expect(fencing).toContain('outbox_events_processing_fencing_check')
+    expect(fencing).toContain('idx_outbox_events_tenant_lease_token')
   })
 
   it('ships an additive release-candidate validator integrity migration', async () => {
@@ -476,6 +482,7 @@ describe('postgres migration smoke', () => {
       available_at: createdAt,
       attempts: 1,
       lease_owner: 'worker-ack-boundary',
+      lease_token: 'lease_00000000-0000-4000-8000-000000000176',
       lease_until: leaseUntil,
       last_error: null,
       processed_at: null,
@@ -514,6 +521,7 @@ describe('postgres migration smoke', () => {
                   ...row,
                   status: 'processed',
                   lease_owner: null,
+                  lease_token: null,
                   lease_until: null,
                   processed_at: createdAt
                 }
@@ -540,6 +548,7 @@ describe('postgres migration smoke', () => {
               ...row,
               status: 'processed',
               lease_owner: null,
+              lease_token: null,
               lease_until: null,
               processed_at: createdAt
             }
@@ -556,6 +565,7 @@ describe('postgres migration smoke', () => {
       tenantId: row.tenant_id,
       eventId: row.id,
       workerId: row.lease_owner,
+      leaseToken: row.lease_token,
       effect: () => {
         expect(activeTransaction).toBe(false)
         expect(commits).toBe(1)
@@ -630,8 +640,10 @@ describe('postgres migration smoke', () => {
 
       await client.connect()
       try {
-        await runInitialPostgresMigration(client, { schemaName })
-        const repository = new PostgresRuntimeRepository(client)
+        await runPostgresMigrations(client, { schemaName })
+        const repository = new PostgresRuntimeRepository(client, {
+          tenantIsolation: true
+        })
         const tenantId = 'tenant_00000000-0000-4000-8000-000000000079'
         const created = await repository.createWithSession({
           tenantId,
@@ -719,6 +731,7 @@ describe('postgres migration smoke', () => {
           sessions: [expect.objectContaining({ takeoverState: 'BOT_ACTIVE' })]
         })
         const audit = await repository.appendAudit({
+          tenantId,
           type: 'integration_event',
           actorType: 'System',
           actorId: 'postgres-smoke',
@@ -726,6 +739,7 @@ describe('postgres migration smoke', () => {
           policyVersion: 'test-policy',
           payload: {
             sessionId: created.session.id,
+            tenantId,
             body: 'email ana@example.com não deve ser persistido'
           }
         })
@@ -738,7 +752,10 @@ describe('postgres migration smoke', () => {
         )
 
         expect(result.rows[0]?.count).toBe('1')
-        expect(audit.payload).toEqual({ sessionId: created.session.id })
+        expect(audit.payload).toEqual({
+          sessionId: created.session.id,
+          tenantId
+        })
         await expect(
           repository.findByExternalMessage(tenantId, 'whatsapp', 'ext_pg_smoke')
         ).resolves.toMatchObject({ id: created.message.id })

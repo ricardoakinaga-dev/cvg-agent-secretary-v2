@@ -1,0 +1,1166 @@
+# CONTINUAÇÃO FINAL — ITEMS 512+
+
+## EXECUTION CLOSURE, EVIDENCE GRAPH & MECHANICAL SUCCESS STATE
+
+> Continuação direta do item 512. Todos os itens anteriores são normativos e permanecem obrigatórios.
+
+---
+
+# 512. NO FAKE PILOT
+
+Nunca registre:
+
+```text id="9gpl4e"
+pilot = PASS
+```
+
+sem piloto realmente executado.
+
+Se não houver ambiente ou autorização:
+
+```text id="ftb60g"
+pilot = NOT_EXECUTED
+```
+
+---
+
+# 513. NO FAKE PRODUCTION
+
+Não faça deploy em produção apenas para satisfazer este prompt.
+
+---
+
+# 514. EXTERNAL ACTION BOUNDARY
+
+Não execute sem autorização explícita:
+
+```text id="vvw7ch"
+production deploy
+real customer messaging
+real patient modification
+real clinical record modification
+DNS change
+credential rotation
+production DB destructive operation
+```
+
+---
+
+# 515. AUTONOMOUS ENGINEERING
+
+Dentro do repositório e ambiente controlado, trabalhe autonomamente.
+
+Não interrompa para pequenas decisões técnicas.
+
+---
+
+# 516. BLOCK ONLY WHEN NECESSARY
+
+Bloqueie apenas quando depender genuinamente de:
+
+```text id="e4nd60"
+credential
+external infrastructure
+human authorization
+business decision
+production access
+```
+
+---
+
+# 517. BLOCKER HANDLING
+
+Quando bloqueado:
+
+não pare o restante do trabalho independente.
+
+Registre:
+
+```text id="qwmkkf"
+blockerId
+requirement
+reason
+owner
+requiredInput
+affectedGate
+```
+
+e continue com tudo que não dependa dele.
+
+---
+
+# 518. NO QUESTION LOOPS
+
+Não pergunte repetidamente por credenciais ou decisões já identificadas como externas.
+
+Registre blocker uma vez.
+
+---
+
+# 519. TECHNICAL DECISION POLICY
+
+Quando houver duas opções tecnicamente válidas:
+
+1. preserve invariants;
+2. prefira segurança;
+3. prefira simplicidade;
+4. prefira determinismo;
+5. prefira solução testável;
+6. documente trade-off.
+
+---
+
+# 520. ARCHITECTURAL CHANGE POLICY
+
+Mudança estrutural significativa exige:
+
+```text id="8i2ubf"
+rationale
+alternatives considered
+migration impact
+tests
+ADR when appropriate
+```
+
+---
+
+# 521. DO NOT REWRITE HEALTHY CODE
+
+Não reescreva módulos estáveis apenas para uniformidade estética.
+
+---
+
+# 522. PROTECT EXISTING GOOD PROPERTIES
+
+Não degrade:
+
+```text id="cz4h5f"
+tenant isolation
+outbox
+idempotency
+audit
+session pinning
+fail-closed startup
+approval integrity
+existing tests
+```
+
+---
+
+# 523. BACKWARD COMPATIBILITY
+
+Preserve contratos públicos quando razoável.
+
+Breaking change exige:
+
+```text id="i28cx9"
+justification
+migration
+tests
+```
+
+---
+
+# 524. DATABASE MIGRATION SAFETY
+
+Toda migration nova deve possuir:
+
+```text id="c2tz6n"
+forward migration
+compatibility assessment
+rollback/forward-fix strategy
+smoke test
+```
+
+---
+
+# 525. NO DESTRUCTIVE MIGRATION IN ONE STEP
+
+Para alteração perigosa use, quando necessário:
+
+```text id="o1wyxj"
+expand
+migrate
+contract
+```
+
+---
+
+# 526. PHASE 11 EVIDENCE GRAPH
+
+Crie um Evidence Graph mecanicamente verificável.
+
+Sugestão:
+
+```text id="sg27ym"
+certification/phase11/evidence-graph.json
+```
+
+---
+
+# 527. EVIDENCE NODE
+
+Cada node deve possuir:
+
+```text id="96d7e8"
+id
+type
+requirement
+artifact
+sha256
+producer
+candidateCommit
+timestamp
+status
+```
+
+---
+
+# 528. EVIDENCE EDGE
+
+Relacione:
+
+```text id="xfjnxe"
+requirement
+→ implementation
+→ test
+→ execution
+→ evidence
+→ gate
+```
+
+---
+
+# 529. ORPHAN REQUIREMENT
+
+Requirement obrigatório sem evidence:
+
+```text id="ntbtl3"
+UNPROVEN
+```
+
+---
+
+# 530. ORPHAN EVIDENCE
+
+Artifact sem requirement associado não conta automaticamente para certificação.
+
+---
+
+# 531. EVIDENCE FRESHNESS
+
+Node produzido para commit diferente:
+
+```text id="5cc46s"
+STALE
+```
+
+salvo artifact explicitamente commit-independent.
+
+---
+
+# 532. EVIDENCE HASH
+
+Todo artifact relevante deve ser hash-bound.
+
+---
+
+# 533. EVIDENCE IMMUTABILITY
+
+Se artifact mudar:
+
+verificação deve falhar até regeneração legítima.
+
+---
+
+# 534. EVIDENCE PRODUCER
+
+Registre quem/qual comando produziu o artifact.
+
+Exemplo:
+
+```text id="8ukff9"
+npm run test:chaos
+npm run test:evals
+npm run phase11:load
+```
+
+---
+
+# 535. EVIDENCE TIMESTAMP
+
+Use timestamps UTC consistentes.
+
+---
+
+# 536. EVIDENCE SCHEMA
+
+Valide Evidence Graph por Zod/JSON Schema.
+
+---
+
+# 537. EVIDENCE VERIFY COMMAND
+
+Crie algo equivalente a:
+
+```bash id="f5ltn6"
+npm run evidence:verify
+```
+
+---
+
+# 538. EVIDENCE VERIFY
+
+Deve validar:
+
+```text id="0dfpm7"
+schema
+hashes
+candidate binding
+required nodes
+edges
+freshness
+```
+
+---
+
+# 539. FINAL TEST INVENTORY
+
+Produza inventário das suites:
+
+```text id="ylafus"
+unit
+contract
+integration
+PostgreSQL
+E2E
+architecture
+security
+agent eval
+orchestrator eval
+adversarial
+chaos
+load
+restore
+integration-real
+pilot
+```
+
+---
+
+# 540. TEST COUNT IS NOT QUALITY
+
+Não use número de testes isoladamente como prova.
+
+---
+
+# 541. CRITICAL PATH TEST MAP
+
+Mapeie requisitos críticos aos testes correspondentes.
+
+---
+
+# 542. CRITICAL PATHS
+
+No mínimo:
+
+```text id="4aw4i9"
+tenant boundary
+identity
+goal creation
+planning
+governance
+risk
+approval
+tool execution
+outbox
+effect journal
+recovery
+human takeover
+replanning
+loop stop
+budget stop
+```
+
+---
+
+# 543. COVERAGE POLICY
+
+Coverage global é indicador secundário.
+
+Defina threshold mais rigoroso para módulos críticos.
+
+---
+
+# 544. CRITICAL MODULES
+
+Inclua pelo menos:
+
+```text id="c30dqn"
+orchestrator
+policy
+risk
+approval
+identity
+outbox
+worker kernel
+tenant boundary
+```
+
+---
+
+# 545. BRANCH COVERAGE
+
+Meta desejada:
+
+```text id="ovkymz"
+critical branch coverage >= 90%
+```
+
+quando tecnicamente razoável.
+
+---
+
+# 546. COVERAGE EXCEPTION
+
+Exceção exige:
+
+```text id="d7ft0w"
+file
+reason
+risk
+alternative evidence
+```
+
+---
+
+# 547. TEST SKIPS
+
+Liste todos os skipped tests.
+
+---
+
+# 548. CRITICAL SKIP
+
+Teste crítico skipped:
+
+```text id="es6tzk"
+blocking
+```
+
+salvo motivo externo explicitamente registrado.
+
+---
+
+# 549. FLAKY TESTS
+
+Não simplesmente rerun até verde.
+
+Investigue.
+
+---
+
+# 550. RETRYING TESTS
+
+Se retry for usado, registre flakiness.
+
+---
+
+# 551. DETERMINISTIC FIXTURES
+
+Prefira clocks, IDs e providers controláveis.
+
+---
+
+# 552. PROPERTY TESTING
+
+Use onde agregar valor:
+
+```text id="xylphu"
+canonical hashing
+state transitions
+tenant invariants
+idempotency
+plan DAG
+budget accounting
+```
+
+---
+
+# 553. FUZZING
+
+Considere fuzz/property testing para parsers/boundaries sensíveis.
+
+---
+
+# 554. HTTP FUZZ BOUNDARIES
+
+Teste entradas:
+
+```text id="ipdhl4"
+malformed JSON
+oversized payload
+invalid content type
+invalid headers
+duplicate headers
+```
+
+---
+
+# 555. WEBHOOK FUZZ
+
+Teste payloads malformados e replay.
+
+---
+
+# 556. PLAN FUZZ
+
+PlanValidator nunca deve crashar com output arbitrário de modelo.
+
+---
+
+# 557. TOOL RESULT FUZZ
+
+Evaluator não deve confiar em output arbitrário.
+
+---
+
+# 558. FINAL CHAOS MATRIX
+
+Produza matriz com:
+
+```text id="47vdwl"
+Scenario
+Failure injected
+Expected invariant
+Observed result
+Evidence
+```
+
+---
+
+# 559. REQUIRED CHAOS
+
+Inclua no mínimo:
+
+```text id="bqznlr"
+worker crash before effect
+worker crash after effect
+worker crash before ack
+lease expiry
+stale worker
+DB disconnect
+provider timeout
+channel outage
+duplicate webhook
+out-of-order webhook
+approval expiration
+human takeover race
+loop amplification
+```
+
+---
+
+# 560. CHAOS SUCCESS
+
+Para cenários críticos:
+
+```text id="05frnq"
+lost committed data = 0
+duplicate critical effect = 0
+cross-tenant effect = 0
+unauthorized effect = 0
+```
+
+---
+
+# 561. FINAL LOAD TEST
+
+Execute carga local/controlada reproduzível.
+
+---
+
+# 562. ORCHESTRATOR LOAD
+
+Além de eventos simples, inclua:
+
+```text id="42jyjq"
+goal creation
+plan creation
+step transitions
+evaluations
+```
+
+---
+
+# 563. CONCURRENT WORKERS
+
+Teste múltiplos workers quando possível.
+
+---
+
+# 564. HOT PARTITION
+
+Teste múltiplos Goals do mesmo tenant sem violar isolamento/ordering necessários.
+
+---
+
+# 565. MULTI-TENANT LOAD
+
+Use tenants sintéticos diferentes.
+
+---
+
+# 566. FAIRNESS
+
+Um tenant com carga alta não deve, quando arquitetura permitir evitar, bloquear indefinidamente todos os demais.
+
+---
+
+# 567. FINAL RESTORE TEST
+
+Crie estado não trivial contendo:
+
+```text id="52dm9g"
+active goal
+completed goal
+waiting approval
+dead-letter
+outbox
+audit
+replanned goal
+```
+
+Faça backup/restore.
+
+---
+
+# 568. RESTORE VERIFY
+
+Confirme:
+
+```text id="rmq03a"
+digest
+relationships
+tenant
+goal state
+approval state
+outbox
+audit
+```
+
+---
+
+# 569. ACTIVE GOAL AFTER RESTORE
+
+Goal ativo deve ser retomável.
+
+---
+
+# 570. NO DUPLICATE AFTER RESTORE
+
+Não repetir side effects já journaled.
+
+---
+
+# 571. FINAL SECURITY REPORT
+
+Gere:
+
+```text id="9lhfjz"
+docs/phase11/PHASE11_SECURITY_REVIEW.md
+```
+
+ou caminho consistente.
+
+---
+
+# 572. SECURITY REPORT CONTENT
+
+Inclua:
+
+```text id="7vr9az"
+threat model
+controls
+tests
+P0-P4 findings
+residual risks
+external blockers
+```
+
+---
+
+# 573. FINAL ARCHITECTURE REPORT
+
+Gere:
+
+```text id="1obf29"
+PHASE11_ARCHITECTURE.md
+```
+
+---
+
+# 574. ORCHESTRATOR REPORT
+
+Gere:
+
+```text id="zue0u9"
+PHASE11_ORCHESTRATOR.md
+```
+
+com:
+
+```text id="4it11x"
+state machine
+Goal
+Plan
+governance
+execution
+recovery
+replanning
+```
+
+---
+
+# 575. INTEGRATION REPORT
+
+Gere:
+
+```text id="i7j6dv"
+PHASE11_INTEGRATION_REPORT.md
+```
+
+---
+
+# 576. CHAOS REPORT
+
+Gere:
+
+```text id="nyex59"
+PHASE11_CHAOS_REPORT.md
+```
+
+---
+
+# 577. EVAL REPORT
+
+Gere:
+
+```text id="lhcgqg"
+PHASE11_EVAL_REPORT.md
+```
+
+---
+
+# 578. LOAD REPORT
+
+Gere:
+
+```text id="hl6s6a"
+PHASE11_LOAD_REPORT.md
+```
+
+---
+
+# 579. RECOVERY REPORT
+
+Gere:
+
+```text id="d2onf2"
+PHASE11_RECOVERY_REPORT.md
+```
+
+---
+
+# 580. PILOT REPORT
+
+Se executado:
+
+```text id="a78e4j"
+PHASE11_PILOT_REPORT.md
+```
+
+Caso contrário:
+
+registre `NOT_EXECUTED`, sem inventar relatório de sucesso.
+
+---
+
+# 581. FINAL AUDIT
+
+Gere:
+
+```text id="kg5svz"
+PHASE11_FINAL_AUDIT.md
+```
+
+---
+
+# 582. FINAL AUDIT MUST BE CRITICAL
+
+Não escreva relatório promocional.
+
+Procure razões para rejeitar o candidato.
+
+---
+
+# 583. FINAL AUDIT QUESTIONS
+
+Responda:
+
+```text id="8jph8x"
+Can a model gain authority?
+Can the orchestrator bypass governance?
+Can a replanner escalate?
+Can a worker duplicate effects?
+Can tenants leak?
+Can approvals be replayed?
+Can state be lost on crash?
+Can loops run forever?
+Can budgets reset?
+Can certification become stale?
+```
+
+---
+
+# 584. EACH ANSWER NEEDS EVIDENCE
+
+Não responder apenas "no".
+
+Aponte implementação/test/evidence.
+
+---
+
+# 585. INDEPENDENT CRITIC REPORT
+
+Gere:
+
+```text id="tmugrl"
+PHASE11_INDEPENDENT_CRITIC.md
+```
+
+quando o processo permitir crítica independente.
+
+---
+
+# 586. FINAL BACKLOG
+
+Gere backlog somente para itens realmente remanescentes.
+
+---
+
+# 587. BACKLOG FIELDS
+
+```text id="a28sdb"
+ID
+Severity
+Priority
+Owner
+Description
+Acceptance
+EvidenceRequired
+BlockingProfile
+Status
+```
+
+---
+
+# 588. NO BACKLOG DUMP
+
+Não transforme ideias opcionais em centenas de tarefas.
+
+---
+
+# 589. CRITICAL BACKLOG
+
+P0/P1 deve estar no topo.
+
+---
+
+# 590. FINAL RELEASE MANIFEST
+
+Gere:
+
+```text id="cvw2na"
+certification/phase11/release-manifest.json
+```
+
+---
+
+# 591. RELEASE MANIFEST CONTENT
+
+```text id="8cs4ck"
+candidateCommit
+treeHash
+buildId
+containerDigest
+sbomDigest
+migrationDigest
+agentVersion
+policyVersion
+promptVersions
+toolVersions
+integrationEvidence
+certificationId
+```
+
+---
+
+# 592. MISSING VALUE
+
+Se algo não existir:
+
+use `null`/`NOT_AVAILABLE` conforme schema.
+
+Não invente digest.
+
+---
+
+# 593. FINAL CERTIFICATION RESULT
+
+Gere:
+
+```text id="cmmttj"
+certification/phase11-result.json
+```
+
+---
+
+# 594. REQUIRED FINAL RESULT FIELDS
+
+Inclua:
+
+```text id="7mwcr8"
+candidate
+deploymentProfile
+
+scores
+
+findings
+
+gates
+
+criticalInvariants
+
+evals
+chaos
+load
+recovery
+integrations
+pilot
+
+rpoRto
+humanSignoff
+
+certification
+decision
+blockers
+```
+
+---
+
+# 595. CRITICAL INVARIANTS
+
+Registre boolean/evidence para:
+
+```text id="1a2qud"
+modelCannotGrantAuthority
+orchestratorCannotBypassGovernance
+replannerCannotEscalate
+crossTenantLeakZero
+duplicateCriticalEffectsZero
+lostCommittedMessagesZero
+approvalReplayZero
+unboundedLoopImpossible
+budgetPersistsAcrossRestart
+certificationBoundToCleanHead
+```
+
+---
+
+# 596. BOOLEAN WITHOUT EVIDENCE INVALID
+
+Cada invariant deve apontar para evidence IDs.
+
+---
+
+# 597. FINAL DECISION ENUM
+
+Use:
+
+```text id="q8r1po"
+GO
+CONDITIONAL_GO
+NO_GO
+```
+
+---
+
+# 598. FINAL CERTIFICATION ENUM
+
+Use:
+
+```text id="dnmp5m"
+STATE_OF_ART_TRIPLE_AAA
+AAA_CANDIDATE
+AAA_CONTROLLED
+NO_GO
+```
+
+Evite duplicar decision e certification semanticamente sem necessidade.
+
+---
+
+# 599. STATE_OF_ART_TRIPLE_AAA
+
+Só pode ocorrer se:
+
+```text id="p3atya"
+deploymentProfile == PRODUCTION
+
+cleanHead == true
+
+allRequiredGates == PASS
+
+P0 == 0
+P1 == 0
+criticalP2 == 0
+
+criticalInvariants == PASS
+
+PostgreSQL == VALIDATED
+
+requiredRealIntegrations == VALIDATED_REAL
+
+RPO/RTO == VALIDATED
+
+supervisedPilot == PASS
+
+humanSignoff == VALIDATED
+
+independentCritic has no blocking finding
+```
+
+---
+
+# 600. AAA_CANDIDATE
+
+Use quando engenharia estiver completa, mas algum gate externo final ainda faltar.
+
+---
+
+# 601. AAA_CONTROLLED
+
+Use quando apenas ambiente controlado tiver sido validado.
+
+---
+
+# 602. NO_GO
+
+Use quando houver blocker crítico técnico ou segurança.
+
+---
+
+# 603. CONDITIONAL_GO
+
+Pode significar apto para próximo profile, nunca automaticamente produção.
+
+Exemplo:
+
+```text id="mvmuw2"
+CONTROLLED_LOCAL
+→ CONDITIONAL_GO for STAGING
+```
+
+---
+
+# 604. PROFILE PROMOTION
+
+Decisão deve sempre indicar:
+
+```text id="rbpnhq"
+currentProfile
+requestedProfile
+```
+
+---
+
+# 605. DO NOT SAY "PRODUCTION READY" AMBIGUOUSLY
+
+Diga:
+
+```text id="3a56ps"
+eligible for SUPERVISED_PILOT
+```
+
+ou:
+
+```text id="59tq5p"
+eligible for PRODUCTION
+```
+
+---
+
+# 606. FINAL COMMAND MATRIX
+
+Documente comandos canônicos:
+
+```text id="s2gs3q"
+npm run format:check
+npm run typecheck
+npm run lint
+npm run build
+npm test
+npm run test:coverage
+
+npm run test:postgres
+npm run test:e2e
+
+npm run test:evals
+npm run test:orchestrator
+npm run test:chaos
+
+npm run evidence:verify
+npm run certify
+npm run certification:verify
+npm run production:preflight
+npm run promotion:check
+```
+
+Adapte nomes ao que realmente for implementado.
+
+---
+
+# 607. COMMAND MUST EXIST
+
+Não documente comando inexistente.
+
+---
+
+# 608. FINAL FULL RUN
+
+Antes do encerramento, execute tudo que for possível no ambiente atual.
+
+---
+
+# 609. EXTERNAL GATES
+
+Não tente falsificar execução indisponível.
+
+---
+
+# 610. FINAL WORKING TREE
+
+Antes de gerar certificação final local:
+
+verifique estado.
+
+Se dirty:
+
+não gere uma falsa certificação final.
+
+---
+
+# 611. COMMIT BOUND CERTIFICATION
+
+Se autorizado a

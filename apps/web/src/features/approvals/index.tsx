@@ -89,7 +89,9 @@ export function ApprovalsPanel({
           </div>
         ) : null}
         {!isLoading && !error && approvals.length === 0 ? (
-          <p className="state">Nenhuma aprovacao pendente.</p>
+          <p className="state" role="status" aria-live="polite">
+            Nenhuma aprovacao pendente.
+          </p>
         ) : null}
         {!isLoading && !error
           ? approvals.map((approval) => {

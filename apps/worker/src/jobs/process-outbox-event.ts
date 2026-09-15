@@ -87,6 +87,7 @@ export async function completeClaimedOutboxEvent(
       tenantId: input.tenantId,
       eventId: event.id,
       workerId: input.workerId,
+      leaseToken: event.leaseToken ?? undefined,
       terminal: true,
       handoff: true,
       error: OUTBOX_TAKEOVER_SUPPRESSED_ERROR
@@ -104,6 +105,7 @@ export async function completeClaimedOutboxEvent(
       tenantId: input.tenantId,
       eventId: event.id,
       workerId: input.workerId,
+      leaseToken: event.leaseToken ?? undefined,
       terminal: true,
       error: `unknown controlled outbox handler: ${event.type}`
     })
@@ -114,6 +116,7 @@ export async function completeClaimedOutboxEvent(
       tenantId: input.tenantId,
       eventId: event.id,
       workerId: input.workerId,
+      leaseToken: event.leaseToken ?? undefined,
       effect: input.effect,
       ...(input.takeoverActive !== undefined
         ? { takeoverActive: input.takeoverActive }
@@ -141,6 +144,7 @@ export async function completeClaimedOutboxEvent(
         tenantId: input.tenantId,
         eventId: event.id,
         workerId: input.workerId,
+        leaseToken: event.leaseToken ?? undefined,
         error
       })
     } catch {

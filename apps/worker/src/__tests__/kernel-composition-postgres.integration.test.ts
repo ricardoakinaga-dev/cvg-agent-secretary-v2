@@ -59,6 +59,7 @@ interface OutboxRow {
   id: string
   idempotency_key: string
   status: string
+  trace_id?: string | null
 }
 
 interface InboundResponse {
@@ -769,6 +770,12 @@ describe('AAA-21 composed kernel path over API → outbox → worker (PostgreSQL
       })
       expect(first.data.outbox.status).toBe('pending')
       expect(first.data.correlationId).toMatch(/^corr_/)
+      const inboundOutboxRows = await queryRows<Pick<OutboxRow, 'trace_id'>>(
+        kernelPool1,
+        'SELECT trace_id FROM outbox_events WHERE tenant_id = $1 AND id = $2',
+        [TENANT, first.data.outbox.id]
+      )
+      expect(inboundOutboxRows[0]?.trace_id).toMatch(/^[0-9a-f]{32}$/)
 
       const processedFirst = await worker1!.worker.processNext(
         first.data.outbox.id
@@ -841,6 +848,8 @@ describe('AAA-21 composed kernel path over API → outbox → worker (PostgreSQL
       const processedSecond =
         await worker1!.worker.processNext(continuationEventId)
       expect(processedSecond).toMatchObject({ status: 'processed' })
+      const executionTurn = kernelRuntime1.turnResults.at(-1)
+      const executionTraceId = executionTurn?.traceId
 
       expect(kernelRuntime1.toolInvocations).toHaveLength(1)
       const invocation = kernelRuntime1.toolInvocations[0]!
@@ -850,6 +859,8 @@ describe('AAA-21 composed kernel path over API → outbox → worker (PostgreSQL
         text: 'SYNTHETIC_CONTROLLED_KERNEL_PAYLOAD'
       })
       expect(invocation.correlationId).toBe(first.data.correlationId)
+      expect(invocation.traceId).toBe(inboundOutboxRows[0]?.trace_id)
+      expect(executionTraceId).toBe(inboundOutboxRows[0]?.trace_id)
 
       const journalRows = await queryRows<JournalRow>(
         kernelPool1,
@@ -870,13 +881,11 @@ describe('AAA-21 composed kernel path over API → outbox → worker (PostgreSQL
       )
       expect(executed.status).toBe('EXECUTED')
 
-      const executionTurn = kernelRuntime1.turnResults.at(-1)
       expect(executionTurn).toMatchObject({
         outcome: 'executed',
         correlationId: first.data.correlationId,
         auditChainValid: true
       })
-      const executionTraceId = executionTurn?.traceId
       expect(executionTraceId).toMatch(/^[0-9a-f]{16,}$/)
       expect(kernelRuntime1.audit.verify()).toEqual({ valid: true })
       const auditRecords = kernelRuntime1.audit.records()
@@ -920,7 +929,7 @@ describe('AAA-21 composed kernel path over API → outbox → worker (PostgreSQL
 
       const outboundRows = await queryRows<OutboxRow>(
         kernelPool1,
-        "SELECT id, idempotency_key, status FROM outbox_events WHERE tenant_id = $1 AND type = 'message.outbound'",
+        "SELECT id, idempotency_key, status, trace_id FROM outbox_events WHERE tenant_id = $1 AND type = 'message.outbound'",
         [TENANT]
       )
       expect(outboundRows).toHaveLength(1)

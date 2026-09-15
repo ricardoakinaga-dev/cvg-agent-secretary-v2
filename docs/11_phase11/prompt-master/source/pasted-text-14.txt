@@ -1,0 +1,520 @@
+# CONCLUSÃO DO ITEM 1300
+
+Somente então determine, pela evidência:
+
+```text id="q73jj6"
+NO_GO
+        │
+        ├── ou
+        │
+AAA_CONTROLLED
+        │
+        ├── ou
+        │
+AAA_CANDIDATE
+        │
+        ├── ou
+        │
+CONDITIONAL_GO
+        │
+        └── ou
+        │
+STATE_OF_ART_TRIPLE_AAA
+```
+
+Nunca escolha o resultado desejado antecipadamente.
+
+O resultado é consequência dos gates.
+
+---
+
+# 1301. DEFINITION OF DONE
+
+A Phase 11 está concluída somente quando existir uma cadeia verificável:
+
+```text id="72kl3e"
+REQUIREMENT
+     ↓
+IMPLEMENTATION
+     ↓
+TEST
+     ↓
+EXECUTION
+     ↓
+EVIDENCE
+     ↓
+GATE
+     ↓
+CERTIFICATION
+```
+
+Nenhum elo obrigatório pode existir apenas em documentação.
+
+---
+
+# 1302. FINAL ARCHITECTURAL CONTRACT
+
+A arquitetura final deve preservar permanentemente:
+
+```text id="wj3t6f"
+OBSERVE
+   ↓
+UNDERSTAND
+   ↓
+ORCHESTRATOR
+   ↓
+GOVERN
+   ↓
+ACT
+   ↓
+OBSERVE RESULT
+   ↓
+EVALUATE
+   ↓
+ ┌───────────────┐
+ │ Goal reached? │
+ └───────┬───────┘
+       /   \
+     YES    NO
+      │      │
+      ↓      ↓
+   RESPOND  REPLAN
+      │      │
+      ↓      │
+     STOP ◄──┘
+```
+
+Com os boundaries transversais:
+
+```text id="a7bq43"
+IDENTITY
+TENANT
+POLICY
+CAPABILITY
+RISK
+APPROVAL
+BUDGET
+AUDIT
+EVIDENCE
+TELEMETRY
+```
+
+---
+
+# 1303. AUTHORITY CONTRACT
+
+A relação de autoridade é:
+
+```text id="u64uj5"
+MODEL
+   │
+   │ proposes
+   ▼
+ORCHESTRATOR
+   │
+   │ coordinates
+   ▼
+GOVERNANCE
+   │
+   │ authorizes
+   ▼
+TOOL / EFFECT BOUNDARY
+   │
+   │ executes
+   ▼
+REAL WORLD
+```
+
+Nunca:
+
+```text id="5edz4m"
+MODEL → AUTHORITY
+```
+
+Nunca:
+
+```text id="7yjj0k"
+ORCHESTRATOR → BYPASS GOVERNANCE
+```
+
+Nunca:
+
+```text id="wd4exl"
+TOOL → SELF-AUTHORIZATION
+```
+
+---
+
+# 1304. STATE CONTRACT
+
+A relação de estado é:
+
+```text id="twlcak"
+PostgreSQL / Authoritative Systems
+             │
+             ▼
+       Operational State
+```
+
+Nunca:
+
+```text id="3t9whk"
+LLM Memory
+   ↓
+Operational Truth
+```
+
+---
+
+# 1305. EFFECT CONTRACT
+
+A relação de efeitos é:
+
+```text id="67ubak"
+Governed Step
+     ↓
+Outbox / Execution Boundary
+     ↓
+Effect
+     ↓
+Effect Journal
+     ↓
+Observe Result
+     ↓
+Reconciliation if required
+```
+
+---
+
+# 1306. RECOVERY CONTRACT
+
+Depois de qualquer restart suportado:
+
+```text id="c6ugab"
+LOAD
+ ↓
+RECONCILE
+ ↓
+RECOVER LEASES
+ ↓
+RESTORE BUDGET
+ ↓
+RESTORE GOAL/PLAN
+ ↓
+RESUME SAFELY
+```
+
+Não:
+
+```text id="ob7ut7"
+restart
+↓
+forget
+↓
+repeat everything
+```
+
+---
+
+# 1307. HUMAN CONTRACT
+
+Quando houver necessidade humana:
+
+```text id="rqacpy"
+WAITING_APPROVAL
+HUMAN_HANDOFF
+PENDING_RETURN
+```
+
+são estados legítimos.
+
+Autonomia máxima não é objetivo.
+
+---
+
+# 1308. CERTIFICATION CONTRACT
+
+A certificação deve responder:
+
+```text id="t4ix47"
+Which commit?
+Which tree?
+Which profile?
+Which tests?
+Which integrations?
+Which infrastructure?
+Which evidence?
+Which human signoff?
+Which unresolved risks?
+```
+
+---
+
+# 1309. STATE OF ART CONTRACT
+
+`STATE_OF_ART_TRIPLE_AAA` significa que:
+
+```text id="j9fzz0"
+architecture quality
+AND
+security quality
+AND
+agent quality
+AND
+orchestrator quality
+AND
+reliability
+AND
+operability
+AND
+real integration proof
+AND
+recovery proof
+AND
+human validation where required
+AND
+fresh mechanical evidence
+```
+
+atingiram a barra definida.
+
+---
+
+# 1310. NO SHORTCUTS
+
+Não substitua:
+
+```text id="6ls3jo"
+real integration
+```
+
+por:
+
+```text id="syp9g8"
+mock
+```
+
+Não substitua:
+
+```text id="r2ytbr"
+pilot
+```
+
+por:
+
+```text id="vknnvm"
+eval
+```
+
+Não substitua:
+
+```text id="4o4otd"
+measured RPO/RTO
+```
+
+por:
+
+```text id="nml1zd"
+documented target
+```
+
+Não substitua:
+
+```text id="7drakf"
+human signoff
+```
+
+por:
+
+```text id="zvlpcp"
+model approval
+```
+
+---
+
+# 1311. FINAL ENGINEERING BAR
+
+O código entregue deve ser:
+
+```text id="76hr0q"
+typed
+tested
+bounded
+modular
+observable
+recoverable
+secure-by-default
+fail-closed where required
+documented where necessary
+mechanically verifiable
+```
+
+---
+
+# 1312. FINAL PRODUCT BAR
+
+O comportamento entregue deve ser:
+
+```text id="bguxv9"
+useful
+predictable
+safe
+operator-controllable
+auditable
+recoverable
+```
+
+---
+
+# 1313. FINAL AGENT BAR
+
+O Agent deve:
+
+```text id="v7ssit"
+understand
+plan
+use knowledge
+propose actions
+ask when necessary
+escalate when necessary
+```
+
+sem adquirir autoridade indevida.
+
+---
+
+# 1314. FINAL ORCHESTRATOR BAR
+
+O Orchestrator deve:
+
+```text id="z3h4zc"
+coordinate
+plan
+route
+track goals
+track dependencies
+evaluate progress
+replan
+enforce budgets
+detect loops
+stop safely
+```
+
+sem substituir Governance.
+
+---
+
+# 1315. FINAL GOVERNANCE BAR
+
+Governance deve permanecer determinística e independente do modelo para decisões de autoridade.
+
+---
+
+# 1316. FINAL RELIABILITY BAR
+
+Uma falha isolada não deve silenciosamente causar:
+
+```text id="lln93s"
+lost message
+duplicate critical action
+tenant leak
+approval bypass
+unbounded loop
+false completion
+```
+
+---
+
+# 1317. FINAL OBSERVABILITY BAR
+
+Uma execução crítica deve ser reconstruível sem acessar chain-of-thought privado.
+
+---
+
+# 1318. FINAL AUDIT BAR
+
+Uma auditoria independente deve conseguir contestar a certificação e reproduzir as principais evidências.
+
+---
+
+# 1319. FINAL RELEASE BAR
+
+O artifact que será promovido deve ser exatamente o artifact que foi certificado.
+
+---
+
+# 1320. FINAL PROMOTION BAR
+
+Nenhum deployment profile recebe promoção com mandatory gate ausente.
+
+---
+
+# 1321. FINAL HONESTY BAR
+
+Quando a engenharia local estiver excelente, mas faltarem provas externas, reporte isso como sucesso de engenharia e não como produção certificada.
+
+---
+
+# 1322. TERMINAL RESULT
+
+Ao final, produza exatamente uma conclusão baseada na evidência:
+
+```text id="24ywef"
+NO_GO
+```
+
+ou:
+
+```text id="bhp4c7"
+AAA_CONTROLLED
+```
+
+ou:
+
+```text id="k7eobd"
+AAA_CANDIDATE
+```
+
+ou, quando semanticamente aplicável:
+
+```text id="6pclws"
+CONDITIONAL_GO
+```
+
+ou:
+
+```text id="e3zq11"
+STATE_OF_ART_TRIPLE_AAA
+```
+
+---
+
+# 1323. FINAL DIRECTIVE
+
+**Não tente alcançar o rótulo.**
+
+Alcance os invariants.
+
+Alcance os gates.
+
+Produza as evidências.
+
+Então permita que o certification engine determine o rótulo.
+
+---
+
+# 1324. EXECUTE
+
+Agora execute integralmente a **PHASE 11 — ORCHESTRATED RUNTIME & TRIPLE-AAA PRODUCTION CLOSURE** sobre o estado real atual do `cvg-agent-secretary-v2`.
+
+Não entregue apenas planejamento.
+
+Não encerre após implementar o Orchestrator.
+
+Não encerre após os testes unitários.
+
+Não encerre após obter uma suíte verde parcial.
+
+Complete todo trabalho local executável, faça a auditoria adversarial, gere a cadeia de evidências, execute a certificação e reporte honestamente os gates externos que não puderem ser comprovados.
+
+## END OF MASTER PROMPT

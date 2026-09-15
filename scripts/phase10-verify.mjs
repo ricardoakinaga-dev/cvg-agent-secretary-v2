@@ -1255,8 +1255,13 @@ function runStandardVerification() {
   const reader = artifactReaderFor(historicalMode ? 'historical' : 'current')
   const bound = Boolean(result.candidate) && Boolean(manifest.candidateId)
   let currentCandidateId
+  let currentCandidate
   if (bound) {
-    currentCandidateId = computeCandidateId(collectCandidateFiles(root))
+    currentCandidate = buildCandidateRecord({
+      root,
+      files: collectCandidateFiles(root)
+    })
+    currentCandidateId = currentCandidate.candidateId
     if (result.candidate.candidateId !== currentCandidateId) {
       fail(
         `CANDIDATE_DRIFT recorded ${result.candidate.candidateId}, current ${currentCandidateId}`
@@ -1283,6 +1288,26 @@ function runStandardVerification() {
         }
       }
     }
+    if (result.commit !== currentCandidate.git.head) {
+      fail(
+        `COMMIT_DRIFT recorded ${result.commit}, current ${currentCandidate.git.head}`
+      )
+    }
+    if (result.candidate.git.head !== currentCandidate.git.head) {
+      fail(
+        `CANDIDATE_COMMIT_DRIFT recorded ${result.candidate.git.head}, current ${currentCandidate.git.head}`
+      )
+    }
+    if (manifest.commit !== currentCandidate.git.head) {
+      fail(
+        `MANIFEST_COMMIT_DRIFT recorded ${manifest.commit}, current ${currentCandidate.git.head}`
+      )
+    }
+    if (result.candidate.git.dirty !== currentCandidate.git.dirty) {
+      fail(
+        `CANDIDATE_DIRTY_STATE_CHANGED recorded ${result.candidate.git.dirty}, current ${currentCandidate.git.dirty}`
+      )
+    }
   }
 
   const qualificationFailures = verifyQualification({
@@ -1291,6 +1316,8 @@ function runStandardVerification() {
     artifactReader: reader,
     requiredGates: PHASE10_REQUIRED_LOCAL_GATES,
     currentCandidateId,
+    currentCommit: currentCandidate?.git.head,
+    currentDirty: currentCandidate?.git.dirty,
     enforceEvidence: bound && !historicalMode
   })
   for (const entry of qualificationFailures) {

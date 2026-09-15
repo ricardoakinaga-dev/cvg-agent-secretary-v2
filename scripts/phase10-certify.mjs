@@ -56,13 +56,15 @@ const commands = [
 
 function run(entry, { runId, candidateId }) {
   const startedAt = Date.now()
+  const commandEnv = { ...process.env, CI: process.env.CI ?? 'true' }
+  if (entry.id !== 'postgres') delete commandEnv.TEST_DATABASE_URL
   const result = spawnSync(entry.command, {
     cwd: root,
     shell: true,
     encoding: 'utf8',
     timeout: 3_600_000,
     maxBuffer: 128 * 1024 * 1024,
-    env: { ...process.env, CI: process.env.CI ?? 'true' }
+    env: commandEnv
   })
   const durationMs = Date.now() - startedAt
   const log = [

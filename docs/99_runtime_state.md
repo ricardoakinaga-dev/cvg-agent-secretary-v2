@@ -1,3 +1,27 @@
+# AAA-21-PHASE11-HARDEN-20260915 — integridade e runtime alvo — 2026-09-15
+
+- current_engine: `AUDIT`; task: `AAA-21` / Phase 11; status: `IN_PROGRESS`; produção `NO-GO`.
+- last_completed_action: runtime Node `22.23.2` localizado e usado em uma execução completa; `node_target` passou, assim como unit, coverage, PostgreSQL, E2E, build, lint, security e startup. O format ativo agora passa após separar evidência histórica imutável; a cadeia candidate-bound passou a exigir commit/manifest/dirty state coerentes e recebeu regressões.
+- next_action: selar os bytes atuais em commit local, executar Phase 10 e Phase 11 sob Node 22 com PostgreSQL descartável, verificar os manifests no mesmo candidato e encerrar o banco.
+- blockers: gates provider/canal/IdP/humanos, piloto, durabilidade física/RPO-RTO e produção permanecem bloqueados; `phase10_current_verification` será recalculada após o novo selo. Nenhum dado real ou efeito externo é permitido.
+- evidência: [`phase11_execution_contract.md`](11_phase11/phase11_execution_contract.md), [`requirements-matrix.json`](11_phase11/requirements-matrix.json), [`phase11-certification.test.ts`](../tests/phase11-certification.test.ts) e artefatos atuais em `certification/`.
+
+# AAA-21-PHASE11-CERT-20260915 — certificação candidate-bound final — 2026-09-15
+
+- current_engine: `AUDIT`; task: `AAA-21` / Phase 11; status: `BLOCKED`; produção `NO-GO`.
+- last_completed_action: `npm run certify:phase11` concluiu e gravou o resultado/manifesto atuais; `npm run certification:verify:phase11` passou no mesmo candidato. Gates PASS: prompt integrity, typecheck, lint, build, unit, coverage, security, worker startup, PostgreSQL, E2E. Gates FAIL: format, verificação corrente da Phase 10, árvore limpa e target Node.
+- next_action: qualificar com Node `>=22 <23`, fechar o format global e a verificação corrente da Phase 10, repetir revisão independente fresca e obter os gates externos/humanos; manter o piloto, produção, provider/canal/IdP/RAG e durabilidade física/RPO-RTO bloqueados.
+- blockers: runtime local `24.20.0` versus target `>=22 <23`; format global histórico; candidato deliberadamente alterado; Phase 10 current verification FAIL; provider/canal/IdP/human signoff não validados; PostgreSQL descartável não prova durabilidade física ou RPO/RTO. O veredicto da máquina é `decision=NO_GO`, `certification=NO_GO`.
+- evidência: [`phase11-result.json`](../certification/phase11-result.json), [`phase11-manifest.json`](../certification/phase11-manifest.json), [`PHASE11-ROUND-20260914.md`](11_phase11/PHASE11-ROUND-20260914.md), [`requirements-matrix.json`](11_phase11/requirements-matrix.json), [`phase11_execution_contract.md`](11_phase11/phase11_execution_contract.md).
+
+# AAA-21-PHASE11-EXEC-20260914 — rodada controlada consolidada — 2026-09-14
+
+- current_engine: `AUDIT`; task: `AAA-21` / Phase 11; status: `BLOCKED`; produção `NO-GO`.
+- last_completed_action: os 14 prompts foram copiados byte a byte para [`docs/11_phase11/prompt-master/source`](11_phase11/prompt-master/source) e vinculados por hash; matriz, contrato e certificador candidate-bound foram adicionados. O caminho controlado recebeu correções de persistência PostgreSQL, fencing de claim do outbox na migration `0018_outbox_lease_fencing`, continuidade de trace no cenário público, console responsivo e fixture E2E de identidade fornecida pelo host. Evidência corrente: PostgreSQL 21 arquivos/193 testes, web 23/81, E2E 8/8, typecheck/lint/build/startup PASS.
+- next_action: executar e verificar a certificação Phase 11 no candidato final; depois obter Node 22, resolver o format global/cobertura, repetir crítico independente e manter gates externos/humanos separados.
+- blockers: Node local 24 versus target `>=22 <23`; árvore de trabalho alterada durante a execução; format global histórico falha em 280 arquivos; cobertura crítica, Docker/durabilidade física/RPO-RTO, provider/canal/IdP/RAG, piloto e signoff humano não validados. PostgreSQL usado nesta rodada é descartável e não prova RPO/RTO.
+- evidência: [`PHASE11-ROUND-20260914.md`](11_phase11/PHASE11-ROUND-20260914.md), [`requirements-matrix.json`](11_phase11/requirements-matrix.json), [`phase11_execution_contract.md`](11_phase11/phase11_execution_contract.md), [`prompt-master/README.md`](11_phase11/prompt-master/README.md), `certification/phase11-result.json` e `certification/phase11-manifest.json` após a execução do runner.
+
 # AAA-21-EXEC-20260914 — BUILD controlado autorizado e SPEC congelada — 2026-09-14
 
 - current_engine: `BUILD`; task: `AAA-21-EXEC-20260914`; status: `IN_PROGRESS`; produção `NO-GO`.
@@ -2428,7 +2452,7 @@ skipped`; coverage `84,86/80,12/84,97/85,97`; readiness `4/4`; worker
   `origin/main` e arquivos do checkpoint; nenhuma ocorrência dos padrões de
   credenciais pesquisados e nenhum arquivo acima de 20 MiB.
 - evidência: `git fetch origin` PASS; `git rev-list --left-right --count
-  HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
+HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
   encontrou somente espaços finais/linha vazia em logs brutos de certificação
   já existentes, preservados para não invalidar evidências.
 - validação: testes não reexecutados nesta rodada de versionamento; resultados

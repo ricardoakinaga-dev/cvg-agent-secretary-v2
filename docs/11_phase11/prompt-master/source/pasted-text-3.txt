@@ -1,0 +1,1287 @@
+# CONTINUAÇÃO — PHASE 11.13
+
+## REAL INTEGRATION READINESS
+
+> Continuação direta do item 137. Todos os requisitos anteriores permanecem obrigatórios.
+
+---
+
+# 137. PHASE 11.13 — REAL INTEGRATION READINESS
+
+A Phase 11.13 deve provar que o runtime está preparado para operar com integrações reais sem permitir que providers externos atravessem os boundaries arquiteturais.
+
+Integrações prioritárias:
+
+```text
+EvolutionAPI
+Chatwoot
+Model Provider real
+External Identity Provider
+CVG internal systems
+```
+
+A ausência de credenciais ou infraestrutura externa NÃO deve ser contornada com mocks para obter certificação externa.
+
+Mocks e fixtures podem provar contratos.
+
+Somente endpoints reais podem produzir:
+
+```text
+VALIDATED_REAL
+```
+
+---
+
+# 138. PRINCÍPIO DE INTEGRAÇÃO
+
+Nenhuma integração externa pode ser chamada diretamente pelo:
+
+```text
+Agent
+Planner
+Replanner
+Orchestrator
+Evaluator
+```
+
+Fluxo obrigatório:
+
+```text
+Orchestrator
+     ↓
+Govern
+     ↓
+Tool / Channel / Model Gateway
+     ↓
+Adapter
+     ↓
+External Provider
+```
+
+---
+
+# 139. ADAPTER BOUNDARY
+
+Cada provider deve possuir adapter explícito.
+
+Exemplo:
+
+```text
+ChannelGateway
+├── EvolutionApiAdapter
+├── ChatwootAdapter
+└── ControlledChannelAdapter
+
+ModelGateway
+├── OpenAICompatibleAdapter
+├── OllamaAdapter
+├── ControlledModelAdapter
+└── future providers
+```
+
+---
+
+# 140. PROVIDER SDK ISOLATION
+
+SDKs ou detalhes HTTP específicos de providers devem existir somente na camada apropriada.
+
+Crie architectural tests impedindo imports proibidos.
+
+Exemplo:
+
+```text
+packages/orchestrator
+    MUST NOT import
+EvolutionAPI implementation
+Chatwoot implementation
+OpenAI SDK
+PostgreSQL implementation
+```
+
+---
+
+# 141. EVOLUTIONAPI
+
+Prepare adapter real para EvolutionAPI conforme a versão efetivamente adotada pelo projeto.
+
+Não invente endpoints.
+
+Leia:
+
+* documentação oficial;
+* versão configurada;
+* contratos reais;
+* comportamento real da instância de homologação.
+
+---
+
+# 142. EVOLUTIONAPI — INBOUND
+
+Validar recebimento real de:
+
+```text
+text
+image
+audio
+video
+document
+reply
+quoted message
+```
+
+quando suportados pela versão utilizada.
+
+Normalize tudo para o canonical channel envelope.
+
+---
+
+# 143. EVOLUTIONAPI — OUTBOUND
+
+Validar envio real de pelo menos:
+
+```text
+text
+image
+audio
+video
+document
+```
+
+quando suportado.
+
+Não liberar tipos não testados como `VALIDATED_REAL`.
+
+---
+
+# 144. MEDIA PIPELINE
+
+Mídia deve passar por boundary próprio.
+
+Validar:
+
+```text
+MIME type
+declared size
+actual size
+download timeout
+upload timeout
+maximum size
+malformed media
+unsupported media
+```
+
+---
+
+# 145. NÃO CONFIE EM MIME DECLARADO
+
+Quando necessário, faça validação segura do conteúdo.
+
+Nunca trate filename/extensão como prova suficiente do tipo de arquivo.
+
+---
+
+# 146. MEDIA STORAGE
+
+Defina explicitamente:
+
+```text
+temporary
+persistent
+external
+```
+
+e política de retenção.
+
+Não deixe arquivos temporários acumularem indefinidamente.
+
+---
+
+# 147. EVOLUTIONAPI WEBHOOK SECURITY
+
+Quando o mecanismo disponível permitir, valide:
+
+```text
+authentication/signature
+timestamp
+replay
+schema
+payload size
+content type
+tenant mapping
+instance mapping
+```
+
+---
+
+# 148. WEBHOOK IDEMPOTENCY
+
+Mesmo evento recebido múltiplas vezes deve produzir:
+
+```text
+one logical inbound event
+```
+
+Teste duplicação.
+
+---
+
+# 149. OUT-OF-ORDER EVENTS
+
+Teste:
+
+```text
+message.created
+message.updated
+delivery
+read receipt
+```
+
+fora de ordem quando o provider puder produzir esse comportamento.
+
+O sistema não deve corromper estado.
+
+---
+
+# 150. EVOLUTIONAPI RECONNECT
+
+Teste:
+
+```text
+provider restart
+connection lost
+session reconnect
+webhook resumes
+```
+
+e confirme que não há duplicação indevida.
+
+---
+
+# 151. PROVIDER OUTAGE
+
+EvolutionAPI indisponível:
+
+```text
+outbound effect
+↓
+controlled failure
+↓
+retry policy
+↓
+outbox
+```
+
+Nunca:
+
+```text
+message silently lost
+```
+
+---
+
+# 152. DELIVERY SEMANTICS
+
+Diferencie:
+
+```text
+accepted
+sent
+delivered
+read
+failed
+```
+
+quando o provider fornecer essas informações.
+
+`HTTP 200` não significa necessariamente `delivered`.
+
+---
+
+# 153. CHATWOOT
+
+Implemente/valide Chatwoot somente através do Channel/Conversation boundary.
+
+Não espalhe chamadas Chatwoot pelo runtime.
+
+---
+
+# 154. CHATWOOT CONVERSATION MAPPING
+
+Crie mapping durável entre:
+
+```text
+tenant
+internalConversationId
+Chatwoot account
+Chatwoot inbox
+Chatwoot conversation
+external contact
+```
+
+---
+
+# 155. CHATWOOT HUMAN TAKEOVER
+
+Esse é um gate crítico.
+
+Quando operador humano assumir:
+
+```text
+conversation ownership = HUMAN
+```
+
+o runtime automático deve bloquear outbound autônomo.
+
+---
+
+# 156. TAKEOVER RACE
+
+Teste:
+
+```text
+agent preparing message
+        +
+human takes over
+```
+
+antes do side effect.
+
+Resultado:
+
+```text
+automatic outbound blocked
+```
+
+---
+
+# 157. RETURN TO BOT
+
+Retorno:
+
+```text
+HUMAN → BOT
+```
+
+deve exigir evento/ação explícita.
+
+Nunca inferir automaticamente que o humano terminou.
+
+---
+
+# 158. OWNERSHIP STATE MACHINE
+
+Formalize:
+
+```text
+BOT
+PENDING_HANDOFF
+HUMAN
+PENDING_RETURN
+```
+
+ou equivalente.
+
+Transições inválidas devem falhar.
+
+---
+
+# 159. CHATWOOT SYNC
+
+Teste sincronização de:
+
+```text
+messages
+attachments
+conversation status
+assignment
+handoff
+```
+
+onde necessário.
+
+---
+
+# 160. EVOLUTIONAPI + CHATWOOT TOGETHER
+
+O sistema deve ser capaz de trabalhar com:
+
+```text
+WhatsApp
+   ↓
+EvolutionAPI
+   ↓
+Gateway
+   ↓
+CVG Runtime
+   ↔
+Chatwoot
+```
+
+sem criar duas fontes de verdade concorrentes.
+
+---
+
+# 161. SOURCE OF TRUTH POR CONCEITO
+
+Documente explicitamente quem é source of truth para:
+
+```text
+message
+conversation
+human ownership
+appointment
+patient
+approval
+goal
+plan
+audit
+```
+
+---
+
+# 162. EVOLUTIONAPI NÃO É SOURCE OF TRUTH DO ORCHESTRATOR
+
+O provider de canal entrega eventos.
+
+Goal/Plan/Approval/Execution state pertencem ao runtime CVG.
+
+---
+
+# 163. CHATWOOT NÃO É POLICY ENGINE
+
+Chatwoot pode representar operador/conversation ownership.
+
+Não pode conceder capabilities ao Agent.
+
+---
+
+# 164. CANONICAL MESSAGE IDENTITY
+
+Normalize:
+
+```text
+provider
+providerInstance
+externalMessageId
+internalMessageId
+conversationId
+tenantId
+```
+
+---
+
+# 165. DUPLICATE PROVIDER IDs
+
+Idempotency deve considerar corretamente provider/instance/tenant.
+
+Não assuma que `externalMessageId` é globalmente único entre providers.
+
+---
+
+# 166. CORRELATION
+
+Propague correlation do inbound até:
+
+```text
+goal
+plan
+approval
+tool
+outbox
+outbound message
+delivery status
+```
+
+---
+
+# 167. MODEL PROVIDER REAL
+
+Valide pelo menos um Model Provider real antes da certificação final.
+
+Pode ser, conforme configuração disponível:
+
+```text
+OpenAI-compatible
+Ollama
+vLLM
+```
+
+Não introduza provider apenas para satisfazer checklist.
+
+---
+
+# 168. MODEL PROVIDER CONTRACT TEST
+
+Teste:
+
+```text
+successful response
+structured output
+malformed structured output
+timeout
+connection failure
+429
+5xx
+cancellation
+token limit
+cost/usage metadata
+```
+
+---
+
+# 169. REAL MODEL EVAL
+
+Além do deterministic eval, crie:
+
+```text
+PROVIDER_EVAL
+```
+
+Executado somente quando provider real estiver configurado.
+
+---
+
+# 170. NÃO CONFUNDA CONTROLLED EVAL COM PROVIDER EVAL
+
+Registre separadamente:
+
+```text
+controlledEval
+providerEval
+```
+
+---
+
+# 171. PROVIDER EVAL DATASET
+
+Use dataset sintético.
+
+Nunca envie dados reais de pacientes/clientes ao provider para certificação automatizada.
+
+---
+
+# 172. PROVIDER EVAL METRICS
+
+Meça:
+
+```text
+task success
+schema validity
+policy-safe proposals
+tool selection
+refusal
+escalation
+latency
+token usage
+estimated/actual cost
+```
+
+---
+
+# 173. MODEL OUTPUT CONTINUA NÃO CONFIÁVEL
+
+Mesmo provider real passando eval:
+
+```text
+model output
+↓
+schema
+↓
+plan validation
+↓
+governance
+```
+
+continua obrigatório.
+
+---
+
+# 174. MODEL TIMEOUT
+
+Provider real sem resposta:
+
+```text
+timeout
+↓
+controlled failure
+```
+
+Não deixe Goal preso indefinidamente.
+
+---
+
+# 175. MODEL CANCELLATION
+
+Se Goal for cancelado:
+
+cancele chamada quando tecnicamente possível.
+
+---
+
+# 176. MODEL RETRY
+
+Somente retry em falhas explicitamente retryable.
+
+Use:
+
+```text
+bounded exponential backoff
++
+jitter
+```
+
+---
+
+# 177. MODEL FALLBACK
+
+Fallback deve obedecer:
+
+```text
+data classification
+model policy
+cost budget
+risk
+```
+
+---
+
+# 178. LOCAL-ONLY
+
+Se dado/ação exigir:
+
+```text
+LOCAL_ONLY
+```
+
+fallback externo é proibido.
+
+---
+
+# 179. MODEL COST ACCOUNTING
+
+Registre custo por:
+
+```text
+goal
+plan
+tenant
+agent
+model
+```
+
+sem expor conteúdo sensível.
+
+---
+
+# 180. EXTERNAL IDENTITY
+
+Integre a arquitetura com mecanismo real de identidade escolhido para operadores.
+
+Preferir padrões maduros como:
+
+```text
+OIDC
+OAuth2/OIDC through trusted IdP
+trusted reverse-proxy identity
+```
+
+conforme arquitetura real.
+
+---
+
+# 181. NÃO INVENTE IDENTIDADE
+
+Se nenhum IdP real estiver disponível:
+
+```text
+externalIdentity = NOT_VALIDATED
+```
+
+---
+
+# 182. IDENTITY BOUNDARY
+
+Identity externa deve ser convertida para identidade interna canônica:
+
+```text
+operatorId
+tenantId
+role
+session
+authenticationStrength
+```
+
+---
+
+# 183. ROLE NÃO É CAPABILITY
+
+Role pode ajudar policy.
+
+Mas autorização final continua:
+
+```text
+Policy + Capability
+```
+
+---
+
+# 184. SESSION SECURITY
+
+Sessão de operador deve possuir:
+
+```text
+expiration
+revocation
+secure cookie/token handling
+CSRF protection where applicable
+```
+
+---
+
+# 185. LOGOUT / REVOCATION
+
+Teste:
+
+```text
+operator authenticated
+↓
+session revoked
+↓
+attempt privileged action
+```
+
+Resultado:
+
+```text
+DENY
+```
+
+---
+
+# 186. IDENTITY REPLAY
+
+Teste replay de credencial/token quando aplicável.
+
+---
+
+# 187. TENANT MAPPING
+
+External identity nunca pode escolher arbitrariamente `tenantId` via request body.
+
+Tenant deve vir de mapping confiável.
+
+---
+
+# 188. OPERATOR CONSOLE
+
+Console deve mostrar claramente:
+
+```text
+current tenant
+operator identity
+human takeover
+pending approvals
+active goals
+blocked goals
+failed steps
+dead letters
+runtime health
+```
+
+---
+
+# 189. HIGH-RISK ACTION UX
+
+Antes de approval humano, mostrar:
+
+```text
+action
+target
+risk
+reason
+payload summary
+agent
+goal
+```
+
+Não exigir que operador aprove JSON bruto.
+
+---
+
+# 190. APPROVAL CONFUSION
+
+UI deve evitar aprovação acidental de ação diferente.
+
+Approval permanece vinculada ao payload hash no backend.
+
+---
+
+# 191. CVG INTERNAL SYSTEM ADAPTER
+
+Se houver integração com HIS/ERP:
+
+crie adapter explícito.
+
+Não faça Orchestrator conhecer schema interno diretamente.
+
+---
+
+# 192. ANTI-CORRUPTION LAYER
+
+Mapeie:
+
+```text
+external/internal system model
+        ↓
+CVG canonical domain
+```
+
+---
+
+# 193. APPOINTMENT SOURCE OF TRUTH
+
+Defina qual sistema possui agenda oficial.
+
+Orchestrator não mantém agenda paralela como fonte primária.
+
+---
+
+# 194. PATIENT SOURCE OF TRUTH
+
+Defina fonte oficial de paciente.
+
+---
+
+# 195. WRITE CONFLICTS
+
+Se sistema externo rejeitar write por conflito:
+
+```text
+observe failure
+↓
+evaluate
+↓
+replan
+```
+
+Não force sobrescrita automaticamente.
+
+---
+
+# 196. EXTERNAL IDEMPOTENCY
+
+Quando provider aceitar idempotency key:
+
+use-a.
+
+Quando não aceitar:
+
+use effect journal + reconciliation strategy.
+
+---
+
+# 197. RECONCILIATION
+
+Para efeitos importantes, prepare reconciliation.
+
+Exemplo:
+
+```text
+outbox says sent
+provider status uncertain
+↓
+reconcile
+```
+
+---
+
+# 198. UNKNOWN OUTCOME
+
+Modele explicitamente:
+
+```text
+UNKNOWN
+```
+
+Não transforme timeout em `FAILED` quando o efeito pode ter acontecido.
+
+---
+
+# 199. UNKNOWN EFFECT POLICY
+
+Quando outcome for incerto:
+
+```text
+do not blindly retry
+```
+
+Primeiro:
+
+```text
+reconcile
+```
+
+---
+
+# 200. EXTERNAL CIRCUIT BREAKERS
+
+Implemente circuit breaker onde útil para:
+
+```text
+EvolutionAPI
+Chatwoot
+Model Provider
+HIS
+```
+
+---
+
+# 201. PROVIDER HEALTH
+
+Mantenha estado operacional:
+
+```text
+HEALTHY
+DEGRADED
+UNAVAILABLE
+```
+
+sem permitir que health transient vire autoridade de negócio.
+
+---
+
+# 202. BACKPRESSURE
+
+Se canal/provider estiver degradado:
+
+não permita crescimento ilimitado da fila.
+
+Defina:
+
+```text
+queue limits
+retry policy
+alerts
+operator visibility
+```
+
+---
+
+# 203. REAL INTEGRATION TEST ENVIRONMENT
+
+Crie configuração explícita:
+
+```text
+integration
+staging
+production
+```
+
+Não use produção como ambiente de teste inicial.
+
+---
+
+# 204. HOMOLOGAÇÃO
+
+Antes de produção:
+
+```text
+EvolutionAPI staging/test instance
+Chatwoot staging/test inbox
+synthetic contacts
+synthetic patient data
+synthetic appointments
+```
+
+---
+
+# 205. NÃO USE PACIENTE REAL PARA CERTIFICAÇÃO
+
+Dados de certificação devem ser sintéticos.
+
+---
+
+# 206. INTEGRATION TEST TAGGING
+
+Separe:
+
+```text
+unit
+contract
+integration-controlled
+integration-real
+production-smoke
+```
+
+---
+
+# 207. REAL TESTS NÃO DEVEM RODAR POR ACIDENTE
+
+Exigir opt-in explícito.
+
+Exemplo conceitual:
+
+```text
+RUN_REAL_INTEGRATION_TESTS=true
+```
+
+e configuração completa.
+
+---
+
+# 208. PRODUCTION SAFETY
+
+Mesmo com flag:
+
+produção deve exigir confirmação adicional/policy adequada para testes destrutivos.
+
+---
+
+# 209. TEST CONTACT ALLOWLIST
+
+Durante homologação de WhatsApp:
+
+outbound deve ser limitado a contatos sintéticos/allowlisted.
+
+---
+
+# 210. NO BROADCAST
+
+Agent não recebe capability de broadcast em homologação.
+
+---
+
+# 211. REAL INTEGRATION EVIDENCE
+
+Cada integração real deve gerar evidence artifact:
+
+```text
+provider
+version
+environment
+timestamp
+candidateCommit
+testSuite
+testsExecuted
+testsPassed
+testsFailed
+limitations
+artifactHashes
+```
+
+---
+
+# 212. SEGREDOS NÃO ENTRAM NA EVIDÊNCIA
+
+Nunca registrar:
+
+```text
+API key
+access token
+password
+session secret
+full authorization header
+```
+
+---
+
+# 213. EVOLUTIONAPI VALIDATION ARTIFACT
+
+Gere algo equivalente a:
+
+```text
+certification/integrations/evolutionapi.json
+```
+
+com:
+
+```text
+status
+providerVersion
+inboundCapabilities
+outboundCapabilities
+duplicateHandling
+reconnect
+outage
+media
+testedAt
+candidateCommit
+```
+
+---
+
+# 214. CHATWOOT VALIDATION ARTIFACT
+
+Gere:
+
+```text
+certification/integrations/chatwoot.json
+```
+
+incluindo:
+
+```text
+conversation mapping
+human takeover
+return-to-bot
+message synchronization
+attachment handling
+outage behavior
+```
+
+---
+
+# 215. MODEL PROVIDER VALIDATION ARTIFACT
+
+Gere:
+
+```text
+certification/integrations/model-provider.json
+```
+
+incluindo:
+
+```text
+provider
+model
+structured output
+timeout
+retry
+cancellation
+schema behavior
+eval result
+latency
+cost
+```
+
+---
+
+# 216. IDENTITY VALIDATION ARTIFACT
+
+Gere:
+
+```text
+certification/integrations/external-identity.json
+```
+
+incluindo:
+
+```text
+IdP/mechanism
+tenant mapping
+session expiration
+revocation
+role mapping
+replay behavior
+```
+
+---
+
+# 217. HASH ALL EVIDENCE
+
+Inclua artifacts no certification manifest.
+
+---
+
+# 218. COMMIT BINDING
+
+Todo integration evidence deve estar vinculado ao:
+
+```text
+candidateCommit
+```
+
+Se código mudar depois:
+
+```text
+STALE
+```
+
+quando a mudança afetar aquela integração ou o certification policy exigir recertificação total.
+
+---
+
+# 219. INTEGRATION GATE STATUS
+
+Estados permitidos:
+
+```text
+NOT_CONFIGURED
+CONTROLLED_ONLY
+VALIDATED_STAGING
+VALIDATED_REAL
+FAILED
+STALE
+```
+
+---
+
+# 220. NÃO PROMOVA `CONTROLLED_ONLY`
+
+Mocks/contracts não podem virar:
+
+```text
+VALIDATED_REAL
+```
+
+---
+
+# 221. EVOLUTIONAPI GATE
+
+Para `VALIDATED_STAGING`, exigir no mínimo:
+
+```text
+inbound text PASS
+outbound text PASS
+duplicate webhook PASS
+outage/retry PASS
+human takeover integration PASS where Chatwoot is in path
+```
+
+e mídias exigidas pelo escopo.
+
+---
+
+# 222. CHATWOOT GATE
+
+Exigir:
+
+```text
+conversation mapping PASS
+human takeover PASS
+bot suppression during takeover PASS
+return-to-bot PASS
+```
+
+---
+
+# 223. MODEL GATE
+
+Exigir:
+
+```text
+real endpoint PASS
+structured output PASS
+timeout PASS
+invalid schema handling PASS
+provider eval PASS
+```
+
+---
+
+# 224. IDENTITY GATE
+
+Exigir:
+
+```text
+real authentication PASS
+tenant mapping PASS
+expiration/revocation PASS
+authorization boundary PASS
+```
+
+---
+
+# 225. INTEGRATION FAILURE
+
+Qualquer integração obrigatória para o deployment target

@@ -8,3 +8,14 @@ coverage/
 test-results/
 playwright-report/
 certification/mutation-logs/
+
+# Historical audit evidence is immutable input to old manifests. Reformatting
+# it would change evidence bytes and invalidate the historical hash chain.
+docs/04_audit/evidence/
+
+# Generated certification outputs are formatted by their generators and are
+# excluded from the candidate source surface.
+certification/negative-validation.json
+certification/phase11-result.json
+certification/phase11-manifest.json
+certification/phase11-logs/

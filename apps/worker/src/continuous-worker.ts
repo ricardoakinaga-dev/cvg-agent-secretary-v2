@@ -253,6 +253,7 @@ export function createContinuousWorker(
         tenantId: TenantId
         eventId: string
         workerId: string
+        leaseToken?: string
         leaseMs: number
       }) => OutboxEventRecord | null | Promise<OutboxEventRecord | null>
     }
@@ -261,6 +262,7 @@ export function createContinuousWorker(
         tenantId: options.tenantId,
         eventId: event.id,
         workerId,
+        leaseToken: event.leaseToken ?? undefined,
         leaseMs: tuning.leaseMs
       })
       return Boolean(
@@ -519,6 +521,7 @@ export function createContinuousWorker(
             tenantId: options.tenantId,
             eventId: event.id,
             workerId,
+            leaseToken: event.leaseToken ?? undefined,
             error: SHUTDOWN_UNSTARTED_CLAIM_ERROR
           })
           counters.released += 1

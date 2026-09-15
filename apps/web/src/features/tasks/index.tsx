@@ -82,7 +82,9 @@ export function TasksPanel({
           </div>
         ) : null}
         {!isLoading && !error && tasks.length === 0 ? (
-          <p className="state">Nenhuma tarefa interna.</p>
+          <p className="state" role="status" aria-live="polite">
+            Nenhuma tarefa interna.
+          </p>
         ) : null}
         {!isLoading && !error
           ? tasks.map((task) => {

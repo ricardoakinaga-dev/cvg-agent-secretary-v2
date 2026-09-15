@@ -1,3 +1,27 @@
+# AAA-21-PHASE11-HARDEN-20260915 — pré-selo final — 2026-09-15
+
+- status: `REVIEW`; produção `NO-GO`; Node 22.23.2 e format ativo qualificados localmente.
+- concluído: cadeia de certificação agora compara commit/manifest/candidate head e estado dirty real; outputs gerados não contaminam o candidato; regressões de dirty candidate e manifest sem commit passaram.
+- próxima ação: criar o commit do candidato, executar Phase 10 e Phase 11 completos sob Node 22, validar evidência e preservar gates externos/humanos como bloqueios explícitos.
+- evidência: `tests/phase11-certification.test.ts`, `scripts/lib/certification-rules.mjs`, `scripts/phase10-verify.mjs`, `scripts/phase11-verify.mjs` e `docs/11_phase11/phase11_execution_contract.md`.
+
+# AAA-21-PHASE11-CERT-20260915 — estado após certificação final — 2026-09-15
+
+- status: `REVIEW/BLOCKED`; produção `NO-GO`; certificação candidate-bound atual `NO_GO`.
+- concluído: matriz/contrato/prompts preservados; fencing de claim, trace vertical, persistência PostgreSQL direta, console responsivo e E2E atualizados; gates locais técnicos principais PASS, incluindo cobertura e PostgreSQL; verificador pós-run PASS.
+- bloqueios: format global, Phase 10 current verification, árvore alterada e Node 24 versus target Node 22; gates externos/humanos, provider/canal/IdP/RAG, piloto e durabilidade física/RPO-RTO continuam pendentes.
+- próxima ação: repetir a qualificação em Node 22 após fechar os bloqueios locais e obter revisão/signoff independentes; nenhuma promoção para `VERIFIED`, `DONE`, `AAA_CANDIDATE` ou produção.
+- evidência: `certification/phase11-result.json`, `certification/phase11-manifest.json`, `certification/phase11-logs/` e `docs/11_phase11/PHASE11-ROUND-20260914.md`.
+
+# AAA-21-PHASE11-EXEC-20260914 — pacote Phase 11 em AUDIT controlado — 2026-09-14
+
+- task canônica: `AAA-21`; status `REVIEW/BLOCKED`; produção `NO-GO`.
+- last_completed_action: 14 prompts arquivados e hasheados; matriz/contrato/certificador Phase 11 criados; correção PostgreSQL direta; migration `0018_outbox_lease_fencing` e token de claim propagado em heartbeat/ack/fail; teste de takeover com `workerId` reutilizado; trace público e console responsivo verificados.
+- evidência corrente: PostgreSQL `21 arquivos / 193 testes`, web `23 / 81`, E2E `8 / 8`, typecheck/lint/build/startup PASS. O resultado candidate-bound e a verificação mecânica devem ser gerados no fechamento da rodada.
+- next_action: executar `certify:phase11` + `certification:verify:phase11`; em seguida fechar Node 22, format global, cobertura crítica e revisão fresca. Não promover `AAA-21` a `VERIFIED`/`DONE`.
+- limites preservados: somente dados sintéticos e banco descartável; provider/canal/IdP/RAG institucional, produção, deploy, piloto, durabilidade física, RPO/RTO e signoff humano continuam bloqueados.
+- evidência: [`PHASE11-ROUND-20260914.md`](11_phase11/PHASE11-ROUND-20260914.md), [`requirements-matrix.json`](11_phase11/requirements-matrix.json), [`phase11_execution_contract.md`](11_phase11/phase11_execution_contract.md) e `certification/phase11-{result,manifest}.json`.
+
 # AAA-21-EXEC-20260914 — task em execução controlada — 2026-09-14
 
 - task canônica: `AAA-21`; execução: `AAA-21-EXEC-20260914`; status: `IN_PROGRESS`.

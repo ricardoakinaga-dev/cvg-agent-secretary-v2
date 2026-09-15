@@ -45,6 +45,8 @@ export interface OutboxRepositoryOptions {
   backoffBaseMs?: number
   backoffMaxMs?: number
   maxPayloadBytes?: number
+  /** Production adapters require the claim token on every settlement. */
+  enforceLeaseFencing?: boolean
   /** A local audit hook may fail; repository operations roll back on failure. */
   auditWriter?: (event: AuditEventRecord) => void
 }
@@ -83,6 +85,8 @@ export interface OutboxHeartbeatInput {
   tenantId: TenantId
   eventId: string
   workerId: string
+  /** Claim-level fencing token returned by claimNext. */
+  leaseToken?: string | undefined
   leaseMs: number
 }
 
@@ -96,6 +100,8 @@ export interface OutboxAckInput {
   tenantId: TenantId
   eventId: string
   workerId: string
+  /** Claim-level fencing token returned by claimNext. */
+  leaseToken?: string | undefined
   effect?: OutboxEffect
   /** Used only when the injected effect intentionally returns no value. */
   result?: unknown
@@ -109,6 +115,8 @@ export interface OutboxFailInput {
   tenantId: TenantId
   eventId: string
   workerId: string
+  /** Claim-level fencing token returned by claimNext. */
+  leaseToken?: string | undefined
   error: unknown
   /** An unknown handler or equivalent failure is terminal by explicit policy. */
   terminal?: boolean
@@ -162,6 +170,7 @@ export class OutboxRepository implements DurableOutboxAdapter {
   private readonly retryBaseMs: number
   private readonly retryMaxMs: number
   private readonly maxPayloadBytes: number
+  private readonly enforceLeaseFencing: boolean
   private readonly auditWriter: ((event: AuditEventRecord) => void) | undefined
 
   constructor(
@@ -197,6 +206,7 @@ export class OutboxRepository implements DurableOutboxAdapter {
       options.maxPayloadBytes ?? DEFAULT_OUTBOX_MAX_PAYLOAD_BYTES,
       'maxPayloadBytes'
     )
+    this.enforceLeaseFencing = options.enforceLeaseFencing ?? false
     this.auditWriter = options.auditWriter
     this.ensureStateCollections()
   }
@@ -254,6 +264,7 @@ export class OutboxRepository implements DurableOutboxAdapter {
       availableAt: now,
       attempts: 0,
       leaseOwner: null,
+      leaseToken: null,
       leaseUntil: null,
       lastError: null,
       processedAt: null,
@@ -341,6 +352,7 @@ export class OutboxRepository implements DurableOutboxAdapter {
       status: 'processing',
       attempts,
       leaseOwner: workerId,
+      leaseToken: createDomainId('lease'),
       leaseUntil: new Date(now.getTime() + leaseMs),
       lastError: null
     }
@@ -372,6 +384,9 @@ export class OutboxRepository implements DurableOutboxAdapter {
       !current ||
       current.status !== 'processing' ||
       current.leaseOwner !== workerId ||
+      (input.leaseToken !== undefined &&
+        current.leaseToken !== input.leaseToken) ||
+      (this.enforceLeaseFencing && !input.leaseToken) ||
       !current.leaseUntil ||
       current.leaseUntil.getTime() <= now.getTime()
     ) {
@@ -393,6 +408,7 @@ export class OutboxRepository implements DurableOutboxAdapter {
       tenantId,
       input.eventId,
       workerId,
+      input.leaseToken,
       now
     )
     const key = requireEventIdempotencyKey(current)
@@ -406,7 +422,13 @@ export class OutboxRepository implements DurableOutboxAdapter {
           'Outbox effect journal points to another event'
         )
       }
-      return this.commitAck(current, workerId, cloneValue(journal.result), now)
+      return this.commitAck(
+        current,
+        workerId,
+        input.leaseToken,
+        cloneValue(journal.result),
+        now
+      )
     }
 
     if (!input.effect && input.result === undefined) {
@@ -423,6 +445,7 @@ export class OutboxRepository implements DurableOutboxAdapter {
           tenantId,
           eventId: current.id,
           workerId,
+          leaseToken: input.leaseToken,
           terminal: true,
           handoff: true,
           error: OUTBOX_TAKEOVER_SUPPRESSED_ERROR
@@ -436,6 +459,7 @@ export class OutboxRepository implements DurableOutboxAdapter {
           this.commitAck(
             current,
             workerId,
+            input.leaseToken,
             value === undefined && input.result !== undefined
               ? cloneValue(input.result)
               : cloneValue(value),
@@ -446,6 +470,7 @@ export class OutboxRepository implements DurableOutboxAdapter {
       return this.commitAck(
         current,
         workerId,
+        input.leaseToken,
         effectResult === undefined && input.result !== undefined
           ? cloneValue(input.result)
           : cloneValue(effectResult),
@@ -467,6 +492,7 @@ export class OutboxRepository implements DurableOutboxAdapter {
       tenantId,
       input.eventId,
       workerId,
+      input.leaseToken,
       now
     )
     const attempts = Math.max(0, current.attempts ?? 0)
@@ -482,6 +508,7 @@ export class OutboxRepository implements DurableOutboxAdapter {
         status: deadLetter ? 'dead_letter' : 'failed',
         attempts,
         leaseOwner: null,
+        leaseToken: null,
         leaseUntil: null,
         lastError: error,
         ...(deadLetter
@@ -564,6 +591,7 @@ export class OutboxRepository implements DurableOutboxAdapter {
         attempts: 0,
         availableAt: new Date(now),
         leaseOwner: null,
+        leaseToken: null,
         leaseUntil: null,
         lastError: null,
         deadLetteredAt: null
@@ -618,11 +646,18 @@ export class OutboxRepository implements DurableOutboxAdapter {
   private commitAck(
     current: OutboxEventRecord,
     workerId: string,
+    leaseToken: string | undefined,
     result: unknown,
     now: Date
   ): OutboxEventRecord {
     const tenantId = requireTenant(current.tenantId)
-    const owned = this.requireOwnedEvent(tenantId, current.id, workerId, now)
+    const owned = this.requireOwnedEvent(
+      tenantId,
+      current.id,
+      workerId,
+      leaseToken,
+      now
+    )
     const key = requireEventIdempotencyKey(owned)
     const snapshot = this.snapshot()
     try {
@@ -655,6 +690,7 @@ export class OutboxRepository implements DurableOutboxAdapter {
         ...cloneEvent(owned),
         status: 'processed',
         leaseOwner: null,
+        leaseToken: null,
         leaseUntil: null,
         lastError: null,
         processedAt: new Date(now)
@@ -680,6 +716,7 @@ export class OutboxRepository implements DurableOutboxAdapter {
     tenantId: TenantId,
     eventId: string,
     workerId: string,
+    leaseToken: string | undefined,
     now: Date
   ): OutboxEventRecord {
     const event = this.db.state.outbox.find(
@@ -698,6 +735,15 @@ export class OutboxRepository implements DurableOutboxAdapter {
       throw new DomainError(
         'conflict',
         'Outbox lease belongs to another worker'
+      )
+    }
+    if (
+      (leaseToken !== undefined && event.leaseToken !== leaseToken) ||
+      (this.enforceLeaseFencing && !leaseToken)
+    ) {
+      throw new DomainError(
+        'conflict',
+        'Outbox lease fencing token is stale or missing'
       )
     }
     if (!event.leaseUntil || event.leaseUntil.getTime() <= now.getTime()) {

@@ -121,6 +121,91 @@ describe('durable PostgreSQL outbox', () => {
   )
 
   it.skipIf(!databaseUrl)(
+    'fences a stale claim when a worker id is reused after takeover',
+    async () => {
+      const schema = `cvg_outbox_fence_${Date.now()}_${randomBytes(3).toString('hex')}`
+      const firstClient = new Client({ connectionString: databaseUrl })
+      const secondClient = new Client({ connectionString: databaseUrl })
+      let clockNow = new Date('2026-01-02T00:00:00.000Z')
+      await firstClient.connect()
+      await secondClient.connect()
+      try {
+        await runPostgresMigrations(firstClient, { schemaName: schema })
+        await secondClient.query(`SET search_path TO ${schema}`)
+        await firstClient.query(
+          "SELECT set_config('cvg.tenant_id', $1, false)",
+          [tenantA]
+        )
+        await secondClient.query(
+          "SELECT set_config('cvg.tenant_id', $1, false)",
+          [tenantA]
+        )
+        const first = new PostgresRuntimeRepository(firstClient, {
+          tenantIsolation: true,
+          clock: () => clockNow
+        })
+        const second = new PostgresRuntimeRepository(secondClient, {
+          tenantIsolation: true,
+          clock: () => clockNow
+        })
+        const created = await first.enqueue({
+          tenantId: tenantA,
+          type: 'inbound.process',
+          payload: { fixture: 'lease-fencing' },
+          correlationId: 'corr_00000000-0000-4000-8000-000000000178',
+          idempotencyKey: `lease-fencing-${Date.now()}`,
+          createdAt: clockNow,
+          availableAt: clockNow
+        })
+        const stale = await first.claimNext({
+          tenantId: tenantA,
+          workerId: 'worker-reused',
+          leaseMs: 1_000
+        })
+        if (!stale) throw new Error('expected initial claim')
+        expect(stale.leaseToken).toBeTruthy()
+        clockNow = new Date(stale.leaseUntil!.getTime() + 1)
+        const current = await second.claimNext({
+          tenantId: tenantA,
+          workerId: 'worker-reused',
+          leaseMs: 30_000
+        })
+        if (!current) throw new Error('expected takeover claim')
+        expect(current.leaseToken).toBeTruthy()
+        expect(current.leaseToken).not.toBe(stale.leaseToken)
+
+        let staleEffectRan = false
+        await expect(
+          first.ack({
+            tenantId: tenantA,
+            eventId: created.id,
+            workerId: 'worker-reused',
+            leaseToken: stale.leaseToken ?? undefined,
+            effect: () => {
+              staleEffectRan = true
+              return { stale: true }
+            }
+          })
+        ).rejects.toMatchObject({ code: 'conflict' })
+        expect(staleEffectRan).toBe(false)
+
+        const processed = await second.ack({
+          tenantId: tenantA,
+          eventId: created.id,
+          workerId: 'worker-reused',
+          leaseToken: current.leaseToken ?? undefined,
+          result: { stale: false, current: true }
+        })
+        expect(processed.status).toBe('processed')
+      } finally {
+        await firstClient.query(`DROP SCHEMA IF EXISTS ${schema} CASCADE`)
+        await Promise.all([firstClient.end(), secondClient.end()])
+      }
+    },
+    30_000
+  )
+
+  it.skipIf(!databaseUrl)(
     'redacts legacy rows without making routable pending work disappear',
     async () => {
       const schema = `cvg_outbox_redaction_${Date.now()}_${randomBytes(3).toString('hex')}`
@@ -320,6 +405,7 @@ describe('durable PostgreSQL outbox', () => {
           tenantId: tenantA,
           eventId: claimed.id,
           workerId: ownerWorkerId,
+          leaseToken: claimed.leaseToken ?? undefined,
           leaseMs: 60_000
         })
         expect(renewed).toMatchObject({
@@ -332,6 +418,7 @@ describe('durable PostgreSQL outbox', () => {
             tenantId: tenantB,
             eventId: claimed.id,
             workerId: ownerWorkerId,
+            leaseToken: claimed.leaseToken ?? undefined,
             leaseMs: 60_000
           })
         ).resolves.toBeNull()
@@ -342,6 +429,7 @@ describe('durable PostgreSQL outbox', () => {
             tenantId: tenantB,
             eventId: created.id,
             workerId: 'worker-b',
+            leaseToken: claimed.leaseToken ?? undefined,
             result: { mustNot: 'cross-tenant' }
           })
         ).rejects.toMatchObject({ code: 'invalid_action' })
@@ -358,6 +446,7 @@ describe('durable PostgreSQL outbox', () => {
             tenantId: tenantA,
             eventId: claimed.id,
             workerId: owner ?? 'worker-a',
+            leaseToken: claimed.leaseToken ?? undefined,
             effect: () => ({ synthetic: true }),
             now: new Date(claimed.leaseUntil!.getTime() - 1)
           })
@@ -396,6 +485,7 @@ describe('durable PostgreSQL outbox', () => {
             tenantId: tenantA,
             eventId: current.id,
             workerId: ownerWorkerId,
+            leaseToken: current.leaseToken ?? undefined,
             error: new Error('synthetic transient failure')
           })
         }

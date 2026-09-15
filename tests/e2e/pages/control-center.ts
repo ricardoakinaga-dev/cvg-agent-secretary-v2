@@ -9,9 +9,14 @@ export class ControlCenterPage {
   }
 
   async authenticateAsAdmin(tenantId: string): Promise<void> {
-    await this.page.getByLabel('ID do operador').fill('admin.e2e')
-    await this.page.getByLabel('Papel operacional').selectOption('Admin')
-    await this.page.getByLabel('Tenant ID').fill(tenantId)
+    await this.page.addInitScript({
+      content: `window.__CVG_OPERATOR_CONTEXT__ = ${JSON.stringify({
+        operatorId: 'admin.e2e',
+        role: 'Admin',
+        tenantId
+      })}`
+    })
+    await this.page.reload({ waitUntil: 'networkidle' })
     await this.page.getByText('Control Center').waitFor()
   }
 

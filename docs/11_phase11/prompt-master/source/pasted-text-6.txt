@@ -1,0 +1,1211 @@
+# CONTINUAÇÃO FINAL — EXECUTION CONTRACT & SUCCESS STATE
+
+> Continuação direta do item 404. Todos os requisitos dos itens anteriores permanecem obrigatórios.
+
+---
+
+# 405. SCORING NÃO SUBSTITUI GATES
+
+Uma nota alta nunca pode transformar:
+
+```text
+NO_GO
+```
+
+em:
+
+```text
+GO
+```
+
+Scores são instrumentos de avaliação.
+
+Gates são instrumentos de promoção.
+
+---
+
+# 406. SCORE EVIDENCE
+
+Toda nota deve possuir rationale e evidência.
+
+Não atribua:
+
+```text
+Security = 100
+```
+
+apenas porque testes passaram.
+
+---
+
+# 407. SCORE TARGETS
+
+Meta desejada para Triple AAA:
+
+```text
+Architecture             >= 97
+Engineering              >= 97
+Testing                  >= 97
+Security                 >= 97
+Reliability              >= 97
+Agent Engineering        >= 97
+Orchestrator Engineering >= 97
+Governance               >= 97
+Observability            >= 97
+Data Governance          >= 95
+DevEx                    >= 95
+Production Readiness     >= 95
+```
+
+Esses thresholds não substituem mandatory gates.
+
+---
+
+# 408. NO SCORE INFLATION
+
+Se evidência justificar 92:
+
+registre 92.
+
+Não manipule nota para atingir 97.
+
+---
+
+# 409. PHASE COMPLETION MODEL
+
+Cada subfase deve possuir:
+
+```text
+NOT_STARTED
+IN_PROGRESS
+BLOCKED
+IMPLEMENTED
+VERIFIED
+CERTIFIED
+```
+
+---
+
+# 410. IMPLEMENTED != VERIFIED
+
+Código existir não significa requisito fechado.
+
+---
+
+# 411. VERIFIED
+
+Exige:
+
+```text
+implementation
++
+test
++
+evidence
+```
+
+---
+
+# 412. CERTIFIED
+
+Exige que todos os gates definidos para a subfase estejam satisfeitos.
+
+---
+
+# 413. PHASE 11.0 SUCCESS
+
+Truth Source & Certification Re-anchor exige:
+
+```text
+clean baseline identified
+certification stale detection implemented
+single decision calculus
+candidate/HEAD binding
+dirty/untracked detection
+```
+
+---
+
+# 414. PHASE 11.1 SUCCESS
+
+Orchestrator Kernel exige:
+
+```text
+explicit state machine
+valid transition enforcement
+persistent state compatibility
+bounded execution
+tests
+```
+
+---
+
+# 415. PHASE 11.2 SUCCESS
+
+Goal & Plan Engine exige:
+
+```text
+Goal first-class entity
+SuccessCriteria
+Plan
+PlanStep
+dependency graph
+plan validation
+plan versioning
+```
+
+---
+
+# 416. PHASE 11.3 SUCCESS
+
+Governed Execution exige:
+
+```text
+every effect
+→ identity
+→ tenant
+→ policy
+→ capability
+→ risk
+→ approval when needed
+→ controlled execution
+```
+
+---
+
+# 417. PHASE 11.4 SUCCESS
+
+Risk Engine exige:
+
+```text
+independent risk classification
+versioned policy
+risk cannot be downgraded by model
+tests
+```
+
+---
+
+# 418. PHASE 11.5 SUCCESS
+
+Durable Agent Execution exige:
+
+```text
+persistent goals
+persistent plans
+persistent steps
+leases
+fencing
+recovery
+budget durability
+```
+
+---
+
+# 419. PHASE 11.6 SUCCESS
+
+Observe / Evaluate / Replan exige:
+
+```text
+result observation
+deterministic evaluation
+semantic evaluation where necessary
+reconciliation
+versioned replanning
+```
+
+---
+
+# 420. PHASE 11.7 SUCCESS
+
+Loop/Budget Safety exige:
+
+```text
+max steps
+max replans
+max model calls
+max tool calls
+max duration
+max cost
+loop detection
+safe stop
+```
+
+---
+
+# 421. PHASE 11.8 SUCCESS
+
+Routing exige:
+
+```text
+model profile routing
+data policy
+agent routing contract
+fallback safety
+routing audit
+```
+
+---
+
+# 422. PHASE 11.9 SUCCESS
+
+Legacy Runtime Elimination exige:
+
+```text
+kernel = only production runtime
+legacy production bypass = 0
+direct external bypass = 0
+architecture tests enforce boundary
+```
+
+---
+
+# 423. PHASE 11.10 SUCCESS
+
+Observability exige trace end-to-end:
+
+```text
+inbound
+→ understand
+→ orchestrator
+→ govern
+→ tool
+→ outbox
+→ effect
+→ evaluation
+→ response
+```
+
+---
+
+# 424. PHASE 11.11 SUCCESS
+
+Security exige:
+
+```text
+threat model updated
+adversarial tests
+tenant isolation
+approval integrity
+risk integrity
+prompt injection resistance at authority boundary
+```
+
+---
+
+# 425. PHASE 11.12 SUCCESS
+
+PostgreSQL/Recovery exige:
+
+```text
+Postgres gate PASS
+RLS PASS where required
+concurrency PASS
+restore PASS
+crash recovery PASS
+```
+
+---
+
+# 426. PHASE 11.13 SUCCESS
+
+Real Integrations exige os providers obrigatórios para o profile devidamente validados.
+
+---
+
+# 427. PHASE 11.14 SUCCESS
+
+Supervised Pilot exige:
+
+```text
+shadow PASS
+restricted pilot PASS
+zero critical safety violation
+human signoff
+rollback tested
+```
+
+---
+
+# 428. PHASE 11.15 SUCCESS
+
+Triple AAA exige todos os mandatory production gates.
+
+---
+
+# 429. IMPLEMENTATION ORDER
+
+Siga dependências.
+
+Ordem recomendada:
+
+```text
+11.0
+ ↓
+11.1
+ ↓
+11.2
+ ↓
+11.3 + 11.4
+ ↓
+11.5
+ ↓
+11.6 + 11.7
+ ↓
+11.8
+ ↓
+11.9
+ ↓
+11.10
+ ↓
+11.11
+ ↓
+11.12
+ ↓
+11.13
+ ↓
+11.14
+ ↓
+11.15
+```
+
+---
+
+# 430. NÃO CONSTRUA TUDO EM UM COMMIT
+
+Faça mudanças incrementais e verificáveis.
+
+---
+
+# 431. COMMIT STRATEGY
+
+Quando autorizado a realizar commits, prefira commits semânticos.
+
+Exemplos:
+
+```text
+fix(certification): bind candidate evidence to clean head
+
+feat(orchestrator): add durable goal state machine
+
+feat(orchestrator): add validated plan graph
+
+feat(risk): add deterministic action classification
+
+feat(approval): enforce single-use payload-bound approvals
+
+feat(runtime): add durable orchestrated execution
+
+feat(runtime): add observe-evaluate-replan loop
+
+feat(runtime): add loop and budget safety
+
+feat(runtime): migrate worker to governed kernel
+
+feat(observability): trace orchestrated execution
+
+test(chaos): prove crash-after-effect idempotency
+
+test(security): prove replanner cannot escalate capabilities
+```
+
+---
+
+# 432. COMMIT MUST BE GREEN
+
+Não acumule conscientemente código quebrado em commits de fechamento.
+
+---
+
+# 433. CHECKPOINTS
+
+Após cada grande subfase:
+
+```text
+typecheck
+targeted tests
+lint relevant scope
+```
+
+---
+
+# 434. PERIODIC FULL VERIFY
+
+Execute full verify em checkpoints razoáveis.
+
+---
+
+# 435. DO NOT WASTE COMPUTE
+
+Não rode suites de vários minutos após cada alteração trivial.
+
+Use targeted tests durante desenvolvimento.
+
+---
+
+# 436. BEFORE FINAL CERTIFICATION
+
+Execute a suíte completa do zero.
+
+---
+
+# 437. FRESH INSTALL
+
+Certificação final deve preferencialmente partir de:
+
+```bash
+rm -rf node_modules
+npm ci
+```
+
+ou ambiente limpo equivalente.
+
+---
+
+# 438. NO HIDDEN LOCAL DEPENDENCY
+
+O candidato deve funcionar sem depender de:
+
+```text
+global npm package
+developer-specific file
+untracked config
+local source patch
+```
+
+---
+
+# 439. ENVIRONMENT CONTRACT
+
+Documente variáveis de ambiente.
+
+Classifique:
+
+```text
+required
+optional
+development-only
+production-only
+secret
+```
+
+---
+
+# 440. ENV SCHEMA
+
+Valide tudo por schema central.
+
+---
+
+# 441. PLACEHOLDER SECRET
+
+Produção deve recusar:
+
+```text
+replace_me
+change_me
+example_secret
+```
+
+ou equivalentes.
+
+---
+
+# 442. SAFE DEFAULTS
+
+Defaults devem ser seguros.
+
+Exemplo:
+
+```text
+real channels disabled
+external model disabled
+admin capability denied
+production memory mode denied
+```
+
+---
+
+# 443. FEATURE FLAGS
+
+Features de risco devem ser opt-in.
+
+---
+
+# 444. FEATURE FLAG AUDIT
+
+Alterações relevantes de feature flag devem ser auditáveis quando aplicável.
+
+---
+
+# 445. CONFIGURATION SNAPSHOT
+
+Registre configuração não secreta relevante do release.
+
+---
+
+# 446. PRODUCTION READINESS CHECK
+
+Crie um preflight determinístico.
+
+Exemplo:
+
+```bash
+npm run production:preflight
+```
+
+---
+
+# 447. PREFLIGHT DEVE VERIFICAR
+
+No mínimo:
+
+```text
+NODE_ENV
+PostgreSQL
+RLS
+durable inbound
+kernel runtime
+identity
+policy
+approval persistence
+outbox
+required integrations
+migration status
+```
+
+---
+
+# 448. PREFLIGHT NÃO DEVE FAZER EFEITO DE NEGÓCIO
+
+Somente verificar readiness.
+
+---
+
+# 449. /LIVE
+
+`/live` responde apenas:
+
+```text
+process alive
+```
+
+---
+
+# 450. /READY
+
+`/ready` deve considerar dependências essenciais do deployment profile.
+
+---
+
+# 451. READINESS NÃO É DEEP HEALTH
+
+Evite chamar provider caro em cada probe.
+
+Use estado/health apropriado.
+
+---
+
+# 452. DEPENDENCY HEALTH
+
+Mantenha health interno para:
+
+```text
+database
+channel
+model provider
+identity
+```
+
+quando aplicável.
+
+---
+
+# 453. DEGRADED MODE
+
+Modele:
+
+```text
+READY
+DEGRADED
+NOT_READY
+```
+
+quando fizer sentido.
+
+---
+
+# 454. DEGRADED NÃO PODE IGNORAR SEGURANÇA
+
+Se identity/policy boundary essencial falhar:
+
+```text
+NOT_READY
+```
+
+não `DEGRADED`.
+
+---
+
+# 455. GRACEFUL SHUTDOWN
+
+Preserve e fortaleça shutdown.
+
+---
+
+# 456. ORCHESTRATOR SHUTDOWN
+
+Durante shutdown:
+
+```text
+stop claiming new work
+allow bounded completion
+release/expire leases safely
+flush telemetry
+close DB
+```
+
+---
+
+# 457. OUTBOX SHUTDOWN
+
+Não abandone side effect em estado ambíguo sem journal/evidence.
+
+---
+
+# 458. STARTUP RECOVERY
+
+Antes de processar novo trabalho:
+
+execute recovery necessário.
+
+---
+
+# 459. MIGRATION CHECK
+
+Produção não sobe com schema incompatível.
+
+---
+
+# 460. RUNTIME VERSION
+
+Exponha versão não sensível em endpoint operacional apropriado.
+
+---
+
+# 461. BUILD IDENTITY
+
+Registre:
+
+```text
+commit
+build id
+image digest
+```
+
+para observabilidade.
+
+---
+
+# 462. OPERATOR CONSOLE — GOALS
+
+Console deve permitir visualizar:
+
+```text
+goal
+status
+plan
+current step
+risk
+approval
+owner
+```
+
+---
+
+# 463. CONSOLE — FAILURES
+
+Mostrar:
+
+```text
+failure reason
+last attempt
+replan count
+budget
+correlation
+```
+
+---
+
+# 464. CONSOLE — HUMAN CONTROL
+
+Permitir:
+
+```text
+takeover
+approve
+reject
+cancel goal
+```
+
+somente quando autorizado.
+
+---
+
+# 465. CANCEL GOAL
+
+Cancellation deve:
+
+```text
+stop future work
+cancel cancellable provider calls
+prevent new effects
+preserve audit
+```
+
+---
+
+# 466. CANCEL NÃO REVERTE EFEITO JÁ COMMITADO
+
+Não finja rollback de efeito externo irreversível.
+
+---
+
+# 467. COMPENSATION
+
+Quando business process suportar:
+
+modele compensating action explicitamente.
+
+---
+
+# 468. COMPENSATION != ROLLBACK
+
+Documente essa distinção.
+
+---
+
+# 469. WAITING_EXTERNAL
+
+Use para:
+
+```text
+waiting user response
+waiting provider callback
+waiting scheduled time
+```
+
+---
+
+# 470. WAITING_APPROVAL
+
+Não consuma execução ativa enquanto aguarda humano.
+
+---
+
+# 471. TIMEOUT POLICY
+
+Waiting states precisam de expiration policy quando aplicável.
+
+---
+
+# 472. EXPIRED GOAL
+
+Goal expirado deve parar de executar automaticamente.
+
+---
+
+# 473. DEADLINE
+
+Se deadline for ultrapassado:
+
+```text
+EXPIRED / SAFE_STOP
+```
+
+conforme domínio.
+
+---
+
+# 474. HUMAN HANDOFF CONTEXT
+
+Ao escalar, forneça ao operador resumo seguro:
+
+```text
+goal
+what happened
+what remains
+why escalated
+relevant evidence
+```
+
+---
+
+# 475. NÃO DESPEJE CHAIN-OF-THOUGHT
+
+Não armazene nem exponha raciocínio privado de modelo.
+
+Armazene decisões estruturadas e justificativas operacionais apropriadas.
+
+---
+
+# 476. EXPLAINABILITY
+
+Registre razões de decisão como:
+
+```text
+policy denied because capability missing
+approval required because risk=R3
+replan because appointment slot conflict
+```
+
+---
+
+# 477. MODEL REASONING
+
+Não dependa de chain-of-thought para auditoria.
+
+---
+
+# 478. HUMAN-READABLE AUDIT
+
+Operador deve conseguir entender o que ocorreu sem ler traces crus.
+
+---
+
+# 479. MACHINE-READABLE AUDIT
+
+Ferramentas devem conseguir consultar structured evidence.
+
+---
+
+# 480. RETENTION
+
+Defina retenção adequada para:
+
+```text
+operational logs
+audit
+traces
+orchestrator state
+temporary media
+```
+
+---
+
+# 481. MEDIA CLEANUP
+
+Jobs de cleanup precisam de testes.
+
+---
+
+# 482. ATTACHMENT SECURITY
+
+Bloqueie:
+
+```text
+oversized
+malformed
+unsupported
+dangerous
+```
+
+conforme política.
+
+---
+
+# 483. AUDIO
+
+Se áudio for processado:
+
+transcrição é conteúdo não confiável.
+
+---
+
+# 484. IMAGE
+
+Texto extraído ou descrição de imagem também é untrusted.
+
+---
+
+# 485. EXTERNAL DOCUMENT
+
+Documento recebido não pode alterar policy.
+
+---
+
+# 486. RAG DOCUMENT
+
+RAG também não pode alterar policy.
+
+---
+
+# 487. POLICY PRECEDENCE
+
+Formalize:
+
+```text
+system governance
+>
+tenant policy
+>
+agent policy
+>
+plan
+>
+model proposal
+>
+external content
+```
+
+conforme arquitetura real.
+
+---
+
+# 488. POLICY CONFLICT
+
+Conflito deve tender ao mais restritivo ou seguir regra determinística documentada.
+
+---
+
+# 489. RISK ENGINE AUTHORITY
+
+Risk Engine não pode ser sobrescrito por Planner.
+
+---
+
+# 490. APPROVAL ENGINE AUTHORITY
+
+Approval Engine não pode ser sobrescrito por Orchestrator.
+
+---
+
+# 491. OUTBOX AUTHORITY
+
+Effect execution deve respeitar outbox/idempotency semantics.
+
+---
+
+# 492. EVENT AUTHENTICITY
+
+Diferencie eventos internos confiáveis de eventos externos não verificados.
+
+---
+
+# 493. EVENT VERSIONING
+
+Eventos importantes devem possuir versão de schema.
+
+---
+
+# 494. EVENT COMPATIBILITY
+
+Teste backward/forward compatibility quando necessário.
+
+---
+
+# 495. EVENT SIZE
+
+Limite payload.
+
+---
+
+# 496. EVENT REDACTION
+
+Não replique secrets via event bus.
+
+---
+
+# 497. FINAL ARCHITECTURE
+
+O resultado final deve se aproximar de:
+
+```text
+                        CHANNELS
+                           │
+                           ▼
+                   CHANNEL GATEWAY
+                           │
+                           ▼
+                       OBSERVE
+                           │
+                           ▼
+                      UNDERSTAND
+                           │
+                           ▼
+               ┌──────────────────────┐
+               │     ORCHESTRATOR     │
+               │                      │
+               │ Goal                 │
+               │ Planner              │
+               │ Router               │
+               │ Budget               │
+               │ Loop Detector        │
+               │ Replanner            │
+               │ Stop Policy          │
+               └──────────┬───────────┘
+                          │
+                          ▼
+               ┌──────────────────────┐
+               │       GOVERN         │
+               │                      │
+               │ Identity             │
+               │ Tenant               │
+               │ Policy               │
+               │ Capability           │
+               │ Risk                 │
+               │ Approval             │
+               └──────────┬───────────┘
+                          │
+                          ▼
+                    TOOL GATEWAY
+                          │
+                          ▼
+                       OUTBOX
+                          │
+            ┌─────────────┼─────────────┐
+            ▼             ▼             ▼
+         CHANNEL         CVG HIS      KNOWLEDGE
+         ADAPTER         ADAPTER         RAG
+            │             │             │
+            └─────────────┼─────────────┘
+                          │
+                          ▼
+                   OBSERVE RESULT
+                          │
+                          ▼
+                      EVALUATE
+                     /        \
+                   YES        NO
+                    │          │
+                    ▼          ▼
+                 RESPOND     REPLAN
+                    │          │
+                    ▼          │
+                   STOP ◄──────┘
+```
+
+---
+
+# 498. CROSS-CUTTING LAYERS
+
+Tudo deve operar sob:
+
+```text
+OpenTelemetry
+Audit
+Evidence
+Correlation
+Tenant Context
+Security Context
+Budget Context
+Data Classification
+```
+
+---
+
+# 499. DO NOT OVERENGINEER
+
+Não transforme o sistema em dezenas de microservices.
+
+Prefira:
+
+```text
+modular monolith
++
+durable PostgreSQL
++
+clear boundaries
+```
+
+enquanto suficiente.
+
+---
+
+# 500. NÃO INTRODUZA KAFKA SEM NECESSIDADE
+
+Outbox/PostgreSQL podem continuar sendo suficientes.
+
+---
+
+# 501. NÃO INTRODUZA KUBERNETES POR STATUS
+
+Só adicione infraestrutura quando houver necessidade operacional real.
+
+---
+
+# 502. REDIS/VALKEY
+
+Pode ser usado se resolver necessidade concreta.
+
+Não obrigatório se PostgreSQL fornecer semântica adequada.
+
+---
+
+# 503. SIMPLICITY IS A FEATURE
+
+Escolha a solução mais simples que satisfaça os invariants.
+
+---
+
+# 504. NO FAKE IMPLEMENTATION
+
+Não marque requirement como implementado se houver apenas:
+
+```text
+interface
+TODO
+mock
+fixture
+documentation
+```
+
+---
+
+# 505. CONTROLLED IMPLEMENTATION
+
+Mocks são válidos para provar contratos controlados.
+
+Devem ser rotulados corretamente.
+
+---
+
+# 506. REAL IMPLEMENTATION
+
+Integração real exige execução real.
+
+---
+
+# 507. NO FAKE EVIDENCE
+
+Nunca edite manualmente um JSON para fazê-lo dizer `PASS`.
+
+Evidence deve ser produzido por execução.
+
+---
+
+# 508. NO FAKE HASH
+
+Hashes devem ser calculados.
+
+---
+
+# 509. NO FAKE HUMAN SIGNOFF
+
+Obrigatório.
+
+---
+
+# 510. NO FAKE RPO/RTO
+
+Obrigatório.
+
+---
+
+# 511. NO FAKE PROVIDER VALIDATION
+
+Obrigatório.
+
+---
+
+# 512. NO FAKE PILOT

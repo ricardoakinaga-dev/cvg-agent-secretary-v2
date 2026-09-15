@@ -1,3 +1,28 @@
+# AAA-21-PHASE11-HARDEN-20260915 — integridade candidate-bound — 2026-09-15
+
+- pipeline: `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`; fase atual `AUDIT`; produção `NO-GO`.
+- ação concluída: Node 22.23.2 qualificado em runner completo; format do candidato ativo passou; verificador Phase 11 endurecido para exigir `result.commit`, `candidate.head`, `manifest.commit` e dirty state ao vivo; saídas geradas foram retiradas da sujeira do candidato; regressões de certificação passaram.
+- próximo passo: commit local dos bytes atuais e certificação Phase 10/11 candidate-bound com PostgreSQL descartável; depois auditoria dos gates restantes sem promoção de produção.
+- limites: evidência histórica permanece imutável; provider/canal/IdP/RAG, piloto, RPO/RTO físico e signoff humano não serão inferidos por testes locais.
+
+# AAA-21-PHASE11-CERT-20260915 — certificação final — 2026-09-15
+
+- pipeline: `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`; fase atual `AUDIT`; produção `NO-GO`.
+- ação concluída: runner candidate-bound executado com `TEST_DATABASE_URL` reservado ao gate PostgreSQL; resultado atual `NO_GO` e verificador pós-run `PASS` no mesmo candidato.
+- gates: prompt integrity, typecheck, lint, build, unit, coverage, security, worker startup, PostgreSQL e E2E `PASS`; format, Phase 10 current verification, candidate clean e Node target `FAIL`.
+- decisão: `NO_GO`; gates externos `modelProvider/channel/externalIdentity=NOT_VALIDATED` e `humanSignoff=PENDING`; nenhum gate de produção, integração externa, RAG institucional ou efeito real foi alterado.
+- próximo passo: Node 22, format global, correção/verificação corrente da Phase 10, revisão independente fresca e comprovação separada de durabilidade física/RPO-RTO e signoff humano.
+- evidência: `certification/phase11-result.json`, `certification/phase11-manifest.json`, `certification/phase11-logs/` e `docs/11_phase11/PHASE11-ROUND-20260914.md`.
+
+# AAA-21-PHASE11-EXEC-20260914 — execução controlada consolidada — 2026-09-14
+
+- pipeline: `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`; fase atual `AUDIT`; produção `NO-GO`.
+- ação concluída: intake dos 14 prompts com cópias e hashes; contrato/matriz/certificação Phase 11; correção do modo PostgreSQL direto; fencing token por claim do outbox com teste de takeover usando o mesmo worker; asserções de trace no vertical HTTP→outbox→worker→kernel; endurecimento visual e E2E com identidade de host.
+- evidência executada: `npm run typecheck`, `npm run lint`, `npm run build`, `npm run test:worker:startup`, PostgreSQL `21/193`, web `23/81` e Playwright `8/8` PASS. O format global permanece FAIL histórico e Node 24 não satisfaz o target Node 22.
+- decisão operacional: `AAA_CONTROLLED`/`NO_GO` somente pode ser calculado pelo runner atual; nenhuma evidência sintética promove candidato a produção, integração externa, RAG institucional ou ação humana.
+- próximo passo: rodar `npm run certify:phase11`, conferir `npm run certification:verify:phase11` no mesmo candidato e registrar o veredicto; depois tratar blockers locais e solicitar revisão humana independente.
+- artefatos: [`PHASE11-ROUND-20260914.md`](11_phase11/PHASE11-ROUND-20260914.md), [`requirements-matrix.json`](11_phase11/requirements-matrix.json), [`phase11_execution_contract.md`](11_phase11/phase11_execution_contract.md) e `certification/phase11-{result,manifest}.json`.
+
 # AAA-21-EXEC-20260914 — autorização local, SPEC/bar e decomposição — 2026-09-14
 
 - engine: `SPEC → BUILD`; task: `AAA-21-EXEC-20260914`; status: `IN_PROGRESS`; produção `NO-GO`.
@@ -5518,7 +5543,7 @@ IN_PROGRESS
   `origin/main` e arquivos do checkpoint; nenhuma ocorrência dos padrões de
   credenciais pesquisados e nenhum arquivo acima de 20 MiB.
 - evidência: `git fetch origin` PASS; `git rev-list --left-right --count
-  HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
+HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
   encontrou somente espaços finais/linha vazia em logs brutos de certificação
   já existentes, preservados para não invalidar evidências.
 - validação: testes não reexecutados nesta rodada de versionamento; resultados

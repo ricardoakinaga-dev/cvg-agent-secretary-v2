@@ -1,0 +1,1173 @@
+# CONTINUAÇÃO — PHASE 11.13 → 11.15
+
+## REAL INTEGRATION CLOSURE, SUPERVISED PILOT & TRIPLE-AAA CERTIFICATION
+
+> Continuação direta do item 225. Todos os requisitos anteriores continuam obrigatórios e cumulativos.
+
+---
+
+# 225. INTEGRATION FAILURE
+
+Qualquer integração obrigatória para o deployment target que esteja:
+
+```text id="vuhfgq"
+FAILED
+STALE
+NOT_CONFIGURED
+CONTROLLED_ONLY
+```
+
+deve impedir certificação de produção quando essa integração for necessária ao ambiente alvo.
+
+Nunca converta ausência de prova em sucesso.
+
+---
+
+# 226. DEPLOYMENT PROFILE
+
+Defina explicitamente o perfil que está sendo certificado.
+
+Exemplos:
+
+```text id="pj5h4b"
+CONTROLLED_LOCAL
+STAGING
+SUPERVISED_PILOT
+PRODUCTION
+```
+
+Os gates obrigatórios dependem do perfil.
+
+---
+
+# 227. CONTROLLED_LOCAL
+
+Pode aceitar:
+
+```text id="i8sbhv"
+controlled model
+controlled channel
+synthetic identity
+synthetic data
+```
+
+Mas a certificação máxima possível deve permanecer:
+
+```text id="v18gm8"
+AAA_CONTROLLED
+```
+
+---
+
+# 228. STAGING
+
+Exige infraestrutura real ou representativa para:
+
+```text id="t3e8br"
+PostgreSQL
+runtime
+worker
+channel
+provider
+identity
+observability
+backup/restore
+```
+
+com dados sintéticos.
+
+---
+
+# 229. SUPERVISED_PILOT
+
+Exige:
+
+```text id="0v2uf7"
+real infrastructure
+real operator
+restricted capabilities
+human supervision
+real channel
+real identity
+approved scope
+rollback
+```
+
+---
+
+# 230. PRODUCTION
+
+Exige todos os gates obrigatórios e signoff humano.
+
+---
+
+# 231. VERSION COMPATIBILITY
+
+Registre versões reais de:
+
+```text id="tpk9dy"
+EvolutionAPI
+Chatwoot
+PostgreSQL
+Node
+container image
+model provider/model
+identity mechanism
+```
+
+---
+
+# 232. CONTRACT DRIFT
+
+Crie testes capazes de detectar mudanças incompatíveis nos providers.
+
+---
+
+# 233. WEBHOOK CONTRACT DRIFT
+
+Payload desconhecido não deve quebrar silenciosamente o runtime.
+
+Use:
+
+```text id="9mm85u"
+schema validation
+unknown-field policy
+version handling
+dead-letter/quarantine
+```
+
+---
+
+# 234. QUARANTINE
+
+Eventos externos inválidos ou desconhecidos podem ir para:
+
+```text id="6jdxbx"
+quarantine
+```
+
+quando apropriado.
+
+Nunca devem chegar diretamente ao Orchestrator.
+
+---
+
+# 235. POISON MESSAGE
+
+Um evento inválido não pode bloquear indefinidamente toda a fila.
+
+---
+
+# 236. DLQ
+
+Dead-letter deve permitir:
+
+```text id="e1r0hp"
+inspect
+reason
+correlation
+tenant
+attempts
+safe replay
+```
+
+---
+
+# 237. SAFE REPLAY
+
+Replay manual deve revalidar:
+
+```text id="9t1g7e"
+tenant
+policy
+approval if needed
+idempotency
+current state
+```
+
+Não execute cegamente o payload histórico.
+
+---
+
+# 238. REAL INTEGRATION CLOSURE
+
+Ao concluir Phase 11.13, produza uma matriz:
+
+```text id="jcl91b"
+Integration
+Provider/version
+Controlled test
+Staging test
+Real validation
+Failure modes
+Evidence
+Status
+```
+
+---
+
+# 239. PHASE 11.13 ACCEPTANCE
+
+Phase 11.13 só pode ser `PASS` quando todas as integrações obrigatórias para o deployment profile tiverem evidência correspondente.
+
+Caso contrário:
+
+```text id="45czc7"
+PARTIAL
+BLOCKED_EXTERNAL
+FAILED
+```
+
+---
+
+# 240. PHASE 11.14 — SUPERVISED PILOT READINESS
+
+Não liberar produção diretamente após integração.
+
+Crie estágio:
+
+# SUPERVISED PILOT
+
+---
+
+# 241. SHADOW MODE PRIMEIRO
+
+Antes de efeitos reais autônomos, suporte:
+
+```text id="x7f1md"
+SHADOW
+```
+
+No Shadow Mode:
+
+```text id="fbqnbf"
+OBSERVE
+UNDERSTAND
+PLAN
+GOVERN
+EVALUATE
+```
+
+funcionam.
+
+Mas:
+
+```text id="b5myb6"
+external write effect = blocked
+```
+
+---
+
+# 242. SHADOW COMPARISON
+
+Compare decisão do runtime com operador humano.
+
+Registre:
+
+```text id="sj6prx"
+agent proposal
+human decision
+agreement
+disagreement
+risk
+reason
+```
+
+---
+
+# 243. SHADOW METRICS
+
+Meça:
+
+```text id="nqd1gv"
+intent accuracy
+plan correctness
+tool selection
+policy correctness
+escalation correctness
+false positive
+false negative
+```
+
+---
+
+# 244. PILOT SCOPE
+
+Comece com escopo mínimo.
+
+Sugestão:
+
+```text id="u4rwx1"
+appointment information
+appointment confirmation
+simple scheduling
+```
+
+Não habilite todo o hospital de uma vez.
+
+---
+
+# 245. CAPABILITY ALLOWLIST
+
+Pilot deve possuir allowlist explícita.
+
+Exemplo:
+
+```text id="bfat2i"
+schedule.read
+appointment.create
+appointment.modify
+conversation.read
+message.draft
+message.send
+```
+
+---
+
+# 246. PILOT DENYLIST
+
+Bloqueie explicitamente:
+
+```text id="pb4xf3"
+clinical.write
+prescription.*
+exam.release
+finance.write
+admin.*
+```
+
+---
+
+# 247. PILOT RISK CEILING
+
+Defina:
+
+```text id="8vlbgm"
+maxRiskLevel
+```
+
+para o pilot.
+
+Exemplo:
+
+```text id="ejugkd"
+R2
+```
+
+R3+:
+
+```text id="fg2i9f"
+REQUIRE_HUMAN
+```
+
+ou `DENY`.
+
+---
+
+# 248. PILOT CONTACT SCOPE
+
+Inicialmente limite a:
+
+```text id="s3r4hw"
+allowlisted test contacts
+```
+
+ou grupo operacional aprovado.
+
+---
+
+# 249. PILOT TENANT SCOPE
+
+Pilot deve ser tenant-bound.
+
+---
+
+# 250. PILOT TIME WINDOW
+
+Permita restringir:
+
+```text id="5pfvsc"
+startAt
+endAt
+```
+
+---
+
+# 251. PILOT KILL SWITCH
+
+Implemente kill switch.
+
+Ao ativar:
+
+```text id="8v20t9"
+new autonomous effects = blocked
+```
+
+sem precisar redeploy.
+
+---
+
+# 252. KILL SWITCH FAIL-CLOSED
+
+Se estado do kill switch não puder ser determinado em situação crítica:
+
+prefira bloquear ações automáticas.
+
+---
+
+# 253. GLOBAL / TENANT / AGENT KILL SWITCH
+
+Quando justificável:
+
+```text id="dp8v82"
+global
+tenant
+agent
+channel
+```
+
+---
+
+# 254. PILOT ROLLBACK
+
+Prepare rollback para:
+
+```text id="cgvhxr"
+application
+agent version
+prompt version
+policy version
+model profile
+channel adapter
+```
+
+---
+
+# 255. ROLLBACK TEST
+
+Não basta escrever runbook.
+
+Execute rollback controlado em staging.
+
+---
+
+# 256. HUMAN SUPERVISOR
+
+Defina papel explícito:
+
+```text id="snm4zr"
+PILOT_SUPERVISOR
+```
+
+sem conceder automaticamente privilégios administrativos.
+
+---
+
+# 257. HUMAN TAKEOVER
+
+Supervisor deve poder assumir conversa imediatamente.
+
+---
+
+# 258. TAKEOVER LATENCY
+
+Meça tempo entre:
+
+```text id="a68vvw"
+takeover requested
+→ automatic outbound blocked
+```
+
+---
+
+# 259. PILOT ALERTS
+
+Alertar para:
+
+```text id="u6gyn8"
+policy violation attempt
+approval failure
+loop detection
+budget exhaustion
+provider outage
+DLQ growth
+high latency
+unexpected tool failure
+```
+
+---
+
+# 260. PILOT DASHBOARD
+
+Mostrar:
+
+```text id="bz9qgq"
+active goals
+waiting approvals
+human-owned conversations
+failed goals
+blocked goals
+replans
+loops
+DLQ
+provider health
+```
+
+---
+
+# 261. PILOT SUCCESS METRICS
+
+Meça pelo menos:
+
+```text id="t77rgl"
+task success
+human takeover rate
+policy violation rate
+unsafe action rate
+duplicate effect rate
+message loss
+latency
+operator intervention
+user correction rate
+```
+
+---
+
+# 262. ZERO-TOLERANCE PILOT METRICS
+
+Para promoção:
+
+```text id="rz00br"
+crossTenantLeak = 0
+unauthorizedCriticalEffect = 0
+duplicateCriticalEffect = 0
+lostCommittedMessage = 0
+clinicalAutonomyViolation = 0
+```
+
+---
+
+# 263. PILOT INCIDENT
+
+Qualquer P0/P1 deve:
+
+```text id="gqgvf9"
+pause promotion
+preserve evidence
+trigger investigation
+```
+
+---
+
+# 264. PILOT SAMPLE
+
+Não declare sucesso com amostra irrelevante.
+
+Defina previamente um mínimo significativo para o escopo.
+
+Não invente estatística.
+
+---
+
+# 265. PILOT SIGNOFF
+
+Ao final, signoff deve registrar:
+
+```text id="kvy6uv"
+scope
+candidateCommit
+runtimeVersion
+agentVersion
+policyVersion
+period
+metrics
+incidents
+knownLimitations
+decision
+approver
+timestamp
+```
+
+---
+
+# 266. SIGNOFF É HUMANO
+
+LLM não pode produzir `humanSignoff=VALIDATED`.
+
+---
+
+# 267. PILOT DECISIONS
+
+Estados:
+
+```text id="g7n0s5"
+PASS
+PASS_WITH_LIMITATIONS
+EXTEND
+ROLLBACK
+FAIL
+```
+
+---
+
+# 268. PRODUCTION PROMOTION
+
+Somente:
+
+```text id="hdg8op"
+PASS
+```
+
+ou política explicitamente aprovada para `PASS_WITH_LIMITATIONS` pode avançar.
+
+---
+
+# 269. PHASE 11.15 — TRIPLE-AAA CERTIFICATION
+
+Agora consolide toda a cadeia.
+
+---
+
+# 270. CERTIFICATION TARGET
+
+O alvo final é:
+
+```text id="z5cn0w"
+STATE_OF_ART_TRIPLE_AAA
+```
+
+Mas somente se todos os gates obrigatórios forem satisfeitos.
+
+---
+
+# 271. CERTIFICATION IDENTITY
+
+Cada certificação deve possuir:
+
+```text id="af4rzr"
+certificationId
+candidateCommit
+candidateTreeHash
+timestamp
+deploymentProfile
+runtimeVersion
+agentVersion
+policyVersion
+```
+
+---
+
+# 272. CLEAN TREE GATE
+
+Obrigatório:
+
+```text id="84d8qe"
+git status --porcelain == empty
+```
+
+---
+
+# 273. HEAD GATE
+
+Obrigatório:
+
+```text id="28yd6q"
+candidateCommit == git HEAD
+```
+
+---
+
+# 274. MANIFEST GATE
+
+Obrigatório:
+
+```text id="tkz1co"
+manifest.commit == candidateCommit
+```
+
+---
+
+# 275. RESULT GATE
+
+Obrigatório:
+
+```text id="7eog6z"
+phase11-result.commit == candidateCommit
+```
+
+---
+
+# 276. EVIDENCE FRESHNESS
+
+Todos os artifacts obrigatórios devem:
+
+```text id="88r8mn"
+exist
+match hash
+belong to candidate
+not be stale
+```
+
+---
+
+# 277. SINGLE CERTIFICATION CALCULUS
+
+Crie apenas uma função/regra autoritativa:
+
+```text id="4d9opz"
+computeCertificationDecision()
+```
+
+Todos os scripts devem utilizá-la.
+
+---
+
+# 278. NÃO DUPLIQUE LÓGICA
+
+`certify` e `certification:verify` não podem possuir regras independentes de GO/NO-GO.
+
+---
+
+# 279. GATE STATUS MODEL
+
+Use estados explícitos:
+
+```text id="vy9yfk"
+PASS
+FAIL
+NOT_EXECUTED
+NOT_APPLICABLE
+STALE
+INVALID
+```
+
+---
+
+# 280. REQUIRED GATE RULE
+
+Gate obrigatório:
+
+```text id="9s1e5n"
+status != PASS
+```
+
+bloqueia `GO`, salvo regra explícita de perfil que o torne `NOT_APPLICABLE`.
+
+---
+
+# 281. P0/P1
+
+Triple AAA exige:
+
+```text id="2c2gj9"
+P0 = 0
+P1 = 0
+```
+
+---
+
+# 282. P2
+
+P2 só pode permanecer se:
+
+```text id="h8l9lv"
+non-critical
+riskAccepted
+owner assigned
+mitigation documented
+does not violate mandatory gate
+```
+
+---
+
+# 283. CRITICAL P2
+
+Critical P2:
+
+```text id="qx6dpj"
+blocks Triple AAA
+```
+
+---
+
+# 284. ENGINEERING GATES
+
+Obrigatórios:
+
+```text id="8xibos"
+format
+typecheck
+lint
+build
+unit
+coverage
+integration
+PostgreSQL
+E2E
+architecture
+```
+
+---
+
+# 285. SECURITY GATES
+
+Obrigatórios:
+
+```text id="pzw0j2"
+dependency audit
+CodeQL/SAST
+secret scan
+license policy
+webhook security
+identity security
+tenant isolation
+approval integrity
+policy/capability tests
+SSRF defenses where applicable
+```
+
+---
+
+# 286. SUPPLY-CHAIN GATES
+
+Obrigatórios:
+
+```text id="g0jqkf"
+SBOM
+pinned CI actions
+dependency lock
+artifact digest
+container digest
+```
+
+---
+
+# 287. AGENT GATES
+
+Obrigatórios:
+
+```text id="rf3w4n"
+controlled eval
+adversarial eval
+policy violations = 0 critical
+unsafe autonomous actions = 0
+loop safety
+budget safety
+```
+
+---
+
+# 288. ORCHESTRATOR GATES
+
+Obrigatórios:
+
+```text id="65ml2s"
+state machine
+goal persistence
+plan persistence
+step persistence
+replanning
+loop detection
+budget enforcement
+recovery
+```
+
+---
+
+# 289. GOVERNANCE GATES
+
+Obrigatórios:
+
+```text id="7lwhzx"
+policy
+capability
+risk
+approval
+payload binding
+single-use approval
+approval race safety
+```
+
+---
+
+# 290. RELIABILITY GATES
+
+Obrigatórios:
+
+```text id="4nsxfy"
+outbox durability
+effect journal
+crash-before-effect
+crash-after-effect
+lease takeover
+fencing
+dead-letter
+safe replay
+```
+
+---
+
+# 291. OBSERVABILITY GATES
+
+Obrigatórios:
+
+```text id="xozgqo"
+trace propagation
+structured logging
+redaction
+metrics
+audit
+correlation
+```
+
+---
+
+# 292. RECOVERY GATES
+
+Obrigatórios:
+
+```text id="h9tp7j"
+backup
+restore
+orchestrator resume
+approval preservation
+outbox preservation
+audit preservation
+```
+
+---
+
+# 293. LOAD GATE
+
+Execute carga representativa.
+
+No mínimo mantenha teste de:
+
+```text id="ucn9fn"
+10k events
+```
+
+e permita perfil maior.
+
+---
+
+# 294. LOAD INVARIANTS
+
+Exigir:
+
+```text id="22jm8u"
+lost committed events = 0
+duplicate critical effects = 0
+cross tenant effects = 0
+```
+
+---
+
+# 295. CHAOS GATE
+
+Inclua:
+
+```text id="om0q7f"
+worker crash
+DB disconnect
+provider timeout
+provider outage
+duplicate webhook
+out-of-order webhook
+expired approval
+stale lease
+human takeover race
+```
+
+---
+
+# 296. REAL INTEGRATION GATES
+
+Para Production:
+
+```text id="pdrb9r"
+PostgreSQL = VALIDATED
+modelProvider = VALIDATED_REAL
+channel = VALIDATED_REAL
+externalIdentity = VALIDATED_REAL
+```
+
+quando esses componentes fizerem parte do deployment profile.
+
+---
+
+# 297. EVOLUTIONAPI + CHATWOOT
+
+Se ambos forem componentes do deployment:
+
+ambos precisam de validação.
+
+---
+
+# 298. RPO/RTO
+
+Triple AAA de produção exige RPO/RTO medidos em infraestrutura representativa.
+
+---
+
+# 299. HUMAN SIGNOFF
+
+Obrigatório para Production.
+
+---
+
+# 300. SUPERVISED PILOT
+
+Obrigatório para a primeira promoção ao deployment profile de produção.
+
+---
+
+# 301. RELEASE ARTIFACT
+
+Gere release manifest contendo:
+
+```text id="6frpmr"
+commit
+tree hash
+container digest
+SBOM digest
+migration digest
+agent version
+policy version
+prompt versions
+integration evidence
+certification ID
+```
+
+---
+
+# 302. CONTAINER BUILD
+
+Build de produção deve ser reproduzível na medida razoavelmente possível.
+
+---
+
+# 303. CONTAINER HARDENING
+
+Valide:
+
+```text id="0j45ck"
+non-root
+read-only where possible
+cap-drop
+no-new-privileges
+resource limits
+health checks
+```
+
+---
+
+# 304. MIGRATION GATE
+
+Execute migration smoke no candidato.
+
+---
+
+# 305. FORWARD COMPATIBILITY
+
+Para migrations críticas, valide estratégia:
+
+```text id="8o1vvr"
+expand
+migrate
+contract
+```
+
+quando necessária.
+
+---
+
+# 306. ROLLBACK GATE
+
+Prove rollback do release candidate em staging.
+
+---
+
+# 307. CONFIGURATION GATE
+
+Produção deve falhar se:
+
+```text id="ztd12i"
+NODE_ENV invalid
+memory persistence
+RLS required but disabled
+durable inbound disabled
+identity missing
+unsafe secret
+invalid origin
+runtime != kernel
+```
+
+---
+
+# 308. LEGACY RUNTIME GATE
+
+Triple AAA exige:
+
+```text id="tmt4xa"
+productionLegacyRuntimePaths = 0
+```
+
+---
+
+# 309. BYPASS GATE
+
+Execute architectural audit para provar:
+
+```text id="wobk2a"
+direct external effects bypassing governance = 0
+```
+
+---
+
+# 310. MODEL AUTHORITY GATE
+
+Prove por testes adversariais:
+
+```text id="pcx4ps"
+model cannot grant capability
+model cannot approve action
+model cannot change tenant
+model cannot disable policy
+```
+
+---
+
+# 311. ORCHESTRATOR AUTHORITY GATE
+
+Prove:
+
+```text id="7a7z4f"
+orchestrator cannot bypass GOVERN
+```
+
+---
+
+# 312. REPLANNER AUTHORITY GATE
+
+Prove:
+
+```text id="ugovx3"
+replanner cannot escalate capability
+replanner cannot downgrade risk
+replanner cannot bypass approval
+```
+
+---
+
+# 313. EVALUATOR AUTHORITY GATE
+
+Prove:
+
+```text id="brfb56"
+semantic evaluator cannot fabricate operational success
+```
+
+---
+
+# 314. SOURCE-OF-TRUTH G

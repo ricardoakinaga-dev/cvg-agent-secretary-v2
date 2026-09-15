@@ -72,7 +72,9 @@ if (startupFailure) {
 
 async function runControlledMemoryWorker(env: NodeJS.ProcessEnv) {
   const tenantId = TenantIdSchema.parse(env.CVG_WORKER_TENANT_ID)
-  const adapter = new OutboxRepository(new InMemoryDatabase())
+  const adapter = new OutboxRepository(new InMemoryDatabase(), {
+    enforceLeaseFencing: true
+  })
   const workerId = env.CVG_WORKER_ID?.trim() || 'worker-controlled-local'
   const smoke = env.CVG_WORKER_CONTROLLED_SMOKE === 'true'
 

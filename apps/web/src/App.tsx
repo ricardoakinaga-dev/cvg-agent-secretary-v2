@@ -131,6 +131,11 @@ export function App({
     useState<PanelNotice | null>(null)
   const [sessionClosed, setSessionClosed] = useState(false)
   const [reloadNonce, setReloadNonce] = useState(0)
+  const [identityDetailsOpen, setIdentityDetailsOpen] = useState(() =>
+    typeof window === 'undefined' || typeof window.matchMedia !== 'function'
+      ? true
+      : window.matchMedia('(min-width: 761px)').matches
+  )
 
   const sourceIdentityKey = JSON.stringify([
     sessionIdentity?.operatorId ?? null,
@@ -798,7 +803,17 @@ export function App({
 
   return (
     <main className="shell">
-      <a className="skipLink" href="#console-operacional">
+      <a
+        className="skipLink"
+        href="#console-operacional"
+        onClick={(event) => {
+          event.preventDefault()
+          const target = document.getElementById('console-operacional')
+          if (!target) return
+          target.focus({ preventScroll: true })
+          target.scrollIntoView({ block: 'start', behavior: 'auto' })
+        }}
+      >
         Pular para o console operacional
       </a>
       <header className="topbar" aria-labelledby="console-title">
@@ -833,48 +848,60 @@ export function App({
                 : 'Aguardando sessão confiável'}
             </span>
           </div>
-          {operatorIdentity ? (
-            <dl className="identityMeta">
-              <div>
-                <dt>Operador autenticado</dt>
-                <dd>
-                  <code>{normalizedOperatorId}</code>
-                </dd>
-              </div>
-              <div>
-                <dt>Papel atribuído</dt>
-                <dd>
-                  <span className="status">{operatorIdentity.role}</span>
-                </dd>
-              </div>
-              <div>
-                <dt>Tenant vinculado</dt>
-                <dd>
-                  <code>{normalizedTenantId || 'Não informado'}</code>
-                </dd>
-              </div>
-            </dl>
-          ) : (
-            <p className="identityUnavailable" role="alert">
-              Nenhum contexto de sessão foi fornecido. Leituras e ações estão
-              bloqueadas até o host disponibilizar uma identidade confiável.
-            </p>
-          )}
-          <p className="identityAuthorityNote">
-            Contexto somente leitura; permissões e autoridade são sempre
-            validadas pelo serviço.
-          </p>
-          <button
-            type="button"
-            className="sessionButton"
-            onClick={() => {
-              setSessionClosed(true)
-              onSessionEnd?.()
-            }}
-            disabled={!operatorIdentity}
+          <details
+            className="identityDetails"
+            open={identityDetailsOpen}
+            onToggle={(event) =>
+              setIdentityDetailsOpen(event.currentTarget.open)
+            }
           >
-            Encerrar sessão
-          </button>
+            <summary>Detalhes da identidade</summary>
+            <div className="identityDetailsBody">
+              {operatorIdentity ? (
+                <dl className="identityMeta">
+                  <div>
+                    <dt>Operador autenticado</dt>
+                    <dd>
+                      <code>{normalizedOperatorId}</code>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Papel atribuído</dt>
+                    <dd>
+                      <span className="status">{operatorIdentity.role}</span>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Tenant vinculado</dt>
+                    <dd>
+                      <code>{normalizedTenantId || 'Não informado'}</code>
+                    </dd>
+                  </div>
+                </dl>
+              ) : (
+                <p className="identityUnavailable" role="alert">
+                  Nenhum contexto de sessão foi fornecido. Leituras e ações
+                  estão bloqueadas até o host disponibilizar uma identidade
+                  confiável.
+                </p>
+              )}
+              <p className="identityAuthorityNote">
+                Contexto somente leitura; permissões e autoridade são sempre
+                validadas pelo serviço.
+              </p>
+              <button
+                type="button"
+                className="sessionButton"
+                onClick={() => {
+                  setSessionClosed(true)
+                  onSessionEnd?.()
+                }}
+                disabled={!operatorIdentity}
+              >
+                Encerrar sessão
+              </button>
+            </div>
+          </details>
         </div>
       </header>
       <nav className="sectionNav" aria-label="Seções do console">

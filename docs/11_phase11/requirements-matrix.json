@@ -1,0 +1,239 @@
+{
+  "schemaVersion": 1,
+  "phase": "11",
+  "kind": "phase11-requirements-matrix",
+  "source": {
+    "promptFiles": 14,
+    "itemRange": "0-1324",
+    "readOrder": "pasted-text-1.txt through pasted-text-14.txt"
+  },
+  "requirements": [
+    {
+      "id": "P11-GOVERNANCE",
+      "title": "Governed kernel, policy authority, approval and actor boundaries",
+      "promptItems": "0-49, 1199-1249",
+      "implementation": [
+        "packages/agent-runtime/src/runtime.ts",
+        "packages/agent-runtime/src/composition.ts",
+        "packages/policy-engine/src",
+        "apps/worker/src/kernel-composition.ts"
+      ],
+      "tests": [
+        "packages/agent-runtime/src/__tests__",
+        "packages/policy-engine/src/__tests__",
+        "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts"
+      ],
+      "evidence": [
+        "docs/02_spec/aaa_composition_contract.md",
+        "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json"
+      ],
+      "gates": ["unit", "postgres", "phase10_current_verification"],
+      "status": "PARTIAL",
+      "blocking": true
+    },
+    {
+      "id": "P11-ORCHESTRATION",
+      "title": "Goal, plan, dependency graph, bounded loop and replan semantics",
+      "promptItems": "50-119, 1079-1128",
+      "implementation": [
+        "packages/agent-runtime/src/contracts.ts",
+        "packages/agent-runtime/src/runtime.ts",
+        "packages/agent-runtime/src/limits.ts"
+      ],
+      "tests": [
+        "packages/agent-runtime/src/__tests__/runtime-kernel-coverage.test.ts",
+        "packages/agent-runtime/src/__tests__/runtime-limits.test.ts"
+      ],
+      "evidence": [
+        "docs/02_spec/aaa21_build_execution_contract_20260914.md",
+        "docs/04_audit/evidence/AAA/AAA-21/CHECKS.md"
+      ],
+      "gates": ["unit", "coverage", "phase10_current_verification"],
+      "status": "PARTIAL",
+      "blocking": true
+    },
+    {
+      "id": "P11-DURABLE-EFFECTS",
+      "title": "Outbox, effect journal, idempotency, approval and durable audit",
+      "promptItems": "120-313, 1129-1187",
+      "implementation": [
+        "packages/persistence/src/postgres.ts",
+        "packages/persistence/src/runtime-approval-store.ts",
+        "packages/persistence/migrations/0010_outbox_durability.sql",
+        "packages/persistence/migrations/0013_runtime_effect_journal.sql",
+        "packages/persistence/migrations/0015_runtime_approval_store.sql",
+        "packages/persistence/migrations/0017_runtime_audit_chain.sql",
+        "packages/persistence/migrations/0018_outbox_lease_fencing.sql"
+      ],
+      "tests": [
+        "packages/persistence/src/__tests__/outbox-durability.test.ts",
+        "packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+        "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
+        "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts"
+      ],
+      "evidence": [
+        "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json",
+        "docs/04_audit/evidence/AAA/AAA-21/FINAL-REPORT.md"
+      ],
+      "gates": ["postgres", "unit", "phase10_current_verification"],
+      "status": "PARTIAL",
+      "blocking": true
+    },
+    {
+      "id": "P11-RECOVERY",
+      "title": "Replay, restart, crash, lease takeover, uncertainty, DLQ and restore",
+      "promptItems": "314-404, 512-610, 736-849",
+      "implementation": [
+        "packages/persistence/src/outbox.ts",
+        "packages/persistence/src/runtime-approval-store.ts",
+        "apps/worker/src/continuous-worker.ts",
+        "apps/web/src"
+      ],
+      "tests": [
+        "apps/worker/src/__tests__/continuous-worker-postgres.integration.test.ts",
+        "packages/chaos/src/__tests__",
+        "apps/web/src/__tests__"
+      ],
+      "evidence": [
+        "certification/restore-report.json",
+        "certification/chaos-report.json",
+        "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json"
+      ],
+      "gates": ["postgres", "unit", "e2e", "phase10_current_verification"],
+      "status": "PARTIAL",
+      "blocking": true
+    },
+    {
+      "id": "P11-PUBLIC-VERTICAL",
+      "title": "Synthetic public HTTP to PostgreSQL to worker to governed kernel to audit",
+      "promptItems": "405-511, 1199-1256",
+      "implementation": [
+        "apps/api/src/server.ts",
+        "apps/worker/src/kernel-composition.ts",
+        "apps/worker/src/continuous-worker.ts",
+        "packages/agent-core/src/commands/receive-inbound-message.ts"
+      ],
+      "tests": [
+        "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+        "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts"
+      ],
+      "evidence": [
+        "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json",
+        "docs/04_audit/evidence/AAA/AAA-21/FINAL-REPORT.md"
+      ],
+      "gates": ["postgres", "unit", "e2e"],
+      "status": "PARTIAL",
+      "blocking": true
+    },
+    {
+      "id": "P11-OBSERVABILITY",
+      "title": "Correlation, trace, state lineage, metrics, redaction and operator evidence",
+      "promptItems": "611-735, 850-970, 1129-1187",
+      "implementation": [
+        "packages/observability/src",
+        "apps/api/src/request-metrics.ts",
+        "apps/api/src/server.ts",
+        "apps/web/src"
+      ],
+      "tests": [
+        "packages/observability/src/__tests__",
+        "apps/api/src/__tests__/correlation.test.ts",
+        "apps/web/src/__tests__"
+      ],
+      "evidence": [
+        "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json",
+        "certification/phase10-result.json"
+      ],
+      "gates": ["unit", "e2e", "phase10_current_verification"],
+      "status": "PARTIAL",
+      "blocking": true
+    },
+    {
+      "id": "P11-SECURITY",
+      "title": "Tenant isolation, identity, headers, injection, secrets and safe errors",
+      "promptItems": "736-849, 970-1078, 1257-1300",
+      "implementation": [
+        "apps/api/src/http-security.ts",
+        "apps/api/src/server.ts",
+        "packages/persistence/migrations/0001_tenant_isolation.sql",
+        "packages/shared/src/auth.ts"
+      ],
+      "tests": [
+        "apps/api/src/__tests__/tenant-inbound-isolation.test.ts",
+        "apps/api/src/__tests__/server-boundary-envelope.test.ts",
+        "apps/worker/src/__tests__/postgres-role-preflight.test.ts"
+      ],
+      "evidence": [
+        "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json",
+        "docs/04_audit/0558_code_audit_2026-09-12.md"
+      ],
+      "gates": ["unit", "postgres", "security", "phase10_current_verification"],
+      "status": "PARTIAL",
+      "blocking": true
+    },
+    {
+      "id": "P11-UX-CONSOLE",
+      "title": "Operational console for pending, approval, DLQ, recovery, focus and responsive states",
+      "promptItems": "405-511, 611-735, 850-970",
+      "implementation": [
+        "apps/web/src/App.tsx",
+        "apps/web/src/styles.css",
+        "apps/web/src/api.ts"
+      ],
+      "tests": ["apps/web/src/__tests__", "tests/e2e"],
+      "evidence": [
+        "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json",
+        "test-results"
+      ],
+      "gates": ["e2e", "unit"],
+      "status": "PARTIAL",
+      "blocking": true
+    },
+    {
+      "id": "P11-CERTIFICATION",
+      "title": "Commit-bound candidate, fresh evidence, independent critique and honest release calculus",
+      "promptItems": "512-610, 611-735, 1079-1198, 1300-1324",
+      "implementation": [
+        "scripts/phase10-certify.mjs",
+        "scripts/phase10-verify.mjs",
+        "scripts/phase11-certify.mjs",
+        "scripts/phase11-verify.mjs",
+        "scripts/lib/phase11-rules.mjs"
+      ],
+      "tests": [
+        "scripts/phase10-verify.mjs --self-test",
+        "scripts/phase11-verify.mjs",
+        "tests/phase11-certification.test.ts"
+      ],
+      "evidence": [
+        "certification/phase11-result.json",
+        "certification/phase11-manifest.json"
+      ],
+      "gates": [
+        "prompt_integrity",
+        "phase10_current_verification",
+        "candidate_clean",
+        "node_target"
+      ],
+      "status": "IMPLEMENTED",
+      "blocking": true
+    },
+    {
+      "id": "P11-EXTERNAL-HUMAN",
+      "title": "Provider, channel, identity, RAG, pilot, RPO/RTO and human release gates",
+      "promptItems": "314-511, 512-610, 1079-1198, 1300-1324",
+      "implementation": [
+        "certification/external-gates.json",
+        "docs/02_spec/aaa21_build_execution_contract_20260914.md"
+      ],
+      "tests": [],
+      "evidence": [
+        "certification/external-gates.json",
+        "docs/04_audit/evidence/AAA/AAA-21/FINAL-REPORT.md"
+      ],
+      "gates": ["external_gates", "human_signoff"],
+      "status": "BLOCKED",
+      "blocking": true
+    }
+  ]
+}

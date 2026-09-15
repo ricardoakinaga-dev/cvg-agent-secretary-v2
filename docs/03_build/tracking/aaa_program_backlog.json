@@ -1820,17 +1820,52 @@
           "productionGateChanged": false,
           "externalGateChanged": false,
           "humanReleaseGateChanged": false
+        },
+        {
+          "at": "2026-09-14T23:50:00-03:00",
+          "executionId": "AAA-21-PHASE11-EXEC-20260914",
+          "phase": "BUILD+AUDIT",
+          "result": "CONTROLLED_LOCAL_IMPLEMENTATION_PENDING_PHASE11_CERTIFICATION",
+          "evidence": "docs/11_phase11/PHASE11-ROUND-20260914.md",
+          "productionGateChanged": false,
+          "externalGateChanged": false,
+          "humanReleaseGateChanged": false
+        },
+        {
+          "at": "2026-09-15T00:25:33-03:00",
+          "executionId": "AAA-21-PHASE11-CERT-20260915",
+          "phase": "AUDIT",
+          "result": "CANDIDATE_BOUND_NO_GO_VERIFIED",
+          "evidence": "certification/phase11-result.json",
+          "productionGateChanged": false,
+          "externalGateChanged": false,
+          "humanReleaseGateChanged": false
+        },
+        {
+          "at": "2026-09-15T01:01:57-03:00",
+          "executionId": "AAA-21-PHASE11-HARDEN-20260915",
+          "phase": "AUDIT",
+          "result": "CERTIFICATION_INTEGRITY_HARDENED_NODE22_FORMAT_ACTIVE_PASS",
+          "evidence": "tests/phase11-certification.test.ts",
+          "productionGateChanged": false,
+          "externalGateChanged": false,
+          "humanReleaseGateChanged": false
         }
       ],
       "evidence": [
         "docs/04_audit/evidence/PROD-20260913/reaudit-round3/AAA-06/REVIEW.md",
         "docs/04_audit/evidence/AAA/AAA-21/FINAL-REPORT.md",
-        "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json"
+        "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json",
+        "docs/11_phase11/PHASE11-ROUND-20260914.md",
+        "docs/11_phase11/requirements-matrix.json",
+        "docs/11_phase11/phase11_execution_contract.md",
+        "certification/phase11-result.json",
+        "certification/phase11-manifest.json"
       ],
       "rollback": "Preserve candidate and evidence; revert only task-owned diff in isolated checkout; data changes require SPEC rollback/roll-forward and restore proof.",
       "buildAuthorization": "LOCAL_CONTROLLED_BUILD_AUTHORIZED_BY_CURRENT_USER_REQUEST_2026-09-14",
       "contractStatus": "FROZEN_TASK_SPEC_CONTROLLED_LOCAL",
-      "nextAction": "Run the blocked PostgreSQL vertical/crash-restart/RLS proof under Node 22, close coverage and global format findings, then obtain human review; preserve production NO-GO.",
+      "nextAction": "Commit the current candidate, run Phase 10 and Phase 11 certification under Node 22 with PostgreSQL disposable evidence, verify the manifests, then execute the remaining crash-restart/RLS, physical durability/RPO-RTO, external and human gates; preserve production NO-GO.",
       "coordinationHistory": [
         {
           "at": "2026-09-13T16:45:07.579Z",
@@ -1847,6 +1882,30 @@
           "source": "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json",
           "productGateGranted": false,
           "note": "build controlado concluído; gates locais passam, mas cobertura AAA, Node 22, formato global e prova PostgreSQL permanecem bloqueados"
+        },
+        {
+          "at": "2026-09-14T23:50:00-03:00",
+          "previousStatus": "REVIEW",
+          "newStatus": "REVIEW",
+          "source": "docs/11_phase11/PHASE11-ROUND-20260914.md",
+          "productGateGranted": false,
+          "note": "fencing de claim, trace vertical, console responsivo e evidência PostgreSQL/web/E2E atualizados; certificação candidate-bound ainda deve calcular o NO-GO/AAA_CONTROLLED vigente"
+        },
+        {
+          "at": "2026-09-15T00:25:33-03:00",
+          "previousStatus": "REVIEW",
+          "newStatus": "REVIEW",
+          "source": "certification/phase11-result.json",
+          "productGateGranted": false,
+          "note": "certificação candidate-bound final NO_GO e verificador pós-run PASS; format, Phase 10 current verification, Node 22 e gates externos/humanos permanecem bloqueados"
+        },
+        {
+          "at": "2026-09-15T01:01:57-03:00",
+          "previousStatus": "REVIEW",
+          "newStatus": "REVIEW",
+          "source": "tests/phase11-certification.test.ts",
+          "productGateGranted": false,
+          "note": "Node 22.23.2 e format ativo passaram; commit/manifest/dirty-state binding endurecidos; commit e certificações completas ainda pendentes"
         }
       ]
     },

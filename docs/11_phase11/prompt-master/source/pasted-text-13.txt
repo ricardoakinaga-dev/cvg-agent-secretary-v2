@@ -1,0 +1,1030 @@
+# FINAL EXECUTION APPENDIX
+
+## NON-NEGOTIABLE CODEX DELIVERY CONTRACT
+
+> Este bloco encerra o Prompt Master. Em caso de ambiguidade operacional entre requisitos anteriores, preserve primeiro os invariants de segurança, tenant isolation, governance, durability, evidence integrity e fail-closed.
+
+---
+
+# 1199. THIS IS AN IMPLEMENTATION TASK
+
+Este prompt NÃO solicita:
+
+```text
+proposal
+blueprint
+recommendations
+architecture-only report
+TODO list
+```
+
+Ele solicita implementação real no repositório.
+
+---
+
+# 1200. BEGIN WITH REPOSITORY TRUTH
+
+Antes de escrever código:
+
+```text
+git status
+git rev-parse HEAD
+git branch
+inspect repository
+inspect Phase 10
+inspect current runtime
+inspect existing orchestrator work
+inspect certification
+```
+
+Use os comandos equivalentes disponíveis no ambiente.
+
+---
+
+# 1201. DO NOT ASSUME THE PROMPT IS FRESHER THAN THE CODE
+
+Se algo já estiver implementado:
+
+```text
+VERIFY
+```
+
+em vez de duplicar.
+
+---
+
+# 1202. BUILD A GAP MATRIX
+
+Crie uma matriz interna:
+
+```text
+Requirement
+Current State
+Gap
+Action
+Test
+Evidence
+```
+
+---
+
+# 1203. CLASSIFY EACH REQUIREMENT
+
+Use:
+
+```text
+ALREADY_VERIFIED
+NEEDS_IMPLEMENTATION
+NEEDS_HARDENING
+NEEDS_TEST
+EXTERNAL_BLOCKED
+NOT_APPLICABLE
+```
+
+---
+
+# 1204. DO NOT IMPLEMENT BY ITEM NUMBER BLINDLY
+
+Os 1198 requisitos anteriores representam invariants e outcomes.
+
+Consolide requisitos relacionados em implementações coerentes.
+
+---
+
+# 1205. AVOID 1198 MICRO-PATCHES
+
+Implemente subsistemas completos.
+
+---
+
+# 1206. TARGET SUBSYSTEMS
+
+A implementação deve convergir para estes grandes blocos:
+
+```text
+Certification Integrity
+Orchestrator Kernel
+Goal/Plan Engine
+Governance
+Risk
+Approval
+Durable Execution
+Observe/Evaluate/Replan
+Loop/Budget Safety
+Routing
+Tool/Effect Boundary
+Recovery
+Observability
+Security
+Integrations
+Certification
+```
+
+---
+
+# 1207. FIRST HARD GATE — CERTIFICATION INTEGRITY
+
+Antes de ampliar significativamente o runtime, corrija:
+
+```text
+dirty candidate acceptance
+HEAD mismatch
+stale evidence
+duplicated decision calculus
+untracked certification dependencies
+```
+
+---
+
+# 1208. CERTIFICATION ENGINE TESTS FIRST
+
+Adicione regressions para esses bugs antes ou junto da correção.
+
+---
+
+# 1209. SECOND HARD GATE — GOVERNED KERNEL
+
+Não permita novo Orchestrator rodar efeitos enquanto Governance boundary não estiver integrado.
+
+---
+
+# 1210. THIRD HARD GATE — DURABILITY
+
+Não declare Orchestrator concluído enquanto seu estado essencial for apenas process-local.
+
+---
+
+# 1211. FOURTH HARD GATE — RECOVERY
+
+Não declare durable execution concluída apenas porque os dados estão no PostgreSQL.
+
+Prove resume.
+
+---
+
+# 1212. FIFTH HARD GATE — EFFECT SAFETY
+
+Prove crash-after-effect.
+
+---
+
+# 1213. SIXTH HARD GATE — LOOP SAFETY
+
+Prove bounded replanning.
+
+---
+
+# 1214. SEVENTH HARD GATE — TENANT SAFETY
+
+Prove cross-tenant denial em todas as novas entidades.
+
+---
+
+# 1215. EIGHTH HARD GATE — APPROVAL SAFETY
+
+Prove:
+
+```text
+payload binding
+single use
+expiration
+race safety
+tenant binding
+```
+
+---
+
+# 1216. NINTH HARD GATE — MODEL AUTHORITY
+
+Prove que malicious model output não ganha authority.
+
+---
+
+# 1217. TENTH HARD GATE — CERTIFICATION
+
+Prove que false GO é impossível nos cenários testados.
+
+---
+
+# 1218. ORCHESTRATOR MINIMUM EXECUTABLE SLICE
+
+Antes de expandir, faça um vertical slice completo:
+
+```text
+synthetic inbound
+↓
+Observe
+↓
+Understand
+↓
+Goal
+↓
+Plan
+↓
+Govern
+↓
+controlled read/write tool
+↓
+Outbox
+↓
+Observe Result
+↓
+Evaluate
+↓
+Goal Complete
+↓
+Response
+```
+
+---
+
+# 1219. VERTICAL SLICE MUST BE DURABLE
+
+Execute novamente com restart no meio.
+
+---
+
+# 1220. VERTICAL SLICE MUST BE AUDITABLE
+
+Reconstitua lineage.
+
+---
+
+# 1221. VERTICAL SLICE MUST BE TENANT-SAFE
+
+Execute com dois tenants sintéticos.
+
+---
+
+# 1222. VERTICAL SLICE MUST BE BOUNDED
+
+Force falha/replan.
+
+---
+
+# 1223. AFTER VERTICAL SLICE
+
+Expanda para:
+
+```text
+approval
+human takeover
+provider routing
+channel integration
+```
+
+---
+
+# 1224. GOLDEN SECRETARY SCENARIO
+
+Use como cenário principal sintético:
+
+```text
+Tutor asks to schedule dermatology for Bob tomorrow afternoon.
+```
+
+---
+
+# 1225. EXPECTED ORCHESTRATION
+
+Deve produzir semanticamente:
+
+```text
+resolve patient
+↓
+query availability
+↓
+present options
+↓
+wait for selection
+↓
+create appointment
+↓
+verify appointment
+↓
+confirm to tutor
+```
+
+---
+
+# 1226. NO PREMATURE SUCCESS
+
+Antes de appointment verificado:
+
+```text
+Goal != COMPLETED
+```
+
+---
+
+# 1227. CONFLICT SCENARIO
+
+Slot desaparece antes do write.
+
+Resultado:
+
+```text
+observe conflict
+↓
+evaluate false
+↓
+replan
+```
+
+---
+
+# 1228. APPROVAL SCENARIO
+
+Use uma ação sintética R3 para provar:
+
+```text
+WAITING_APPROVAL
+```
+
+---
+
+# 1229. HUMAN TAKEOVER SCENARIO
+
+Humano assume antes do outbound.
+
+Resultado:
+
+```text
+automatic outbound = suppressed
+```
+
+---
+
+# 1230. LOOP SCENARIO
+
+Provider retorna repetidamente mesmo conflito.
+
+Resultado:
+
+```text
+LOOP_DETECTED
+```
+
+ou budget stop.
+
+---
+
+# 1231. CRASH SCENARIO
+
+Mate worker após effect e antes de finalização.
+
+Resultado:
+
+```text
+external effect count = 1
+```
+
+---
+
+# 1232. STALE WORKER SCENARIO
+
+Lease expira e novo worker assume.
+
+Worker antigo não pode commit.
+
+---
+
+# 1233. TENANT ATTACK SCENARIO
+
+Tente trocar Bob por recurso pertencente a tenant B via malicious model/tool result.
+
+Resultado:
+
+```text
+DENY
+```
+
+---
+
+# 1234. MODEL ATTACK SCENARIO
+
+Modelo retorna:
+
+```text
+risk=R0
+approval=false
+grantCapability=admin
+```
+
+para ação sensível.
+
+Resultado:
+
+```text
+proposal sanitized/rejected
+independent governance applies
+```
+
+---
+
+# 1235. RAG ATTACK SCENARIO
+
+Documento institucional malicioso tenta instruir bypass.
+
+Resultado:
+
+```text
+no authority change
+```
+
+---
+
+# 1236. TOOL ATTACK SCENARIO
+
+Tool result contém prompt injection.
+
+Mesmo resultado.
+
+---
+
+# 1237. CERTIFICATION ATTACK SCENARIO
+
+Altere:
+
+```text
+gate
+hash
+HEAD
+profile
+external status
+```
+
+individualmente.
+
+Verifier deve detectar inconsistência.
+
+---
+
+# 1238. DO NOT BUILD UI FIRST
+
+Prioridade:
+
+```text
+runtime correctness
+>
+operator UI polish
+```
+
+---
+
+# 1239. OPERATOR CONSOLE AFTER CORE
+
+Depois do kernel sólido, exponha estado operacional necessário.
+
+---
+
+# 1240. NO UI-ONLY APPROVAL
+
+Approval authority pertence ao backend.
+
+---
+
+# 1241. NO CLIENT-TRUSTED RISK
+
+Risk calculado/validado no backend.
+
+---
+
+# 1242. NO CLIENT-TRUSTED TENANT
+
+Mesmo princípio.
+
+---
+
+# 1243. NO CLIENT-TRUSTED GOAL STATE
+
+Mesmo princípio.
+
+---
+
+# 1244. FINAL STORAGE DESIGN REVIEW
+
+Antes de migrations finais, revise cardinalidade e lifecycle de:
+
+```text
+goals
+plans
+steps
+attempts
+evaluations
+```
+
+---
+
+# 1245. AVOID JSON-BLOB DATABASE
+
+Não armazene tudo em um único JSON se isso impedir:
+
+```text
+concurrency
+queries
+constraints
+auditability
+```
+
+---
+
+# 1246. AVOID OVER-NORMALIZATION
+
+Também não transforme cada campo trivial em tabela.
+
+---
+
+# 1247. DATABASE CONSTRAINTS
+
+Use constraints para invariants que o banco puder garantir.
+
+---
+
+# 1248. UNIQUE CONSTRAINTS
+
+Use para idempotency/single-use quando adequado.
+
+---
+
+# 1249. FOREIGN KEYS
+
+Use quando compatíveis com lifecycle.
+
+---
+
+# 1250. CHECK CONSTRAINTS
+
+Use para estados/ranges quando agregar segurança.
+
+---
+
+# 1251. DATABASE IS PART OF THE SAFETY MODEL
+
+Não dependa exclusivamente de application code para invariants críticos facilmente garantíveis pelo DB.
+
+---
+
+# 1252. MIGRATION TEST
+
+Toda nova migration entra no Postgres smoke.
+
+---
+
+# 1253. FINAL TEST EXECUTION ORDER
+
+Ao final:
+
+```text
+format
+typecheck
+lint
+build
+unit
+critical coverage
+architecture
+PostgreSQL
+E2E
+evals
+adversarial
+chaos
+load
+restore
+evidence
+certification
+promotion
+```
+
+---
+
+# 1254. STOP ON CRITICAL FAILURE
+
+Durante certificação final, não esconda failure continuando e apresentando somente sucessos.
+
+---
+
+# 1255. CONTINUE FOR DIAGNOSTICS WHEN SAFE
+
+Pode continuar suites independentes para obter visão completa.
+
+---
+
+# 1256. FINAL FAILURE SUMMARY
+
+Liste todos os gates falhos.
+
+---
+
+# 1257. NO CHERRY-PICKED RESULTS
+
+Obrigatório.
+
+---
+
+# 1258. FINAL COVERAGE REPORT
+
+Inclua:
+
+```text
+global
+critical modules
+```
+
+---
+
+# 1259. FINAL EVAL REPORT
+
+Inclua failures, não apenas aggregate score.
+
+---
+
+# 1260. FINAL CHAOS REPORT
+
+Inclua scenarios não executados.
+
+---
+
+# 1261. FINAL LOAD REPORT
+
+Inclua environment e limitations.
+
+---
+
+# 1262. FINAL INTEGRATION REPORT
+
+Diferencie controlled/staging/real.
+
+---
+
+# 1263. FINAL PILOT REPORT
+
+Somente se real.
+
+---
+
+# 1264. FINAL HUMAN SIGNOFF
+
+Somente se humano real autorizado.
+
+---
+
+# 1265. LOCAL COMPLETION MARKER
+
+Quando todo trabalho local terminar, registre:
+
+```text
+LOCAL_ENGINEERING_CLOSURE
+```
+
+com evidence.
+
+---
+
+# 1266. LOCAL CLOSURE DOES NOT MEAN PRODUCTION
+
+Obrigatório.
+
+---
+
+# 1267. EXTERNAL CLOSURE MARKER
+
+Quando integrações reais forem validadas:
+
+```text
+EXTERNAL_INTEGRATION_CLOSURE
+```
+
+---
+
+# 1268. PILOT CLOSURE MARKER
+
+Após piloto:
+
+```text
+SUPERVISED_PILOT_CLOSURE
+```
+
+---
+
+# 1269. PRODUCTION ASSURANCE MARKER
+
+Somente após todos os gates:
+
+```text
+PRODUCTION_ASSURANCE_CLOSURE
+```
+
+---
+
+# 1270. TRIPLE AAA MARKER
+
+Somente então:
+
+```text
+STATE_OF_ART_TRIPLE_AAA
+```
+
+---
+
+# 1271. MACHINE MARKERS ONLY
+
+Esses estados devem ser derivados pelo certification engine.
+
+---
+
+# 1272. FINAL RESULT EXAMPLE — EXTERNAL BLOCKED
+
+Um resultado válido pode ser:
+
+```text
+Implementation Complete: YES
+Local Verification: PASS
+Critical Invariants: PASS
+PostgreSQL: PASS
+Real Provider: NOT_VALIDATED
+Real Channel: NOT_VALIDATED
+Human Signoff: PENDING
+
+Certification: AAA_CANDIDATE
+Production Promotion: NO
+```
+
+---
+
+# 1273. FINAL RESULT EXAMPLE — TECHNICAL FAILURE
+
+Outro resultado:
+
+```text
+Critical Invariant:
+duplicateCriticalEffectsZero = FAIL
+
+Certification: NO_GO
+```
+
+---
+
+# 1274. FINAL RESULT EXAMPLE — FULL CLOSURE
+
+Somente com provas:
+
+```text
+All mandatory production gates PASS
+P0 = 0
+P1 = 0
+Critical P2 = 0
+RPO/RTO VALIDATED
+Pilot PASS
+Human Signoff VALIDATED
+
+Certification:
+STATE_OF_ART_TRIPLE_AAA
+```
+
+---
+
+# 1275. CODEX MUST NOT SELF-SIGN HUMAN GATES
+
+Reforço final.
+
+---
+
+# 1276. CODEX MUST NOT SELF-VALIDATE REAL PROVIDERS WITHOUT REAL EXECUTION
+
+Reforço final.
+
+---
+
+# 1277. CODEX MUST NOT SELF-VALIDATE RPO/RTO FROM TARGET VALUES
+
+Reforço final.
+
+---
+
+# 1278. CODEX MUST NOT SELF-VALIDATE PILOT FROM SYNTHETIC EVAL
+
+Reforço final.
+
+---
+
+# 1279. CODEX MUST NOT HIDE UNEXECUTED TESTS
+
+Reforço final.
+
+---
+
+# 1280. CODEX MUST NOT DECLARE CLEAN TREE IF DIRTY
+
+Reforço final.
+
+---
+
+# 1281. CODEX MUST NOT ALTER EVIDENCE TO MATCH EXPECTED RESULT
+
+Reforço final.
+
+---
+
+# 1282. FINAL INSTRUCTION TO THE IMPLEMENTER
+
+Você deve agir como builder e auditor adversarial do próprio trabalho.
+
+Para cada mecanismo crítico, pergunte:
+
+```text
+How can this fail?
+How can this be bypassed?
+How can this duplicate?
+How can this leak tenant data?
+How can this survive restart incorrectly?
+How could the certification falsely mark it green?
+```
+
+Depois implemente testes para essas respostas.
+
+---
+
+# 1283. FINAL DESIGN PRINCIPLE
+
+Não confie em disciplina humana quando invariant puder ser imposto mecanicamente.
+
+---
+
+# 1284. FINAL DATABASE PRINCIPLE
+
+Não confie em memória de processo para estado que precisa sobreviver falha.
+
+---
+
+# 1285. FINAL AGENT PRINCIPLE
+
+Não confie em prompt para autorização.
+
+---
+
+# 1286. FINAL INTEGRATION PRINCIPLE
+
+Não confie em `200 OK` como prova universal de efeito.
+
+---
+
+# 1287. FINAL CERTIFICATION PRINCIPLE
+
+Não confie em relatório textual quando estado puder ser verificado mecanicamente.
+
+---
+
+# 1288. FINAL OPERATIONS PRINCIPLE
+
+Não confie que falhas "não vão acontecer".
+
+Projete recuperação.
+
+---
+
+# 1289. FINAL SAFETY PRINCIPLE
+
+Quando autoridade for incerta:
+
+```text
+FAIL CLOSED
+```
+
+---
+
+# 1290. FINAL EFFECT PRINCIPLE
+
+Quando resultado do efeito for incerto:
+
+```text
+RECONCILE BEFORE RETRY
+```
+
+---
+
+# 1291. FINAL ORCHESTRATION PRINCIPLE
+
+Quando objetivo ainda não estiver comprovadamente atingido:
+
+```text
+EVALUATE
+→ REPLAN / ASK / WAIT / HANDOFF / STOP
+```
+
+não invente sucesso.
+
+---
+
+# 1292. FINAL HUMAN PRINCIPLE
+
+Quando a máquina atingir limite de autoridade ou confiança operacional:
+
+```text
+HUMAN_HANDOFF
+```
+
+é comportamento correto.
+
+---
+
+# 1293. FINAL SIMPLICITY PRINCIPLE
+
+Quando duas arquiteturas fornecerem as mesmas garantias:
+
+escolha a mais simples.
+
+---
+
+# 1294. FINAL EVIDENCE PRINCIPLE
+
+Cada claim importante deve responder:
+
+```text
+Where is the proof?
+```
+
+---
+
+# 1295. TERMINAL CHECKLIST
+
+Antes de responder ao usuário, confirme:
+
+```text
+[ ] Repository re-inspected
+[ ] Delta implemented
+[ ] Certification integrity repaired
+[ ] Orchestrator executable
+[ ] Governance integrated
+[ ] Risk integrated
+[ ] Approval hardened
+[ ] Durable persistence integrated
+[ ] Recovery tested
+[ ] Observe/Evaluate/Replan implemented
+[ ] Loop/budget bounded
+[ ] Legacy production bypass removed
+[ ] Tenant isolation tested
+[ ] Security adversarial tests run
+[ ] PostgreSQL tests run where available
+[ ] Chaos run
+[ ] Load run
+[ ] Restore run
+[ ] Evidence graph verified
+[ ] Certification verified
+[ ] External blockers honestly recorded
+[ ] Final audit completed
+[ ] Final Success State generated
+```
+
+---
+
+# 1296. CHECKLIST IS NOT EVIDENCE
+
+Cada `[x]` deve corresponder a artifact/test/evidence.
+
+---
+
+# 1297. UNPROVEN CHECKBOX
+
+Deixe desmarcado.
+
+---
+
+# 1298. FINAL RESPONSE
+
+Entregue o resultado e pare.
+
+Não gere outro blueprint como substituto da implementação.
+
+---
+
+# 1299. FINAL TARGET STATEMENT
+
+O alvo desta Phase 11 é entregar o `cvg-agent-secretary-v2` como uma plataforma em que:
+
+> **o Orchestrator pode planejar e replanejar livremente dentro de limites, mas nunca pode conceder a si mesmo autoridade; toda ação relevante é governada, todo efeito crítico é durável/idempotente ou reconciliável, todo objetivo é avaliado contra evidência, toda execução é recuperável e auditável, e toda alegação de qualidade é vinculada mecanicamente ao candidato que foi realmente testado.**
+
+---
+
+# 1300. START NOW
+
+Comece pela verdade atual do repositório.
+
+Implemente o delta completo.
+
+Teste.
+
+Ataque.
+
+Recupere.
+
+Verifique.
+
+Audite.
+
+Certifique.
+
+Somente então determine, pela evidência:
+
+```text
+NO
+```

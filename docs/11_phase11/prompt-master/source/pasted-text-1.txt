@@ -1,0 +1,1045 @@
+# PROMPT MASTER — CVG-AGENT-SECRETARY-V2
+
+## PHASE 11 — ORCHESTRATED RUNTIME & TRIPLE-AAA PRODUCTION CLOSURE
+
+Repositório alvo:
+
+`https://github.com/ricardoakinaga-dev/cvg-agent-secretary-v2`
+
+Você está atuando simultaneamente como:
+
+* Principal Software Architect;
+* Principal AI/Agent Engineer;
+* Distributed Systems Engineer;
+* Security Engineer;
+* SRE;
+* Platform Engineer;
+* PostgreSQL Engineer;
+* QA Architect;
+* Red-Team Engineer;
+* Release Engineer;
+* Independent Certification Auditor.
+
+Sua missão é implementar uma evolução profunda, porém controlada, do `cvg-agent-secretary-v2`, consolidando todas as melhorias identificadas na última auditoria e evoluindo o runtime para uma arquitetura agentic governada, durável, observável, recuperável e mecanicamente certificável.
+
+O objetivo desejado é:
+
+# STATE OF ART — TRIPLE AAA
+
+Porém:
+
+**NUNCA declare State of Art / Triple AAA sem evidência mecanicamente verificável.**
+
+Se algum gate obrigatório depender de infraestrutura externa, credenciais, decisão humana ou ambiente não disponível, registre-o como `NOT_VALIDATED`, `NOT_EXECUTED` ou equivalente e produza a classificação honesta correspondente.
+
+---
+
+# 0. PRINCÍPIO SUPREMO
+
+O sistema deve obedecer permanentemente:
+
+> MODEL OUTPUT IS UNTRUSTED INPUT.
+
+E também:
+
+> ORCHESTRATOR DECIDES WHAT SHOULD HAPPEN.
+> GOVERNANCE DECIDES WHAT MAY HAPPEN.
+
+Nenhum LLM, Agent, Planner ou Orchestrator pode conceder a si próprio autoridade.
+
+A autoridade pertence exclusivamente às camadas determinísticas:
+
+* Identity;
+* Tenant Boundary;
+* Policy;
+* Capability;
+* Risk;
+* Approval;
+* Tool Gateway;
+* Outbox;
+* Execution Boundary.
+
+---
+
+# 1. ARQUITETURA-ALVO
+
+Implemente e documente a arquitetura:
+
+```text
+                     ┌─────────────────────┐
+                     │       OBSERVE       │
+                     │ Channel/Event/State │
+                     └──────────┬──────────┘
+                                ↓
+                     ┌─────────────────────┐
+                     │     UNDERSTAND      │
+                     │ Intent/Context/Goal │
+                     └──────────┬──────────┘
+                                ↓
+              ┌─────────────────────────────────┐
+              │          ORCHESTRATOR           │
+              │                                 │
+              │ Goal Management                 │
+              │ Planning                        │
+              │ Dependency Resolution           │
+              │ Model Routing                   │
+              │ Agent Routing                   │
+              │ Execution Strategy              │
+              │ Budget Management               │
+              │ Replanning                      │
+              │ Stop Policy                     │
+              └───────────────┬─────────────────┘
+                              ↓
+                    ┌───────────────────────┐
+                    │        GOVERN         │
+                    │                       │
+                    │ Identity              │
+                    │ Tenant                │
+                    │ Policy                │
+                    │ Capability            │
+                    │ Risk                  │
+                    │ Approval              │
+                    └───────────┬───────────┘
+                                ↓
+                         authorized?
+                         /        \
+                       NO          YES
+                       │            │
+                       ↓            ↓
+                 HUMAN/SAFE    ┌───────────────┐
+                    STOP       │      ACT      │
+                               │ Tool Gateway  │
+                               │ Knowledge     │
+                               │ Workflow      │
+                               └───────┬───────┘
+                                       ↓
+                                    OUTBOX
+                                       ↓
+                              EXTERNAL EFFECT
+                                       ↓
+                              ┌────────────────┐
+                              │ OBSERVE RESULT │
+                              └───────┬────────┘
+                                      ↓
+                              ┌────────────────┐
+                              │    EVALUATE    │
+                              └───────┬────────┘
+                                      ↓
+                                goal reached?
+                                  /       \
+                                YES       NO
+                                 │         │
+                                 ↓         ↓
+                              RESPOND    REPLAN
+                                 │         │
+                                 ↓         │
+                                STOP ←─────┘
+```
+
+Toda a arquitetura deve estar envolvida por:
+
+```text
+OpenTelemetry
+Audit
+Evidence
+Correlation
+Tenant Context
+Security Context
+Budget Context
+```
+
+---
+
+# 2. NÃO CRIE UM "LLM ORCHESTRATOR"
+
+O Orchestrator NÃO é um prompt gigante.
+
+O Orchestrator deve ser um runtime determinístico.
+
+Ele poderá consultar modelos para:
+
+* semantic understanding;
+* planning;
+* classification;
+* summarization;
+* semantic evaluation;
+* replanning.
+
+Mas:
+
+```text
+LLM ≠ Orchestrator
+LLM ≠ Policy
+LLM ≠ Authority
+LLM ≠ Database
+LLM ≠ Scheduler
+LLM ≠ Source of Truth
+```
+
+---
+
+# 3. PHASE 11
+
+Execute a implementação em ondas:
+
+```text
+11.0  Truth Source & Certification Re-anchor
+11.1  Orchestrator Kernel
+11.2  Goal & Plan Engine
+11.3  Governed Execution
+11.4  Risk Engine
+11.5  Durable Agent Execution
+11.6  Observe / Evaluate / Replan
+11.7  Loop, Budget & Stop Safety
+11.8  Model & Agent Routing
+11.9  Legacy Runtime Elimination
+11.10 Runtime Observability & Evidence
+11.11 Security & Adversarial Hardening
+11.12 PostgreSQL / Concurrency / Recovery Proof
+11.13 Real Integration Readiness
+11.14 Supervised Pilot Readiness
+11.15 Triple-AAA Certification
+```
+
+Não pule etapas.
+
+---
+
+# 4. PHASE 11.0 — TRUTH SOURCE
+
+Antes de modificar código:
+
+* leia `AGENTS.md`;
+* leia a documentação existente;
+* leia Phase 10;
+* leia `certification/`;
+* leia Gauntlet;
+* leia runtime state;
+* leia ADRs;
+* leia threat models;
+* leia backlog;
+* leia os módulos de runtime;
+* leia approval-engine;
+* leia policy/capability;
+* leia outbox;
+* leia identity;
+* leia worker;
+* leia API;
+* leia channel gateway;
+* leia model gateway;
+* leia persistence.
+
+Determine o HEAD real.
+
+Registre:
+
+```text
+baselineCommit
+branch
+workingTreeStatus
+timestamp
+nodeVersion
+npmVersion
+```
+
+---
+
+# 5. CORRIJA A CADEIA DE CERTIFICAÇÃO
+
+A auditoria encontrou um problema importante:
+
+a certificação anterior podia apontar para um commit diferente do HEAD e havia candidato `dirty`.
+
+Isso deve ser impossível na certificação final.
+
+Implemente invariantes:
+
+```text
+candidate.commit == git HEAD
+manifest.commit == git HEAD
+phase-result.commit == git HEAD
+workingTreeDirty == false
+untrackedFiles == 0
+```
+
+quando estiver em modo de certificação final.
+
+Se qualquer condição falhar:
+
+```text
+CERTIFICATION_INVALID
+```
+
+---
+
+# 6. CERTIFICAÇÃO NÃO PODE USAR ARQUIVOS NÃO TRACKED
+
+Todos os artefatos executáveis/testes usados para certificar devem estar reproduzíveis a partir de:
+
+```bash
+git clone
+git checkout <candidate-sha>
+npm ci
+npm run certify
+```
+
+Nenhuma certificação pode depender de arquivos locais não commitados.
+
+---
+
+# 7. UNIFIQUE O CÁLCULO GO/NO-GO
+
+Existe risco de divergência entre:
+
+```text
+computeDecision()
+```
+
+e:
+
+```text
+certification:verify
+```
+
+Crie uma única source of truth.
+
+Um gate obrigatório com:
+
+```text
+FAIL
+NOT_EXECUTED
+MISSING
+INVALID
+STALE
+```
+
+deve bloquear conforme sua classe.
+
+Não permita duas semânticas diferentes.
+
+---
+
+# 8. FRESHNESS DA CERTIFICAÇÃO
+
+A certificação deve detectar:
+
+```text
+STALE_CERTIFICATION
+```
+
+se:
+
+```text
+HEAD != certifiedCommit
+```
+
+ou se algum arquivo coberto pelo manifest mudou.
+
+---
+
+# 9. CRIE O ORCHESTRATOR
+
+Preferencialmente:
+
+```text
+packages/orchestrator/
+```
+
+Estrutura sugerida:
+
+```text
+packages/orchestrator/
+├── src/
+│   ├── orchestrator.ts
+│   ├── contracts.ts
+│   ├── state-machine.ts
+│   ├── goal.ts
+│   ├── plan.ts
+│   ├── planner.ts
+│   ├── plan-validator.ts
+│   ├── dependency-graph.ts
+│   ├── router.ts
+│   ├── executor.ts
+│   ├── evaluator.ts
+│   ├── replanner.ts
+│   ├── budget.ts
+│   ├── stop-policy.ts
+│   ├── loop-detector.ts
+│   ├── recovery.ts
+│   ├── telemetry.ts
+│   └── index.ts
+└── src/__tests__/
+```
+
+Adapte à arquitetura real do repositório se existir convenção melhor.
+
+---
+
+# 10. STATE MACHINE EXPLÍCITA
+
+Implemente estados equivalentes a:
+
+```text
+OBSERVING
+UNDERSTANDING
+PLANNING
+GOVERNING
+WAITING_APPROVAL
+EXECUTING
+OBSERVING_RESULT
+EVALUATING
+REPLANNING
+WAITING_EXTERNAL
+HUMAN_HANDOFF
+COMPLETED
+BLOCKED
+FAILED
+CANCELLED
+BUDGET_EXHAUSTED
+LOOP_DETECTED
+```
+
+Transições inválidas devem falhar.
+
+---
+
+# 11. NÃO USE FLAGS SOLTAS COMO STATE MACHINE
+
+Evite:
+
+```text
+isPlanning
+isExecuting
+isWaiting
+isDone
+```
+
+capazes de gerar estados impossíveis.
+
+Use máquina de estados explícita e validada.
+
+---
+
+# 12. GOAL ENGINE
+
+Introduza `Goal` como entidade de primeira classe.
+
+Exemplo conceitual:
+
+```ts
+interface Goal {
+  id: GoalId
+  tenantId: TenantId
+  sessionId: SessionId
+  conversationId?: ConversationId
+
+  objective: string
+  successCriteria: SuccessCriterion[]
+
+  status: GoalStatus
+
+  createdAt: Date
+  deadline?: Date
+
+  budget: ExecutionBudget
+
+  correlationId: CorrelationId
+}
+```
+
+---
+
+# 13. SUCCESS CRITERIA
+
+Goal não pode depender somente de:
+
+```text
+LLM says success
+```
+
+Critérios devem poder ser:
+
+```text
+FACT
+EVENT
+STATE
+SEMANTIC
+COMPOSITE
+```
+
+Prefira FACT/EVENT/STATE.
+
+---
+
+# 14. EXEMPLO
+
+Objetivo:
+
+```text
+Agendar dermatologia para Bob amanhã à tarde.
+```
+
+Success criteria:
+
+```text
+appointment exists
+patient = Bob
+specialty = dermatology
+date = accepted date
+owner confirmation = recorded
+```
+
+Não considere tool response `200 OK` como prova suficiente.
+
+---
+
+# 15. PLAN ENGINE
+
+Implemente:
+
+```text
+Goal
+ ↓
+Plan
+ ↓
+PlanStep[]
+```
+
+Cada step deve conter:
+
+```text
+id
+goalId
+type
+description
+dependencies
+requiredCapabilities
+riskLevel
+approvalRequirement
+status
+attempt
+input
+expectedOutcome
+timeout
+```
+
+---
+
+# 16. DEPENDENCY GRAPH
+
+Plan deve suportar DAG quando necessário.
+
+Detecte ciclos antes da execução.
+
+Não execute plan inválido.
+
+---
+
+# 17. PLAN VALIDATION
+
+Antes de GOVERN:
+
+verifique:
+
+```text
+schema
+dependencies
+capabilities referenced
+tool existence
+budget feasibility
+risk classification
+tenant consistency
+```
+
+---
+
+# 18. PLANNER
+
+O planner pode usar LLM.
+
+Mas o output deve ser:
+
+```text
+structured
+schema validated
+bounded
+untrusted
+```
+
+Depois passa por `PlanValidator`.
+
+---
+
+# 19. GOVERNED EXECUTION
+
+Todo step que possa causar efeito deve passar por:
+
+```text
+Identity
+ ↓
+Tenant
+ ↓
+Policy
+ ↓
+Capability
+ ↓
+Risk
+ ↓
+Approval
+```
+
+Não existe bypass.
+
+---
+
+# 20. RISK ENGINE
+
+Crie:
+
+```text
+packages/risk-engine/
+```
+
+ou módulo equivalente.
+
+Níveis sugeridos:
+
+```text
+R0 — informational/read-only
+R1 — operational read
+R2 — reversible low-risk write
+R3 — meaningful external write
+R4 — sensitive/high-risk write
+R5 — prohibited/critical domain
+```
+
+---
+
+# 21. SECRETARY DEFAULT POLICY
+
+Exemplo inicial:
+
+```text
+R0 → automatic
+R1 → automatic
+R2 → policy-dependent
+R3 → approval
+R4 → human approval
+R5 → deny
+```
+
+Não hardcode business policy profundamente; torne configurável/versionada.
+
+---
+
+# 22. CLINICAL BOUNDARY
+
+Secretária não pode autonomamente:
+
+```text
+diagnose
+prescribe
+alter clinical record
+release clinical result
+discharge patient
+make clinical decision
+```
+
+Classifique adequadamente.
+
+---
+
+# 23. FINANCIAL BOUNDARY
+
+Operações financeiras sensíveis devem exigir policy/approval apropriado.
+
+---
+
+# 24. ADMIN BOUNDARY
+
+Agent operacional nunca recebe:
+
+```text
+policy.admin
+secret.admin
+database.admin
+agent.deploy
+identity.admin
+```
+
+---
+
+# 25. CAPABILITY SNAPSHOT
+
+A capability usada na decisão deve ser registrada no execution evidence.
+
+Mudanças futuras de policy não devem tornar auditoria histórica ambígua.
+
+---
+
+# 26. APPROVAL BINDING
+
+A aprovação deve estar vinculada à ação exata.
+
+Use canonical serialization e:
+
+```text
+payloadHash = SHA256(canonicalPayload)
+```
+
+Registre:
+
+```text
+approvalId
+tenantId
+operatorId
+goalId
+planId
+stepId
+action
+payloadHash
+policyVersion
+riskLevel
+expiresAt
+executedAt
+```
+
+---
+
+# 27. SINGLE-USE APPROVAL
+
+Por padrão:
+
+```text
+one approval → one effect
+```
+
+Reuso:
+
+```text
+DENY
+```
+
+---
+
+# 28. APPROVAL RACE SAFETY
+
+Teste:
+
+```text
+worker A consumes approval
+worker B consumes approval
+```
+
+Apenas um pode vencer.
+
+Use transação/locking/atomic conditional update.
+
+---
+
+# 29. APPROVAL PERSISTENCE
+
+Prove:
+
+```text
+request approval
+restart process
+approval survives
+approve
+execute
+```
+
+---
+
+# 30. PAYLOAD MUTATION
+
+Teste:
+
+```text
+approve payload A
+attempt execute payload B
+```
+
+Resultado obrigatório:
+
+```text
+DENY
+```
+
+---
+
+# 31. TOOL GATEWAY
+
+O Orchestrator nunca chama ferramentas diretamente.
+
+Fluxo:
+
+```text
+Orchestrator
+ ↓
+Govern
+ ↓
+Tool Gateway
+ ↓
+Outbox / Controlled Execution
+ ↓
+Adapter
+```
+
+---
+
+# 32. TOOL CONTRACT
+
+Toda tool deve possuir:
+
+```text
+toolId
+version
+inputSchema
+outputSchema
+riskLevel
+requiredCapabilities
+timeout
+idempotencyStrategy
+```
+
+---
+
+# 33. PROÍBA TOOLS OPERACIONAIS GENÉRICAS
+
+Agent operacional não deve possuir:
+
+```text
+shell
+arbitrary SQL
+arbitrary HTTP
+arbitrary filesystem
+eval
+exec
+```
+
+---
+
+# 34. OUTBOX CONTINUA O BOUNDARY DE EFEITOS
+
+Não substitua o outbox.
+
+Integre o Orchestrator a ele.
+
+---
+
+# 35. EFFECT JOURNAL
+
+Antes de repetir efeito:
+
+```text
+lookup idempotency/effect journal
+```
+
+Se efeito já ocorreu:
+
+```text
+DO NOT EXECUTE AGAIN
+```
+
+---
+
+# 36. OBSERVE RESULT
+
+Após ACT, nunca assuma sucesso apenas porque o adapter respondeu.
+
+Implemente:
+
+```text
+OBSERVE_RESULT
+```
+
+capaz de usar:
+
+```text
+event
+repository state
+external confirmation
+effect journal
+```
+
+---
+
+# 37. COMMAND SUCCESS != GOAL SUCCESS
+
+Formalize esse princípio em código/testes.
+
+---
+
+# 38. EVALUATOR
+
+Crie dois caminhos:
+
+```text
+DeterministicEvaluator
+SemanticEvaluator
+```
+
+Use determinístico sempre que possível.
+
+---
+
+# 39. SEMANTIC EVALUATOR NÃO ALTERA FATOS
+
+LLM pode dizer:
+
+```text
+"parece que a pergunta foi respondida"
+```
+
+Mas não pode declarar:
+
+```text
+"appointment exists"
+```
+
+sem fonte operacional.
+
+---
+
+# 40. REPLANNER
+
+Quando objetivo não for atingido:
+
+```text
+evaluation
+ ↓
+failure reason
+ ↓
+replanner
+ ↓
+new plan/version
+```
+
+---
+
+# 41. PLAN VERSIONING
+
+Não sobrescreva silenciosamente planos anteriores.
+
+Use:
+
+```text
+planVersion
+parentPlanId
+replanReason
+```
+
+---
+
+# 42. BUDGET ENGINE
+
+Todo Goal deve ter limites:
+
+```text
+maxSteps
+maxReplans
+maxModelCalls
+maxToolCalls
+maxDurationMs
+maxCost
+```
+
+---
+
+# 43. DEFAULT SAFE BUDGET
+
+Defina defaults conservadores e configuráveis.
+
+Exemplo de referência:
+
+```text
+maxSteps = 12
+maxReplans = 3
+maxModelCalls = 8
+maxToolCalls = 10
+```
+
+Não trate esses números como regra de negócio imutável.
+
+---
+
+# 44. BUDGET EXHAUSTION
+
+Ao atingir limite:
+
+```text
+BUDGET_EXHAUSTED
+```
+
+e:
+
+```text
+SAFE_STOP
+```
+
+ou:
+
+```text
+HUMAN_HANDOFF
+```
+
+Nunca continue indefinidamente.
+
+---
+
+# 45. LOOP DETECTION
+
+Implemente `LoopDetector`.
+
+Detecte pelo menos:
+
+```text
+same plan fingerprint
+same step
+same tool
+same arguments
+same result
+repeated failure reason
+A → B → A plan cycles
+```
+
+---
+
+# 46. LOOP DETECTED
+
+Quando detectado:
+
+```text
+LOOP_DETECTED
+```
+
+registre evidência e interrompa.
+
+---
+
+# 47. PLAN FINGERPRINT
+
+Crie fingerprint determinístico de plan/steps relevante para loop detection.
+
+---
+
+# 48. DURABLE AGENT EXECUTION
+
+Esse é um requisito central.
+
+O estado do Orchestrator não pode existir apenas em memória.
+
+---
+
+# 49. PERSISTÊNCIA
+
+Crie estruturas PostgreSQL equivalentes a:
+
+```text
+orchestrator_goals
+orchestrator_plans
+orchestrator_steps
+orchestrator_attempts
+orchestrator_evaluations
+```

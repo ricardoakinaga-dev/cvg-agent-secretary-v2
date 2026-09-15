@@ -1,0 +1,1151 @@
+# CONTINUAÇÃO — FINAL SUCCESS STATE
+
+```text id="il0mms"
+Testing:                          <0-100>
+Security:                         <0-100>
+Reliability:                      <0-100>
+Agent Engineering:                <0-100>
+Orchestrator Engineering:         <0-100>
+Governance:                       <0-100>
+Observability:                    <0-100>
+Data Governance:                  <0-100>
+DevEx:                            <0-100>
+Production Readiness:             <0-100>
+
+
+CERTIFICATION
+------------------------------------------------------------
+Current Profile:
+<CONTROLLED_LOCAL | STAGING | SUPERVISED_PILOT | PRODUCTION>
+
+Requested Promotion:
+<profile>
+
+Promotion Decision:
+<GO | CONDITIONAL_GO | NO_GO>
+
+Certification:
+<STATE_OF_ART_TRIPLE_AAA |
+ AAA_CANDIDATE |
+ AAA_CONTROLLED |
+ NO_GO>
+
+
+REMAINING BLOCKERS
+------------------------------------------------------------
+1. <blocker or NONE>
+2. <blocker or NONE>
+3. <blocker or NONE>
+
+
+EVIDENCE
+------------------------------------------------------------
+Certification Result:
+certification/phase11-result.json
+
+Gate Matrix:
+certification/phase11/gates.json
+
+Evidence Graph:
+certification/phase11/evidence-graph.json
+
+Manifest:
+certification/phase11/manifest.json
+
+Release Manifest:
+certification/phase11/release-manifest.json
+
+
+FINAL VERDICT
+------------------------------------------------------------
+
+<Explain in 3–8 concise sentences why the candidate received
+the resulting certification. Do not use promotional language.
+Distinguish engineering readiness from production proof.>
+
+============================================================
+END PHASE 11 FINAL SUCCESS STATE
+============================================================
+```
+
+---
+
+# 850. SUCCESS BLOCK MUST MATCH MACHINE STATE
+
+Todo valor do bloco anterior deve corresponder ao:
+
+```text id="yzl5mj"
+certification/phase11-result.json
+```
+
+Não mantenha dois estados divergentes.
+
+---
+
+# 851. MACHINE RESULT IS AUTHORITATIVE
+
+Se relatório humano disser:
+
+```text id="tsys12"
+PASS
+```
+
+e machine result disser:
+
+```text id="spvljd"
+FAIL
+```
+
+o resultado oficial é:
+
+```text id="y8h8de"
+FAIL
+```
+
+---
+
+# 852. SUCCESS BLOCK GENERATION
+
+Preferencialmente gere o Success Block automaticamente a partir do resultado estruturado.
+
+---
+
+# 853. NO MANUAL SCORE DRIFT
+
+Scores apresentados no relatório final devem vir do mesmo resultado estruturado.
+
+---
+
+# 854. BLOCKER CONSISTENCY
+
+`remainingBlockers` deve ser derivado dos gates/findings, não escrito manualmente de forma independente.
+
+---
+
+# 855. DECISION CONSISTENCY
+
+`Promotion Decision` deve ser calculada pela função autoritativa de certificação.
+
+---
+
+# 856. CERTIFICATION CONSISTENCY
+
+Mesmo princípio para:
+
+```text id="33j6tt"
+STATE_OF_ART_TRIPLE_AAA
+AAA_CANDIDATE
+AAA_CONTROLLED
+NO_GO
+```
+
+---
+
+# 857. FINAL ARTIFACT CONSISTENCY TEST
+
+Crie teste que compare:
+
+```text id="a76qyt"
+result
+manifest
+release manifest
+gate matrix
+evidence graph
+```
+
+e falhe em inconsistência.
+
+---
+
+# 858. CANDIDATE IDENTITY CONSISTENCY
+
+Todos devem apontar para o mesmo:
+
+```text id="3a7i84"
+candidateCommit
+```
+
+---
+
+# 859. TREE HASH CONSISTENCY
+
+Mesmo princípio para tree hash quando utilizado.
+
+---
+
+# 860. PROFILE CONSISTENCY
+
+Artifacts devem concordar sobre deployment profile.
+
+---
+
+# 861. GATE CONSISTENCY
+
+Não permita:
+
+```text id="01v5he"
+gate matrix = FAIL
+result = PASS
+```
+
+---
+
+# 862. FINDING CONSISTENCY
+
+P0/P1 abertos devem aparecer no result.
+
+---
+
+# 863. BLOCKING FINDING
+
+Finding blocking não pode desaparecer apenas do relatório narrativo.
+
+---
+
+# 864. EXTERNAL GATE CONSISTENCY
+
+Integration evidence e final result devem concordar.
+
+---
+
+# 865. STALE INTEGRATION
+
+Se adapter mudar depois da validação:
+
+marque evidence afetada como:
+
+```text id="pg9p7e"
+STALE
+```
+
+conforme dependency/evidence graph.
+
+---
+
+# 866. SELECTIVE RECERTIFICATION
+
+Pode ser implementada somente quando dependency graph provar quais evidências foram afetadas.
+
+---
+
+# 867. DEFAULT RECERTIFICATION POLICY
+
+Na dúvida:
+
+```text id="d8cn58"
+re-run affected gate
+```
+
+---
+
+# 868. SECURITY-RELEVANT CHANGE
+
+Mudança em:
+
+```text id="wwpx4s"
+identity
+tenant
+policy
+risk
+approval
+orchestrator
+tool gateway
+outbox
+channel security
+```
+
+deve invalidar gates de segurança relevantes.
+
+---
+
+# 869. DATABASE CHANGE
+
+Migration/schema change invalida:
+
+```text id="p7xt6p"
+Postgres
+restore
+recovery
+RPO/RTO where relevant
+```
+
+---
+
+# 870. PROVIDER ADAPTER CHANGE
+
+Invalida provider validation correspondente.
+
+---
+
+# 871. AGENT/PROMPT CHANGE
+
+Invalida evals correspondentes.
+
+---
+
+# 872. POLICY CHANGE
+
+Invalida:
+
+```text id="32f1a1"
+policy tests
+agent safety evals
+approval/risk interaction
+```
+
+conforme dependências.
+
+---
+
+# 873. ORCHESTRATOR CHANGE
+
+Invalida:
+
+```text id="ybz0wi"
+orchestrator tests
+chaos
+recovery
+relevant evals
+```
+
+---
+
+# 874. CERTIFICATION DEPENDENCY GRAPH
+
+Implemente essas relações de forma estruturada quando possível.
+
+---
+
+# 875. FINAL CI RELEASE WORKFLOW
+
+Crie workflow de release/certification quando adequado.
+
+---
+
+# 876. RELEASE WORKFLOW MUST NOT DEPLOY
+
+Certificação e deployment são processos distintos.
+
+---
+
+# 877. RELEASE WORKFLOW
+
+Pode:
+
+```text id="7y3rjs"
+checkout candidate
+npm ci
+verify
+test
+certify
+build artifacts
+generate SBOM
+upload evidence
+```
+
+---
+
+# 878. PRODUCTION DEPLOY
+
+Permanece ação separada e explicitamente autorizada.
+
+---
+
+# 879. CI ENVIRONMENT
+
+Use environment/secrets apropriados para real-integration gates.
+
+---
+
+# 880. NO SECRET IN FORK PR
+
+Não exponha secrets em PR não confiável.
+
+---
+
+# 881. REAL-INTEGRATION WORKFLOW
+
+Prefira:
+
+```text id="afn92s"
+manual dispatch
+protected environment
+```
+
+quando adequado.
+
+---
+
+# 882. HUMAN APPROVAL FOR PRODUCTION ENVIRONMENT
+
+Use proteção de ambiente quando infraestrutura disponível suportar.
+
+---
+
+# 883. FINAL BRANCH PROTECTION RECOMMENDATION
+
+Documente:
+
+```text id="f7b58s"
+required checks
+PR review
+no force push
+```
+
+Não altere configuração remota sem autorização.
+
+---
+
+# 884. CODEOWNERS
+
+Considere para áreas críticas se fizer sentido.
+
+---
+
+# 885. SECURITY OWNERSHIP
+
+Defina ownership de:
+
+```text id="y0ug38"
+policy
+identity
+database
+integrations
+```
+
+na documentação/backlog.
+
+---
+
+# 886. NO SINGLE PERSON ASSUMPTION
+
+Arquitetura deve ser compreensível por outro engenheiro.
+
+---
+
+# 887. OPERABILITY
+
+State of Art inclui capacidade de operar o sistema, não apenas código elegante.
+
+---
+
+# 888. RUNBOOK VALIDATION
+
+Sempre que possível, execute runbooks em staging.
+
+---
+
+# 889. ALERT VALIDATION
+
+Prove que alert crítico pode ser disparado em ambiente controlado.
+
+---
+
+# 890. DLQ ALERT
+
+Simule DLQ threshold.
+
+---
+
+# 891. PROVIDER ALERT
+
+Simule circuit breaker/open ou outage.
+
+---
+
+# 892. SECURITY ALERT
+
+Simule replay/invalid signature.
+
+---
+
+# 893. LOOP ALERT
+
+Simule loop detected.
+
+---
+
+# 894. BUDGET ALERT
+
+Simule budget exhausted.
+
+---
+
+# 895. ALERT NOISE
+
+Evite alertar por cada erro benigno individual.
+
+---
+
+# 896. FINAL OPERATIONS SCORE
+
+Considere runbooks, alerts, dashboards e recovery.
+
+---
+
+# 897. FINAL USER EXPERIENCE REVIEW
+
+O sistema deve falhar de forma compreensível para operador/tutor.
+
+---
+
+# 898. NO INTERNAL ERROR TO USER
+
+Não mostrar:
+
+```text id="x1ptvb"
+policy engine exception
+SQL error
+stack trace
+```
+
+---
+
+# 899. HUMAN-FRIENDLY FALLBACK
+
+Quando automation não puder continuar:
+
+```text id="3w71l5"
+handoff
+clear safe response
+```
+
+---
+
+# 900. NO HALLUCINATED COMPLETION
+
+Nunca diga ao tutor:
+
+```text id="1a23ze"
+"Agendamento realizado"
+```
+
+sem SuccessCriteria operacional confirmado.
+
+---
+
+# 901. PENDING STATE
+
+Quando ainda aguardando confirmação:
+
+diga isso explicitamente.
+
+---
+
+# 902. UNKNOWN STATE
+
+Se outcome for desconhecido:
+
+não afirmar sucesso nem falha até reconciliation.
+
+---
+
+# 903. OPERATOR VISIBILITY
+
+Unknown effects devem aparecer no console.
+
+---
+
+# 904. MANUAL RECONCILIATION
+
+Forneça caminho seguro quando automático não resolver.
+
+---
+
+# 905. FINAL BUSINESS FLOW E2E
+
+Crie E2E sintético cobrindo:
+
+```text id="hnwxjq"
+incoming appointment request
+→ understand
+→ goal
+→ plan
+→ availability
+→ user selection
+→ govern
+→ create appointment
+→ observe result
+→ evaluate
+→ respond
+```
+
+---
+
+# 906. HUMAN APPROVAL E2E
+
+Inclua fluxo que exige approval.
+
+---
+
+# 907. HUMAN TAKEOVER E2E
+
+Inclua takeover.
+
+---
+
+# 908. REPLAN E2E
+
+Inclua slot indisponível:
+
+```text id="10x3w8"
+plan
+→ conflict
+→ observe
+→ evaluate false
+→ replan
+→ alternative
+```
+
+---
+
+# 909. CRASH RECOVERY E2E
+
+Quando infraestrutura de teste permitir.
+
+---
+
+# 910. CROSS-TENANT E2E
+
+Tentar acessar recurso de outro tenant.
+
+---
+
+# 911. PROHIBITED CLINICAL E2E
+
+Pedido clínico proibido deve escalar/refusar corretamente.
+
+---
+
+# 912. FINAL GOLDEN PATHS
+
+Defina conjunto pequeno de golden paths obrigatórios.
+
+---
+
+# 913. GOLDEN PATH REGRESSION
+
+Todos precisam passar para release.
+
+---
+
+# 914. FINAL FAILURE PATHS
+
+Defina também failure paths obrigatórios.
+
+---
+
+# 915. FAILURE PATH IS FIRST-CLASS
+
+State of Art exige qualidade quando as coisas dão errado.
+
+---
+
+# 916. FINAL CODE CLEANUP
+
+Após todos os gates:
+
+remova:
+
+```text id="lgzddu"
+temporary adapters
+debug switches
+dead compatibility code
+unused imports
+test-only production paths
+```
+
+---
+
+# 917. DO NOT REMOVE CONTROLLED PROVIDERS
+
+Controlled adapters úteis para testes devem permanecer, mas claramente isolados.
+
+---
+
+# 918. TEST-ONLY EXPORTS
+
+Evite expor internamente como API pública sem necessidade.
+
+---
+
+# 919. FINAL API SURFACE REVIEW
+
+Reduza superfície desnecessária.
+
+---
+
+# 920. FINAL DEPENDENCY REVIEW
+
+Remova dependências não utilizadas.
+
+---
+
+# 921. BUNDLE REVIEW
+
+Frontend: verifique regressões grosseiras de bundle.
+
+---
+
+# 922. SERVER STARTUP REVIEW
+
+Meça startup smoke.
+
+---
+
+# 923. WORKER STARTUP REVIEW
+
+Preserve fail-closed.
+
+---
+
+# 924. FINAL MIGRATION SMOKE
+
+Obrigatório quando DB muda.
+
+---
+
+# 925. FINAL CLEAN BUILD
+
+Build deve funcionar a partir de estado limpo.
+
+---
+
+# 926. FINAL VERIFY
+
+Execute todos os local gates.
+
+---
+
+# 927. FINAL CERTIFY
+
+Gere evidence final.
+
+---
+
+# 928. FINAL CERTIFICATION VERIFY
+
+Verifique evidence final.
+
+---
+
+# 929. FINAL PROMOTION CHECK
+
+Execute para o profile realmente solicitado.
+
+---
+
+# 930. DO NOT REQUEST PRODUCTION IF PROFILE IS CONTROLLED
+
+Mantenha coerência.
+
+---
+
+# 931. FINAL INDEPENDENT AUDIT
+
+Faça última auditoria depois da certificação, não antes.
+
+---
+
+# 932. AUDITOR MUST CHECK CERTIFICATION CODE
+
+Não apenas application code.
+
+---
+
+# 933. CERTIFICATION ENGINE IS SECURITY-RELEVANT
+
+Um bug nele pode gerar falso GO.
+
+---
+
+# 934. CERTIFICATION ENGINE TESTS
+
+Cubra:
+
+```text id="umwm95"
+missing gate
+FAIL gate
+NOT_EXECUTED gate
+STALE gate
+P0
+P1
+critical P2
+missing signoff
+dirty tree
+stale commit
+invalid hash
+```
+
+---
+
+# 935. GO MUTATION TEST
+
+Tente alterar inputs para produzir falso GO.
+
+Deve falhar.
+
+---
+
+# 936. PROFILE MUTATION TEST
+
+Tente certificar Controlled evidence como Production.
+
+Deve falhar.
+
+---
+
+# 937. HUMAN SIGNOFF MUTATION
+
+Não permitir string arbitrária virar validated.
+
+---
+
+# 938. INTEGRATION MUTATION
+
+Não permitir `CONTROLLED_ONLY` satisfazer `VALIDATED_REAL`.
+
+---
+
+# 939. RPO/RTO MUTATION
+
+Não permitir target documentado satisfazer measured requirement.
+
+---
+
+# 940. PILOT MUTATION
+
+Não permitir shadow test satisfazer supervised pilot.
+
+---
+
+# 941. FINAL PROMOTION INVARIANT
+
+Formalize:
+
+```text id="8n4v0u"
+Evidence strength required
+>=
+Deployment risk
+```
+
+---
+
+# 942. FINAL CERTIFICATION LABEL
+
+Não use "Triplo AAA" em README como status permanente.
+
+Status deve apontar para certificação específica/candidato.
+
+---
+
+# 943. BADGE
+
+Se criar badge, derive do machine result.
+
+---
+
+# 944. STALE BADGE
+
+Certificação stale deve remover/rebaixar badge automaticamente quando possível.
+
+---
+
+# 945. FINAL README
+
+README pode explicar arquitetura e status atual honestamente.
+
+---
+
+# 946. README STATUS
+
+Exemplo:
+
+```text id="s72z88"
+Current certified profile: AAA_CONTROLLED
+Production certification: pending external gates
+```
+
+se esse for o resultado real.
+
+---
+
+# 947. NO MARKETING CLAIM
+
+Não exagerar.
+
+---
+
+# 948. FINAL ACCEPTANCE CONDITION
+
+O trabalho local está concluído somente quando:
+
+```text id="8dug70"
+all locally implementable Phase 11 requirements completed
++
+all local mandatory gates executed
++
+evidence graph coherent
++
+certification coherent
++
+external blockers explicitly isolated
+```
+
+---
+
+# 949. IF EXTERNAL GATES REMAIN
+
+Resultado provável:
+
+```text id="czwy5s"
+AAA_CANDIDATE
+```
+
+ou:
+
+```text id="l5em4q"
+AAA_CONTROLLED
+```
+
+dependendo da evidência.
+
+Isso NÃO é falha do trabalho local.
+
+---
+
+# 950. IF ALL PRODUCTION GATES PASS
+
+Somente então:
+
+```text id="pht18f"
+STATE_OF_ART_TRIPLE_AAA
+```
+
+---
+
+# 951. FINAL CODEx EXECUTION INSTRUCTION
+
+Comece pelo estado real do repositório.
+
+Não assuma que a auditoria anterior ainda descreve exatamente o HEAD.
+
+---
+
+# 952. RE-DISCOVER
+
+Confirme:
+
+```text id="9us4bj"
+HEAD
+tree
+existing Phase 10/11 code
+tests
+certification
+working tree
+```
+
+---
+
+# 953. PRESERVE NEWER GOOD WORK
+
+Se o repositório já tiver implementado parte deste prompt:
+
+audite e reutilize.
+
+Não duplique.
+
+---
+
+# 954. GAP-DRIVEN IMPLEMENTATION
+
+Construa somente o delta necessário entre:
+
+```text id="g4bwwa"
+current reality
+```
+
+e:
+
+```text id="fvlr72"
+Phase 11 target
+```
+
+---
+
+# 955. PRIORITIZATION
+
+Prioridade:
+
+```text id="q0aw3r"
+P0
+P1
+certification integrity
+governance
+durability
+orchestrator
+security
+reliability
+integration
+observability
+optimization
+```
+
+---
+
+# 956. DO NOT OPTIMIZE BEFORE CORRECTNESS
+
+Obrigatório.
+
+---
+
+# 957. PHASE 11 MASTER OBJECTIVE
+
+Entregar um runtime que seja:
+
+```text id="91tw0p"
+orchestrated
+governed
+durable
+tenant-safe
+approval-safe
+idempotent
+recoverable
+observable
+bounded
+auditable
+certifiable
+```
+
+---
+
+# 958. ORCHESTRATOR MASTER INVARIANT
+
+Em nenhuma circunstância:
+
+```text id="uhvtrp"
+planning intelligence
+```
+
+pode se transformar em:
+
+```text id="02hz4j"
+execution authority
+```
+
+---
+
+# 959. RUNTIME MASTER LOOP
+
+O comportamento final deve seguir:
+
+```text id="rhdkvx"
+OBSERVE
+   ↓
+UNDERSTAND
+   ↓
+ORCHESTRATOR DECIDE
+   ↓
+GOVERN
+   ↓
+ACT
+   ↓
+OBSERVE RESULT
+   ↓
+EVALUATE
+   ↓
+goal reached?
+   ├── YES → RESPOND → STOP
+   └── NO  → REPLAN ─────┐
+                          │
+                          └→ GOVERN
+```
+
+---
+
+# 960. EVERY LOOP IS BOUNDED
+
+Nenhum caminho pode contornar:
+
+```text id="up1dcv"
+budget
+stop policy
+loop detection
+governance
+```
+
+---
+
+# 961. EVERY EFFECT IS GOVERNED
+
+Nenhuma exceção implícita.
+
+---
+
+# 962. EVERY EFFECT IS AUDITABLE
+
+Nenhuma exceção implícita.
+
+---
+
+# 963. EVERY CRITICAL EFFECT IS IDEMPOTENT OR RECONCILABLE
+
+Obrigatório.
+
+---
+
+# 964. EVERY STATE IS RECOVERABLE OR EXPLICITLY EPHEMERAL
+
+Documente exceções.
+
+---
+
+# 965. EVERY TENANT BOUNDARY IS ENFORCED
+
+Obrigatório.
+
+---
+
+# 966. EVERY EXTERNAL INPUT IS UNTRUSTED
+
+Inclui:
+
+```text id="b0u67d"
+user
+provider
+RAG
+tool result
+model
+agent
+webhook
+```
+
+---
+
+# 967. EVERY HUMAN ACTION IS AUTHENTICATED/AUDITED
+
+Quando aplicável.
+
+---
+
+# 968. EVERY CERTIFICATION CLAIM HAS EVIDENCE
+
+Obrigatório.
+
+---
+
+# 969. EVERY BLOCKER IS HONEST
+
+Obrigatório.
+
+---
+
+# 970. FINAL MACHINE SUCCESS BLOCK
+
+Além do bloco humano, gere no `phase11-result.json`:
+
+```json id="8u1rx3"
+{
+  "successState": {
+    "implementationComplete": false,
+```

@@ -234,4 +234,48 @@ describe('durable outbox memory adapter', () => {
     })
     expect(repository['db'].state.outboxEffects).toHaveLength(0)
   })
+
+  it('rejects a stale claim token when fencing is enabled', () => {
+    let now = new Date('2026-09-05T12:00:00.000Z')
+    const repository = new OutboxRepository(new InMemoryDatabase(), {
+      now: () => now,
+      leaseMs: 1_000,
+      enforceLeaseFencing: true
+    })
+    const event = repository.enqueue({
+      tenantId: tenantA,
+      type: 'synthetic.memory',
+      payload: { fixture: true },
+      idempotencyKey: 'memory-fencing-151',
+      correlationId
+    })
+    const stale = repository.claimNext({
+      tenantId: tenantA,
+      workerId: 'worker-reused'
+    })!
+    now = new Date(stale.leaseUntil!.getTime() + 1)
+    const current = repository.claimNext({
+      tenantId: tenantA,
+      workerId: 'worker-reused'
+    })!
+    expect(current.leaseToken).not.toBe(stale.leaseToken)
+    expect(() =>
+      repository.ack({
+        tenantId: tenantA,
+        eventId: event.id,
+        workerId: 'worker-reused',
+        leaseToken: stale.leaseToken ?? undefined,
+        result: { stale: true }
+      })
+    ).toThrow(/fencing token/)
+    expect(
+      repository.ack({
+        tenantId: tenantA,
+        eventId: event.id,
+        workerId: 'worker-reused',
+        leaseToken: current.leaseToken ?? undefined,
+        result: { current: true }
+      })
+    ).toMatchObject({ status: 'processed' })
+  })
 })

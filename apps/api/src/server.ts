@@ -4204,7 +4204,8 @@ const tenantIsolationMigrationVersions = [
   '0014_journeys',
   '0015_runtime_approval_store',
   '0016_runtime_continuation_trace',
-  '0017_runtime_audit_chain'
+  '0017_runtime_audit_chain',
+  '0018_outbox_lease_fencing'
 ] as const
 
 const tenantIsolationRequiredConstraints = [
@@ -4222,6 +4223,7 @@ const tenantIsolationRequiredConstraints = [
   'outbox_events_status_check',
   'outbox_events_attempts_check',
   'outbox_events_processing_lease_check',
+  'outbox_events_processing_fencing_check',
   'outbox_events_failed_available_check',
   'outbox_events_dead_letter_check',
   'outbox_effects_pkey',
@@ -5286,7 +5288,9 @@ function createPersistence(
   if (config?.kind === 'postgres' || config?.kind === 'postgres-pool') {
     const postgres =
       config.kind === 'postgres'
-        ? new PostgresRuntimeRepository(config.client)
+        ? new PostgresRuntimeRepository(config.client, {
+            tenantIsolation: true
+          })
         : new TenantScopedPostgresRuntimeRepository(config.pool)
     const journeys =
       journeyRepository !== undefined
@@ -5318,7 +5322,11 @@ function createPersistence(
         append: (input, tenantId) =>
           config.kind === 'postgres-pool'
             ? postgres.appendAudit(input, tenantId)
-            : postgres.appendAudit(input),
+            : tenantId
+              ? postgres.appendAudit({ ...input, tenantId })
+              : Promise.reject(
+                  new DomainError('unauthorized', 'Tenant scope is required')
+                ),
         listBySession: (sessionId, tenantId: TenantId) =>
           postgres.listAuditBySession(sessionId, tenantId),
         listEvidence: (query: AuditEvidenceQuery, tenantId: TenantId) =>
@@ -5355,7 +5363,7 @@ function createPersistence(
   }
 
   const db = new InMemoryDatabase()
-  const outbox = new OutboxRepository(db)
+  const outbox = new OutboxRepository(db, { enforceLeaseFencing: true })
   return {
     sessionVersionPinning: true,
     outbox,

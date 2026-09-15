@@ -12,7 +12,6 @@ import {
   buildServerFromEnv
 } from '../server.ts'
 import {
-  runInitialPostgresMigration,
   readPostgresMigrationSql,
   runPostgresMigrations,
   PostgresControlPlaneRepository,
@@ -218,7 +217,8 @@ describe('api PostgreSQL persistence mode', () => {
       '0014_journeys',
       '0015_runtime_approval_store',
       '0016_runtime_continuation_trace',
-      '0017_runtime_audit_chain'
+      '0017_runtime_audit_chain',
+      '0018_outbox_lease_fencing'
     ] as const
     const rows: Array<{
       version: string
@@ -1362,7 +1362,7 @@ describe('api PostgreSQL persistence mode', () => {
       await client.connect()
 
       try {
-        await runInitialPostgresMigration(client, { schemaName })
+        await runPostgresMigrations(client, { schemaName })
         const logs: Array<{
           event: string
           correlationId: string
@@ -1575,7 +1575,7 @@ describe('api PostgreSQL persistence mode', () => {
       await client.connect()
 
       try {
-        await runInitialPostgresMigration(client, { schemaName })
+        await runPostgresMigrations(client, { schemaName })
         const app = buildServer({
           persistence: { kind: 'postgres', client }
         })
@@ -1726,7 +1726,7 @@ describe('api PostgreSQL persistence mode', () => {
       await client.connect()
 
       try {
-        await runInitialPostgresMigration(client, { schemaName })
+        await runPostgresMigrations(client, { schemaName })
         const platform = new InMemoryControlPlaneStore()
         const agent = await createPostgresHandoffAgent(
           platform,

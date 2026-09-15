@@ -1,0 +1,1133 @@
+# ENCERRAMENTO DEFINITIVO — PHASE 11
+
+## MACHINE SUCCESS CONTRACT & CODEX EXECUTION DIRECTIVE
+
+> Continuação direta do item 970. Todos os requisitos anteriores permanecem obrigatórios.
+
+---
+
+# 970. FINAL MACHINE SUCCESS BLOCK
+
+Além do bloco humano, gere no `phase11-result.json` estrutura equivalente a:
+
+```json id="cxds9m"
+{
+  "successState": {
+    "implementationComplete": false,
+    "localVerificationComplete": false,
+    "evidenceComplete": false,
+    "criticalInvariantsSatisfied": false,
+    "externalValidationComplete": false,
+    "pilotComplete": false,
+    "productionProofComplete": false,
+    "eligibleForRequestedProfile": false
+  }
+}
+```
+
+Os valores devem ser calculados.
+
+Nunca preenchidos manualmente para atingir resultado desejado.
+
+---
+
+# 971. IMPLEMENTATION COMPLETE
+
+`implementationComplete=true` somente quando:
+
+```text id="b7t93n"
+all locally implementable mandatory requirements
+```
+
+estiverem:
+
+```text id="4uxzqr"
+IMPLEMENTED
++
+VERIFIED
+```
+
+---
+
+# 972. LOCAL VERIFICATION COMPLETE
+
+Exige todos os mandatory local gates:
+
+```text id="ycb98g"
+PASS
+```
+
+---
+
+# 973. EVIDENCE COMPLETE
+
+Exige:
+
+```text id="n8d3yg"
+required evidence nodes exist
+hashes valid
+candidate binding valid
+no stale mandatory evidence
+```
+
+---
+
+# 974. CRITICAL INVARIANTS SATISFIED
+
+Exige todos os critical invariants:
+
+```text id="j8jrgw"
+PASS
+```
+
+---
+
+# 975. EXTERNAL VALIDATION COMPLETE
+
+Exige todas as integrações obrigatórias ao profile solicitado no nível de validação requerido.
+
+---
+
+# 976. PILOT COMPLETE
+
+Para Production:
+
+```text id="dgvuxr"
+supervisedPilot = PASS
+```
+
+---
+
+# 977. PRODUCTION PROOF COMPLETE
+
+Exige:
+
+```text id="o7w9x2"
+real integrations
+RPO/RTO
+pilot
+human signoff
+production-profile mandatory gates
+```
+
+---
+
+# 978. ELIGIBLE FOR REQUESTED PROFILE
+
+Derive exclusivamente do promotion calculus.
+
+---
+
+# 979. SUCCESS STATE INVARIANT
+
+Não permita:
+
+```text id="5ygzpm"
+eligibleForRequestedProfile = true
+```
+
+se qualquer mandatory gate correspondente estiver diferente de `PASS`.
+
+---
+
+# 980. PRODUCTION INVARIANT
+
+Não permita:
+
+```text id="96zb7n"
+productionProofComplete = true
+```
+
+com:
+
+```text id="1sfvly"
+pilotComplete = false
+```
+
+---
+
+# 981. EXTERNAL INVARIANT
+
+Não permita:
+
+```text id="uy9j6h"
+externalValidationComplete = true
+```
+
+se provider/channel/identity obrigatório estiver apenas:
+
+```text id="hsce8p"
+CONTROLLED_ONLY
+```
+
+---
+
+# 982. EVIDENCE INVARIANT
+
+Não permita:
+
+```text id="tz0ghz"
+evidenceComplete = true
+```
+
+com certification stale.
+
+---
+
+# 983. IMPLEMENTATION VS PRODUCTION
+
+É válido ter:
+
+```text id="3lj4hy"
+implementationComplete = true
+productionProofComplete = false
+```
+
+quando faltarem apenas fatores externos.
+
+---
+
+# 984. THIS IS NOT FAILURE
+
+Nesse caso, reporte corretamente:
+
+```text id="j8pjm8"
+local engineering complete
+external production proof pending
+```
+
+---
+
+# 985. BLOCKER TYPES
+
+Classifique blocker:
+
+```text id="gl7usl"
+CODE
+TEST
+SECURITY
+INFRASTRUCTURE
+CREDENTIAL
+INTEGRATION
+HUMAN
+BUSINESS
+```
+
+---
+
+# 986. LOCAL BLOCKER
+
+Blocker `CODE`, `TEST` ou `SECURITY` normalmente deve ser resolvido antes de encerrar.
+
+---
+
+# 987. EXTERNAL BLOCKER
+
+`CREDENTIAL`, `HUMAN`, `BUSINESS` podem permanecer quando genuinamente externos.
+
+---
+
+# 988. INFRASTRUCTURE BLOCKER
+
+Se infraestrutura puder ser criada localmente/controladamente sem risco, faça.
+
+Caso dependa de ambiente externo real, registre.
+
+---
+
+# 989. BLOCKER SCHEMA
+
+Use estrutura:
+
+```json id="qv1d5x"
+{
+  "id": "BLOCK-001",
+  "type": "HUMAN",
+  "description": "...",
+  "owner": "...",
+  "requiredForProfile": "PRODUCTION",
+  "blockingGateIds": ["..."],
+  "resolutionEvidence": "..."
+}
+```
+
+---
+
+# 990. NO FREE-TEXT-ONLY BLOCKERS
+
+Blockers importantes devem ser machine-readable.
+
+---
+
+# 991. FINDING ≠ BLOCKER
+
+Finding pode não bloquear profile.
+
+Mantenha distinção.
+
+---
+
+# 992. GATE ≠ FINDING
+
+Gate é prova/promotion requirement.
+
+Finding é problema identificado.
+
+---
+
+# 993. RISK ACCEPTANCE ≠ PASS
+
+Aceitar risco não transforma gate falho em PASS.
+
+---
+
+# 994. HUMAN SIGNOFF ≠ TECHNICAL TEST
+
+Mantenha categorias distintas.
+
+---
+
+# 995. FINAL CERTIFICATION SCHEMA TEST
+
+Adicione testes garantindo coerência dessas relações.
+
+---
+
+# 996. FALSE-GO TEST
+
+Construa fixture contendo:
+
+```text id="nn9s7d"
+all scores = 100
+one mandatory gate = FAIL
+```
+
+Resultado:
+
+```text id="aqylj8"
+NO_GO
+```
+
+---
+
+# 997. FALSE-AAA TEST
+
+Fixture:
+
+```text id="h5rwj8"
+engineering gates PASS
+external provider CONTROLLED_ONLY
+requested profile PRODUCTION
+```
+
+Resultado:
+
+```text id="5y5fqn"
+NOT STATE_OF_ART_TRIPLE_AAA
+```
+
+---
+
+# 998. FALSE-PILOT TEST
+
+Fixture:
+
+```text id="5vgg9e"
+shadow PASS
+pilot NOT_EXECUTED
+```
+
+Não pode satisfazer Production.
+
+---
+
+# 999. FALSE-SIGNOFF TEST
+
+Fixture com string arbitrária:
+
+```text id="rzc2ok"
+"approved"
+```
+
+não deve passar schema se o mecanismo exigir artifact/signoff estruturado.
+
+---
+
+# 1000. FALSE-RPO TEST
+
+Target:
+
+```text id="0d1lnd"
+RTO = 30min
+```
+
+sem medição:
+
+```text id="e46w1b"
+NOT_VALIDATED
+```
+
+---
+
+# 1001. FALSE-INTEGRATION TEST
+
+Mock EvolutionAPI:
+
+```text id="gzefnb"
+CONTROLLED_ONLY
+```
+
+não satisfaz:
+
+```text id="b5axmp"
+VALIDATED_REAL
+```
+
+---
+
+# 1002. FALSE-CLEAN TEST
+
+Dirty tree:
+
+não pode gerar final production certification.
+
+---
+
+# 1003. FALSE-FRESH TEST
+
+HEAD diferente do candidate:
+
+```text id="5n74io"
+STALE
+```
+
+---
+
+# 1004. FALSE-EVIDENCE TEST
+
+Artifact hash incorreto:
+
+```text id="txj5cc"
+INVALID
+```
+
+---
+
+# 1005. FALSE-ORCHESTRATOR TEST
+
+Orchestrator chamando tool adapter diretamente:
+
+architecture gate deve falhar.
+
+---
+
+# 1006. FALSE-GOVERNANCE TEST
+
+Planner tentando marcar:
+
+```text id="z1h9qb"
+approvalRequired=false
+```
+
+para ação R3 não pode contornar Risk/Policy.
+
+---
+
+# 1007. FALSE-TENANT TEST
+
+Goal A não pode carregar Step B de outro tenant.
+
+---
+
+# 1008. FALSE-LEASE TEST
+
+Lease expirado não autoriza completion.
+
+---
+
+# 1009. FALSE-BUDGET TEST
+
+Restart não pode restaurar budget para zero.
+
+---
+
+# 1010. FALSE-LOOP TEST
+
+Replan infinito deve terminar em:
+
+```text id="kqnnpx"
+LOOP_DETECTED
+```
+
+ou budget exhaustion.
+
+---
+
+# 1011. FALSE-SUCCESS TEST
+
+Tool retorna sucesso mas SuccessCriteria falha:
+
+Goal continua não concluído.
+
+---
+
+# 1012. FALSE-FAILURE TEST
+
+Tool timeout após efeito incerto:
+
+não marcar automaticamente como safe retry.
+
+---
+
+# 1013. RECONCILIATION TEST
+
+Deve resolver outcome antes de repetir quando possível.
+
+---
+
+# 1014. FINAL QUALITY BAR
+
+O objetivo não é maximizar:
+
+```text id="lhc3se"
+LOC
+number of modules
+number of abstractions
+number of tests
+```
+
+---
+
+# 1015. QUALITY IS
+
+Qualidade é:
+
+```text id="b40x55"
+correctness
+security
+simplicity
+recoverability
+operability
+evidence
+```
+
+---
+
+# 1016. STATE OF ART DEFINITION
+
+Para este projeto:
+
+> Um sistema State of Art não é aquele que usa mais IA.
+> É aquele que usa IA onde ela agrega valor sem transferir autoridade indevida ao modelo.
+
+---
+
+# 1017. TRIPLE-A ARCHITECTURE
+
+Significa:
+
+```text id="t7qv1m"
+clear boundaries
+durable orchestration
+controlled side effects
+recovery
+observability
+```
+
+---
+
+# 1018. TRIPLE-A SECURITY
+
+Significa:
+
+```text id="ix8c3b"
+least privilege
+tenant isolation
+policy enforcement
+approval integrity
+untrusted-model principle
+```
+
+---
+
+# 1019. TRIPLE-A OPERATIONS
+
+Significa:
+
+```text id="zsybf2"
+failure handling
+backup/restore
+RPO/RTO
+pilot
+rollback
+incident readiness
+```
+
+---
+
+# 1020. TRIPLE-A EVIDENCE
+
+Significa:
+
+```text id="w8vrih"
+machine-verifiable
+commit-bound
+fresh
+reproducible
+honest
+```
+
+---
+
+# 1021. CODEX EXECUTION MODE
+
+Agora execute a implementação.
+
+Não produza apenas outro plano.
+
+---
+
+# 1022. FIRST ACTION
+
+Inspecione o repositório atual.
+
+---
+
+# 1023. SECOND ACTION
+
+Determine o delta real.
+
+---
+
+# 1024. THIRD ACTION
+
+Crie/atualize Phase 11 execution plan.
+
+---
+
+# 1025. FOURTH ACTION
+
+Implemente começando por:
+
+```text id="hzrzxp"
+certification integrity
+```
+
+antes do novo Orchestrator.
+
+---
+
+# 1026. WHY
+
+Precisamos de uma baseline confiável antes de ampliar o runtime.
+
+---
+
+# 1027. NEXT
+
+Implemente Orchestrator Kernel.
+
+---
+
+# 1028. THEN
+
+Goal/Plan.
+
+---
+
+# 1029. THEN
+
+Governed Execution + Risk.
+
+---
+
+# 1030. THEN
+
+Durability/Recovery.
+
+---
+
+# 1031. THEN
+
+Observe/Evaluate/Replan.
+
+---
+
+# 1032. THEN
+
+Loop/Budget Safety.
+
+---
+
+# 1033. THEN
+
+Routing.
+
+---
+
+# 1034. THEN
+
+Legacy elimination.
+
+---
+
+# 1035. THEN
+
+Observability/Security.
+
+---
+
+# 1036. THEN
+
+PostgreSQL/Chaos/Load.
+
+---
+
+# 1037. THEN
+
+Integration readiness.
+
+---
+
+# 1038. EXTERNAL GATES
+
+Execute somente quando ambiente/credenciais permitirem.
+
+---
+
+# 1039. PILOT
+
+Não execute real pilot sem autorização.
+
+---
+
+# 1040. FINAL CERTIFICATION
+
+Execute no nível máximo permitido pelas evidências reais.
+
+---
+
+# 1041. DO NOT STOP ON CONTEXT SIZE
+
+Se o trabalho for grande:
+
+use os documentos Phase 11 e machine-readable state como checkpoint.
+
+Continue de onde parou.
+
+---
+
+# 1042. PERSIST EXECUTION STATE
+
+Mantenha tracking:
+
+```text id="9gmsbi"
+currentPhase
+currentTask
+completedTasks
+blockers
+lastVerification
+```
+
+---
+
+# 1043. RESUMABILITY
+
+Outra sessão do Codex deve conseguir continuar sem reconstruir todo o contexto.
+
+---
+
+# 1044. MASTER EXECUTION LOG
+
+Atualize o mecanismo existente de execution log ou crie equivalente coerente.
+
+---
+
+# 1045. NO DUPLICATE DOCUMENT SYSTEM
+
+Se o repositório já possui tracking/evidence framework adequado, reutilize-o.
+
+---
+
+# 1046. GAUNTLET
+
+Integre ao Gauntlet existente quando aplicável.
+
+---
+
+# 1047. INDEPENDENT CRITIC
+
+Use o mecanismo de critic existente se houver.
+
+---
+
+# 1048. EXISTING ENGINEERING FRAMEWORK
+
+Não substitua frameworks internos maduros sem necessidade.
+
+---
+
+# 1049. FINAL IMPLEMENTATION OBJECTIVE
+
+Quando todo trabalho local terminar, devemos ter:
+
+```text id="x30ix7"
+CVG Agent Secretary v2
+        ↓
+Orchestrated Governed Runtime
+        ↓
+Durable Goal Execution
+        ↓
+Policy / Capability / Risk / Approval
+        ↓
+Controlled Tools / Outbox
+        ↓
+Observe Result
+        ↓
+Evaluate
+        ↓
+Replan or Stop
+```
+
+---
+
+# 1050. FINAL SAFETY OBJECTIVE
+
+Mesmo que o modelo:
+
+```text id="kluz22"
+hallucinates
+is manipulated
+is compromised
+returns malformed plan
+tries escalation
+```
+
+a arquitetura deve impedir que isso automaticamente se transforme em ação não autorizada.
+
+---
+
+# 1051. FINAL RELIABILITY OBJECTIVE
+
+Mesmo que:
+
+```text id="ozk4lq"
+worker crashes
+DB temporarily disconnects
+provider times out
+webhook duplicates
+human takes over
+```
+
+o sistema deve preservar os invariants críticos.
+
+---
+
+# 1052. FINAL OPERABILITY OBJECTIVE
+
+Operador deve conseguir descobrir:
+
+```text id="8c61zd"
+what is happening
+why it happened
+what is blocked
+what needs approval
+what failed
+how to recover
+```
+
+---
+
+# 1053. FINAL AUDITABILITY OBJECTIVE
+
+Auditor deve conseguir reconstruir:
+
+```text id="k7c53n"
+input
+goal
+plan
+governance
+approval
+effect
+result
+evaluation
+response
+```
+
+sem depender de chain-of-thought.
+
+---
+
+# 1054. FINAL CERTIFICATION OBJECTIVE
+
+Certificação deve responder:
+
+> “O que exatamente foi provado para este commit e para este deployment profile?”
+
+---
+
+# 1055. NO AMBIGUOUS AAA
+
+Não existe:
+
+```text id="i8otln"
+"parece AAA"
+```
+
+Existe:
+
+```text id="vmrhwu"
+STATE_OF_ART_TRIPLE_AAA
+```
+
+somente quando calculus permitir.
+
+---
+
+# 1056. FINAL RESPONSE MUST STATE LIMITATIONS
+
+Mesmo com Triple AAA, liste riscos residuais relevantes.
+
+---
+
+# 1057. ZERO RISK IS NOT CLAIMED
+
+Nenhum sistema real tem risco zero.
+
+---
+
+# 1058. FINAL CODEX CONTRACT
+
+Você está autorizado a:
+
+```text id="ulougo"
+inspect
+edit
+refactor
+add tests
+add migrations
+add packages
+add scripts
+run local commands
+generate controlled evidence
+```
+
+dentro do escopo do repositório e ambiente autorizado.
+
+---
+
+# 1059. YOU ARE NOT AUTHORIZED TO
+
+Sem autorização explícita:
+
+```text id="k1nphw"
+deploy production
+message real customers
+modify real patient data
+rotate production credentials
+change DNS
+perform destructive production operations
+```
+
+---
+
+# 1060. DO NOT ASK FOR PERMISSION FOR NORMAL LOCAL ENGINEERING
+
+Execute.
+
+---
+
+# 1061. DO ASK/BLOCK FOR REAL EXTERNAL ACTIONS
+
+Registre blocker.
+
+---
+
+# 1062. FINAL EXPECTATION
+
+Não me entregue somente recomendações.
+
+Entregue o máximo de implementação real possível.
+
+---
+
+# 1063. FINAL EXPECTATION — TESTS
+
+Não me diga apenas quais testes deveriam existir.
+
+Implemente-os.
+
+---
+
+# 1064. FINAL EXPECTATION — SECURITY
+
+Não me diga apenas que Policy deveria bloquear.
+
+Prove por teste.
+
+---
+
+# 1065. FINAL EXPECTATION — RECOVERY
+
+Não me diga apenas que worker deveria recuperar.
+
+Prove por teste.
+
+---
+
+# 1066. FINAL EXPECTATION — ORCHESTRATOR
+
+Não entregue apenas interfaces.
+
+Entregue fluxo executável.
+
+---
+
+# 1067. FINAL EXPECTATION — PERSISTENCE
+
+Não entregue somente tabelas.
+
+Integre-as ao runtime.
+
+---
+
+# 1068. FINAL EXPECTATION — OBSERVABILITY
+
+Não entregue apenas nomes de métricas.
+
+Instrumente caminhos críticos.
+
+---
+
+# 1069. FINAL EXPECTATION — CERTIFICATION
+
+Não entregue somente Markdown.
+
+Entregue machine-readable evidence.
+
+---
+
+# 1070. FINAL EXPECTATION — QUALITY
+
+Não sacrifique legibilidade por abstração.
+
+---
+
+# 1071. FINAL EXPECTATION — SIMPLICITY
+
+Se duas soluções satisfizerem os mesmos invariants:
+
+escolha a mais simples.
+
+---
+
+# 1072. FINAL EXPECTATION — COMPATIBILITY
+
+Não destrua comportamento saudável existente.
+
+---
+
+# 1073. FINAL EXPECTATION — SECURITY
+
+Fail closed onde segurança/autoridade estiver incerta.
+
+---
+
+# 1074. FINAL EXPECTATION — OPERATIONS
+
+Fail safely onde side effect estiver incerto.
+
+---
+
+# 1075. FINAL EXPECTATION — EVIDENCE
+
+Never claim what you cannot prove.
+
+---
+
+# 1076. FINAL ACCEPTANCE
+
+Quando terminar, entregue:
+
+```text id="4f4mss"
+implementation
+tests
+evidence
+audit
+certification
+blockers
+final success state
+```
+
+---
+
+# 1077. FINAL STOP CONDITION
+
+Você pode encerrar a Phase 11 somente quando uma das duas condições ocorrer:
+
+### CONDITION A — FULL SUCCESS
+
+```text id="i4y6no"
+all locally implementable work complete
+all mandatory local gates PASS
+all required external gates PASS
+pilot PASS
+human signoff VALIDATED
+production promotion PASS
+```
+
+Resultado possível:
+
+```text id="fkr15a"
+STATE_OF_ART_TRIPLE_AAA
+```
+
+### CONDITION B — EXTERNAL BOUNDARY
+
+```text id="ysbx4r"
+all locally implementable work complete
+all mandatory local gates PASS
+remaining blockers genuinely external
+```
+
+Resultado:
+
+```text id="1x8t80"
+AAA_CANDIDATE
+```
+
+ou classificação inferior que o evidence justificar.
+
+---
+
+# 1078. INVALID STOP CONDITION
+
+Não encerrar porque:
+
+```text id="id07kp"
+"implementation is large"
+"future work remains"
+"tests would take time"
+"provider unavailable"
+```
+
+se ainda existir trabalho local independente que possa ser realizado.
+
+---
+
+# 1079. MASTER SUCCESS CRITERION
+
+O sistema final deve conseguir responder mecanicamente:
+
+```text id="cijok7"
+What was observed?
+What goal was created?
+What plan was selected?
+What policy governed it?
+What risk was assigned?
+What approval existed?
+What action was executed?
+What actually happened?
+Was the goal achieved?
+Why
+```

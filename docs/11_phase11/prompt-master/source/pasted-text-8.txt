@@ -1,0 +1,1071 @@
+# CONTINUAÇÃO FINAL — CERTIFICATION CLOSURE
+
+## ITEMS 611–FINAL
+
+> Continuação direta do item 611. Todo o contrato anterior permanece normativo.
+
+---
+
+# 611. COMMIT-BOUND CERTIFICATION
+
+Se autorizado a criar commits, a certificação deve referenciar exatamente o commit candidato final.
+
+Obrigatório:
+
+```text id="8cveqb"
+candidateCommit == HEAD
+manifestCommit == HEAD
+evidenceCommit == HEAD
+releaseManifestCommit == HEAD
+```
+
+---
+
+# 612. POST-CERTIFICATION MUTATION
+
+Se qualquer arquivo coberto pela certificação mudar depois:
+
+```text id="gjft2x"
+certification = STALE
+```
+
+---
+
+# 613. DOC-ONLY CHANGE
+
+Não presuma automaticamente que mudança documental é irrelevante.
+
+Implemente política explícita para distinguir:
+
+```text id="7ptzke"
+behavior-changing
+certification-relevant
+certification-neutral
+```
+
+---
+
+# 614. BEHAVIOR HASH
+
+Considere gerar hash da superfície comportamental relevante para distinguir reanchor documental seguro de mudança de runtime.
+
+Não substitua commit binding sem rationale forte.
+
+---
+
+# 615. REANCHOR
+
+Se houver commit posterior estritamente documental:
+
+um reanchor só é permitido quando script provar que nenhum artifact comportamental mudou.
+
+---
+
+# 616. REANCHOR EVIDENCE
+
+Registre:
+
+```text id="5fmhmv"
+previousCandidate
+newCandidate
+changedFiles
+classification
+behaviorHashBefore
+behaviorHashAfter
+decision
+```
+
+---
+
+# 617. NO MANUAL REANCHOR
+
+Não altere SHA manualmente em JSON.
+
+---
+
+# 618. CERTIFICATION GENERATOR
+
+Artifacts de certificação devem ser gerados por scripts.
+
+---
+
+# 619. FINAL CLEAN-CLONE PROOF
+
+Quando ambiente permitir:
+
+```bash id="h6zdn1"
+git clone <repo> clean-certification
+cd clean-certification
+git checkout <candidate>
+npm ci
+npm run certification:verify
+```
+
+Registre resultado.
+
+---
+
+# 620. REPRODUCIBILITY ARTIFACT
+
+Gere evidence indicando:
+
+```text id="xflac9"
+candidate
+install
+build
+verification
+result
+```
+
+---
+
+# 621. NO DEVELOPER MACHINE ASSUMPTION
+
+O candidato não pode depender de arquivos em:
+
+```text id="izd4ne"
+/home/<developer>
+```
+
+ou paths absolutos específicos.
+
+---
+
+# 622. PATH PORTABILITY
+
+Audite artifacts/scripts por paths absolutos.
+
+---
+
+# 623. PLATFORM TARGET
+
+Linux é o target principal.
+
+Não introduza dependência acidental de Windows/macOS.
+
+---
+
+# 624. NODE VERSION
+
+Pin/documente versão suportada.
+
+---
+
+# 625. ENGINE CONTRACT
+
+Considere `engines` no `package.json` se apropriado.
+
+---
+
+# 626. DEPENDENCY INSTALL POLICY
+
+Produção deve usar dependências de runtime somente.
+
+---
+
+# 627. TS RUNTIME DECISION
+
+Avalie conscientemente se produção continuará executando TypeScript via `tsx` ou se deve produzir JavaScript compilado.
+
+Não mude apenas por estética.
+
+Documente trade-off.
+
+---
+
+# 628. IF USING TSX IN PRODUCTION
+
+Garanta:
+
+```text id="4d2y97"
+tsx = runtime dependency
+version pinned by lockfile
+container includes only required runtime surface
+```
+
+---
+
+# 629. IF COMPILING SERVER
+
+Garanta source maps/observability e package resolution corretos.
+
+---
+
+# 630. CONTAINER TARGETS
+
+Mantenha separação apropriada entre:
+
+```text id="f8nqzt"
+API/worker runtime
+web static runtime
+```
+
+quando fizer sentido.
+
+---
+
+# 631. WEB CONTAINER
+
+Frontend não deve precisar do toolchain completo de desenvolvimento em runtime.
+
+---
+
+# 632. API CONTAINER
+
+API não deve carregar frontend build toolchain desnecessariamente.
+
+---
+
+# 633. WORKER CONTAINER
+
+Avalie se worker deve possuir target próprio.
+
+---
+
+# 634. CONTAINER USER
+
+Todos os runtime containers devem preferencialmente executar non-root.
+
+---
+
+# 635. FILESYSTEM
+
+Teste funcionamento em filesystem read-only onde compatível.
+
+---
+
+# 636. TEMP
+
+Use `/tmp` ou storage explicitamente permitido para temporários.
+
+---
+
+# 637. SECRET INJECTION
+
+Segredos devem vir do ambiente/secret store.
+
+---
+
+# 638. NO SECRET BAKE
+
+Nunca bake secret em image.
+
+---
+
+# 639. DEPLOYMENT MANIFEST
+
+Crie exemplo seguro de deployment/staging se apropriado.
+
+---
+
+# 640. RESOURCE BOUNDS
+
+Documente limites iniciais:
+
+```text id="9tmnq3"
+CPU
+memory
+worker concurrency
+DB pool
+```
+
+sem fingir tuning de produção não medido.
+
+---
+
+# 641. WORKER CONCURRENCY
+
+Configuração deve ser bounded.
+
+---
+
+# 642. ORCHESTRATOR CONCURRENCY
+
+Evite executar múltiplos steps incompatíveis do mesmo Goal simultaneamente.
+
+---
+
+# 643. PARALLEL STEPS
+
+Permita somente quando DAG e domínio disserem que são independentes.
+
+---
+
+# 644. SIDE-EFFECT ORDERING
+
+Preserve ordering quando necessário.
+
+---
+
+# 645. CONVERSATION ORDERING
+
+Eventos de uma mesma conversa devem ter política explícita de ordering.
+
+---
+
+# 646. OUT-OF-ORDER TOLERANCE
+
+Quando não puder garantir ordering, handlers devem ser resilientes.
+
+---
+
+# 647. CLOCK SKEW
+
+Considere clock skew em:
+
+```text id="p8tf0l"
+tokens
+approvals
+leases
+webhooks
+```
+
+---
+
+# 648. MONOTONIC OPERATIONS
+
+Use DB time/monotonic counters quando necessário para fencing.
+
+---
+
+# 649. ID GENERATION
+
+IDs críticos devem ser não previsíveis ou monotônicos conforme necessidade sem criar colisão.
+
+---
+
+# 650. CORRELATION ID
+
+Preserve formato validado existente ou evolua com migration segura.
+
+---
+
+# 651. IDEMPOTENCY KEY
+
+Defina canonical derivation quando automática.
+
+---
+
+# 652. IDEMPOTENCY SCOPE
+
+Inclua contexto suficiente:
+
+```text id="izqeq7"
+tenant
+provider
+operation
+external identity
+```
+
+quando aplicável.
+
+---
+
+# 653. NEVER GLOBALIZE UNSAFE IDs
+
+Provider message ID isolado pode não ser global.
+
+---
+
+# 654. ERROR TAXONOMY
+
+Consolide erros em taxonomia consistente.
+
+---
+
+# 655. ORCHESTRATOR ERRORS
+
+Inclua:
+
+```text id="pz7vxi"
+goal_invalid
+plan_invalid
+dependency_cycle
+budget_exhausted
+loop_detected
+policy_denied
+approval_required
+approval_expired
+approval_consumed
+stale_lease
+unknown_effect
+reconciliation_required
+```
+
+---
+
+# 656. ERROR RETRY CLASSIFICATION
+
+Cada erro deve poder indicar:
+
+```text id="mzn6fv"
+retryable
+terminal
+requiresHuman
+requiresReplan
+```
+
+---
+
+# 657. NO RETRY BY STRING MATCHING
+
+Evite decisões frágeis baseadas apenas em texto de exception.
+
+---
+
+# 658. RETRY BUDGET
+
+Retries também consomem budget.
+
+---
+
+# 659. REPLAN BUDGET
+
+Replans consomem budget.
+
+---
+
+# 660. MODEL COST BUDGET
+
+Fallback/retry não pode contornar maxCost.
+
+---
+
+# 661. HUMAN HANDOFF IS SUCCESSFUL SAFETY
+
+Não trate handoff apropriado como falha de agente em todos os evals.
+
+Meça corretamente.
+
+---
+
+# 662. REFUSAL QUALITY
+
+Refusar ação proibida pode ser comportamento correto.
+
+---
+
+# 663. AGENT EVAL SEMANTICS
+
+Separe:
+
+```text id="02d8q8"
+taskSuccess
+safeRefusal
+correctEscalation
+```
+
+---
+
+# 664. EVAL FALSE SUCCESS
+
+Não marque task success quando agente simplesmente produz texto plausível sem cumprir Goal.
+
+---
+
+# 665. OPERATIONAL SUCCESS
+
+Use SuccessCriteria.
+
+---
+
+# 666. HUMAN ESCALATION ACCURACY
+
+Meça:
+
+```text id="m0gd8a"
+shouldEscalate
+didEscalate
+```
+
+---
+
+# 667. OVER-ESCALATION
+
+Também é problema operacional.
+
+---
+
+# 668. UNDER-ESCALATION
+
+É problema de segurança.
+
+---
+
+# 669. FINAL EVAL THRESHOLDS
+
+Defina thresholds baseados no dataset.
+
+Para safety-critical invariants:
+
+```text id="imq7qw"
+threshold = 100%
+```
+
+quando adequado.
+
+---
+
+# 670. BUSINESS TASK THRESHOLDS
+
+Podem ser menores que 100%, mas devem ser explicitamente aprovados.
+
+---
+
+# 671. MODEL NON-DETERMINISM
+
+Provider eval deve considerar repetição/amostragem quando razoável.
+
+---
+
+# 672. TEMPERATURE
+
+Use configuração apropriada ao task profile.
+
+---
+
+# 673. STRUCTURED PLANNING
+
+Planner deve preferir baixa variância para contratos estruturados.
+
+---
+
+# 674. EVALUATOR INDEPENDENCE
+
+Quando high-risk, considere evaluator separado do planner/model original.
+
+Não é obrigatório para todo fluxo.
+
+---
+
+# 675. CRITICAL REVIEW PROFILE
+
+Mantenha capacidade de usar:
+
+```text id="ix8nwm"
+CRITICAL_REVIEW
+```
+
+para tarefas de risco elevado permitidas.
+
+---
+
+# 676. CRITICAL REVIEW DOES NOT GRANT AUTHORITY
+
+Continua sujeito a GOVERN.
+
+---
+
+# 677. MULTI-AGENT FUTURE
+
+Prepare interfaces sem implementar swarm prematuramente.
+
+---
+
+# 678. NO AGENT-TO-AGENT TRUST
+
+Futuro agent output também será untrusted.
+
+---
+
+# 679. AGENT MESSAGE ENVELOPE
+
+Se implementado, deve ser structured e tenant-bound.
+
+---
+
+# 680. ORCHESTRATOR OWNS COORDINATION
+
+Agents especializados não devem coordenar livremente entre si fora do Orchestrator.
+
+---
+
+# 681. HUMAN IS AN EXTERNAL ACTOR
+
+Human action também deve ser autenticada, autorizada e auditada.
+
+---
+
+# 682. HUMAN DOES NOT BYPASS TENANT
+
+Operador humano continua tenant-bound.
+
+---
+
+# 683. ADMIN BREAK-GLASS
+
+Se existir, implemente explicitamente.
+
+Não criar backdoor escondido.
+
+---
+
+# 684. BREAK-GLASS
+
+Exige:
+
+```text id="8xt4pf"
+strong authentication
+reason
+short duration
+audit
+alert
+```
+
+---
+
+# 685. NO BREAK-GLASS BY DEFAULT
+
+Não implementar se não houver requisito real.
+
+---
+
+# 686. OPERATOR ACTION AUDIT
+
+Aprovar/rejeitar/cancelar/takeover deve gerar audit event.
+
+---
+
+# 687. APPROVAL REASON
+
+Permita reason quando apropriado.
+
+---
+
+# 688. REJECTION REASON
+
+Pode ajudar replanning/handoff.
+
+---
+
+# 689. REJECTED APPROVAL
+
+Orchestrator não pode simplesmente solicitar a mesma ação indefinidamente.
+
+---
+
+# 690. REJECTION LOOP
+
+Detecte repetição.
+
+---
+
+# 691. REPLAN AFTER REJECTION
+
+Pode criar alternativa somente se policy permitir.
+
+---
+
+# 692. NEVER REPHRASE TO BYPASS APPROVAL
+
+Mudar wording não pode mudar risk semanticamente equivalente.
+
+---
+
+# 693. ACTION CANONICALIZATION
+
+Risk/approval devem operar sobre ação canônica, não apenas texto.
+
+---
+
+# 694. TOOL IDENTITY
+
+Use `toolId + version + action`.
+
+---
+
+# 695. FINAL ACCEPTANCE MATRIX
+
+Ao final, produza tabela consolidada:
+
+```text id="f9lznr"
+Phase
+Requirement
+Implementation
+Test
+Evidence
+Status
+Blocking
+```
+
+---
+
+# 696. NO "MOSTLY PASS"
+
+Status deve ser objetivo.
+
+---
+
+# 697. PARTIAL
+
+Use apenas quando schema permitir e explique blocker.
+
+---
+
+# 698. FINAL P0/P1 REVIEW
+
+Antes de finalizar:
+
+reabra todos os P0/P1 históricos.
+
+Confirme evidence de closure.
+
+---
+
+# 699. CLOSED FINDING
+
+Deve possuir:
+
+```text id="3t8dsf"
+rootCause
+fix
+regressionTest
+evidence
+closedAt
+```
+
+---
+
+# 700. FINAL P2 REVIEW
+
+Determine quais P2 bloqueiam profile alvo.
+
+---
+
+# 701. FINAL P3/P4
+
+Não bloqueiam automaticamente, salvo política específica.
+
+---
+
+# 702. FINAL SCORE CALCULATION
+
+Calcule notas após os gates, não antes.
+
+---
+
+# 703. PRODUCTION READINESS SCORE
+
+Deve refletir provas reais, não apenas arquitetura.
+
+---
+
+# 704. TRIPLE AAA IS NOT 100/100
+
+Não é necessário artificialmente produzir 100 em tudo.
+
+---
+
+# 705. TRIPLE AAA MEANS
+
+Neste projeto, Triple AAA significa:
+
+```text id="5sfpjv"
+high engineering quality
++
+strong security/governance
++
+demonstrated operational reliability
++
+mechanical evidence
++
+production proof
+```
+
+---
+
+# 706. FINAL SUCCESS STATE
+
+O trabalho de implementação só pode ser considerado concluído quando:
+
+1. todas as mudanças independentes de fatores externos forem implementadas;
+2. todos os testes locais aplicáveis forem executados;
+3. blockers externos forem explicitamente registrados;
+4. evidence estiver coerente;
+5. final audit estiver produzido;
+6. certification calculus tiver sido executado.
+
+---
+
+# 707. DO NOT STOP AFTER CODE GENERATION
+
+Não encerre depois de escrever arquivos.
+
+---
+
+# 708. DO NOT STOP AFTER UNIT TESTS
+
+Continue para:
+
+```text id="6j0cyh"
+integration
+chaos
+eval
+load
+recovery
+certification
+```
+
+quando disponíveis.
+
+---
+
+# 709. DO NOT STOP AT FIRST GREEN
+
+Faça auditoria fresh-context final.
+
+---
+
+# 710. DO NOT STOP BECAUSE EXTERNAL GATE IS BLOCKED
+
+Conclua todo trabalho local independente primeiro.
+
+---
+
+# 711. NO "TODO FOR LATER" FOR LOCAL WORK
+
+Se algo pode ser implementado/testado agora dentro do repositório, faça agora.
+
+---
+
+# 712. EXTERNAL TODO
+
+Somente para dependências realmente externas.
+
+---
+
+# 713. FINAL DELIVERABLES
+
+Entregue no repositório, adaptando paths à convenção existente:
+
+```text id="qgkk5w"
+docs/phase11/PHASE11_PLAN.md
+docs/phase11/PHASE11_ARCHITECTURE.md
+docs/phase11/PHASE11_ORCHESTRATOR.md
+docs/phase11/PHASE11_THREAT_MODEL.md
+docs/phase11/PHASE11_SECURITY_REVIEW.md
+docs/phase11/PHASE11_EVAL_REPORT.md
+docs/phase11/PHASE11_CHAOS_REPORT.md
+docs/phase11/PHASE11_LOAD_REPORT.md
+docs/phase11/PHASE11_RECOVERY_REPORT.md
+docs/phase11/PHASE11_INTEGRATION_REPORT.md
+docs/phase11/PHASE11_FINAL_AUDIT.md
+```
+
+---
+
+# 714. CONDITIONAL DELIVERABLES
+
+Quando executados:
+
+```text id="vn3u95"
+PHASE11_RPO_RTO_REPORT.md
+PHASE11_PILOT_REPORT.md
+PHASE11_INDEPENDENT_CRITIC.md
+```
+
+---
+
+# 715. MACHINE-READABLE DELIVERABLES
+
+No mínimo:
+
+```text id="u9cpxu"
+certification/phase11/gates.json
+certification/phase11/evidence-graph.json
+certification/phase11/manifest.json
+certification/phase11/release-manifest.json
+certification/phase11-result.json
+```
+
+---
+
+# 716. INTEGRATION ARTIFACTS
+
+Quando aplicável:
+
+```text id="vuh8l4"
+certification/phase11/integrations/evolutionapi.json
+certification/phase11/integrations/chatwoot.json
+certification/phase11/integrations/model-provider.json
+certification/phase11/integrations/external-identity.json
+```
+
+---
+
+# 717. NO EMPTY PLACEHOLDER REPORTS
+
+Se não executado, prefira machine-readable:
+
+```text id="nt6ntf"
+NOT_EXECUTED
+```
+
+com motivo.
+
+---
+
+# 718. FINAL BACKLOG ARTIFACT
+
+Gere:
+
+```text id="g16ufm"
+docs/phase11/PHASE11_REMAINING_BACKLOG.md
+```
+
+somente se houver itens reais.
+
+---
+
+# 719. FINAL COMMANDS
+
+Garanta comandos equivalentes a:
+
+```text id="ooxr7j"
+npm run phase11:verify
+npm run evidence:verify
+npm run certification:verify
+npm run promotion:check
+```
+
+Não crie aliases inúteis se comandos existentes puderem ser reutilizados.
+
+---
+
+# 720. PHASE11 VERIFY
+
+Deve agregar gates locais essenciais.
+
+---
+
+# 721. FULL CERTIFICATION
+
+Pode ser mais pesada e separada do PR CI.
+
+---
+
+# 722. PR CI
+
+Mantenha feedback razoavelmente rápido.
+
+---
+
+# 723. EXTENDED CI
+
+Use workflow separado/nightly/manual para:
+
+```text id="04dpqn"
+full chaos
+full eval
+load
+real integration
+```
+
+---
+
+# 724. REAL INTEGRATION CI
+
+Nunca execute sem secrets/environment explicitamente configurados.
+
+---
+
+# 725. SECURITY CI
+
+Mantenha:
+
+```text id="p8zqj1"
+CodeQL
+Gitleaks
+dependency audit
+SBOM
+license checks
+```
+
+ou substituições justificadas.
+
+---
+
+# 726. ACTION PINNING
+
+Preserve pinning por SHA.
+
+---
+
+# 727. PERMISSIONS
+
+GitHub Actions devem usar least privilege.
+
+---
+
+# 728. PERSIST CREDENTIALS
+
+Checkout deve preferir:
+
+```text id="ue0o1q"
+persist-credentials: false
+```
+
+quando apropriado.
+
+---
+
+# 729. ARTIFACT RETENTION
+
+Não publique artifacts contendo secrets.
+
+---
+
+# 730. CERTIFICATION ARTIFACTS
+
+Podem ser publicados como CI artifacts quando seguros.
+
+---
+
+# 731. FINAL CODE REVIEW
+
+Revise:
+
+```text id="vfpwba"
+dead code
+duplicate abstractions
+temporary compatibility
+debug logging
+TODO
+FIXME
+unsafe casts
+```
+
+---
+
+# 732. TODO AUDIT
+
+TODO crítico não pode permanecer escondido.
+
+---
+
+# 733. FIXME AUDIT
+
+Mesmo princípio.
+
+---
+
+# 734. ANY CAST AUDIT
+
+Revise `any`/unsafe casts nos boundaries críticos.
+
+---
+
+# 735. TYPE SAFETY
+
+Use schemas runtime nos boundaries.
+
+TypeScript type sozinho não valida input externo.
+
+---
+
+# 736. ERROR LEAKAGE
+
+Não exponha:
+
+```text id="p7
+```

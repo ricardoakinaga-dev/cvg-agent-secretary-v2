@@ -173,6 +173,7 @@ export const CANDIDATE_EXCLUDED_PREFIXES = [
   'docs/04_audit/evidence/',
   'apps/web/dist/',
   'certification/logs/',
+  'certification/phase11-logs/',
   'certification/baseline-logs/',
   'certification/mutation-logs/',
   'certification/historical/'
@@ -190,7 +191,10 @@ export const CANDIDATE_EXCLUDED_FILES = [
   'certification/load-report.json',
   'certification/restore-report.json',
   'certification/negative-validation.json',
-  'certification/baseline.json'
+  'certification/baseline.json',
+  'certification/phase11-result.json',
+  'certification/phase11-manifest.json',
+  'certification/phase11-candidate-manifest.json'
 ]
 
 export const CANDIDATE_SCOPE_NOTE =
@@ -261,6 +265,35 @@ export function collectCandidateFiles(root) {
   return records
 }
 
+/**
+ * Generated certification outputs are deliberately outside the candidate
+ * surface. A run that rewrites only those outputs must remain clean; a source,
+ * configuration, contract, or test change must keep the candidate dirty.
+ */
+export function candidateWorktreeDirty(root) {
+  const result = spawnSync(
+    'git',
+    ['status', '--porcelain=v1', '--untracked-files=all', '-z'],
+    { cwd: root, encoding: 'utf8' }
+  )
+  const tokens = (result.stdout ?? '').split('\0').filter(Boolean)
+  for (let index = 0; index < tokens.length; index += 1) {
+    const entry = tokens[index]
+    const paths = [entry.slice(3)]
+    if (entry[0] === 'R' || entry[0] === 'C') {
+      const renamedPath = tokens[index + 1]
+      if (renamedPath) {
+        paths.push(renamedPath)
+        index += 1
+      }
+    }
+    if (paths.some((relativePath) => !isCandidateExcluded(relativePath))) {
+      return true
+    }
+  }
+  return false
+}
+
 export function computeCandidateId(files) {
   const normalized = [...files]
     .map(({ path: filePath, sha256, size, tracked }) => ({
@@ -284,17 +317,13 @@ export function buildCandidateRecord({ root, files, now = new Date() }) {
     cwd: root,
     encoding: 'utf8'
   }).stdout.trim()
-  const status = spawnSync('git', ['status', '--porcelain'], {
-    cwd: root,
-    encoding: 'utf8'
-  }).stdout.trim()
   const sorted = [...files].sort((left, right) =>
     left.path < right.path ? -1 : 1
   )
   return {
     schemaVersion: 'aaa-candidate-v1',
     createdAt: now.toISOString(),
-    git: { head, branch, dirty: status.length > 0 },
+    git: { head, branch, dirty: candidateWorktreeDirty(root) },
     files: sorted,
     candidateId: computeCandidateId(sorted),
     scope: {
@@ -1117,6 +1146,8 @@ export function verifyQualification({
   artifactReader,
   requiredGates = PHASE10_REQUIRED_LOCAL_GATES,
   currentCandidateId,
+  currentCommit,
+  currentDirty,
   enforceEvidence = false
 }) {
   const failures = []
@@ -1147,6 +1178,21 @@ export function verifyQualification({
     result.candidate.candidateId !== manifest.candidateId
   ) {
     failures.push('candidate_id_mismatch_result_manifest')
+  }
+  if (currentCommit && result.commit !== currentCommit) {
+    failures.push('commit_drift')
+  }
+  if (currentCommit && manifest.commit !== currentCommit) {
+    failures.push('manifest_commit_drift')
+  }
+  if (currentCommit && result.candidate?.git?.head !== currentCommit) {
+    failures.push('candidate_commit_drift')
+  }
+  if (
+    currentDirty !== undefined &&
+    result.candidate?.git?.dirty !== currentDirty
+  ) {
+    failures.push('candidate_dirty_state_changed')
   }
   if (enforceEvidence) {
     failures.push(...verifyGateEvidence({ result, manifest, artifactReader }))

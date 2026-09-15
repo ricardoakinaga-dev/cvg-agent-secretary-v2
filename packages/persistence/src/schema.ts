@@ -275,6 +275,8 @@ export interface OutboxEventRecord {
   availableAt?: Date
   attempts?: number
   leaseOwner?: string | null
+  /** Unique fencing token for this claim; stale workers cannot settle it. */
+  leaseToken?: string | null
   leaseUntil?: Date | null
   lastError?: string | null
   processedAt?: Date | null

@@ -1,0 +1,1112 @@
+# FINAL ABSOLUTO — MASTER ACCEPTANCE CONTRACT
+
+## ITEMS 1079–END
+
+---
+
+# 1079. MASTER SUCCESS CRITERION
+
+O sistema final deve conseguir responder mecanicamente:
+
+```text
+What was observed?
+What goal was created?
+What plan was selected?
+What policy governed it?
+What risk was assigned?
+What approval existed?
+What action was executed?
+What actually happened?
+Was the goal achieved?
+Why was it considered achieved?
+Was replanning required?
+Which model/agent/tool versions participated?
+Which tenant owned the execution?
+Which operator authorized it?
+Which evidence proves each statement?
+```
+
+Se essas perguntas não puderem ser respondidas de maneira auditável para uma execução crítica, a arquitetura ainda não está completa.
+
+---
+
+# 1080. EXECUTION LINEAGE
+
+Toda execução crítica deve permitir reconstruir:
+
+```text
+Observation
+   ↓
+Understanding
+   ↓
+Goal
+   ↓
+Plan v1
+   ↓
+Step
+   ↓
+Governance Decision
+   ↓
+Approval
+   ↓
+Effect
+   ↓
+Observed Result
+   ↓
+Evaluation
+   ↓
+Plan v2 if required
+   ↓
+Final Goal State
+```
+
+---
+
+# 1081. LINEAGE IDENTIFIERS
+
+Use IDs/correlation apropriados para relacionar:
+
+```text
+observationId
+goalId
+planId
+stepId
+approvalId
+outboxEventId
+effectId
+evaluationId
+correlationId
+causationId
+```
+
+---
+
+# 1082. LINEAGE MUST SURVIVE RESTART
+
+Restart não pode destruir relações necessárias para auditoria.
+
+---
+
+# 1083. LINEAGE MUST SURVIVE REPLAN
+
+Plan v2 deve apontar para sua origem.
+
+---
+
+# 1084. LINEAGE MUST SURVIVE HANDOFF
+
+Human takeover deve continuar associado ao Goal/conversation.
+
+---
+
+# 1085. LINEAGE MUST SURVIVE DLQ
+
+Dead-letter não deve perder correlation.
+
+---
+
+# 1086. LINEAGE MUST SURVIVE RESTORE
+
+Backup/restore deve preservar lineage.
+
+---
+
+# 1087. FINAL INVARIANT MATRIX
+
+Crie uma matriz machine-readable dos invariants críticos.
+
+No mínimo:
+
+```text
+INV-001 Model cannot grant authority
+INV-002 Orchestrator cannot bypass governance
+INV-003 Planner cannot grant capability
+INV-004 Replanner cannot escalate capability
+INV-005 Risk cannot be downgraded by model
+INV-006 Approval is payload-bound
+INV-007 Approval is single-use
+INV-008 Tenant cannot change during execution
+INV-009 Critical effects are idempotent/reconcilable
+INV-010 Stale worker cannot commit
+INV-011 Budget survives restart
+INV-012 Loop is bounded
+INV-013 Goal completion requires evidence
+INV-014 Human takeover suppresses automation
+INV-015 Certification is commit-bound
+INV-016 Production certification requires real proof
+```
+
+---
+
+# 1088. INVARIANT SCHEMA
+
+Cada invariant deve possuir:
+
+```text
+id
+description
+severity
+implementationRefs
+testRefs
+evidenceRefs
+status
+```
+
+---
+
+# 1089. CRITICAL INVARIANT FAILURE
+
+Qualquer critical invariant:
+
+```text
+FAIL
+```
+
+implica:
+
+```text
+NO_GO
+```
+
+para qualquer profile que dependa dele.
+
+---
+
+# 1090. MISSING INVARIANT EVIDENCE
+
+Critical invariant sem evidence:
+
+```text
+UNPROVEN
+```
+
+e bloqueia promoção relevante.
+
+---
+
+# 1091. FINAL GATE MATRIX — CONTROLLED_LOCAL
+
+Para `CONTROLLED_LOCAL`, exigir pelo menos:
+
+```text
+clean build
+typecheck
+lint
+unit
+critical coverage
+architecture tests
+controlled model
+controlled channel
+orchestrator
+governance
+approval
+outbox
+evals
+security
+evidence
+```
+
+---
+
+# 1092. FINAL GATE MATRIX — STAGING
+
+Adicionar:
+
+```text
+PostgreSQL
+RLS
+migrations
+multi-worker where applicable
+restore
+chaos
+load
+staging integrations
+observability
+deployment preflight
+```
+
+---
+
+# 1093. FINAL GATE MATRIX — SUPERVISED_PILOT
+
+Adicionar:
+
+```text
+real channel
+real identity
+real model provider if deployment uses it
+shadow mode
+restricted capabilities
+kill switch
+human takeover
+rollback
+pilot supervisor
+```
+
+---
+
+# 1094. FINAL GATE MATRIX — PRODUCTION
+
+Adicionar:
+
+```text
+real integration validation
+RPO/RTO
+supervised pilot PASS
+human signoff
+production topology validation
+release provenance
+rollback evidence
+P0=0
+P1=0
+criticalP2=0
+```
+
+---
+
+# 1095. PROMOTION STRENGTH
+
+Nunca permita evidência de profile inferior satisfazer automaticamente profile superior.
+
+---
+
+# 1096. STAGING PASS != PILOT PASS
+
+Obrigatório.
+
+---
+
+# 1097. PILOT PASS != PRODUCTION DEPLOY
+
+Obrigatório.
+
+---
+
+# 1098. PRODUCTION ELIGIBILITY != DEPLOYMENT
+
+Obrigatório.
+
+---
+
+# 1099. DEPLOYMENT != CERTIFICATION
+
+Deployment real não torna automaticamente sistema certificado.
+
+---
+
+# 1100. FINAL STATE MODEL
+
+O projeto deve distinguir:
+
+```text
+IMPLEMENTED
+VERIFIED
+CERTIFIED
+PROMOTABLE
+DEPLOYED
+```
+
+---
+
+# 1101. NO STATUS COLLAPSE
+
+Não use apenas:
+
+```text
+ready=true
+```
+
+para representar tudo.
+
+---
+
+# 1102. CERTIFIED PROFILE
+
+Registre profile certificado.
+
+---
+
+# 1103. DEPLOYED PROFILE
+
+Se conhecido, registre separadamente.
+
+---
+
+# 1104. RELEASE CANDIDATE
+
+Candidate deve ser imutável por SHA.
+
+---
+
+# 1105. NEW COMMIT = NEW CANDIDATE
+
+Mesmo pequena mudança gera novo candidate identity.
+
+---
+
+# 1106. SELECTIVE EVIDENCE REUSE
+
+Permitida somente com dependency/freshness proof.
+
+---
+
+# 1107. FINAL DATABASE INVARIANT
+
+Estado operacional crítico pertence ao PostgreSQL/source of truth apropriado.
+
+Não ao LLM.
+
+---
+
+# 1108. FINAL MODEL INVARIANT
+
+Modelo é reasoning service.
+
+Não state store.
+
+---
+
+# 1109. FINAL ORCHESTRATOR INVARIANT
+
+Orchestrator é coordination runtime.
+
+Não authority service.
+
+---
+
+# 1110. FINAL GOVERNANCE INVARIANT
+
+Governance é authority boundary.
+
+---
+
+# 1111. FINAL OUTBOX INVARIANT
+
+Outbox/effect boundary protege side effects.
+
+---
+
+# 1112. FINAL EVALUATOR INVARIANT
+
+Evaluator verifica resultado.
+
+Não fabrica estado.
+
+---
+
+# 1113. FINAL HUMAN INVARIANT
+
+Humano autenticado pode exercer autoridade apenas dentro de sua própria policy.
+
+---
+
+# 1114. FINAL AUDIT INVARIANT
+
+Audit registra o que aconteceu.
+
+Não o que o sistema gostaria que tivesse acontecido.
+
+---
+
+# 1115. FINAL EVIDENCE INVARIANT
+
+Evidence registra o que foi provado.
+
+Não o que foi planejado.
+
+---
+
+# 1116. FINAL CERTIFICATION INVARIANT
+
+Certification declara somente o nível que evidence sustenta.
+
+---
+
+# 1117. FINAL CODE QUALITY REVIEW
+
+Antes de concluir, procure sinais de overengineering introduzidos pela Phase 11.
+
+---
+
+# 1118. OVERENGINEERING QUESTIONS
+
+Pergunte:
+
+```text
+Can this abstraction be removed?
+Are two modules doing the same thing?
+Is this interface needed?
+Is this service actually distributed?
+Can PostgreSQL solve this simply?
+Is this code only present to look sophisticated?
+```
+
+---
+
+# 1119. SIMPLIFY
+
+Se puder reduzir complexidade preservando invariants:
+
+faça.
+
+---
+
+# 1120. NO ARCHITECTURE ASTRONAUTICS
+
+Obrigatório.
+
+---
+
+# 1121. FINAL DUPLICATION REVIEW
+
+Procure duplicação entre:
+
+```text
+Phase 10
+Phase 11
+legacy runtime
+new orchestrator
+certification engines
+```
+
+---
+
+# 1122. CONSOLIDATE
+
+Elimine duplicação que crie duas sources of truth.
+
+---
+
+# 1123. PRESERVE HISTORY
+
+Não apague evidência histórica legítima apenas para organizar.
+
+---
+
+# 1124. ARCHIVE WHEN NEEDED
+
+Marque artifacts históricos como superseded/stale.
+
+---
+
+# 1125. FINAL DOCUMENTATION INDEX
+
+Crie índice simples apontando para:
+
+```text
+architecture
+runtime
+orchestrator
+security
+operations
+certification
+```
+
+---
+
+# 1126. NEW ENGINEER TEST
+
+Outro engenheiro deve conseguir entender:
+
+```text
+how to run
+how to test
+how to inspect Goal
+how to inspect approval
+how to recover
+how to certify
+```
+
+sem depender do autor original.
+
+---
+
+# 1127. FINAL DEVEX
+
+Comandos comuns devem ser previsíveis.
+
+---
+
+# 1128. LOCAL DEVELOPMENT
+
+Não exigir infraestrutura real para unit development.
+
+Controlled adapters permanecem úteis.
+
+---
+
+# 1129. STAGING DEVELOPMENT
+
+Documente como habilitar integrations sem confundir com produção.
+
+---
+
+# 1130. SAFE ENVIRONMENT NAMES
+
+Evite flags ambíguas.
+
+---
+
+# 1131. PRODUCTION MODE
+
+Deve ser explicitamente reconhecido pelo runtime.
+
+---
+
+# 1132. FAIL CLOSED ON UNKNOWN ENV
+
+Ambiente inválido:
+
+```text
+startup fail
+```
+
+---
+
+# 1133. FINAL SECURITY SCORE CONDITION
+
+Security >=97 somente se critical security gates realmente passarem.
+
+---
+
+# 1134. FINAL RELIABILITY SCORE CONDITION
+
+Reliability >=97 somente com chaos/recovery fortes.
+
+---
+
+# 1135. FINAL PRODUCTION SCORE CONDITION
+
+Production Readiness >=95 somente com provas externas suficientes.
+
+---
+
+# 1136. NO AUTOMATIC 100
+
+100 deve ser excepcional.
+
+---
+
+# 1137. FINAL TRIPLE AAA SCORE CONDITION
+
+Triple AAA depende de gates, não da média matemática.
+
+---
+
+# 1138. FINAL REPORT MUST SHOW SCORE/GATE DIFFERENCE
+
+Exemplo:
+
+```text
+Engineering: 98/100
+Production readiness: 88/100
+Certification: AAA_CANDIDATE
+```
+
+é perfeitamente válido.
+
+---
+
+# 1139. FINAL RISK REGISTER
+
+Inclua riscos residuais significativos.
+
+---
+
+# 1140. RESIDUAL RISK
+
+Não transforme todo risco teórico em blocker.
+
+---
+
+# 1141. RISK PRIORITIZATION
+
+Use:
+
+```text
+impact
+likelihood
+detectability
+mitigation
+```
+
+quando útil.
+
+---
+
+# 1142. FINAL BUSINESS SAFETY
+
+Secretária deve sempre privilegiar:
+
+```text
+accurate information
+safe escalation
+confirmed actions
+```
+
+sobre autonomia máxima.
+
+---
+
+# 1143. AUTONOMY IS NOT THE KPI
+
+Não maximize número de ações sem humano.
+
+---
+
+# 1144. CORRECT AUTOMATION IS THE KPI
+
+Obrigatório.
+
+---
+
+# 1145. FINAL ORCHESTRATOR PRINCIPLE
+
+O melhor Orchestrator é aquele que sabe:
+
+```text
+when to act
+when to ask
+when to wait
+when to replan
+when to escalate
+when to stop
+```
+
+---
+
+# 1146. FINAL SAFE STOP
+
+Qualquer situação não resolvível dentro de authority/budget:
+
+```text
+SAFE_STOP / HUMAN_HANDOFF
+```
+
+---
+
+# 1147. FINAL RESPONSE QUALITY
+
+Resposta ao tutor deve ser separada da execução interna.
+
+---
+
+# 1148. NO INTERNAL PLAN LEAK
+
+Não envie plano interno bruto ao usuário.
+
+---
+
+# 1149. NO POLICY LEAK
+
+Não exponha detalhes de segurança desnecessários.
+
+---
+
+# 1150. USER-FACING CONFIRMATION
+
+Confirme somente fatos comprovados.
+
+---
+
+# 1151. FINAL SYSTEM TEST
+
+Execute golden E2E completo.
+
+---
+
+# 1152. FINAL FAILURE TEST
+
+Execute failure E2E completo.
+
+---
+
+# 1153. FINAL SECURITY TEST
+
+Execute adversarial suite.
+
+---
+
+# 1154. FINAL RECOVERY TEST
+
+Execute recovery suite.
+
+---
+
+# 1155. FINAL CERTIFICATION TEST
+
+Execute certification mutation suite.
+
+---
+
+# 1156. FINAL EVIDENCE VERIFY
+
+Obrigatório.
+
+---
+
+# 1157. FINAL CLEAN CHECK
+
+Obrigatório para final candidate.
+
+---
+
+# 1158. FINAL HEAD CHECK
+
+Obrigatório.
+
+---
+
+# 1159. FINAL MANIFEST CHECK
+
+Obrigatório.
+
+---
+
+# 1160. FINAL RELEASE CHECK
+
+Obrigatório para profile relevante.
+
+---
+
+# 1161. FINAL PROMOTION CHECK
+
+Obrigatório.
+
+---
+
+# 1162. FINAL DECISION
+
+Calcule.
+
+Não escolha.
+
+---
+
+# 1163. FINAL CERTIFICATION
+
+Calcule.
+
+Não escolha.
+
+---
+
+# 1164. FINAL SCORES
+
+Derive da auditoria.
+
+Não escolha para atingir meta.
+
+---
+
+# 1165. FINAL BLOCKERS
+
+Derive.
+
+Não esconda.
+
+---
+
+# 1166. FINAL SUCCESS STATE
+
+Gere.
+
+---
+
+# 1167. FINAL OUTPUT ORDER
+
+A resposta final do Codex deve seguir:
+
+```text
+1. Executive Result
+2. Candidate Identity
+3. Major Implementation
+4. Orchestrator Architecture
+5. Governance & Security
+6. Durability & Recovery
+7. Tests & Evals
+8. Chaos & Load
+9. Real Integrations
+10. Certification Gates
+11. Findings
+12. Scores
+13. Remaining Blockers
+14. Final Success State
+```
+
+---
+
+# 1168. EXECUTIVE RESULT
+
+Máximo de clareza.
+
+Informe imediatamente:
+
+```text
+Decision
+Certification
+Eligible Profile
+```
+
+---
+
+# 1169. NO LONG PREAMBLE
+
+Resultados primeiro.
+
+---
+
+# 1170. CANDIDATE IDENTITY
+
+Mostre SHA exato.
+
+---
+
+# 1171. MAJOR IMPLEMENTATION
+
+Liste o que realmente foi implementado.
+
+---
+
+# 1172. TESTS
+
+Somente números observados.
+
+---
+
+# 1173. INTEGRATIONS
+
+Diferencie claramente:
+
+```text
+CONTROLLED
+STAGING
+REAL
+```
+
+---
+
+# 1174. BLOCKERS
+
+Diga exatamente o que falta para próximo profile.
+
+---
+
+# 1175. IF AAA_CANDIDATE
+
+Informe:
+
+> Local engineering closure completed; production proof remains blocked by the external gates listed below.
+
+somente se for verdade.
+
+---
+
+# 1176. IF TRIPLE AAA
+
+Informe quais provas reais permitiram o status.
+
+---
+
+# 1177. NO CELEBRATORY LANGUAGE IN CERTIFICATION
+
+Seja técnico.
+
+---
+
+# 1178. FINAL ARTIFACT REFERENCES
+
+Aponte paths dos artifacts principais.
+
+---
+
+# 1179. FINAL COMMIT
+
+Se commits forem permitidos, deixe o repositório em estado coerente.
+
+---
+
+# 1180. NO DIRTY FINAL CERTIFICATION
+
+Reforço obrigatório.
+
+---
+
+# 1181. FINAL PUSH
+
+Não faça push remoto se isso não estiver autorizado pelo ambiente/instruções.
+
+---
+
+# 1182. LOCAL COMMITS
+
+Siga autorização existente.
+
+---
+
+# 1183. NO BRANCH DELETION
+
+Não necessário.
+
+---
+
+# 1184. NO HISTORY REWRITE
+
+Não force push/rebase destrutivo sem autorização.
+
+---
+
+# 1185. FINAL PRESERVATION
+
+Não apague artifacts Phase 10 necessários para histórico.
+
+---
+
+# 1186. PHASE 11 SUPERSEDES, DOES NOT ERASE
+
+Obrigatório.
+
+---
+
+# 1187. FINAL MASTER VERDICT RULE
+
+O máximo status permitido é determinado pelo gate mais fraco obrigatório do profile solicitado.
+
+---
+
+# 1188. EXAMPLE
+
+Se:
+
+```text
+Architecture = 99
+Security = 99
+Reliability = 99
+
+but
+
+Human Signoff = PENDING
+```
+
+Production Triple AAA não pode ser concedido.
+
+---
+
+# 1189. EXAMPLE
+
+Se:
+
+```text
+all local gates PASS
+real integrations NOT_VALIDATED
+```
+
+máximo:
+
+```text
+AAA_CANDIDATE
+```
+
+se os demais requisitos dessa classificação estiverem satisfeitos.
+
+---
+
+# 1190. EXAMPLE
+
+Se:
+
+```text
+critical governance bypass exists
+```
+
+resultado:
+
+```text
+NO_GO
+```
+
+independentemente dos scores.
+
+---
+
+# 1191. FINAL PROMOTION PHILOSOPHY
+
+```text
+Evidence before confidence.
+Governance before autonomy.
+Recovery before scale.
+Production proof before production claims.
+```
+
+---
+
+# 1192. FINAL IMPLEMENTATION PHILOSOPHY
+
+```text
+Deterministic where possible.
+Agentic where valuable.
+Human where necessary.
+Fail closed where authority is uncertain.
+Reconcile where effects are uncertain.
+```
+
+---
+
+# 1193. FINAL STATE-OF-ART PHILOSOPHY
+
+Não construir um agente que tenha permissão para fazer tudo.
+
+Construir um sistema capaz de fazer a coisa certa **dentro de limites comprováveis**.
+
+---
+
+# 1194. TERMINAL EXECUTION DIRECTIVE
+
+Agora:
+
+```text
+INSPECT
+→ BASELINE
+→ IMPLEMENT
+→ TEST
+→ ATTACK
+→ RECOVER
+→ MEASURE
+→ VERIFY
+→ AUDIT
+→ CERTIFY
+```
+
+---
+
+# 1195. DO NOT RETURN A PLAN ONLY
+
+Execute a Phase 11.
+
+---
+
+# 1196. DO NOT RETURN PARTIAL LOCAL WORK AS FINAL
+
+Continue enquanto houver trabalho local obrigatório executável.
+
+---
+
+# 1197. EXTERNAL BOUNDARY IS THE ONLY ACCEPTABLE EARLY BOUNDARY
+
+Depois que todo trabalho local estiver concluído.
+
+---
+
+# 1198. FINAL TARGET
+
+Transformar `cvg-agent-secretary-v2` em uma:
+
+# ORCHESTRATED, GOVERNED, DURABLE, AUDITABLE, FAILURE-RESILIENT AGENTIC OPERATIONS PLATFORM
+
+capaz de alcançar:
+
+# STATE OF ART — TRIPLE AAA
+
+**somente quando a evidência técnica e operacional realmente justificar esse status.**
+
+---

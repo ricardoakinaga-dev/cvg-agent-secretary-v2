@@ -28,6 +28,7 @@ test('console shell preserves layout, focus and control sizing across viewports'
     await skipLink.focus()
     await skipLink.press('Enter')
     await expect(page.locator('#console-operacional')).toBeFocused()
+    await expect(page.locator('#console-operacional')).toBeInViewport()
 
     const metrics = await page.evaluate(() => ({
       viewport: window.innerWidth,
@@ -42,8 +43,16 @@ test('console shell preserves layout, focus and control sizing across viewports'
     ).toBeLessThanOrEqual(metrics.viewport)
     expect(metrics.actionMinHeights.every((height) => height >= 40)).toBe(true)
 
+    const identityDetails = page.locator('.identityDetails')
     const sessionButton = page.getByRole('button', { name: 'Encerrar sessão' })
-    await sessionButton.focus()
+    if ((await identityDetails.getAttribute('open')) === null) {
+      const summary = identityDetails.locator('summary')
+      await summary.focus()
+      await summary.press('Enter')
+      await page.keyboard.press('Tab')
+    } else {
+      await sessionButton.focus()
+    }
     await expect
       .poll(() =>
         sessionButton.evaluate((element) => {

@@ -9,12 +9,14 @@ import {
   type PostgresPoolClient,
   type PostgresPoolLike
 } from '../tenant-scoped-postgres.ts'
+import { createCorrelationId } from '@cvg/shared'
 
 const testDatabaseUrl = process.env.TEST_DATABASE_URL
 const describeWithPostgres = testDatabaseUrl ? describe : describe.skip
 
 const tenantA = 'tenant_00000000-0000-4000-8000-000000000a11'
 const tenantPending = 'tenant_00000000-0000-4000-8000-000000000a13'
+const tenantPendingList = 'tenant_00000000-0000-4000-8000-000000000a18'
 const tenantRls = 'tenant_00000000-0000-4000-8000-000000000a14'
 const tenantRlsOther = 'tenant_00000000-0000-4000-8000-000000000a15'
 const tenantCrashMissing = 'tenant_00000000-0000-4000-8000-000000000a16'
@@ -60,7 +62,7 @@ function requestInput(tenantId: string, hint: string) {
     resource: { type: 'appointment', id: `apt_${hint}` },
     payload: syntheticPayload(hint),
     policyVersion: 'policy-v1',
-    correlationId: `corr:${hint}`,
+    correlationId: createCorrelationId(),
     proposalId: `proposal_${hint}`,
     proposalHash: proposalHashFor(hint),
     capability: 'appointments.manage',
@@ -246,7 +248,7 @@ describeWithPostgres('durable runtime approval authority (PROD-04)', () => {
       decision: 'approve',
       approverId: 'op_approver_1',
       actorType: 'Supervisor',
-      requestCorrelationId: `corr_request_${hint}`
+      requestCorrelationId: createCorrelationId()
     })
 
     expect(result.approval.status).toBe('APPROVED')
@@ -306,7 +308,7 @@ describeWithPostgres('durable runtime approval authority (PROD-04)', () => {
           decision: 'approve',
           approverId: 'op_approver_1',
           actorType: 'Supervisor',
-          requestCorrelationId: `corr_request_${hint}`
+          requestCorrelationId: createCorrelationId()
         })
       ).rejects.toThrow('synthetic continuation enqueue failure')
     } finally {
@@ -700,37 +702,55 @@ describeWithPostgres('durable runtime approval authority (PROD-04)', () => {
     const hintC = `opkey_c_${randomBytes(4).toString('hex')}`
     const operationKey = `op:${randomBytes(16).toString('hex')}`
     const requested = await authority.request(
-      requestInput(tenantPending, hintA)
+      requestInput(tenantPendingList, hintA)
     )
-    const pending = await authority.request(requestInput(tenantPending, hintB))
-    await authority.submit(tenantPending, pending.approvalId, 'op_operator_1')
-    const approved = await createApproved(authority, tenantPending, hintC)
+    const pending = await authority.request(
+      requestInput(tenantPendingList, hintB)
+    )
+    await authority.submit(
+      tenantPendingList,
+      pending.approvalId,
+      'op_operator_1'
+    )
+    const approved = await createApproved(authority, tenantPendingList, hintC)
 
-    const pendingList = await authority.listPending(tenantPending)
+    const pendingList = await authority.listPending(tenantPendingList)
     expect(pendingList.map((record) => record.approvalId).sort()).toEqual(
       [requested.approvalId, pending.approvalId].sort()
     )
 
-    await authority.submit(tenantPending, requested.approvalId, 'op_operator_1')
-    await authority.approve(tenantPending, requested.approvalId, {
+    await authority.submit(
+      tenantPendingList,
+      requested.approvalId,
+      'op_operator_1'
+    )
+    await authority.approve(tenantPendingList, requested.approvalId, {
       approverId: 'op_approver_1'
     })
-    await authority.approve(tenantPending, pending.approvalId, {
+    await authority.approve(tenantPendingList, pending.approvalId, {
       approverId: 'op_approver_1'
     })
     await authority.reserve(
-      reserveInput(tenantPending, hintA, requested.approvalId, `rsv_${hintA}`, {
-        operationKey
-      })
+      reserveInput(
+        tenantPendingList,
+        hintA,
+        requested.approvalId,
+        `rsv_${hintA}`,
+        { operationKey }
+      )
     )
     await authority.reserve(
-      reserveInput(tenantPending, hintB, pending.approvalId, `rsv_${hintB}`, {
-        operationKey
-      })
+      reserveInput(
+        tenantPendingList,
+        hintB,
+        pending.approvalId,
+        `rsv_${hintB}`,
+        { operationKey }
+      )
     )
 
     const candidates = await authority.getByOperationKey(
-      tenantPending,
+      tenantPendingList,
       operationKey
     )
     expect(candidates.map((record) => record.approvalId).sort()).toEqual(
@@ -741,16 +761,16 @@ describeWithPostgres('durable runtime approval authority (PROD-04)', () => {
     )
 
     const missingCandidates = await authority.getByOperationKey(
-      tenantPending,
+      tenantPendingList,
       `op:${'0'.repeat(32)}`
     )
     expect(missingCandidates).toEqual([])
 
-    const approvedList = await authority.list(tenantPending, 'APPROVED')
+    const approvedList = await authority.list(tenantPendingList, 'APPROVED')
     expect(approvedList.map((record) => record.approvalId)).toEqual([
       approved.approvalId
     ])
-    expect(await authority.listPending(tenantPending)).toEqual([])
+    expect(await authority.listPending(tenantPendingList)).toEqual([])
   })
 
   it('persists the engine expiry transition before rethrowing expired', async () => {
