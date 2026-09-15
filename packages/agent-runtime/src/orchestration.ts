@@ -14,6 +14,7 @@ import {
   type ToolRiskLevel
 } from '@cvg/policy-engine'
 import type { ModelInput, StructuredOutputContract } from '@cvg/model-gateway'
+import type { Telemetry } from '@cvg/observability'
 import type { GovernedResource } from './contracts.ts'
 
 /**
@@ -199,6 +200,9 @@ export interface ExecutionSnapshot {
   policyVersion: string | null
   modelProfile: string | null
   toolVersions: Record<string, string>
+  /** Explicit runtime binding prevents legacy/durable continuation mixing. */
+  runtimeMode?: 'kernel' | 'published-agent' | 'unknown'
+  runtimeVersion?: string | null
 }
 
 export interface Goal {
@@ -218,6 +222,12 @@ export interface Goal {
   version: number
   activePlanId: string | null
   executionSnapshot: ExecutionSnapshot
+  /**
+   * Runtime-owned JSON context needed to recreate an initial plan after a
+   * worker restart. It is intentionally opaque to the orchestration engine;
+   * the owning runtime validates and interprets it.
+   */
+  plannerContext?: unknown
   replanFingerprints: string[]
   lastReason: string | null
   lastError: string | null
@@ -319,6 +329,58 @@ export interface OperationalEvidence {
   verified: boolean
   key?: string
   digest?: string
+  eventType?: string
+  correlationId?: string
+}
+
+function expectedValueDigest(value: unknown): string {
+  return createHash('sha256').update(canonicalizeJson(value)).digest('hex')
+}
+
+/**
+ * Evaluates persisted operational evidence against a Goal's declared success
+ * criteria. Unsupported or incomplete evidence stays unsatisfied so a goal
+ * cannot become COMPLETED because a step merely returned successfully.
+ */
+export function evaluateSuccessCriteria(
+  criteria: SuccessCriterion[],
+  evidence: OperationalEvidence[]
+): { satisfied: boolean; unsatisfied: number } {
+  const verified = evidence.filter((item) => item.verified)
+  const matches = (criterion: SuccessCriterion): boolean => {
+    switch (criterion.kind) {
+      case 'EVENT':
+        return verified.some(
+          (item) =>
+            item.source === criterion.source &&
+            (item.eventType === criterion.eventType ||
+              item.key === criterion.eventType) &&
+            (criterion.correlationId === undefined ||
+              item.correlationId === criterion.correlationId)
+        )
+      case 'SEMANTIC':
+        return criterion.requiredEvidenceKeys.every((key) =>
+          verified.some((item) => item.key === key)
+        )
+      case 'FACT':
+      case 'STATE':
+        return verified.some(
+          (item) =>
+            item.source === criterion.source &&
+            item.key ===
+              (criterion.kind === 'FACT'
+                ? criterion.key
+                : `${criterion.resourceType}:${criterion.resourceId ?? '*'}:${criterion.field}`) &&
+            item.digest === expectedValueDigest(criterion.expected)
+        )
+      case 'COMPOSITE':
+        return criterion.operator === 'all'
+          ? criterion.criteria.every((nested) => matches(nested))
+          : criterion.criteria.some((nested) => matches(nested))
+    }
+  }
+  const unsatisfied = criteria.filter((criterion) => !matches(criterion)).length
+  return { satisfied: unsatisfied === 0, unsatisfied }
 }
 
 export interface StepExecutionResult {
@@ -397,6 +459,7 @@ export interface CreateGoalInput {
   budget?: ExecutionBudgetInput
   correlationId: string
   executionSnapshot?: Partial<ExecutionSnapshot>
+  plannerContext?: unknown
 }
 
 export interface ActivatePlanInput {
@@ -493,6 +556,10 @@ export interface GoalPlanStore {
     tenantId: OrchestrationTenantId,
     inboundMessageId: string
   ): Promise<Goal | null>
+  listGoals(
+    tenantId: OrchestrationTenantId,
+    options?: GoalListOptions
+  ): Promise<Goal[]>
   listRunnableGoals(tenantId?: OrchestrationTenantId): Promise<Goal[]>
   transitionGoal(input: TransitionGoalInput): Promise<Goal>
   activatePlan(input: ActivatePlanInput): Promise<ActivatePlanResult>
@@ -553,6 +620,65 @@ export interface GoalPlanStore {
 
 export type GoalStore = GoalPlanStore
 
+/**
+ * Goal states that a worker may safely revisit after a restart. Waiting,
+ * handoff and uncertain states require an explicit continuation or
+ * reconciliation signal and must never be replayed by a blind sweep.
+ */
+export const RUNNABLE_GOAL_STATUSES: readonly GoalStatus[] = [
+  'OBSERVING',
+  'UNDERSTANDING',
+  'PLANNING',
+  'GOVERNING',
+  'EXECUTING',
+  'OBSERVING_RESULT',
+  'EVALUATING',
+  'REPLANNING'
+]
+
+export function isRunnableGoalStatus(status: GoalStatus): boolean {
+  return RUNNABLE_GOAL_STATUSES.includes(status)
+}
+
+export interface GoalRecoverySweepResult {
+  inspected: number
+  resumed: number
+  skipped: number
+  completed: number
+  failures: number
+}
+
+export interface GoalListOptions {
+  statuses?: readonly GoalStatus[]
+  limit?: number
+  offset?: number
+}
+
+function normalizeGoalListOptions(options: GoalListOptions = {}): {
+  statuses?: readonly GoalStatus[]
+  limit: number
+  offset: number
+} {
+  const limit = options.limit ?? 50
+  const offset = options.offset ?? 0
+  if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+    throw new OrchestrationError(
+      'invalid_plan',
+      'Goal list limit must be between 1 and 100'
+    )
+  }
+  if (!Number.isInteger(offset) || offset < 0) {
+    throw new OrchestrationError(
+      'invalid_plan',
+      'Goal list offset must be a non-negative integer'
+    )
+  }
+  const statuses = options.statuses?.map((status) =>
+    GoalStatusSchema.parse(status)
+  )
+  return { ...(statuses ? { statuses } : {}), limit, offset }
+}
+
 export type OrchestrationErrorCode =
   | 'not_found'
   | 'tenant_violation'
@@ -577,6 +703,7 @@ const goalTransitions: Readonly<Record<GoalStatus, readonly GoalStatus[]>> = {
   OBSERVING: [
     'UNDERSTANDING',
     'PLANNING',
+    'BUDGET_EXHAUSTED',
     'WAITING_EXTERNAL',
     'HUMAN_HANDOFF',
     'CANCELLED'
@@ -887,12 +1014,17 @@ export function validatePlanGraph(
         approvalRequirement: step.approvalRequirement,
         inputHash: safeHash(step.input ?? null),
         expectedOutcome: step.expectedOutcome ?? null,
+        timeoutMs: step.timeoutMs ?? 30_000,
+        toolId: step.toolId ?? null,
+        toolVersion: step.toolVersion ?? null,
         intent: {
           capability: step.intent.capability,
           action: step.intent.action,
           resource: step.intent.resource,
           dataClassification: step.intent.dataClassification,
-          idempotencyKey: step.intent.idempotencyKey
+          idempotencyKey: step.intent.idempotencyKey,
+          modelMessages: step.intent.modelMessages,
+          structuredOutput: step.intent.structuredOutput
         }
       }))
       .sort((left, right) => left.id.localeCompare(right.id))
@@ -988,6 +1120,21 @@ function goalReasonForStepStatus(status: PlanStepStatus): GoalStatus | null {
   }
 }
 
+function assertSettleAccounting(input: SettleStepInput): void {
+  for (const [label, value] of [
+    ['modelCalls', input.modelCalls],
+    ['toolCalls', input.toolCalls],
+    ['costUsd', input.costUsd]
+  ] as const) {
+    if (!Number.isFinite(value) || value < 0) {
+      throw new OrchestrationError(
+        'invalid_plan',
+        `Step settlement ${label} must be a finite non-negative number`
+      )
+    }
+  }
+}
+
 /** In-memory durable-contract reference store used by unit tests and local controlled mode. */
 export class InMemoryGoalPlanStore implements GoalPlanStore {
   private readonly goals = new Map<string, Goal>()
@@ -1018,12 +1165,19 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
       )
     }
     const createdAt = this.clock()
+    const budget = createExecutionBudget(input.budget)
     const executionSnapshot: ExecutionSnapshot = {
       agentVersion: input.executionSnapshot?.agentVersion ?? null,
       promptVersion: input.executionSnapshot?.promptVersion ?? null,
       policyVersion: input.executionSnapshot?.policyVersion ?? null,
       modelProfile: input.executionSnapshot?.modelProfile ?? null,
-      toolVersions: { ...(input.executionSnapshot?.toolVersions ?? {}) }
+      toolVersions: { ...(input.executionSnapshot?.toolVersions ?? {}) },
+      ...(input.executionSnapshot?.runtimeMode !== undefined
+        ? { runtimeMode: input.executionSnapshot.runtimeMode }
+        : {}),
+      ...(input.executionSnapshot?.runtimeVersion !== undefined
+        ? { runtimeVersion: input.executionSnapshot.runtimeVersion }
+        : {})
     }
     const goal: Goal = {
       id: createDomainId('goal'),
@@ -1036,12 +1190,17 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
       status: 'OBSERVING',
       createdAt: new Date(createdAt),
       updatedAt: new Date(createdAt),
-      deadline: input.deadline ? new Date(input.deadline) : null,
-      budget: createExecutionBudget(input.budget),
+      deadline: input.deadline
+        ? new Date(input.deadline)
+        : new Date(createdAt.getTime() + budget.maxDurationMs),
+      budget,
       correlationId: input.correlationId,
       version: 1,
       activePlanId: null,
       executionSnapshot,
+      ...(input.plannerContext !== undefined
+        ? { plannerContext: clone(input.plannerContext) }
+        : {}),
       replanFingerprints: [],
       lastReason: null,
       lastError: null
@@ -1102,6 +1261,28 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
     )
   }
 
+  async listGoals(
+    tenantId: OrchestrationTenantId,
+    options: GoalListOptions = {}
+  ): Promise<Goal[]> {
+    const scope = validateTenant(tenantId)
+    const normalized = normalizeGoalListOptions(options)
+    return [...this.goals.values()]
+      .filter(
+        (goal) =>
+          goal.tenantId === scope &&
+          (normalized.statuses === undefined ||
+            normalized.statuses.includes(goal.status))
+      )
+      .sort(
+        (left, right) =>
+          right.updatedAt.getTime() - left.updatedAt.getTime() ||
+          left.id.localeCompare(right.id)
+      )
+      .slice(normalized.offset, normalized.offset + normalized.limit)
+      .map((goal) => clone(goal))
+  }
+
   async listRunnableGoals(tenantId?: OrchestrationTenantId): Promise<Goal[]> {
     if (tenantId === undefined) {
       throw new OrchestrationError(
@@ -1112,7 +1293,7 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
     const scope = validateTenant(tenantId)
     return [...this.goals.values()]
       .filter(
-        (goal) => goal.tenantId === scope && !isTerminalGoalStatus(goal.status)
+        (goal) => goal.tenantId === scope && isRunnableGoalStatus(goal.status)
       )
       .sort((left, right) => left.id.localeCompare(right.id))
       .map((goal) => clone(goal))
@@ -1520,6 +1701,7 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
   }
 
   async settleStep(input: SettleStepInput): Promise<SettledStep> {
+    assertSettleAccounting(input)
     const tenantId = validateTenant(input.lease.tenantId)
     const step = this.steps.get(this.key(tenantId, input.lease.stepId))
     const goal = this.goals.get(this.key(tenantId, input.lease.goalId))
@@ -1532,6 +1714,15 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
       throw new OrchestrationError(
         'lease_lost',
         `Lease lost for step ${step.id}`
+      )
+    }
+    if (
+      step.goalId !== input.lease.goalId ||
+      step.planId !== input.lease.planId
+    ) {
+      throw new OrchestrationError(
+        'lease_lost',
+        `Lease lineage does not match step ${step.id}`
       )
     }
     if (!step.leaseUntil || step.leaseUntil <= input.now) {
@@ -1682,6 +1873,28 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
   async recordObservation(
     input: Omit<ObservationRecord, 'id' | 'createdAt'> & { createdAt?: Date }
   ): Promise<ObservationRecord> {
+    const tenantId = validateTenant(input.tenantId)
+    const goal = this.goals.get(this.key(tenantId, input.goalId))
+    const plan = this.plans.get(this.key(tenantId, input.planId))
+    if (!goal || !plan || plan.goalId !== input.goalId) {
+      throw new OrchestrationError(
+        'conflict',
+        'Observation lineage does not match its Goal and Plan'
+      )
+    }
+    if (input.stepId !== null) {
+      const step = this.steps.get(this.key(tenantId, input.stepId))
+      if (
+        !step ||
+        step.goalId !== input.goalId ||
+        step.planId !== input.planId
+      ) {
+        throw new OrchestrationError(
+          'conflict',
+          'Observation lineage does not match its Step'
+        )
+      }
+    }
     const record: ObservationRecord = {
       ...clone(input),
       id: createDomainId('observation'),
@@ -1707,6 +1920,28 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
   async recordEvaluation(
     input: Omit<EvaluationRecord, 'id' | 'createdAt'> & { createdAt?: Date }
   ): Promise<EvaluationRecord> {
+    const tenantId = validateTenant(input.tenantId)
+    const goal = this.goals.get(this.key(tenantId, input.goalId))
+    const plan = this.plans.get(this.key(tenantId, input.planId))
+    if (!goal || !plan || plan.goalId !== input.goalId) {
+      throw new OrchestrationError(
+        'conflict',
+        'Evaluation lineage does not match its Goal and Plan'
+      )
+    }
+    if (input.stepId !== null) {
+      const step = this.steps.get(this.key(tenantId, input.stepId))
+      if (
+        !step ||
+        step.goalId !== input.goalId ||
+        step.planId !== input.planId
+      ) {
+        throw new OrchestrationError(
+          'conflict',
+          'Evaluation lineage does not match its Step'
+        )
+      }
+    }
     const record: EvaluationRecord = {
       ...clone(input),
       id: createDomainId('evaluation'),
@@ -1844,7 +2079,9 @@ export interface GoalPlanOrchestratorOptions {
   clock?: () => Date
   leaseMs?: number
   reconcileExpiredLease?: (step: PlanStep) => Promise<'retry' | 'uncertain'>
+  reconcileWaitingApproval?: (goal: Goal) => Promise<'resolved' | 'pending'>
   maxIterations?: number
+  telemetry?: Pick<Telemetry, 'startSpan' | 'recordMetric'>
 }
 
 export interface OrchestrationRunResult {
@@ -1885,12 +2122,112 @@ export class GoalPlanOrchestrator {
     return this.options.store.listRunnableGoals(tenantId)
   }
 
+  /**
+   * Resume every runnable Goal visible to this tenant. The store's Step lease
+   * fencing remains the concurrency boundary when two workers sweep at once;
+   * one worker may lose a version/claim race and is counted as a failed
+   * recovery attempt instead of executing an unfenced effect.
+   */
+  async recoverGoals(
+    tenantId: OrchestrationTenantId
+  ): Promise<GoalRecoverySweepResult> {
+    const span = this.options.telemetry?.startSpan(
+      'orchestrator.goal.recovery',
+      { operation: 'goal_recovery', tenantId }
+    )
+    try {
+      const goals = this.options.reconcileWaitingApproval
+        ? await this.options.store.listGoals(tenantId, {
+            statuses: [...RUNNABLE_GOAL_STATUSES, 'WAITING_APPROVAL'],
+            limit: 100
+          })
+        : await this.recoverRunnableGoals(tenantId)
+      const result: GoalRecoverySweepResult = {
+        inspected: goals.length,
+        resumed: 0,
+        skipped: 0,
+        completed: 0,
+        failures: 0
+      }
+      for (const candidate of goals) {
+        const current = await this.options.store.getGoal(tenantId, candidate.id)
+        if (current === null) {
+          result.skipped += 1
+          continue
+        }
+        if (current.status === 'WAITING_APPROVAL') {
+          if (this.options.reconcileWaitingApproval === undefined) {
+            result.skipped += 1
+            continue
+          }
+          try {
+            const resolution =
+              await this.options.reconcileWaitingApproval(current)
+            if (resolution === 'resolved') {
+              result.resumed += 1
+              const resolved = await this.options.store.getGoal(
+                tenantId,
+                current.id
+              )
+              if (resolved && isTerminalGoalStatus(resolved.status)) {
+                result.completed += 1
+              }
+            } else {
+              result.skipped += 1
+            }
+          } catch {
+            result.failures += 1
+          }
+          continue
+        }
+        if (!isRunnableGoalStatus(current.status)) {
+          result.skipped += 1
+          continue
+        }
+        try {
+          const resumed = await this.run(tenantId, current.id)
+          result.resumed += 1
+          if (isTerminalGoalStatus(resumed.goal.status)) {
+            result.completed += 1
+          }
+        } catch {
+          result.failures += 1
+        }
+      }
+      span?.end(
+        result.failures === 0 ? 'ok' : 'error',
+        result.failures === 0 ? undefined : 'goal_recovery_partial'
+      )
+      this.options.telemetry?.recordMetric(
+        'orchestrator_goal_recovery_total',
+        1,
+        {
+          operation: 'goal_recovery',
+          outcome: result.failures === 0 ? 'ok' : 'partial'
+        }
+      )
+      return result
+    } catch (error) {
+      span?.end(
+        'error',
+        error instanceof Error && 'code' in error
+          ? String((error as { code: unknown }).code)
+          : 'goal_recovery_failed'
+      )
+      this.options.telemetry?.recordMetric(
+        'orchestrator_goal_recovery_total',
+        1,
+        { operation: 'goal_recovery', outcome: 'error' }
+      )
+      throw error
+    }
+  }
+
   async run(
     tenantId: OrchestrationTenantId,
     goalId: string
   ): Promise<OrchestrationRunResult> {
     const scope = validateTenant(tenantId)
-    const startedAt = this.clock().getTime()
     const executedStepIds: string[] = []
     await this.recoverExpiredLeases(scope)
     let lastReason = 'goal_not_started'
@@ -1909,7 +2246,11 @@ export class GoalPlanOrchestrator {
         )
       }
       if (goal.deadline && goal.deadline <= this.clock()) {
-        goal = await this.transition(goal, 'BLOCKED', 'goal_deadline_expired')
+        goal = await this.transition(
+          goal,
+          'BUDGET_EXHAUSTED',
+          'goal_deadline_expired'
+        )
         return this.result(
           goal,
           await this.activePlan(scope, goal),
@@ -1918,7 +2259,10 @@ export class GoalPlanOrchestrator {
           executedStepIds
         )
       }
-      if (this.clock().getTime() - startedAt >= goal.budget.maxDurationMs) {
+      const effectiveDeadline =
+        goal.deadline ??
+        new Date(goal.createdAt.getTime() + goal.budget.maxDurationMs)
+      if (effectiveDeadline <= this.clock()) {
         goal = await this.transition(
           goal,
           'BUDGET_EXHAUSTED',
@@ -2127,12 +2471,24 @@ export class GoalPlanOrchestrator {
         leaseMs: this.leaseMs
       })
       if (!claimed) {
+        this.options.telemetry?.recordMetric(
+          'orchestrator_step_claim_total',
+          1,
+          { operation: 'step_claim', outcome: 'conflict' }
+        )
         lastReason = 'step_claim_not_available'
         continue
       }
+      this.options.telemetry?.recordMetric('orchestrator_step_claim_total', 1, {
+        operation: 'step_claim',
+        outcome: 'claimed'
+      })
       executedStepIds.push(next.id)
       const abortController = new AbortController()
       let execution: StepExecutionResult
+      const stepTimeout = setTimeout(() => {
+        abortController.abort('step_timeout')
+      }, next.timeoutMs)
       try {
         execution = await this.options.executor.execute({
           goal: claimed.goal,
@@ -2147,6 +2503,15 @@ export class GoalPlanOrchestrator {
           reason:
             error instanceof Error ? error.message : 'step_executor_failed'
         }
+      } finally {
+        clearTimeout(stepTimeout)
+      }
+      if (abortController.signal.aborted) {
+        execution = {
+          ...execution,
+          outcome: 'uncertain',
+          reason: 'step_timeout'
+        }
       }
       const settled = await this.options.store.settleStep({
         lease: claimed.lease,
@@ -2159,6 +2524,11 @@ export class GoalPlanOrchestrator {
         toolCalls: execution.toolCalls ?? 0,
         costUsd: execution.costUsd ?? 0
       })
+      this.options.telemetry?.recordMetric(
+        'orchestrator_step_settle_total',
+        1,
+        { operation: 'step_settle', outcome: execution.outcome }
+      )
       await this.options.store.recordObservation({
         tenantId: scope,
         goalId: settled.goal.id,
@@ -2281,13 +2651,44 @@ export class GoalPlanOrchestrator {
     reason: string
   ): Promise<Goal> {
     if (goal.status === target) return goal
-    return this.options.store.transitionGoal({
-      tenantId: goal.tenantId,
-      goalId: goal.id,
-      expectedVersion: goal.version,
-      target,
-      reason
-    })
+    const span = this.options.telemetry?.startSpan(
+      'orchestrator.goal.transition',
+      {
+        operation: 'goal_transition',
+        goalId: goal.id,
+        fromStatus: goal.status,
+        toStatus: target
+      }
+    )
+    try {
+      const transitioned = await this.options.store.transitionGoal({
+        tenantId: goal.tenantId,
+        goalId: goal.id,
+        expectedVersion: goal.version,
+        target,
+        reason
+      })
+      span?.end('ok')
+      this.options.telemetry?.recordMetric(
+        'orchestrator_goal_transition_total',
+        1,
+        { operation: 'goal_transition', status: target }
+      )
+      return transitioned
+    } catch (error) {
+      span?.end(
+        'error',
+        error instanceof Error && 'code' in error
+          ? String((error as { code: unknown }).code)
+          : 'goal_transition_failed'
+      )
+      this.options.telemetry?.recordMetric(
+        'orchestrator_goal_transition_total',
+        1,
+        { operation: 'goal_transition', status: 'error' }
+      )
+      throw error
+    }
   }
 
   private nextReadyStep(steps: readonly PlanStep[]): PlanStep | null {

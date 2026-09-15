@@ -339,6 +339,150 @@ export interface DeadLetterView {
   deadLetteredAt: string | null
 }
 
+export type OrchestrationGoalStatus =
+  | 'OBSERVING'
+  | 'UNDERSTANDING'
+  | 'PLANNING'
+  | 'GOVERNING'
+  | 'WAITING_APPROVAL'
+  | 'EXECUTING'
+  | 'OBSERVING_RESULT'
+  | 'EVALUATING'
+  | 'REPLANNING'
+  | 'WAITING_EXTERNAL'
+  | 'HUMAN_HANDOFF'
+  | 'PENDING_RETURN'
+  | 'UNCERTAIN'
+  | 'COMPLETED'
+  | 'BLOCKED'
+  | 'FAILED'
+  | 'CANCELLED'
+  | 'BUDGET_EXHAUSTED'
+  | 'LOOP_DETECTED'
+
+export interface OrchestrationGoalView {
+  id: string
+  status: OrchestrationGoalStatus
+  objective: string | null
+  correlationId: string
+  inboundMessageId: string | null
+  conversationId: string | null
+  sessionId: string | null
+  activePlanId: string | null
+  version: number
+  lastReason: string | null
+  lastError: string | null
+  deadline: string | null
+  createdAt: string
+  updatedAt: string
+  budget: {
+    maxSteps: number
+    maxReplans: number
+    maxModelCalls: number
+    maxToolCalls: number
+    maxDurationMs: number
+    maxCostUsd: number
+    usage: {
+      steps: number
+      replans: number
+      modelCalls: number
+      toolCalls: number
+      costUsd: number
+    }
+  }
+}
+
+export interface OrchestrationGoalDetailView extends OrchestrationGoalView {
+  successCriteria: Array<Record<string, unknown>>
+  executionSnapshot: {
+    agentVersion: string | null
+    promptVersion: string | null
+    policyVersion: string | null
+    modelProfile: string | null
+    toolVersions: Record<string, string>
+  }
+  replanCount: number
+  plans: Array<{
+    id: string
+    goalId: string
+    version: number
+    parentPlanId: string | null
+    status: string
+    reason: string | null
+    fingerprint: string
+    createdAt: string
+    updatedAt: string
+    steps: Array<{
+      id: string
+      goalId: string
+      planId: string
+      type: string
+      description: string | null
+      dependencies: string[]
+      requiredCapabilities: string[]
+      riskLevel: string
+      approvalRequirement: string
+      status: string
+      attemptCount: number
+      approvalId: string | null
+      toolId: string | null
+      toolVersion: string | null
+      resultHash: string | null
+      lastError: string | null
+      startedAt: string | null
+      completedAt: string | null
+      version: number
+      createdAt: string
+      updatedAt: string
+      attempts: Array<{
+        id: string
+        workerId: string
+        correlationId: string
+        startedAt: string
+        finishedAt: string | null
+        outcome: string | null
+        errorClass: string | null
+      }>
+    }>
+  }>
+  observations: Array<{
+    id: string
+    planId: string
+    stepId: string | null
+    kind: string
+    resultDigest: string | null
+    evidence: Array<{
+      source: string
+      reference: string | null
+      verified: boolean
+      key: string | null
+      digest: string | null
+    }>
+    createdAt: string
+  }>
+  evaluations: Array<{
+    id: string
+    planId: string
+    stepId: string | null
+    evaluatorType: string
+    result: string
+    reason: string | null
+    evidence: Array<{
+      source: string
+      reference: string | null
+      verified: boolean
+      key: string | null
+      digest: string | null
+    }>
+    createdAt: string
+  }>
+}
+
+export interface OrchestrationGoalPageView {
+  items: OrchestrationGoalView[]
+  pageInfo: { limit: number; hasNextPage: boolean }
+}
+
 export interface JourneyCandidateView {
   id: string
   displayName: string
@@ -560,6 +704,29 @@ export const apiClient = {
     identity: TenantScopedOperatorIdentity
   ): Promise<DeadLetterView[]> {
     return request('/v1/outbox/dead-letters', operatorInit(identity))
+  },
+
+  async listOrchestrationGoals(
+    identity: OperatorIdentity,
+    input: { limit?: number; status?: OrchestrationGoalStatus } = {}
+  ): Promise<OrchestrationGoalPageView> {
+    const params = new URLSearchParams()
+    params.set('limit', String(input.limit ?? 25))
+    if (input.status) params.set('status', input.status)
+    return request(
+      `/v1/orchestration/goals?${params.toString()}`,
+      operatorInit(identity)
+    )
+  },
+
+  async getOrchestrationGoal(
+    identity: OperatorIdentity,
+    goalId: string
+  ): Promise<OrchestrationGoalDetailView> {
+    return request(
+      `/v1/orchestration/goals/${encodeURIComponent(goalId)}`,
+      operatorInit(identity)
+    )
   },
 
   async requeueDeadLetter(input: {

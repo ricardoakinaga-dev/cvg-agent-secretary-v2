@@ -23,6 +23,7 @@ const permissionsByRole: Record<Role, string[]> = {
   Supervisor: [
     'approval:view',
     'approval:decide',
+    'orchestration:view',
     'outbox:view',
     'outbox:requeue',
     'audit:view_full',
@@ -34,6 +35,7 @@ const permissionsByRole: Record<Role, string[]> = {
   ],
   Admin: [
     'approval:view',
+    'orchestration:view',
     'outbox:view',
     'outbox:requeue',
     'audit:view_full',

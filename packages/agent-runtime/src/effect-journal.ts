@@ -35,6 +35,12 @@ export interface EffectRecord {
   createdAt: string
   updatedAt: string
   revision: number
+  orchestrationContext?: {
+    goalId: string
+    planId: string
+    stepId: string
+    attemptId?: string
+  }
 }
 
 export interface EffectReserveInput {
@@ -43,6 +49,7 @@ export interface EffectReserveInput {
   proposalHash: string
   attemptId: string
   expiresAt: string
+  orchestrationContext?: EffectRecord['orchestrationContext']
 }
 
 export type EffectReserveOutcome =
@@ -185,7 +192,10 @@ function rearmEffectRecord(
     reconciledBy: null,
     reconciliationEvidenceRef: null,
     updatedAt: nowIso,
-    revision: existing.revision + 1
+    revision: existing.revision + 1,
+    ...(input.orchestrationContext !== undefined
+      ? { orchestrationContext: input.orchestrationContext }
+      : {})
   }
 }
 
@@ -208,7 +218,10 @@ function createEffectRecord(
     reconciliationEvidenceRef: null,
     createdAt: nowIso,
     updatedAt: nowIso,
-    revision: 1
+    revision: 1,
+    ...(input.orchestrationContext !== undefined
+      ? { orchestrationContext: input.orchestrationContext }
+      : {})
   }
 }
 

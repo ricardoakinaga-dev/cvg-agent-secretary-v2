@@ -102,6 +102,12 @@ describeWithPostgres('durable worker Goal orchestration', () => {
     expect(
       await runtime.goalStore.listAttempts(TENANT, result.steps[0]!.id)
     ).toHaveLength(1)
+    await expect(
+      runtime.runDurableGoal({
+        ...input,
+        envelope: { ...input.envelope, agentVersion: 'synthetic-v2' }
+      })
+    ).rejects.toThrow(/does not match the persisted runtime snapshot/)
 
     const second = await runtime.runDurableGoal({
       ...input,
@@ -154,5 +160,79 @@ describeWithPostgres('durable worker Goal orchestration', () => {
     expect(afterApproval.goal.status).toBe('COMPLETED')
     expect(afterApproval.steps[0]?.status).toBe('SUCCEEDED')
     expect(restarted.toolInvocations).toHaveLength(1)
+    expect(restarted.toolInvocations[0]?.signal).toBeInstanceOf(AbortSignal)
+  })
+
+  it('rebuilds the first plan from persisted planner context after restart', async () => {
+    const runtime = createPostgresKernelRuntime({
+      pool,
+      tenantId: TENANT,
+      agentId: AGENT,
+      env: {
+        CVG_WORKER_RUNTIME: KERNEL_WORKER_RUNTIME,
+        CVG_WORKER_ID: 'durable-planning-worker'
+      }
+    })
+    const messageId = 'msg_durable_planning_restart'
+    const envelope = parseKernelTurnEnvelope(
+      JSON.stringify({
+        cvgTurn: {
+          capability: 'schedule.read',
+          action: 'schedule.read',
+          resource: {
+            type: 'appointment_draft',
+            id: 'draft_durable_planning_restart'
+          },
+          message: 'synthetic controlled planning restart',
+          dataClassification: 'INTERNAL',
+          modelProfile: 'fast'
+        }
+      })
+    )
+    const goal = await runtime.goalStore.createGoal({
+      tenantId: TENANT,
+      inboundMessageId: messageId,
+      conversationId: 'conv_durable_planning_restart',
+      objective: envelope.message,
+      successCriteria: [
+        {
+          kind: 'EVENT',
+          eventType: 'schedule.read.executed',
+          source: 'outbox',
+          correlationId: CORRELATION
+        }
+      ],
+      correlationId: CORRELATION,
+      plannerContext: {
+        messageId,
+        sessionId: null,
+        envelope
+      },
+      executionSnapshot: {
+        agentVersion: envelope.agentVersion,
+        promptVersion: '1.0.0',
+        policyVersion: 'synthetic.controlled-kernel@1.0.0',
+        modelProfile: envelope.modelProfile,
+        toolVersions: { 'controlled-kernel-tool': '1.0.0' },
+        runtimeMode: 'kernel',
+        runtimeVersion: 'aaa21-kernel-v1'
+      }
+    })
+
+    const restarted = createPostgresKernelRuntime({
+      pool,
+      tenantId: TENANT,
+      agentId: AGENT,
+      env: {
+        CVG_WORKER_RUNTIME: KERNEL_WORKER_RUNTIME,
+        CVG_WORKER_ID: 'durable-planning-worker-restarted'
+      }
+    })
+    const resumed = await restarted.orchestrator.run(TENANT, goal.id)
+
+    expect(resumed.goal.status).toBe('COMPLETED')
+    expect(resumed.plan?.version).toBe(1)
+    expect(resumed.steps[0]?.status).toBe('SUCCEEDED')
+    expect(resumed.executedStepIds).toHaveLength(1)
   })
 })

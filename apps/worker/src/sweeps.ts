@@ -2,6 +2,7 @@ import {
   sweepExpiredApprovals,
   type EffectJournalPort
 } from '@cvg/agent-runtime'
+import type { GoalRecoverySweepResult } from '@cvg/agent-runtime'
 import type { ApprovalAuthority } from '@cvg/approval-engine'
 import { sanitizeOutboxError } from '@cvg/shared'
 import {
@@ -18,6 +19,9 @@ export interface SweepTickPorts {
   tenantId: string
   reservationTtlMs?: number
   clock?: () => Date
+  goalRecovery?: {
+    recover(): Promise<GoalRecoverySweepResult>
+  }
 }
 
 export interface SweepTickResult {
@@ -25,6 +29,19 @@ export interface SweepTickResult {
   journalReleased: number
   approvalsReleased: number
   approvalsUncertain: number
+  goalsInspected: number
+  goalsResumed: number
+  goalsSkipped: number
+  goalsCompleted: number
+  goalRecoveryFailures: number
+}
+
+const EMPTY_GOAL_RECOVERY: GoalRecoverySweepResult = {
+  inspected: 0,
+  resumed: 0,
+  skipped: 0,
+  completed: 0,
+  failures: 0
 }
 
 /**
@@ -47,11 +64,19 @@ export async function runSweepTick(
     now,
     ttlMs
   })
+  const goalRecovery = ports.goalRecovery
+    ? await ports.goalRecovery.recover()
+    : EMPTY_GOAL_RECOVERY
   return {
     now: now.toISOString(),
     journalReleased,
     approvalsReleased: approvals.released,
-    approvalsUncertain: approvals.uncertain
+    approvalsUncertain: approvals.uncertain,
+    goalsInspected: goalRecovery.inspected,
+    goalsResumed: goalRecovery.resumed,
+    goalsSkipped: goalRecovery.skipped,
+    goalsCompleted: goalRecovery.completed,
+    goalRecoveryFailures: goalRecovery.failures
   }
 }
 
@@ -107,6 +132,24 @@ export function createPeriodicSweepRunner(
       'worker_sweep_approvals_uncertain_total',
       result.approvalsUncertain,
       { status: 'uncertain' }
+    )
+    telemetry.metric(
+      'worker_sweep_goals_inspected_total',
+      result.goalsInspected,
+      { operation: 'goal_recovery' }
+    )
+    telemetry.metric('worker_sweep_goals_resumed_total', result.goalsResumed, {
+      operation: 'goal_recovery'
+    })
+    telemetry.metric(
+      'worker_sweep_goals_completed_total',
+      result.goalsCompleted,
+      { operation: 'goal_recovery' }
+    )
+    telemetry.metric(
+      'worker_sweep_goal_recovery_failures_total',
+      result.goalRecoveryFailures,
+      { operation: 'goal_recovery' }
     )
     return result
   }

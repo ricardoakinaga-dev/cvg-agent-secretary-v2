@@ -6,6 +6,7 @@ import { DeadLettersPanel } from './features/dead-letters/index.tsx'
 import { TasksPanel } from './features/tasks/index.tsx'
 import { JourneysPanel } from './features/journeys/index.tsx'
 import { PlatformPanel } from './features/platform/index.tsx'
+import { OrchestrationPanel } from './features/orchestration/index.tsx'
 import {
   apiClient,
   isApiConflict,
@@ -18,6 +19,8 @@ import {
   type DeadLetterView,
   type OperatorIdentity,
   type OperatorRole,
+  type OrchestrationGoalDetailView,
+  type OrchestrationGoalView,
   type TaskStatus,
   type TaskView,
   type TenantScopedOperatorIdentity,
@@ -72,6 +75,10 @@ function canReviewDeadLetters(role: OperatorRole): boolean {
   return role === 'Supervisor' || role === 'Admin'
 }
 
+function canReviewOrchestration(role: OperatorRole): boolean {
+  return role === 'Supervisor' || role === 'Admin'
+}
+
 const auditEvidenceLimit = 10
 
 export function App({
@@ -91,6 +98,14 @@ export function App({
   const [deadLetters, setDeadLetters] = useState<PanelState<DeadLetterView[]>>(
     loading([])
   )
+  const [orchestrationGoals, setOrchestrationGoals] = useState<
+    PanelState<OrchestrationGoalView[]>
+  >(loading([]))
+  const [orchestrationDetail, setOrchestrationDetail] =
+    useState<OrchestrationGoalDetailView | null>(null)
+  const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null)
+  const [orchestrationDetailLoading, setOrchestrationDetailLoading] =
+    useState(false)
   const [auditEvents, setAuditEvents] = useState<PanelState<AuditEventView[]>>(
     loading([])
   )
@@ -202,6 +217,10 @@ export function App({
       setApprovals(loaded([]))
       setTasks(loaded([]))
       setDeadLetters(loaded([]))
+      setOrchestrationGoals(loaded([]))
+      setOrchestrationDetail(null)
+      setSelectedGoalId(null)
+      setOrchestrationDetailLoading(false)
       setAuditEvents(loaded([]))
       setAuditEvidence(loaded(null))
       setAuditEvidenceOffset(0)
@@ -227,6 +246,10 @@ export function App({
     setApprovals(loading([]))
     setTasks(loading([]))
     setDeadLetters(loading([]))
+    setOrchestrationGoals(loading([]))
+    setOrchestrationDetail(null)
+    setSelectedGoalId(null)
+    setOrchestrationDetailLoading(false)
     setAuditEvents(loading([]))
     setAuditEvidence(loaded(null))
     setAuditEvidenceOffset(0)
@@ -298,10 +321,62 @@ export function App({
       setDeadLetters(loaded([]))
     }
 
+    const orchestrationIdentity = currentTenantIdentity()
+    if (
+      orchestrationIdentity &&
+      canReviewOrchestration(orchestrationIdentity.role)
+    ) {
+      apiClient
+        .listOrchestrationGoals(orchestrationIdentity)
+        .then((page) => {
+          if (!active || !isCurrentIdentity(scope)) return
+          setOrchestrationGoals(loaded(page.items))
+          setSelectedGoalId(page.items[0]?.id ?? null)
+        })
+        .catch(() => {
+          if (!active || !isCurrentIdentity(scope)) return
+          setOrchestrationGoals(failed([]))
+        })
+    } else {
+      setOrchestrationGoals(loaded([]))
+    }
+
     return () => {
       active = false
     }
   }, [identityKey, reloadNonce])
+
+  useEffect(() => {
+    const identity = currentTenantIdentity()
+    if (
+      !identity ||
+      identityChanged ||
+      !canReviewOrchestration(identity.role) ||
+      !selectedGoalId
+    ) {
+      setOrchestrationDetail(null)
+      setOrchestrationDetailLoading(false)
+      return
+    }
+    let active = true
+    const scope = identityKey
+    setOrchestrationDetailLoading(true)
+    apiClient
+      .getOrchestrationGoal(identity, selectedGoalId)
+      .then((detail) => {
+        if (active && isCurrentIdentity(scope)) setOrchestrationDetail(detail)
+      })
+      .catch(() => {
+        if (active && isCurrentIdentity(scope)) setOrchestrationDetail(null)
+      })
+      .finally(() => {
+        if (active && isCurrentIdentity(scope))
+          setOrchestrationDetailLoading(false)
+      })
+    return () => {
+      active = false
+    }
+  }, [selectedGoalId, identityKey, identityChanged, reloadNonce])
 
   useEffect(() => {
     const identity = currentOperatorIdentity()
@@ -906,6 +981,9 @@ export function App({
       </header>
       <nav className="sectionNav" aria-label="Seções do console">
         <a href="#console-operacional">Operação</a>
+        {operatorIdentity && canReviewOrchestration(operatorIdentity.role) ? (
+          <a href="#orchestration-panel">Goals duráveis</a>
+        ) : null}
         <a href="#journeys-panel">Jornadas</a>
         {canReviewDeadLetterQueue ? (
           <a href="#dead-letters-panel">Dead letters</a>
@@ -1005,6 +1083,17 @@ export function App({
           }
         />
       </section>
+      <OrchestrationPanel
+        identity={currentOperatorIdentity()}
+        goals={orchestrationGoals.data}
+        detail={orchestrationDetail}
+        selectedGoalId={selectedGoalId}
+        error={orchestrationGoals.error}
+        isLoading={orchestrationGoals.isLoading}
+        isDetailLoading={orchestrationDetailLoading}
+        onRetry={() => setReloadNonce((current) => current + 1)}
+        onSelectGoal={setSelectedGoalId}
+      />
       <JourneysPanel
         identity={currentOperatorIdentity()}
         selectedSessionId={selectedSessionId}

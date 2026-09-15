@@ -3,6 +3,7 @@ import { executePublishedAgent, getConversationTimeline } from '@cvg/agent-core'
 import {
   resolveWorkflowCoordinator,
   type EffectJournalPort,
+  type GoalRecoverySweepResult,
   type WorkflowCoordinatorAdapters
 } from '@cvg/agent-runtime'
 import {
@@ -129,7 +130,8 @@ function createTenantScopedPostgresEffectJournal(
 function createPostgresKernelSweepRunner(
   pool: Pool,
   tenantId: TenantId,
-  telemetry?: WorkerTelemetry
+  telemetry?: WorkerTelemetry,
+  recoverDurableGoals?: () => Promise<GoalRecoverySweepResult>
 ): ContinuousSweepHandle {
   return createPeriodicSweepRunner({
     approvals: new PostgresApprovalAuthority(
@@ -141,6 +143,9 @@ function createPostgresKernelSweepRunner(
     ),
     tenantId,
     runImmediately: true,
+    ...(recoverDurableGoals
+      ? { goalRecovery: { recover: recoverDurableGoals } }
+      : {}),
     ...(telemetry ? { telemetry } : {})
   })
 }
@@ -242,7 +247,8 @@ export function createPostgresContinuousWorker(
       ? createPostgresKernelSweepRunner(
           connection.pool,
           connection.tenantId,
-          options.telemetry
+          options.telemetry,
+          connection.handlers.recoverDurableGoals
         )
       : undefined)
   const tuning: ContinuousWorkerTuning = {

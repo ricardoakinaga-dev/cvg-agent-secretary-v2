@@ -3,6 +3,12 @@ import { performance } from 'node:perf_hooks'
 import Fastify from 'fastify'
 import type { ApprovalAuthority, ApprovalRecord } from '@cvg/approval-engine'
 import {
+  InMemoryGoalPlanStore,
+  GoalStatusSchema,
+  type GoalPlanStore,
+  type GoalStatus
+} from '@cvg/agent-runtime'
+import {
   auditEvidenceGovernance,
   createCorrelationId,
   DomainError,
@@ -97,6 +103,7 @@ import {
   type JourneyRepositoryPort,
   OutboxRepository,
   PostgresApprovalAuthority,
+  PostgresGoalPlanStore,
   PostgresJourneyRepository,
   PostgresRuntimeRepository,
   PostgresControlPlaneRepository,
@@ -156,6 +163,10 @@ import {
   type WebhookReplayStore,
   type WebhookVerificationLease
 } from './webhook-security.ts'
+import {
+  toOrchestrationGoalDetailView,
+  toOrchestrationGoalView
+} from './orchestration-observability.ts'
 
 export interface RuntimeLogEntry {
   event: string
@@ -1367,6 +1378,106 @@ export function buildServer(options: BuildServerOptions = {}) {
       const identity = requireIdentity(request.headers, 'approval:view')
       const tenantId = resolveDataPlaneTenant(request.headers, identity)
       return ok(await runtimeApprovalAuthority.list(tenantId), correlationId)
+    } catch (error) {
+      const safeError = toSafeError(error)
+      reply.code(statusCodeForError(safeError.code))
+      return fail(safeError.code, safeError.message, correlationId)
+    }
+  })
+
+  app.get('/v1/orchestration/goals', async (request, reply) => {
+    const correlationId = createCorrelationId()
+    try {
+      const identity = requireIdentity(request.headers, 'orchestration:view')
+      const tenantId = resolveDataPlaneTenant(request.headers, identity)
+      const query = parseOrchestrationGoalQuery(request.query)
+      if (!persistence.orchestration) {
+        throw new DomainError(
+          'invalid_action',
+          'Durable Goal inspection is unavailable in this persistence mode'
+        )
+      }
+      const goals = await persistence.orchestration.listGoals(tenantId, {
+        limit: query.limit + 1,
+        ...(query.status ? { statuses: [query.status] } : {})
+      })
+      const hasNextPage = goals.length > query.limit
+      return ok(
+        {
+          items: goals.slice(0, query.limit).map(toOrchestrationGoalView),
+          pageInfo: {
+            limit: query.limit,
+            hasNextPage
+          }
+        },
+        correlationId
+      )
+    } catch (error) {
+      const safeError = toSafeError(error)
+      reply.code(statusCodeForError(safeError.code))
+      return fail(safeError.code, safeError.message, correlationId)
+    }
+  })
+
+  app.get('/v1/orchestration/goals/:goalId', async (request, reply) => {
+    const correlationId = createCorrelationId()
+    try {
+      const identity = requireIdentity(request.headers, 'orchestration:view')
+      const tenantId = resolveDataPlaneTenant(request.headers, identity)
+      if (!persistence.orchestration) {
+        throw new DomainError(
+          'invalid_action',
+          'Durable Goal inspection is unavailable in this persistence mode'
+        )
+      }
+      const params = z
+        .object({ goalId: z.string().trim().min(1).max(200) })
+        .strict()
+        .parse(request.params)
+      const goal = await persistence.orchestration.getGoal(
+        tenantId,
+        params.goalId
+      )
+      if (!goal) throw new DomainError('not_found', 'Goal not found')
+      const plans = await persistence.orchestration.listPlans(tenantId, goal.id)
+      const stepsByPlan = new Map(
+        await Promise.all(
+          plans.map(
+            async (plan) =>
+              [
+                plan.id,
+                await persistence.orchestration!.listSteps(tenantId, plan.id)
+              ] as const
+          )
+        )
+      )
+      const steps = [...stepsByPlan.values()].flat()
+      const attemptsByStep = new Map(
+        await Promise.all(
+          steps.map(
+            async (step) =>
+              [
+                step.id,
+                await persistence.orchestration!.listAttempts(tenantId, step.id)
+              ] as const
+          )
+        )
+      )
+      const detail = toOrchestrationGoalDetailView({
+        goal,
+        plans,
+        stepsByPlan,
+        observations: await persistence.orchestration.listObservations(
+          tenantId,
+          goal.id
+        ),
+        evaluations: await persistence.orchestration.listEvaluations(
+          tenantId,
+          goal.id
+        ),
+        attemptsByStep
+      })
+      return ok(detail, correlationId)
     } catch (error) {
       const safeError = toSafeError(error)
       reply.code(statusCodeForError(safeError.code))
@@ -5068,6 +5179,7 @@ interface RuntimePersistence {
   /** Legacy direct-client fixtures do not have the tenant-scoped pin columns. */
   sessionVersionPinning: boolean
   outbox: DurableOutboxAdapter
+  orchestration: GoalPlanStore | null
   /** R3 controlled journey store: memory or tenant-scoped PostgreSQL adapter. */
   journeys: JourneyRepositoryPort | null
   conversations:
@@ -5215,6 +5327,29 @@ function parseTraceLimit(query: unknown): number {
   return parsed.data.limit
 }
 
+const OrchestrationGoalQuerySchema = z
+  .object({
+    limit: z.coerce.number().int().min(1).max(50).default(25),
+    status: GoalStatusSchema.optional()
+  })
+  .strict()
+
+function parseOrchestrationGoalQuery(query: unknown): {
+  limit: number
+  status?: GoalStatus
+} {
+  const parsed = OrchestrationGoalQuerySchema.safeParse(query)
+  if (!parsed.success) {
+    throw new DomainError(
+      'invalid_pagination',
+      'limit must be between 1 and 50 and status must be a valid Goal state'
+    )
+  }
+  return parsed.data.status === undefined
+    ? { limit: parsed.data.limit }
+    : { limit: parsed.data.limit, status: parsed.data.status }
+}
+
 const auditEventTypes: AuditEventType[] = [
   'tool_call',
   'safety_event',
@@ -5299,6 +5434,10 @@ function createPersistence(
     return {
       sessionVersionPinning: config.kind === 'postgres-pool',
       outbox: postgres as unknown as DurableOutboxAdapter,
+      orchestration:
+        config.kind === 'postgres-pool'
+          ? new PostgresGoalPlanStore(config.pool)
+          : null,
       journeys,
       conversations: postgres,
       tasks: {
@@ -5367,6 +5506,7 @@ function createPersistence(
   return {
     sessionVersionPinning: true,
     outbox,
+    orchestration: new InMemoryGoalPlanStore(),
     journeys:
       journeyRepository !== undefined
         ? journeyRepository

@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
+import { InMemoryTelemetry } from '@cvg/observability'
 import {
   assertGoalTransition,
   assertPlanStepTransition,
+  evaluateSuccessCriteria,
   GoalPlanOrchestrator,
   InMemoryGoalPlanStore,
   validatePlanGraph,
@@ -156,6 +158,106 @@ async function activateInitialPlan(
 }
 
 describe('durable Goal/Plan/Step orchestration', () => {
+  it('matches success criteria only against verified, source-bound evidence', () => {
+    const criteria = [
+      {
+        kind: 'EVENT' as const,
+        eventType: 'schedule.read.executed',
+        source: 'outbox' as const,
+        correlationId: CORRELATION
+      }
+    ]
+    expect(
+      evaluateSuccessCriteria(criteria, [
+        {
+          source: 'outbox',
+          reference: 'outbox_1',
+          verified: true,
+          key: 'schedule.read.executed',
+          eventType: 'schedule.read.executed',
+          correlationId: CORRELATION
+        }
+      ])
+    ).toEqual({ satisfied: true, unsatisfied: 0 })
+    expect(
+      evaluateSuccessCriteria(criteria, [
+        {
+          source: 'effect_journal',
+          reference: 'exec_1',
+          verified: true,
+          eventType: 'schedule.read.executed',
+          correlationId: CORRELATION
+        },
+        {
+          source: 'outbox',
+          reference: 'outbox_2',
+          verified: false,
+          key: 'schedule.read.executed',
+          correlationId: CORRELATION
+        }
+      ])
+    ).toEqual({ satisfied: false, unsatisfied: 1 })
+  })
+
+  it('uses the persisted Goal deadline across restart and enforces step timeout', async () => {
+    let now = new Date(NOW)
+    const store = new InMemoryGoalPlanStore({ clock: () => now })
+    const expiredGoal = await buildGoal(store, {
+      maxSteps: 2,
+      maxReplans: 0,
+      maxModelCalls: 1,
+      maxToolCalls: 1,
+      maxDurationMs: 100,
+      maxCostUsd: 1
+    })
+    now = new Date(NOW.getTime() + 101)
+    const expired = await new GoalPlanOrchestrator({
+      store,
+      workerId: 'worker-deadline',
+      clock: () => now,
+      planner: {
+        async plan() {
+          return { reason: 'must not plan', steps: [step('never')] }
+        }
+      },
+      evaluator: evaluatorForAllSteps(),
+      executor: successfulExecutor()
+    }).run(TENANT, expiredGoal.id)
+    expect(expired.goal.status).toBe('BUDGET_EXHAUSTED')
+    expect(expired.reason).toBe('goal_deadline_expired')
+
+    const timeoutStore = new InMemoryGoalPlanStore({ clock: () => NOW })
+    const timeoutGoal = await buildGoal(timeoutStore)
+    const timeoutResult = await new GoalPlanOrchestrator({
+      store: timeoutStore,
+      workerId: 'worker-timeout',
+      clock: () => NOW,
+      planner: {
+        async plan() {
+          return {
+            reason: 'slow step',
+            steps: [{ ...step('slow'), timeoutMs: 100 }]
+          }
+        }
+      },
+      evaluator: evaluatorForAllSteps(),
+      executor: {
+        async execute() {
+          await new Promise((resolve) => setTimeout(resolve, 160))
+          return {
+            outcome: 'succeeded' as const,
+            reason: 'late result',
+            evidence: verifiedEvidence('late'),
+            toolCalls: 1,
+            costUsd: 0.01
+          }
+        }
+      }
+    }).run(TENANT, timeoutGoal.id)
+    expect(timeoutResult.goal.status).toBe('UNCERTAIN')
+    expect(timeoutResult.reason).toBe('step_timeout')
+  })
+
   it('validates a DAG and rejects duplicate, unknown and cyclic dependencies', () => {
     const plan = {
       id: 'plan_1',
@@ -275,10 +377,12 @@ describe('durable Goal/Plan/Step orchestration', () => {
   it('executes a multi-step DAG and completes only after verified evaluation evidence', async () => {
     const store = new InMemoryGoalPlanStore({ clock: () => NOW })
     const goal = await buildGoal(store)
+    const telemetry = new InMemoryTelemetry({ clock: () => NOW })
     const orchestrator = new GoalPlanOrchestrator({
       store,
       workerId: 'worker-a',
       clock: () => NOW,
+      telemetry,
       planner: {
         async plan() {
           return {
@@ -301,6 +405,16 @@ describe('durable Goal/Plan/Step orchestration', () => {
     expect(await store.listAttempts(TENANT, 'a')).toHaveLength(1)
     expect(await store.listAttempts(TENANT, 'b')).toHaveLength(1)
     expect(result.goal.budget.usage.steps).toBe(2)
+    expect(telemetry.spans().map((span) => span.name)).toContain(
+      'orchestrator.goal.transition'
+    )
+    expect(telemetry.metrics().map((metric) => metric.name)).toEqual(
+      expect.arrayContaining([
+        'orchestrator_goal_transition_total',
+        'orchestrator_step_claim_total',
+        'orchestrator_step_settle_total'
+      ])
+    )
   })
 
   it('never treats a successful tool call as Goal completion without verified evidence', async () => {
@@ -608,10 +722,25 @@ describe('durable Goal/Plan/Step orchestration', () => {
       evaluator: evaluatorForAllSteps(),
       executor: successfulExecutor()
     })
-    const result = await resumed.run(TENANT, goal.id)
-    expect(result.goal.status).toBe('COMPLETED')
-    expect(result.goal.budget.usage.steps).toBe(2)
-    expect(result.executedStepIds).toEqual(['second'])
+    const recovery = await resumed.recoverGoals(TENANT)
+    const resultGoal = await store.getGoal(TENANT, goal.id)
+    const resultPlan = await store.getActivePlan(TENANT, goal.id)
+    const resultSteps = resultPlan
+      ? await store.listSteps(TENANT, resultPlan.id)
+      : []
+    expect(recovery).toMatchObject({
+      inspected: 1,
+      resumed: 1,
+      skipped: 0,
+      completed: 1,
+      failures: 0
+    })
+    expect(resultGoal?.status).toBe('COMPLETED')
+    expect(resultGoal?.budget.usage.steps).toBe(2)
+    expect(resultSteps.map((candidate) => candidate.id)).toEqual([
+      'first',
+      'second'
+    ])
   })
 
   it('returns a safe terminal state on an expired lease when reconciliation is unavailable', async () => {

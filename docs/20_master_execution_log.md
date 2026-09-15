@@ -1,3 +1,13 @@
+# AAA-21-HARDEN-20260915 — integridade, recovery, lineage e certificação — 2026-09-15
+
+- **Pipeline:** `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`; fase atual `AUDIT`; produção `NO-GO`.
+- **Entrega:** recovery de Goals foi conectado ao sweep periódico; a conclusão exige critérios e evidência verificada; deadlines e timeouts são aplicados; approvals expirados são reconciliados; runtime/version/planner context têm binding durável; stores e PostgreSQL validam lineage; journal/outbox recebem contexto de orquestração; API/console oferecem inspeção read-only; transições e recovery têm métricas/spans bounded.
+- **Persistência:** migration `0020_orchestrator_lineage_hardening.sql` adiciona contexto de planner, deadlines backfilled, constraints composite e FKs de lineage para novas linhas de attempts, effect journal e outbox, preservando legado sem relaxar novas escritas.
+- **Verificação:** Node `22.23.2`; unit `249/1.743/116 skips`, PostgreSQL `23/199`, focused hardening `7 arquivos/120 testes`, typecheck, lint, Prettier do incremento, build, startup, security, licenses e diff check passaram.
+- **Decisão:** o candidato-bound atual passou todos os gates mecânicos sob Node `22.23.2` e os verificadores pós-selo: `CONDITIONAL_GO / AAA_CONTROLLED`. O hash do commit e do candidato deve ser lido dos manifests gerados para esta rodada. Nenhuma promoção para `STATE_OF_ART_TRIPLE_AAA` ou produção foi feita.
+- **Bloqueios:** provider/canal/IdP/RAG institucional, piloto, RPO/RTO físico e signoff humano; matriz P11 ainda parcial/bloqueada onde faltam essas provas.
+- **Evidência:** [`aaa21_hardening_round_20260915.md`](02_spec/aaa21_hardening_round_20260915.md), [`HARDENING-ROUND-20260915.md`](04_audit/evidence/AAA/AAA-21/HARDENING-ROUND-20260915.md), [`requirements-matrix.json`](11_phase11/requirements-matrix.json).
+
 # AAA-21-ORCHESTRATOR-BUILD-20260915 — execução durável controlada
 
 - **Pipeline:** BUILD, com auditoria local preparada; produção `NO-GO`.

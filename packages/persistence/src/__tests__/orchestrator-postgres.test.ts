@@ -4,7 +4,8 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import {
   PostgresGoalPlanStore,
   readPostgresMigrationSql,
-  runPostgresMigrations
+  runPostgresMigrations,
+  withTenantContext
 } from '../index.ts'
 import {
   validatePlanGraph,
@@ -144,6 +145,43 @@ describeWithPostgres('durable orchestrator PostgreSQL store', () => {
     expect(
       (await store.listPlans(TENANT, goal.id)).map((plan) => plan.version)
     ).toEqual([1])
+  })
+
+  it('rejects orphan effect and outbox orchestration lineage', async () => {
+    await expect(
+      withTenantContext(pool, TENANT, (client) =>
+        client.query(
+          `INSERT INTO effect_journal
+             (tenant_id, operation_key, proposal_hash, state, attempt_id,
+              expires_at, orchestration_goal_id, orchestration_plan_id,
+              orchestration_step_id)
+           VALUES ($1, $2, $3, 'RESERVED', $4, now() + interval '1 hour',
+                   'missing_goal', 'missing_plan', 'missing_step')`,
+          [TENANT, 'orphan_effect_lineage', 'proposal_hash', 'effect_attempt']
+        )
+      )
+    ).rejects.toThrow(/orchestration_(step|attempt)_lineage_fk/)
+
+    await expect(
+      withTenantContext(pool, TENANT, (client) =>
+        client.query(
+          `INSERT INTO outbox_events
+             (id, type, payload, status, tenant_id, envelope_version,
+              correlation_id, idempotency_key, available_at, attempts,
+              tenant_isolation_quarantined, orchestration_goal_id,
+              orchestration_plan_id, orchestration_step_id)
+           VALUES ($1, 'synthetic.orphan', '{}'::jsonb, 'pending', $2, 1,
+                   $3, $4, now(), 0, false,
+                   'missing_goal', 'missing_plan', 'missing_step')`,
+          [
+            'outbox_orphan_lineage',
+            TENANT,
+            CORRELATION,
+            'outbox_orphan_lineage'
+          ]
+        )
+      )
+    ).rejects.toThrow(/outbox_events_orchestration_step_lineage_fk/)
   })
 
   it('enforces CAS, claim fencing, attempt history and recovery in PostgreSQL', async () => {

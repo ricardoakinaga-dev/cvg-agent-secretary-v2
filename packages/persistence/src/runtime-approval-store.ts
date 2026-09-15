@@ -727,9 +727,14 @@ export class PostgresApprovalAuthority implements ApprovalAuthority {
         `SELECT ${runtimeApprovalColumns}
          FROM runtime_approvals
          WHERE tenant_id = $1
-           AND status IN ('RESERVED', 'EXECUTING')
-           AND reservation_expires_at IS NOT NULL
-           AND reservation_expires_at <= $2
+           AND (
+             (status IN ('RESERVED', 'EXECUTING')
+              AND reservation_expires_at IS NOT NULL
+              AND reservation_expires_at <= $2)
+             OR
+             (status IN ('REQUESTED', 'PENDING', 'APPROVED')
+              AND expires_at <= $2)
+           )
          ORDER BY approval_id
          FOR UPDATE`,
         [input.tenantId, now]
@@ -745,9 +750,28 @@ export class PostgresApprovalAuthority implements ApprovalAuthority {
         store.insert(cloneRecord(record))
       }
       const engine = this.#createEngine(store)
+      engine.expireStale(now)
       const sweep = engine.releaseExpired({ ...input, now })
       await this.#persistChanged(client, loaded, store, input.tenantId)
       return sweep
+    })
+  }
+
+  async expireStaleForTenant(
+    tenantId: string,
+    now = this.#clock()
+  ): Promise<number> {
+    return withTenantTransaction(this.#pool, tenantId, async (client) => {
+      const result = await client.query(
+        `UPDATE runtime_approvals
+            SET status = 'EXPIRED', expired_at = $2, updated_at = $2,
+                revision = revision + 1
+          WHERE tenant_id = $1
+            AND status IN ('REQUESTED', 'PENDING', 'APPROVED')
+            AND expires_at <= $2`,
+        [tenantId, now]
+      )
+      return result.rowCount ?? 0
     })
   }
 

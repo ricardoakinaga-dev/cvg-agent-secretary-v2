@@ -119,6 +119,12 @@ export interface ApprovalAuthority {
     evidenceFor: (record: ApprovalRecord) => EffectEvidence | undefined
   }): ApprovalAuthorityResult<{ released: number; uncertain: number }>
 
+  /** Tenant-scoped expiry for approvals that never acquired an effect lease. */
+  expireStaleForTenant?: (
+    tenantId: string,
+    now?: Date
+  ) => ApprovalAuthorityResult<number>
+
   expireStale(now?: Date): ApprovalAuthorityResult<number>
 
   list(

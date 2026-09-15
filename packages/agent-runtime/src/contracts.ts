@@ -57,6 +57,13 @@ export interface GovernedTurnInput {
   task?: string
   shadowMode?: boolean
   takeoverActive?: boolean
+  /** Durable orchestration lineage for audit, outbox and effect recovery. */
+  orchestrationContext?: {
+    goalId: string
+    planId: string
+    stepId: string
+    attemptId?: string
+  }
   limits?: Partial<LoopLimits>
   /**
    * Cooperative cancellation for the current turn. Propagated to the model
@@ -94,6 +101,13 @@ export interface OutboxEnqueueInput {
   correlationId: string
   traceId: string
   payload: Record<string, unknown>
+  /** Durable orchestration lineage, when this event came from a Goal step. */
+  orchestrationContext?: {
+    goalId: string
+    planId: string
+    stepId: string
+    attemptId?: string
+  }
 }
 
 export interface GovernedTurnResult {
@@ -112,6 +126,8 @@ export interface GovernedTurnResult {
   resultDigest?: string
   replayed?: boolean
   effectConfirmed?: boolean
+  /** Canonical event type emitted by a successful governed turn. */
+  eventType?: string
   auditChainValid: boolean
   costUsd: number
   durationMs: number

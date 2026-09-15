@@ -13,6 +13,7 @@ import {
   PlanStatusSchema,
   PlanStepStatusSchema,
   GoalStatusSchema,
+  RUNNABLE_GOAL_STATUSES,
   type ActivatePlanInput,
   type ActivatePlanResult,
   type AttemptRecord,
@@ -22,6 +23,7 @@ import {
   type EvaluationRecord,
   type ExecutionBudget,
   type Goal,
+  type GoalListOptions,
   type GoalPlanStore,
   type GoalStatus,
   type ObservationRecord,
@@ -58,6 +60,7 @@ interface GoalRow extends QueryResultRow {
   correlation_id: string
   active_plan_id: string | null
   execution_snapshot: unknown
+  planner_context: unknown
   replan_fingerprints: unknown
   last_reason: string | null
   last_error: string | null
@@ -201,6 +204,11 @@ function toGoal(row: GoalRow): Goal {
     executionSnapshot: jsonValue<Goal['executionSnapshot']>(
       row.execution_snapshot
     ),
+    ...(row.planner_context !== null && row.planner_context !== undefined
+      ? {
+          plannerContext: jsonValue<Goal['plannerContext']>(row.planner_context)
+        }
+      : {}),
     replanFingerprints: jsonValue<string[]>(row.replan_fingerprints),
     lastReason: row.last_reason,
     lastError: row.last_error
@@ -374,13 +382,21 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
     }
     const createdAt = this.clock()
     const budget = createExecutionBudget(input.budget)
+    const deadline =
+      input.deadline ?? new Date(createdAt.getTime() + budget.maxDurationMs)
     const id = createDomainId('goal')
     const snapshot: Goal['executionSnapshot'] = {
       agentVersion: input.executionSnapshot?.agentVersion ?? null,
       promptVersion: input.executionSnapshot?.promptVersion ?? null,
       policyVersion: input.executionSnapshot?.policyVersion ?? null,
       modelProfile: input.executionSnapshot?.modelProfile ?? null,
-      toolVersions: { ...(input.executionSnapshot?.toolVersions ?? {}) }
+      toolVersions: { ...(input.executionSnapshot?.toolVersions ?? {}) },
+      ...(input.executionSnapshot?.runtimeMode !== undefined
+        ? { runtimeMode: input.executionSnapshot.runtimeMode }
+        : {}),
+      ...(input.executionSnapshot?.runtimeVersion !== undefined
+        ? { runtimeVersion: input.executionSnapshot.runtimeVersion }
+        : {})
     }
     return withTenantTransaction(this.pool, scope, async (client) => {
       const row = await one<GoalRow>(
@@ -388,10 +404,12 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
         `INSERT INTO orchestrator_goals
            (tenant_id, id, inbound_message_id, session_id, conversation_id, objective,
             success_criteria, status, budget, budget_usage, deadline,
-            correlation_id, execution_snapshot, replan_fingerprints,
+            correlation_id, execution_snapshot, planner_context,
+            replan_fingerprints,
             version, created_at, updated_at)
          VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, 'OBSERVING', $8::jsonb,
-                 $9::jsonb, $10, $11, $12::jsonb, '[]'::jsonb, 1, $13, $13)
+                 $9::jsonb, $10, $11, $12::jsonb, $13::jsonb,
+                 '[]'::jsonb, 1, $14, $14)
          RETURNING *`,
         [
           scope,
@@ -403,9 +421,12 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
           JSON.stringify(input.successCriteria),
           JSON.stringify(budgetLimits(budget)),
           JSON.stringify(budget.usage),
-          input.deadline ?? null,
+          deadline,
           correlationId,
           JSON.stringify(snapshot),
+          input.plannerContext === undefined
+            ? null
+            : JSON.stringify(input.plannerContext),
           createdAt
         ]
       )
@@ -468,6 +489,41 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
     })
   }
 
+  async listGoals(
+    tenant: OrchestrationTenantId,
+    options: GoalListOptions = {}
+  ): Promise<Goal[]> {
+    const scope = tenantId(tenant)
+    const limit = options.limit ?? 50
+    const offset = options.offset ?? 0
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+      throw new OrchestrationError(
+        'invalid_plan',
+        'Goal list limit must be between 1 and 100'
+      )
+    }
+    if (!Number.isInteger(offset) || offset < 0) {
+      throw new OrchestrationError(
+        'invalid_plan',
+        'Goal list offset must be a non-negative integer'
+      )
+    }
+    const statuses = options.statuses?.map((status) =>
+      GoalStatusSchema.parse(status)
+    )
+    return withTenantContext(this.pool, scope, async (client) => {
+      const result = await client.query<GoalRow>(
+        `SELECT * FROM orchestrator_goals
+         WHERE tenant_id = $1
+           AND ($2::text[] IS NULL OR status = ANY($2::text[]))
+         ORDER BY updated_at DESC, id
+         LIMIT $3 OFFSET $4`,
+        [scope, statuses?.length ? [...statuses] : null, limit, offset]
+      )
+      return result.rows.map(toGoal)
+    })
+  }
+
   async listRunnableGoals(tenant?: OrchestrationTenantId): Promise<Goal[]> {
     const scopes = tenant ? [tenantId(tenant)] : undefined
     if (!scopes) {
@@ -480,9 +536,9 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
       const result = await client.query<GoalRow>(
         `SELECT * FROM orchestrator_goals
          WHERE tenant_id = $1
-           AND status NOT IN ('COMPLETED', 'BLOCKED', 'FAILED', 'CANCELLED', 'BUDGET_EXHAUSTED', 'LOOP_DETECTED')
+           AND status = ANY($2::text[])
          ORDER BY updated_at, id`,
-        [scopes[0]]
+        [scopes[0], [...RUNNABLE_GOAL_STATUSES]]
       )
       return result.rows.map(toGoal)
     })
@@ -1092,6 +1148,18 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
   }
 
   async settleStep(input: SettleStepInput): Promise<SettledStep> {
+    for (const [label, value] of [
+      ['modelCalls', input.modelCalls],
+      ['toolCalls', input.toolCalls],
+      ['costUsd', input.costUsd]
+    ] as const) {
+      if (!Number.isFinite(value) || value < 0) {
+        throw new OrchestrationError(
+          'invalid_plan',
+          `Step settlement ${label} must be a finite non-negative number`
+        )
+      }
+    }
     const scope = tenantId(input.lease.tenantId)
     return withTenantTransaction(this.pool, scope, async (client) => {
       const goal = toGoal(
@@ -1115,6 +1183,14 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
         throw new OrchestrationError(
           'lease_lost',
           `Lease lost for step ${current.id}`
+        )
+      if (
+        current.goalId !== input.lease.goalId ||
+        current.planId !== input.lease.planId
+      )
+        throw new OrchestrationError(
+          'lease_lost',
+          `Lease lineage does not match step ${current.id}`
         )
       if (!current.leaseUntil || current.leaseUntil <= input.now)
         throw new OrchestrationError(
@@ -1306,6 +1382,30 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
     const id = createDomainId('observation')
     const createdAt = input.createdAt ?? this.clock()
     return withTenantTransaction(this.pool, scope, async (client) => {
+      const plan = await client.query(
+        `SELECT 1 FROM orchestrator_plans
+         WHERE tenant_id = $1 AND id = $2 AND goal_id = $3`,
+        [scope, input.planId, input.goalId]
+      )
+      if (plan.rowCount !== 1) {
+        throw new OrchestrationError(
+          'conflict',
+          'Observation lineage does not match its Goal and Plan'
+        )
+      }
+      if (input.stepId !== null) {
+        const step = await client.query(
+          `SELECT 1 FROM orchestrator_steps
+           WHERE tenant_id = $1 AND id = $2 AND goal_id = $3 AND plan_id = $4`,
+          [scope, input.stepId, input.goalId, input.planId]
+        )
+        if (step.rowCount !== 1) {
+          throw new OrchestrationError(
+            'conflict',
+            'Observation lineage does not match its Step'
+          )
+        }
+      }
       const row = await one<ObservationRow>(
         client,
         `INSERT INTO orchestrator_observations
@@ -1349,6 +1449,30 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
     const id = createDomainId('evaluation')
     const createdAt = input.createdAt ?? this.clock()
     return withTenantTransaction(this.pool, scope, async (client) => {
+      const plan = await client.query(
+        `SELECT 1 FROM orchestrator_plans
+         WHERE tenant_id = $1 AND id = $2 AND goal_id = $3`,
+        [scope, input.planId, input.goalId]
+      )
+      if (plan.rowCount !== 1) {
+        throw new OrchestrationError(
+          'conflict',
+          'Evaluation lineage does not match its Goal and Plan'
+        )
+      }
+      if (input.stepId !== null) {
+        const step = await client.query(
+          `SELECT 1 FROM orchestrator_steps
+           WHERE tenant_id = $1 AND id = $2 AND goal_id = $3 AND plan_id = $4`,
+          [scope, input.stepId, input.goalId, input.planId]
+        )
+        if (step.rowCount !== 1) {
+          throw new OrchestrationError(
+            'conflict',
+            'Evaluation lineage does not match its Step'
+          )
+        }
+      }
       const row = await one<EvaluationRow>(
         client,
         `INSERT INTO orchestrator_evaluations

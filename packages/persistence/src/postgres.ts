@@ -124,7 +124,8 @@ const defaultPostgresMigrations = [
   '0016_runtime_continuation_trace',
   '0017_runtime_audit_chain',
   '0018_outbox_lease_fencing',
-  '0019_orchestrator_state'
+  '0019_orchestrator_state',
+  '0020_orchestrator_lineage_hardening'
 ]
 
 export interface PostgresQueryable {
@@ -229,7 +230,8 @@ const outboxSelectColumns = `
   conversation_id, session_id, agent_id, agent_version_id,
   inbound_message_id, payload, status, created_at, available_at, attempts,
   lease_owner, lease_token, lease_until, last_error, processed_at, dead_lettered_at,
-  parent_event_id`
+  parent_event_id, orchestration_goal_id, orchestration_plan_id,
+  orchestration_step_id, orchestration_attempt_id`
 
 interface DurableOutboxRow {
   id: string
@@ -256,6 +258,10 @@ interface DurableOutboxRow {
   processed_at: Date | null
   dead_lettered_at: Date | null
   parent_event_id: string | null
+  orchestration_goal_id: string | null
+  orchestration_plan_id: string | null
+  orchestration_step_id: string | null
+  orchestration_attempt_id: string | null
 }
 
 function assertOutboxText(value: string, label: string, max = 200): string {
@@ -462,7 +468,21 @@ function mapDurableOutboxRow(row: DurableOutboxRow): DurableOutboxEventRecord {
     lastError: row.last_error ? redactOutboxError(row.last_error) : null,
     processedAt: outboxDate(row.processed_at),
     deadLetteredAt: outboxDate(row.dead_lettered_at),
-    parentEventId: row.parent_event_id
+    parentEventId: row.parent_event_id,
+    ...(typeof row.orchestration_goal_id === 'string' &&
+    typeof row.orchestration_plan_id === 'string' &&
+    typeof row.orchestration_step_id === 'string'
+      ? {
+          orchestrationContext: {
+            goalId: row.orchestration_goal_id,
+            planId: row.orchestration_plan_id,
+            stepId: row.orchestration_step_id,
+            ...(row.orchestration_attempt_id !== null
+              ? { attemptId: row.orchestration_attempt_id }
+              : {})
+          }
+        }
+      : {})
   }
 }
 
@@ -1063,9 +1083,12 @@ export class PostgresRuntimeRepository {
             conversation_id, session_id, agent_id, agent_version_id,
             inbound_message_id, payload, payload_protection_version, status, created_at, available_at,
             attempts, lease_owner, lease_token, lease_until, last_error, processed_at,
-            dead_lettered_at, parent_event_id, tenant_isolation_quarantined)
+            dead_lettered_at, parent_event_id, tenant_isolation_quarantined,
+            orchestration_goal_id, orchestration_plan_id, orchestration_step_id,
+            orchestration_attempt_id)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13::jsonb,
-                 $14, 'pending', $15, $16, 0, NULL, NULL, NULL, NULL, NULL, NULL, $17, false)
+                 $14, 'pending', $15, $16, 0, NULL, NULL, NULL, NULL, NULL, NULL, $17, false,
+                 $18, $19, $20, $21)
          ON CONFLICT (tenant_id, idempotency_key) DO NOTHING
          RETURNING ${outboxSelectColumns}`,
         [
@@ -1085,7 +1108,11 @@ export class PostgresRuntimeRepository {
           'outbox-r6',
           createdAt,
           availableAt,
-          rawInput.parentEventId ?? null
+          rawInput.parentEventId ?? null,
+          rawInput.orchestrationContext?.goalId ?? null,
+          rawInput.orchestrationContext?.planId ?? null,
+          rawInput.orchestrationContext?.stepId ?? null,
+          rawInput.orchestrationContext?.attemptId ?? null
         ]
       )
       if (insert.rows[0]) return mapDurableOutboxRow(insert.rows[0])

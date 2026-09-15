@@ -17,17 +17,21 @@
         "packages/agent-runtime/src/composition.ts",
         "packages/policy-engine/src",
         "apps/worker/src/kernel-composition.ts",
-        "packages/agent-runtime/src/orchestration.ts"
+        "packages/agent-runtime/src/orchestration.ts",
+        "packages/persistence/migrations/0020_orchestrator_lineage_hardening.sql"
       ],
       "tests": [
         "packages/agent-runtime/src/__tests__",
         "packages/policy-engine/src/__tests__",
         "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts",
-        "apps/worker/src/__tests__/kernel-composition-state.test.ts"
+        "apps/worker/src/__tests__/kernel-composition-state.test.ts",
+        "apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts"
       ],
       "evidence": [
         "docs/02_spec/aaa_composition_contract.md",
-        "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json"
+        "docs/02_spec/aaa21_hardening_round_20260915.md",
+        "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json",
+        "docs/04_audit/evidence/AAA/AAA-21/HARDENING-ROUND-20260915.md"
       ],
       "gates": ["unit", "postgres", "phase10_current_verification"],
       "status": "PARTIAL",
@@ -42,7 +46,8 @@
         "packages/agent-runtime/src/runtime.ts",
         "packages/agent-runtime/src/orchestration.ts",
         "packages/persistence/src/orchestrator-postgres.ts",
-        "packages/persistence/migrations/0019_orchestrator_state.sql"
+        "packages/persistence/migrations/0019_orchestrator_state.sql",
+        "packages/persistence/migrations/0020_orchestrator_lineage_hardening.sql"
       ],
       "tests": [
         "packages/agent-runtime/src/__tests__/runtime-kernel-coverage.test.ts",
@@ -54,7 +59,8 @@
         "docs/02_spec/aaa21_build_execution_contract_20260914.md",
         "docs/02_spec/aaa21_durable_orchestration_20260915.md",
         "docs/04_audit/evidence/AAA/AAA-21/CHECKS.md",
-        "docs/04_audit/evidence/AAA/AAA-21/ORCHESTRATOR-BUILD-20260915.md"
+        "docs/04_audit/evidence/AAA/AAA-21/ORCHESTRATOR-BUILD-20260915.md",
+        "docs/04_audit/evidence/AAA/AAA-21/HARDENING-ROUND-20260915.md"
       ],
       "gates": ["unit", "coverage", "phase10_current_verification"],
       "status": "PARTIAL",
@@ -73,7 +79,9 @@
         "packages/persistence/migrations/0017_runtime_audit_chain.sql",
         "packages/persistence/migrations/0018_outbox_lease_fencing.sql",
         "packages/persistence/migrations/0019_orchestrator_state.sql",
-        "packages/persistence/src/orchestrator-postgres.ts"
+        "packages/persistence/migrations/0020_orchestrator_lineage_hardening.sql",
+        "packages/persistence/src/orchestrator-postgres.ts",
+        "packages/persistence/src/effect-journal-postgres.ts"
       ],
       "tests": [
         "packages/persistence/src/__tests__/outbox-durability.test.ts",
@@ -82,11 +90,13 @@
         "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts",
         "packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
         "apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts",
-        "apps/worker/src/__tests__/kernel-composition-state.test.ts"
+        "apps/worker/src/__tests__/kernel-composition-state.test.ts",
+        "apps/api/src/__tests__/orchestration-observability.test.ts"
       ],
       "evidence": [
         "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json",
-        "docs/04_audit/evidence/AAA/AAA-21/FINAL-REPORT.md"
+        "docs/04_audit/evidence/AAA/AAA-21/FINAL-REPORT.md",
+        "docs/04_audit/evidence/AAA/AAA-21/HARDENING-ROUND-20260915.md"
       ],
       "gates": ["postgres", "unit", "phase10_current_verification"],
       "status": "PARTIAL",
@@ -102,7 +112,10 @@
         "apps/worker/src/continuous-worker.ts",
         "apps/web/src",
         "packages/agent-runtime/src/orchestration.ts",
-        "packages/persistence/src/orchestrator-postgres.ts"
+        "packages/persistence/src/orchestrator-postgres.ts",
+        "packages/persistence/migrations/0020_orchestrator_lineage_hardening.sql",
+        "apps/worker/src/sweeps.ts",
+        "apps/worker/src/kernel-composition.ts"
       ],
       "tests": [
         "apps/worker/src/__tests__/continuous-worker-postgres.integration.test.ts",
@@ -110,12 +123,14 @@
         "apps/web/src/__tests__",
         "packages/agent-runtime/src/__tests__/orchestration.test.ts",
         "packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
-        "apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts"
+        "apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts",
+        "apps/worker/src/__tests__/worker-sweeps.test.ts"
       ],
       "evidence": [
         "certification/restore-report.json",
         "certification/chaos-report.json",
-        "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json"
+        "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json",
+        "docs/04_audit/evidence/AAA/AAA-21/HARDENING-ROUND-20260915.md"
       ],
       "gates": ["postgres", "unit", "e2e", "phase10_current_verification"],
       "status": "PARTIAL",
@@ -131,12 +146,14 @@
         "apps/worker/src/continuous-worker.ts",
         "packages/agent-core/src/commands/receive-inbound-message.ts",
         "packages/agent-runtime/src/orchestration.ts",
-        "packages/persistence/src/orchestrator-postgres.ts"
+        "packages/persistence/src/orchestrator-postgres.ts",
+        "apps/worker/src/sweeps.ts"
       ],
       "tests": [
         "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
         "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts",
-        "apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts"
+        "apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts",
+        "apps/api/src/__tests__/orchestration-observability.test.ts"
       ],
       "evidence": [
         "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json",
@@ -153,20 +170,26 @@
       "implementation": [
         "packages/observability/src",
         "apps/api/src/request-metrics.ts",
+        "apps/api/src/main.ts",
         "apps/api/src/server.ts",
         "apps/web/src",
         "packages/agent-runtime/src/orchestration.ts",
-        "packages/persistence/src/orchestrator-postgres.ts"
+        "packages/persistence/src/orchestrator-postgres.ts",
+        "apps/api/src/orchestration-observability.ts",
+        "apps/worker/src/worker-observability.ts"
       ],
       "tests": [
         "packages/observability/src/__tests__",
         "apps/api/src/__tests__/correlation.test.ts",
         "apps/web/src/__tests__",
-        "packages/agent-runtime/src/__tests__/orchestration.test.ts"
+        "packages/agent-runtime/src/__tests__/orchestration.test.ts",
+        "apps/api/src/__tests__/orchestration-observability.test.ts",
+        "apps/web/src/features/orchestration/orchestration.test.tsx"
       ],
       "evidence": [
         "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json",
-        "certification/phase10-result.json"
+        "certification/phase10-result.json",
+        "docs/04_audit/evidence/AAA/AAA-21/HARDENING-ROUND-20260915.md"
       ],
       "gates": ["unit", "e2e", "phase10_current_verification"],
       "status": "PARTIAL",
@@ -181,13 +204,15 @@
         "apps/api/src/server.ts",
         "packages/persistence/migrations/0001_tenant_isolation.sql",
         "packages/shared/src/auth.ts",
-        "packages/persistence/migrations/0019_orchestrator_state.sql"
+        "packages/persistence/migrations/0019_orchestrator_state.sql",
+        "packages/persistence/migrations/0020_orchestrator_lineage_hardening.sql"
       ],
       "tests": [
         "apps/api/src/__tests__/tenant-inbound-isolation.test.ts",
         "apps/api/src/__tests__/server-boundary-envelope.test.ts",
         "apps/worker/src/__tests__/postgres-role-preflight.test.ts",
-        "packages/persistence/src/__tests__/orchestrator-postgres.test.ts"
+        "packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
+        "apps/api/src/__tests__/orchestration-observability.test.ts"
       ],
       "evidence": [
         "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json",
@@ -204,11 +229,19 @@
       "implementation": [
         "apps/web/src/App.tsx",
         "apps/web/src/styles.css",
-        "apps/web/src/api/client.ts"
+        "apps/web/src/api/client.ts",
+        "apps/web/src/features/orchestration/index.tsx",
+        "apps/api/src/orchestration-observability.ts"
       ],
-      "tests": ["apps/web/src/__tests__", "tests/e2e"],
+      "tests": [
+        "apps/web/src/__tests__",
+        "apps/web/src/features/orchestration/orchestration.test.tsx",
+        "apps/api/src/__tests__/orchestration-observability.test.ts",
+        "tests/e2e"
+      ],
       "evidence": [
         "docs/04_audit/evidence/AAA/AAA-21/final-round-20260914.json",
+        "docs/04_audit/evidence/AAA/AAA-21/HARDENING-ROUND-20260915.md",
         "test-results"
       ],
       "gates": ["e2e", "unit"],

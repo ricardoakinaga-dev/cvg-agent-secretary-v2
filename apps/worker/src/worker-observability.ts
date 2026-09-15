@@ -102,6 +102,7 @@ export function createRuntimeTelemetrySink(
             : {}),
           status: span.status,
           durationMs: span.durationMs,
+          attributes: span.attributes,
           ...(span.errorCode !== undefined ? { errorCode: span.errorCode } : {})
         },
         'debug'

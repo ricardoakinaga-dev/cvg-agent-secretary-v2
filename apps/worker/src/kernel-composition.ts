@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import {
   createGovernedRuntimeComposition,
+  evaluateSuccessCriteria,
   GoalPlanOrchestrator,
   resolveWorkflowCoordinator,
   toGovernedTurnInput,
@@ -9,6 +10,7 @@ import {
   type GovernedTurnInput,
   type GovernedTurnResult,
   type GoalEvaluation,
+  type GoalRecoverySweepResult,
   type OrchestrationRunResult,
   type OutboxEnqueueInput,
   type PlanStepDraft,
@@ -73,6 +75,7 @@ export const CONTROLLED_KERNEL_POLICY_ID = 'synthetic.controlled-kernel'
 export const CONTROLLED_KERNEL_POLICY_VERSION = '1.0.0'
 export const CONTROLLED_KERNEL_PROMPT_ID = 'synthetic.controlled-kernel-prompt'
 export const CONTROLLED_KERNEL_PROMPT_VERSION = '1.0.0'
+export const CONTROLLED_KERNEL_RUNTIME_VERSION = 'aaa21-kernel-v1'
 
 const RuntimeTraceIdSchema = z.string().regex(/^[0-9a-f]{32}$/)
 
@@ -197,6 +200,57 @@ export const KernelTurnEnvelopeSchema = z
 
 export type KernelTurnEnvelope = z.output<typeof KernelTurnEnvelopeSchema>
 
+const DurablePlannerContextSchema = z
+  .object({
+    messageId: z.string().min(1).max(200),
+    sessionId: z.string().min(1).max(200).nullable(),
+    envelope: KernelTurnEnvelopeSchema,
+    traceId: RuntimeTraceIdSchema.optional()
+  })
+  .strict()
+
+type DurablePlannerContext = z.output<typeof DurablePlannerContextSchema>
+
+function assertControlledKernelSnapshot(
+  snapshot: {
+    agentVersion: string | null
+    promptVersion: string | null
+    policyVersion: string | null
+    modelProfile: string | null
+    toolVersions: Record<string, string>
+    runtimeMode?: 'kernel' | 'published-agent' | 'unknown'
+    runtimeVersion?: string | null
+  },
+  envelope?: KernelTurnEnvelope
+): void {
+  const expectedPolicyVersion = `${CONTROLLED_KERNEL_POLICY_ID}@${CONTROLLED_KERNEL_POLICY_VERSION}`
+  const toolEntries = Object.entries(snapshot.toolVersions)
+  const toolVersion = snapshot.toolVersions['controlled-kernel-tool']
+  if (
+    snapshot.runtimeMode !== 'kernel' ||
+    snapshot.runtimeVersion !== CONTROLLED_KERNEL_RUNTIME_VERSION ||
+    snapshot.promptVersion !== CONTROLLED_KERNEL_PROMPT_VERSION ||
+    snapshot.policyVersion !== expectedPolicyVersion ||
+    snapshot.modelProfile !== 'fast' ||
+    snapshot.agentVersion === null ||
+    toolEntries.length !== 1 ||
+    toolVersion !== '1.0.0'
+  ) {
+    throw new Error(
+      'durable continuation snapshot does not match the controlled kernel'
+    )
+  }
+  if (
+    envelope !== undefined &&
+    (snapshot.agentVersion !== envelope.agentVersion ||
+      snapshot.modelProfile !== envelope.modelProfile)
+  ) {
+    throw new Error(
+      'durable continuation envelope does not match the persisted runtime snapshot'
+    )
+  }
+}
+
 export function parseKernelTurnEnvelope(body: string): KernelTurnEnvelope {
   let decoded: unknown
   try {
@@ -245,6 +299,7 @@ export interface PostgresKernelRuntime {
   turnResults: readonly GovernedTurnResult[]
   runTurn(input: GovernedTurnInput): Promise<GovernedTurnResult>
   runDurableGoal(input: DurableKernelGoalInput): Promise<OrchestrationRunResult>
+  recoverDurableGoals(): Promise<GoalRecoverySweepResult>
   preflight(): Promise<void>
 }
 
@@ -377,7 +432,7 @@ export function createPostgresKernelRuntime(
     invocation: ToolInvocation
   ): Promise<{ result: unknown }> => {
     toolInvocations.push(invocation)
-    return { result: { synthetic: true, invocation } }
+    return { result: { synthetic: true } }
   }
 
   const flushRuntimeAudit = async (traceId: string | undefined) => {
@@ -418,7 +473,10 @@ export function createPostgresKernelRuntime(
               action: turnInput.action,
               resourceType: turnInput.resource.type,
               correlationId: event.correlationId,
-              traceId: event.traceId
+              traceId: event.traceId,
+              ...(event.orchestrationContext !== undefined
+                ? { orchestrationContext: event.orchestrationContext }
+                : {})
             },
             idempotencyKey: `kernel-outbox:${event.idempotencyKey}`,
             correlationId: event.correlationId,
@@ -461,9 +519,101 @@ export function createPostgresKernelRuntime(
   const orchestrator = new GoalPlanOrchestrator({
     store: goalStore,
     workerId,
+    telemetry,
+    reconcileExpiredLease: async (step) => {
+      // A lease expiry is not proof that an external effect is absent. The
+      // approval's persisted operation key and the effect journal decide
+      // whether replay is safe; all missing or ambiguous identity fails closed.
+      if (step.approvalId === null) {
+        return step.approvalRequirement === 'none' ? 'retry' : 'uncertain'
+      }
+      let approval
+      try {
+        approval = await approvals.get(tenantId, step.approvalId)
+      } catch {
+        return 'uncertain'
+      }
+      const operationKey = approval.operationKey
+      if (operationKey === undefined) return 'uncertain'
+      let journal
+      try {
+        journal = await withTenantContext(pool, tenantId, async (client) =>
+          new PostgresEffectJournal(client).get(tenantId, operationKey)
+        )
+      } catch {
+        return 'uncertain'
+      }
+      const canReplayConfirmed =
+        approval.status === 'EXECUTED' ||
+        (approval.reservationId !== undefined &&
+          ['RESERVED', 'EXECUTING'].includes(approval.status))
+      if (journal?.state === 'CONFIRMED') {
+        return canReplayConfirmed ? 'retry' : 'uncertain'
+      }
+      if (
+        journal?.state === 'EFFECT_FAILED' ||
+        journal?.state === 'ABANDONED'
+      ) {
+        return ['APPROVED', 'RESERVED', 'EXECUTING'].includes(approval.status)
+          ? 'retry'
+          : 'uncertain'
+      }
+      if (journal === undefined && approval.status === 'APPROVED') {
+        return 'retry'
+      }
+      return 'uncertain'
+    },
+    reconcileWaitingApproval: async (goal) => {
+      const plan = await goalStore.getActivePlan(tenantId, goal.id)
+      if (plan === null) return 'pending'
+      const waiting = (await goalStore.listSteps(tenantId, plan.id)).find(
+        (step) => step.status === 'WAITING_APPROVAL'
+      )
+      if (waiting?.approvalId === null || waiting === undefined) {
+        return 'pending'
+      }
+      let approval
+      try {
+        approval = await approvals.get(tenantId, waiting.approvalId)
+      } catch {
+        return 'pending'
+      }
+      if (approval.status !== 'EXPIRED') return 'pending'
+      await goalStore.resolveWaitingApproval({
+        tenantId,
+        goalId: goal.id,
+        planId: plan.id,
+        stepId: waiting.id,
+        expectedGoalVersion: goal.version,
+        expectedStepVersion: waiting.version,
+        approvalId: waiting.approvalId,
+        target: 'CANCELLED',
+        reason: 'approval_expired_before_decision',
+        now: new Date()
+      })
+      return 'resolved'
+    },
     planner: {
       async plan({ goal, previousPlan, steps }) {
-        const context = durableContexts.get(goal.id)
+        assertControlledKernelSnapshot(goal.executionSnapshot)
+        const persistedContext = DurablePlannerContextSchema.safeParse(
+          goal.plannerContext
+        )
+        const runtimeContext = durableContexts.get(goal.id)
+        const context = persistedContext.success
+          ? persistedContext.data
+          : runtimeContext
+            ? {
+                messageId: runtimeContext.context.message.id,
+                sessionId: runtimeContext.context.session?.id ?? null,
+                envelope: runtimeContext.envelope,
+                ...(runtimeContext.traceContext !== undefined
+                  ? {
+                      traceId: runtimeContext.traceContext.traceId
+                    }
+                  : {})
+              }
+            : undefined
         if (context !== undefined) {
           return {
             reason:
@@ -473,12 +623,12 @@ export function createPostgresKernelRuntime(
             steps: [
               durableStepDraft({
                 tenantId,
-                context: context.context,
+                context,
                 envelope: context.envelope,
                 planVersion:
                   previousPlan === null ? 1 : previousPlan.version + 1,
-                ...(context.traceContext !== undefined
-                  ? { traceContext: context.traceContext }
+                ...(context.traceId !== undefined
+                  ? { traceId: context.traceId }
                   : {})
               })
             ]
@@ -517,37 +667,44 @@ export function createPostgresKernelRuntime(
       }
     },
     evaluator: {
-      async evaluate({ steps, observations }): Promise<GoalEvaluation> {
+      async evaluate({ goal, steps, observations }): Promise<GoalEvaluation> {
         const evidence = observations.flatMap((observation) =>
           observation.evidence.filter((item) => item.verified)
         )
+        const criteria = evaluateSuccessCriteria(goal.successCriteria, evidence)
         if (
           steps.length > 0 &&
           steps.every((step) => step.status === 'SUCCEEDED') &&
-          evidence.length > 0
+          criteria.satisfied
         ) {
           return {
             result: 'satisfied',
-            reason: 'controlled operational evidence was recorded',
+            reason: 'declared success criteria matched verified evidence',
             evidence
           }
         }
         if (steps.some((step) => step.status === 'FAILED')) {
           return {
             result: 'not_satisfied',
-            reason: 'controlled step failed; replanning is bounded',
+            reason: `controlled step failed; ${criteria.unsatisfied} success criteria remain unsatisfied`,
             evidence
           }
         }
         return {
           result: 'not_satisfied',
-          reason: 'verified operational evidence is still pending',
+          reason: `${criteria.unsatisfied} declared success criteria remain unsatisfied`,
           evidence
         }
       }
     },
     executor: {
-      async execute({ goal, step }): Promise<StepExecutionResult> {
+      async execute({
+        goal,
+        step,
+        lease,
+        signal
+      }): Promise<StepExecutionResult> {
+        assertControlledKernelSnapshot(goal.executionSnapshot)
         const workflowStep: WorkflowStep = {
           stepId: step.id,
           capability: step.intent.capability,
@@ -613,10 +770,23 @@ export function createPostgresKernelRuntime(
           workflowStep,
           governedEnvelope
         )
-        return durableTurnResult(await runTurn(turnInput))
+        const governedResult = await runTurn({
+          ...turnInput,
+          orchestrationContext: {
+            goalId: goal.id,
+            planId: step.planId,
+            stepId: step.id,
+            attemptId: lease.attemptId
+          },
+          cancelSignal: signal
+        })
+        return durableTurnResult(governedResult)
       }
     }
   })
+
+  const recoverDurableGoals = (): Promise<GoalRecoverySweepResult> =>
+    orchestrator.recoverGoals(tenantId)
 
   const runDurableGoal = async (
     goalInput: DurableKernelGoalInput
@@ -638,21 +808,32 @@ export function createPostgresKernelRuntime(
         successCriteria: [
           {
             kind: 'EVENT',
-            eventType: 'controlled.governed_turn.evidence',
+            eventType: `${goalInput.envelope.capability}.executed`,
             source: 'outbox',
             correlationId
           }
         ],
         correlationId,
+        plannerContext: {
+          messageId: goalInput.context.message.id,
+          sessionId: goalInput.context.session?.id ?? null,
+          envelope: goalInput.envelope,
+          ...(goalInput.traceContext !== undefined
+            ? { traceId: goalInput.traceContext.traceId }
+            : {})
+        },
         executionSnapshot: {
           agentVersion: goalInput.envelope.agentVersion,
           promptVersion: CONTROLLED_KERNEL_PROMPT_VERSION,
           policyVersion: `${CONTROLLED_KERNEL_POLICY_ID}@${CONTROLLED_KERNEL_POLICY_VERSION}`,
           modelProfile: goalInput.envelope.modelProfile,
-          toolVersions: { 'controlled-kernel-tool': '1.0.0' }
+          toolVersions: { 'controlled-kernel-tool': '1.0.0' },
+          runtimeMode: 'kernel',
+          runtimeVersion: CONTROLLED_KERNEL_RUNTIME_VERSION
         }
       })
     }
+    assertControlledKernelSnapshot(goal.executionSnapshot, goalInput.envelope)
     if (
       !['COMPLETED', 'BLOCKED', 'FAILED', 'CANCELLED'].includes(goal.status)
     ) {
@@ -737,6 +918,7 @@ export function createPostgresKernelRuntime(
     turnResults,
     runTurn,
     runDurableGoal,
+    recoverDurableGoals,
     preflight: () => assertPostgresKernelPrerequisites(pool, tenantId)
   }
 }
@@ -952,13 +1134,13 @@ async function buildKernelTurnInput(input: {
 
 function durableStepDraft(input: {
   tenantId: TenantId
-  context: InboundRuntimeContext
+  context: Pick<DurablePlannerContext, 'messageId' | 'sessionId'>
   envelope: KernelTurnEnvelope
   planVersion: number
-  traceContext?: TraceContext
+  traceId?: string
 }): PlanStepDraft {
   return {
-    id: `durable-kernel-step:${input.context.message.id}:${input.planVersion}`,
+    id: `durable-kernel-step:${input.context.messageId}:${input.planVersion}`,
     type: 'governed_kernel_turn',
     description: input.envelope.action,
     dependencies: [],
@@ -970,12 +1152,10 @@ function durableStepDraft(input: {
     approvalRequirement:
       input.envelope.capability === 'appointment.modify' ? 'approval' : 'none',
     input: {
-      messageId: input.context.message.id,
+      messageId: input.context.messageId,
       action: input.envelope.action,
       resourceType: input.envelope.resource.type,
-      ...(input.traceContext !== undefined
-        ? { traceId: input.traceContext.traceId }
-        : {})
+      ...(input.traceId !== undefined ? { traceId: input.traceId } : {})
     },
     expectedOutcome: {
       governedRuntime: 'executed',
@@ -1001,7 +1181,7 @@ function durableStepDraft(input: {
       // response through its prompt/model contract when the step is resumed.
       structuredOutput: null,
       idempotencyKey:
-        input.envelope.idempotencyKey ?? `durable:${input.context.message.id}`
+        input.envelope.idempotencyKey ?? `durable:${input.context.messageId}`
     },
     toolId: 'controlled-kernel-tool',
     toolVersion: '1.0.0'
@@ -1054,6 +1234,10 @@ function durableTurnResult(result: GovernedTurnResult): StepExecutionResult {
       source: 'effect_journal' as const,
       reference: result.executionRef ?? result.resultDigest ?? result.traceId,
       verified: true,
+      ...(result.eventType !== undefined
+        ? { eventType: result.eventType, key: result.eventType }
+        : {}),
+      correlationId: result.correlationId,
       ...(result.resultDigest !== undefined
         ? { digest: result.resultDigest }
         : {})
@@ -1063,6 +1247,10 @@ function durableTurnResult(result: GovernedTurnResult): StepExecutionResult {
       source: 'outbox' as const,
       reference: result.outboxEventId,
       verified: true,
+      ...(result.eventType !== undefined
+        ? { eventType: result.eventType, key: result.eventType }
+        : {}),
+      correlationId: result.correlationId,
       ...(result.resultDigest !== undefined
         ? { digest: result.resultDigest }
         : {})
@@ -1610,7 +1798,11 @@ export function createPostgresKernelHandlers(
     messageOutbound: () => ({
       status: 'controlled_outbound_suppressed',
       externalEffects: false
-    })
+    }),
+    ...(durableOrchestratorEnabled(env) &&
+    typeof runtime.recoverDurableGoals === 'function'
+      ? { recoverDurableGoals: runtime.recoverDurableGoals }
+      : {})
   }
 }
 

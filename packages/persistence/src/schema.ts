@@ -282,6 +282,12 @@ export interface OutboxEventRecord {
   processedAt?: Date | null
   deadLetteredAt?: Date | null
   parentEventId?: string | null
+  orchestrationContext?: {
+    goalId: string
+    planId: string
+    stepId: string
+    attemptId?: string
+  }
 }
 
 export type OutboxAttemptOutcome =

@@ -43,12 +43,18 @@ interface EffectJournalRow extends QueryResultRow {
   created_at: Date | string
   updated_at: Date | string
   revision: string | number
+  orchestration_goal_id: string | null
+  orchestration_plan_id: string | null
+  orchestration_step_id: string | null
+  orchestration_attempt_id: string | null
 }
 
 const effectJournalColumns = `
   tenant_id, operation_key, proposal_hash, state, attempt_id, execution_ref,
   result_digest, error_code, reason, expires_at, reconciled_by,
-  reconciliation_evidence_ref, created_at, updated_at, revision`
+  reconciliation_evidence_ref, created_at, updated_at, revision,
+  orchestration_goal_id, orchestration_plan_id, orchestration_step_id,
+  orchestration_attempt_id`
 
 const MAX_TRANSACTION_RETRIES = 2
 
@@ -79,7 +85,21 @@ function mapEffectJournalRow(row: EffectJournalRow): EffectRecord {
     reconciliationEvidenceRef: row.reconciliation_evidence_ref,
     createdAt: toIsoString(row.created_at),
     updatedAt: toIsoString(row.updated_at),
-    revision: Number(row.revision)
+    revision: Number(row.revision),
+    ...(typeof row.orchestration_goal_id === 'string' &&
+    typeof row.orchestration_plan_id === 'string' &&
+    typeof row.orchestration_step_id === 'string'
+      ? {
+          orchestrationContext: {
+            goalId: row.orchestration_goal_id,
+            planId: row.orchestration_plan_id,
+            stepId: row.orchestration_step_id,
+            ...(row.orchestration_attempt_id !== null
+              ? { attemptId: row.orchestration_attempt_id }
+              : {})
+          }
+        }
+      : {})
   }
 }
 
@@ -179,8 +199,10 @@ export class PostgresEffectJournal implements EffectJournalPort {
       const inserted = await this.#client.query<EffectJournalRow>(
         `INSERT INTO effect_journal
            (tenant_id, operation_key, proposal_hash, state, attempt_id,
-            expires_at, created_at, updated_at, revision)
-         VALUES ($1, $2, $3, 'RESERVED', $4, $5, $6, $6, 1)
+           expires_at, created_at, updated_at, revision,
+           orchestration_goal_id, orchestration_plan_id, orchestration_step_id,
+           orchestration_attempt_id)
+         VALUES ($1, $2, $3, 'RESERVED', $4, $5, $6, $6, 1, $7, $8, $9, $10)
          ON CONFLICT (tenant_id, operation_key) DO NOTHING
          RETURNING ${effectJournalColumns}`,
         [
@@ -189,7 +211,11 @@ export class PostgresEffectJournal implements EffectJournalPort {
           input.proposalHash,
           input.attemptId,
           input.expiresAt,
-          nowIso
+          nowIso,
+          input.orchestrationContext?.goalId ?? null,
+          input.orchestrationContext?.planId ?? null,
+          input.orchestrationContext?.stepId ?? null,
+          input.orchestrationContext?.attemptId ?? null
         ]
       )
       if (inserted.rows[0]) return { outcome: 'reserved' as const }
@@ -356,9 +382,13 @@ export class PostgresEffectJournal implements EffectJournalPort {
            reconciliation_evidence_ref = $12,
            created_at = $13,
            updated_at = $14,
-           revision = $15
+           revision = $15,
+           orchestration_goal_id = $16,
+           orchestration_plan_id = $17,
+           orchestration_step_id = $18,
+           orchestration_attempt_id = $19
        WHERE tenant_id = $1 AND operation_key = $2
-         AND state = $16 AND revision = $17 AND attempt_id = $18
+         AND state = $20 AND revision = $21 AND attempt_id = $22
        RETURNING ${effectJournalColumns}`,
       [
         existing.tenantId,
@@ -376,6 +406,10 @@ export class PostgresEffectJournal implements EffectJournalPort {
         updated.createdAt,
         updated.updatedAt,
         updated.revision,
+        updated.orchestrationContext?.goalId ?? null,
+        updated.orchestrationContext?.planId ?? null,
+        updated.orchestrationContext?.stepId ?? null,
+        updated.orchestrationContext?.attemptId ?? null,
         existing.state,
         existing.revision,
         existing.attemptId

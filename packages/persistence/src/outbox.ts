@@ -70,6 +70,12 @@ export interface OutboxEnqueueInput {
   eventId?: string
   /** Reserved for an intentional future migration/command. */
   parentEventId?: string | null
+  orchestrationContext?: {
+    goalId: string
+    planId: string
+    stepId: string
+    attemptId?: string
+  }
 }
 
 export interface OutboxClaimInput {
@@ -269,7 +275,10 @@ export class OutboxRepository implements DurableOutboxAdapter {
       lastError: null,
       processedAt: null,
       deadLetteredAt: null,
-      parentEventId: inputOrType.parentEventId ?? null
+      parentEventId: inputOrType.parentEventId ?? null,
+      ...(inputOrType.orchestrationContext !== undefined
+        ? { orchestrationContext: inputOrType.orchestrationContext }
+        : {})
     }
     this.db.state.outbox = [...this.db.state.outbox, cloneEvent(event)]
     return cloneEvent(event)

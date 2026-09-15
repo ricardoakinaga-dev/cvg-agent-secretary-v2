@@ -85,6 +85,51 @@ describe('AAA-19 periodic sweeps', () => {
     expect(approvals.list).toHaveBeenCalledWith(tenantId)
   })
 
+  it('resumes durable Goals in the same periodic recovery tick and records metrics', async () => {
+    const journal = {
+      get: vi.fn(),
+      releaseExpired: vi.fn(async () => 0)
+    } as unknown as EffectJournalPort
+    const approvals = createFakeApprovals({ released: 0, uncertain: 0 })
+    const recording = createRecordingTelemetry()
+    const recoverDurableGoals = vi.fn(async () => ({
+      inspected: 2,
+      resumed: 1,
+      skipped: 1,
+      completed: 1,
+      failures: 0
+    }))
+
+    const result = await runSweepTick({
+      approvals: approvals.engine,
+      effectJournal: journal,
+      tenantId,
+      goalRecovery: { recover: recoverDurableGoals }
+    })
+
+    expect(recoverDurableGoals).toHaveBeenCalledOnce()
+    expect(result).toMatchObject({
+      goalsInspected: 2,
+      goalsResumed: 1,
+      goalsSkipped: 1,
+      goalsCompleted: 1,
+      goalRecoveryFailures: 0
+    })
+
+    const runner = createPeriodicSweepRunner({
+      approvals: approvals.engine,
+      effectJournal: journal,
+      tenantId,
+      goalRecovery: { recover: recoverDurableGoals },
+      telemetry: recording.telemetry
+    })
+    await runner.runOnce()
+    expect(recording.metrics).toContain('worker_sweep_goals_resumed_total')
+    expect(recording.metrics).toContain(
+      'worker_sweep_goal_recovery_failures_total'
+    )
+  })
+
   it('invokes both sweeps on a timer and stops cleanly', async () => {
     const journal = {
       get: vi.fn(),

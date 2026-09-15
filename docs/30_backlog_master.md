@@ -1,3 +1,22 @@
+# AAA-21-HARDEN-20260915 — backlog após hardening de recovery e lineage — 2026-09-15
+
+## Concluído nesta rodada
+
+- [x] Ligar recovery de Goals runnable ao sweep periódico do worker, com métricas de inspeção, retomada, conclusão e falha.
+- [x] Fazer a conclusão depender de `successCriteria` e evidência persistida/verificada.
+- [x] Persistir deadline absoluto, runtime/version e planner context para restart antes do primeiro plano.
+- [x] Aplicar timeout abortável por Step e reconciliar approvals expiradas antes de deixar Goals em espera órfãos.
+- [x] Validar lineage Goal/Plan/Step/Attempt em memória e PostgreSQL, incluindo effect journal e outbox.
+- [x] Entregar inspeção read-only tenant-scoped na API/console e telemetria bounded para transições e recovery.
+- [x] Executar unit `249/1.743/116 skips`, PostgreSQL `23/199`, build, startup, lint, typecheck, security, licenses e focused hardening sob Node `22.23.2`.
+
+## Bloqueios restantes
+
+- [x] Reexecutar certificação Phase 10/11 candidate-bound depois do commit e verificar os manifests no mesmo candidato (Node `22.23.2`; todos os gates mecânicos PASS).
+- [ ] Conectar o inbound público ao orquestrador com rollout controlado e handoff explícito, depois de revisão independente.
+- [ ] Validar provider, canal, identidade, RAG institucional, piloto supervisionado, durabilidade física/RPO-RTO e signoff humano em ambientes autorizados.
+- [ ] Manter produção `NO-GO` até os gates externos e humanos serem satisfeitos; nenhuma ação clínica, financeira, de prontuário ou consulta real é automatizada.
+
 # AAA-21 — backlog atualizado após BUILD de orquestração — 2026-09-15
 
 ## Concluído neste incremento

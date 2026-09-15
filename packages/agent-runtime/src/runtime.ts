@@ -48,6 +48,7 @@ interface FinishExtra {
   resultDigest?: string
   replayed?: boolean
   effectConfirmed?: boolean
+  eventType?: string
   costUsd?: number
 }
 
@@ -309,6 +310,9 @@ export async function sweepExpiredApprovals(options: {
   now?: Date
   ttlMs?: number
 }): Promise<{ released: number; uncertain: number }> {
+  if (options.approvals.expireStaleForTenant !== undefined) {
+    await options.approvals.expireStaleForTenant(options.tenantId, options.now)
+  }
   const evidence = await collectApprovalSweepEvidence(
     options.approvals,
     options.effectJournal,
@@ -471,7 +475,12 @@ export class GovernedAgentRuntime {
         ...(extra.replayed !== undefined ? { replayed: extra.replayed } : {}),
         ...(extra.effectConfirmed !== undefined
           ? { effectConfirmed: extra.effectConfirmed }
-          : {})
+          : {}),
+        ...(extra.eventType !== undefined
+          ? { eventType: extra.eventType }
+          : outcome === 'executed'
+            ? { eventType: `${input.capability}.executed` }
+            : {})
       }
     }
 
@@ -1001,7 +1010,10 @@ export class GovernedAgentRuntime {
             agentId: input.agentId,
             agentVersion: input.agentVersion,
             policyVersion: decision.policyVersion
-          }
+          },
+          ...(input.orchestrationContext !== undefined
+            ? { orchestrationContext: input.orchestrationContext }
+            : {})
         })
         outboxEventId = enqueued.eventId
         telemetry.recordMetric('outbox_enqueued_total', 1, {
@@ -1642,7 +1654,10 @@ export class GovernedAgentRuntime {
           approvalId,
           proposalId: record.proposalId ?? null,
           proposalHash: record.proposalHash
-        }
+        },
+        ...(input.orchestrationContext !== undefined
+          ? { orchestrationContext: input.orchestrationContext }
+          : {})
       })
       outboxEventId = enqueued.eventId
       telemetry.recordMetric('outbox_enqueued_total', 1, {
@@ -1971,7 +1986,10 @@ export class GovernedAgentRuntime {
           approvalId,
           proposalId: record.proposalId ?? null,
           proposalHash: record.proposalHash ?? null
-        }
+        },
+        ...(input.orchestrationContext !== undefined
+          ? { orchestrationContext: input.orchestrationContext }
+          : {})
       })
       telemetry.recordMetric('outbox_enqueued_total', 1, {
         capability: input.capability
@@ -2324,7 +2342,10 @@ export class GovernedAgentRuntime {
         operationKey,
         proposalHash,
         attemptId,
-        expiresAt
+        expiresAt,
+        ...(input.orchestrationContext !== undefined
+          ? { orchestrationContext: input.orchestrationContext }
+          : {})
       })
     } catch (error) {
       const code =
@@ -2480,7 +2501,10 @@ export class GovernedAgentRuntime {
         operationKey,
         proposalHash,
         attemptId,
-        expiresAt
+        expiresAt,
+        ...(input.orchestrationContext !== undefined
+          ? { orchestrationContext: input.orchestrationContext }
+          : {})
       })
     } catch (error) {
       const code =

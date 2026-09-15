@@ -1,3 +1,12 @@
+# AAA-21-HARDEN-20260915 — certificação candidate-bound final — 2026-09-15
+
+- current_engine: `AUDIT`; task: `AAA-21-HARDEN-20260915`; status `CONDITIONAL_GO` / `AAA_CONTROLLED`; produção `NO-GO`.
+- last_completed_action: recuperação durável foi ligada ao sweep do worker; critérios de sucesso, deadlines absolutos, timeout abortável, expiração de aprovação, binding de runtime, planner context persistido, lineage de Goal/Plan/Step/Attempt e propagação para effect journal/outbox foram endurecidos. API e console expõem inspeção read-only tenant-scoped, e transições/recovery emitem telemetria bounded.
+- verification: os manifests candidate-bound registram 944 arquivos e árvore limpa. Node `22.23.2`; todos os gates Phase 10/11 e verificadores pós-selo passaram; unit `249 arquivos / 1.743 passed / 116 skipped`; PostgreSQL `23 arquivos / 199 passed`; E2E `8/8`; coverage statements `90.11%`, branches `83.44%`, functions `89.12%`, lines `90.67%`.
+- next_action: revisão independente fresca e validação dos gates externos/humanos em ambientes autorizados; manter a flag pública opt-in e a produção bloqueada.
+- blockers: provider/canal/identidade externa, RAG institucional, piloto supervisionado, durabilidade física/RPO-RTO e signoff humano permanecem não validados; requisitos P11 seguem `PARTIAL`/`BLOCKED`; nenhum dado real ou efeito externo foi usado.
+- evidência: [`aaa21_hardening_round_20260915.md`](02_spec/aaa21_hardening_round_20260915.md), [`HARDENING-ROUND-20260915.md`](04_audit/evidence/AAA/AAA-21/HARDENING-ROUND-20260915.md), [`requirements-matrix.json`](11_phase11/requirements-matrix.json), `certification/phase10-result.json` e `certification/phase11-result.json`.
+
 # AAA-21-ORCHESTRATOR-BUILD-20260915 — núcleo durável Goal/Plan/Step — 2026-09-15
 
 - current_engine: `AUDIT`; task: `AAA-21` / Phase 11; status: `CONDITIONAL_GO` / `AAA_CONTROLLED`; produção `NO-GO`.
