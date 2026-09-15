@@ -1,3 +1,10 @@
+# AAA-21-PHASE11-FINAL-20260915 — certificação controlada encerrada — 2026-09-15
+
+- pipeline: `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`; fase atual `AUDIT`; produção `NO-GO`.
+- ação concluída: o candidato commit-bound atual foi selado sob Node `22.23.2`, com identidade e hashes registrados nos manifestos correntes; Phase 10 `CONDITIONAL_GO`/`AAA_CONTROLLED` e Phase 11 `CONDITIONAL_GO`/`AAA_CONTROLLED` passaram pelos verificadores candidate-bound. Todos os gates locais Phase 11 passaram, inclusive `phase10_current_verification`, `candidate_clean` e `node_target`.
+- próximo passo: revisão independente fresca, adjudicação dos requisitos P11 ainda `PARTIAL` e validação separada dos gates externos/humanos; produção, provider/canal/IdP/RAG institucional, dados reais e efeitos externos continuam bloqueados.
+- limites: `modelProvider`, `channel` e `externalIdentity` não foram validados; `humanSignoff` permanece pendente; o PostgreSQL usado foi descartável e não prova durabilidade física ou RPO/RTO. A certificação não é uma autorização de produção.
+
 # AAA-21-PHASE11-HARDEN-20260915 — integridade candidate-bound — 2026-09-15
 
 - pipeline: `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`; fase atual `AUDIT`; produção `NO-GO`.

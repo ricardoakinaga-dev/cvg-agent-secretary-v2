@@ -1,3 +1,11 @@
+# AAA-21-PHASE11-FINAL-20260915 — certificação controlada encerrada — 2026-09-15
+
+- current_engine: `AUDIT`; task: `AAA-21` / Phase 11; status: `CONDITIONAL_GO` / `AAA_CONTROLLED`; produção `NO-GO`.
+- last_completed_action: o candidato commit-bound atual foi certificado sob Node `22.23.2`; sua identidade está vinculada nos manifestos correntes. Phase 10 e Phase 11 passaram todos os gates locais, os verificadores pós-selo passaram e o PostgreSQL descartável foi encerrado.
+- next_action: revisão independente fresca e avaliação humana dos requisitos parciais; validar provider/canal/IdP, piloto, RPO/RTO físico e signoff somente em ambientes autorizados. Nenhuma promoção de produção é permitida.
+- blockers: `modelProvider`, `channel`, `externalIdentity` estão `NOT_VALIDATED`; `humanSignoff` está `PENDING`; requisitos P11 de governança, orquestração, efeitos duráveis, recovery, vertical público, observabilidade, segurança e UX permanecem `PARTIAL`; P11-EXTERNAL-HUMAN permanece `BLOCKED`. Nenhum dado real ou efeito externo foi usado.
+- evidência: [`phase11-result.json`](../certification/phase11-result.json), [`phase11-manifest.json`](../certification/phase11-manifest.json), [`phase11_execution_contract.md`](11_phase11/phase11_execution_contract.md), [`requirements-matrix.json`](11_phase11/requirements-matrix.json), [`phase11-certification.test.js`](../tests/phase11-certification.test.js) e os prompts byte a byte em [`prompt-master/source`](11_phase11/prompt-master/source).
+
 # AAA-21-PHASE11-HARDEN-20260915 — integridade e runtime alvo — 2026-09-15
 
 - current_engine: `AUDIT`; task: `AAA-21` / Phase 11; status: `IN_PROGRESS`; produção `NO-GO`.

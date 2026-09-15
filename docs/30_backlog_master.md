@@ -1,3 +1,11 @@
+# AAA-21-PHASE11-FINAL-20260915 — certificação controlada encerrada — 2026-09-15
+
+- status: `CONDITIONAL_GO` / `AAA_CONTROLLED`; produção `NO-GO`.
+- concluído: o candidato commit-bound atual foi certificado sob Node `22.23.2`, com identidade e hashes registrados nos manifestos correntes; Phase 10 e Phase 11 passaram todos os gates locais e os verificadores pós-run. PostgreSQL descartável foi encerrado.
+- próxima ação: revisão independente fresca, fechar adjudicação dos requisitos `PARTIAL` e executar somente em ambientes autorizados os gates de provider, canal, IdP, piloto, RPO/RTO físico e signoff humano. Não promover `AAA_CONTROLLED` a produção.
+- bloqueios: `modelProvider/channel/externalIdentity=NOT_VALIDATED`, `humanSignoff=PENDING`, P11-GOVERNANCE/ORCHESTRATION/DURABLE-EFFECTS/RECOVERY/PUBLIC-VERTICAL/OBSERVABILITY/SECURITY/UX-CONSOLE=`PARTIAL` e P11-EXTERNAL-HUMAN=`BLOCKED`.
+- evidência: `certification/phase11-result.json`, `certification/phase11-manifest.json`, `certification/phase10-result.json`, `certification/manifest.json`, `tests/phase11-certification.test.js`, `scripts/phase11-verify.mjs` e `docs/11_phase11/phase11_execution_contract.md`.
+
 # AAA-21-PHASE11-HARDEN-20260915 — pré-selo final — 2026-09-15
 
 - status: `REVIEW`; produção `NO-GO`; Node 22.23.2 e format ativo qualificados localmente.
