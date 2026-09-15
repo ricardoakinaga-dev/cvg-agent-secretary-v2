@@ -1,0 +1,27 @@
+$ npm run build
+# runId=run-bf035ddfe187-mu0ldbpd candidateId=bf035ddfe1874918cc01fdca99a7f199393894cbf7fa0e803063f3085c43f426 gate=build command=npm run build
+# exitCode=0 durationMs=11565
+
+
+> cvg-agent-secretary-v2@1.0.0 build
+> npm run typecheck && npm run build:web
+
+
+> cvg-agent-secretary-v2@1.0.0 typecheck
+> tsc -p tsconfig.typecheck.json --noEmit
+
+
+> cvg-agent-secretary-v2@1.0.0 build:web
+> vite --config vite.config.mts build apps/web
+
+vite v8.2.2 building client environment for production...
+transforming...
+✓ 163 modules transformed.
+rendering chunks...
+computing gzip size...
+apps/web/dist/index.html                   0.40 kB │ gzip:   0.27 kB
+apps/web/dist/assets/index-BUjBxes9.css   10.97 kB │ gzip:   3.05 kB
+apps/web/dist/assets/index-BIkJoSbj.js   364.63 kB │ gzip: 105.20 kB
+
+✓ built in 200ms
+

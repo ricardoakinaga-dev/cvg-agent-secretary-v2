@@ -92,6 +92,11 @@ export class HashChainedAuditLedger {
     return [...this.#records]
   }
 
+  recordsForTrace(traceId: string): AuditLedgerRecord[] {
+    const prefix = `evt_${traceId}_`
+    return this.#records.filter((record) => record.eventId.startsWith(prefix))
+  }
+
   head(): AuditLedgerRecord | undefined {
     const head = this.#records[this.#records.length - 1]
     return head ? { ...head } : undefined

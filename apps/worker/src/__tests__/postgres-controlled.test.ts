@@ -6,6 +6,7 @@ import {
   parseControlledDrainLimit,
   POSTGRES_CONTROLLED_QUEUE_ADAPTER
 } from '../postgres-controlled.ts'
+import { PUBLISHED_AGENT_WORKER_RUNTIME } from '../kernel-composition.ts'
 import {
   ensureControlledSecretaryPreset,
   InMemoryControlPlaneStore,
@@ -107,7 +108,10 @@ describe('controlled PostgreSQL worker boundary', () => {
       markInboundRuntimeCompleted: vi.fn()
     }
     const handlers = createPostgresControlledHandlers(
-      { CVG_WORKER_AGENT_ID: agent.id },
+      {
+        CVG_WORKER_RUNTIME: PUBLISHED_AGENT_WORKER_RUNTIME,
+        CVG_WORKER_AGENT_ID: agent.id
+      },
       conversations as never,
       platform as never
     )
@@ -155,7 +159,7 @@ describe('controlled PostgreSQL worker boundary', () => {
     }
     const platform = new InMemoryControlPlaneStore()
     const handlers = createPostgresControlledHandlers(
-      {},
+      { CVG_WORKER_RUNTIME: PUBLISHED_AGENT_WORKER_RUNTIME },
       conversations as never,
       platform as never
     )

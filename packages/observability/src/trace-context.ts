@@ -55,6 +55,31 @@ export function createTraceContext(
   })
 }
 
+/**
+ * Rehydrates a new boundary span while preserving the trace root carried by a
+ * durable event. The worker never trusts arbitrary trace fields beyond the
+ * validated trace id and creates a fresh span id for its own work.
+ */
+export function createTraceContextWithTraceId(
+  input: TraceContextInput & { traceId: string },
+  generator: TraceIdGenerator = cryptoIdGenerator
+): TraceContext {
+  return TraceContextSchema.parse({
+    traceId: input.traceId,
+    spanId: generator.spanId(),
+    correlationId: input.correlationId,
+    ...(input.tenantId !== undefined ? { tenantId: input.tenantId } : {}),
+    ...(input.conversationId !== undefined
+      ? { conversationId: input.conversationId }
+      : {}),
+    ...(input.sessionId !== undefined ? { sessionId: input.sessionId } : {}),
+    ...(input.agentId !== undefined ? { agentId: input.agentId } : {}),
+    ...(input.agentVersion !== undefined
+      ? { agentVersion: input.agentVersion }
+      : {})
+  })
+}
+
 export function toTraceparent(context: TraceContext): string {
   return `00-${context.traceId}-${context.spanId}-01`
 }

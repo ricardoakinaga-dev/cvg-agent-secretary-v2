@@ -1,5 +1,6 @@
 $ npm run build
-# exitCode=0 durationMs=5506
+# runId=run-27cce90eab75-mu0lx19j candidateId=27cce90eab7554eaf42b5a6e49519a3b70d51f67f8bb11a0be82932c9ddc07c3 gate=build command=npm run build
+# exitCode=0 durationMs=10702
 
 
 > cvg-agent-secretary-v2@1.0.0 build
@@ -20,7 +21,7 @@ rendering chunks...
 computing gzip size...
 apps/web/dist/index.html                   0.40 kB │ gzip:   0.27 kB
 apps/web/dist/assets/index-BUjBxes9.css   10.97 kB │ gzip:   3.05 kB
-apps/web/dist/assets/index-bk-5Onvn.js   363.84 kB │ gzip: 104.99 kB
+apps/web/dist/assets/index-BIkJoSbj.js   364.63 kB │ gzip: 105.20 kB
 
-✓ built in 142ms
+✓ built in 241ms
 

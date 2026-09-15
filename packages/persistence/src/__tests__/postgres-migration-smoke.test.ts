@@ -17,6 +17,28 @@ const migrationPath = resolve(
 const testDatabaseUrl = process.env.TEST_DATABASE_URL
 
 describe('postgres migration smoke', () => {
+  it('ships the controlled runtime continuation and durable audit migrations', async () => {
+    const continuation = await readPostgresMigrationSql(
+      '0016_runtime_continuation_trace'
+    )
+    expect(continuation).toContain('runtime_approval_id')
+    expect(continuation).toContain('runtime_trace_id')
+    expect(continuation).toContain("'waiting_approval'")
+    expect(continuation).toContain('continuation_payload')
+    expect(continuation).toContain('uq_runtime_approvals_continuation_message')
+
+    const audit = await readPostgresMigrationSql('0017_runtime_audit_chain')
+    expect(audit).toContain('CREATE TABLE IF NOT EXISTS runtime_audit_events')
+    expect(audit).toContain('event_key text NOT NULL')
+    expect(audit).toContain('UNIQUE (tenant_id, sequence)')
+    expect(audit).toContain('previous_hash text NOT NULL')
+    expect(audit).toContain('payload_hash text NOT NULL')
+    expect(audit).toContain('event_hash text NOT NULL')
+    expect(audit).toContain('FORCE ROW LEVEL SECURITY')
+    expect(audit).toContain("current_setting('cvg.tenant_id', true)")
+    expect(audit).toContain('REVOKE ALL ON runtime_audit_events FROM PUBLIC')
+  })
+
   it('ships an additive release-candidate validator integrity migration', async () => {
     const migration = await readPostgresMigrationSql(
       '0009_release_candidate_validator_integrity'
@@ -141,6 +163,9 @@ describe('postgres migration smoke', () => {
               created_at: new Date('2026-04-29T12:00:00.000Z')
             }
           ] as unknown as T[])
+        }
+        if (text.includes('INSERT INTO tasks')) {
+          return result([{ id: 'task_fake' }] as unknown as T[])
         }
         if (text.includes('FROM audit_events')) {
           return result([
@@ -575,7 +600,8 @@ describe('postgres migration smoke', () => {
           )
         }
         if (text.includes('INSERT INTO tasks')) {
-          throw { code: '23505' }
+          // PostgreSQL reports no inserted row for ON CONFLICT DO NOTHING.
+          return result([] as T[])
         }
         return result([] as T[])
       }

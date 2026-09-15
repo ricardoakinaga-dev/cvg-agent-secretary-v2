@@ -4,6 +4,10 @@ test('seals and archives an audit evidence checkpoint without payload export', a
   page,
   request
 }) => {
+  await page.addInitScript({
+    content:
+      "window.__CVG_OPERATOR_CONTEXT__ = { operatorId: 'supervisor.e2e', role: 'Supervisor', tenantId: 'tenant_00000000-0000-4000-8000-000000000001' }"
+  })
   await request.post('/v1/webhooks/channels/whatsapp/messages', {
     data: {
       externalMessageId: `e2e-checkpoint-${Date.now()}`,
@@ -15,8 +19,6 @@ test('seals and archives an audit evidence checkpoint without payload export', a
 
   await page.goto('/')
   await page.getByText('CVG Agent Secretary').waitFor()
-  await page.getByLabel('ID do operador').fill('supervisor.e2e')
-  await page.getByLabel('Papel operacional').selectOption('Supervisor')
   await expect(page.getByText('Evidencias de auditoria')).toBeVisible()
   await expect(page.getByText(/eventos controlados/)).toBeVisible()
 

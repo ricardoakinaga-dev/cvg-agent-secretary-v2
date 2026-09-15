@@ -27,6 +27,8 @@ export interface ConversationCommandRepository {
     body: string
     conversationId?: string | undefined
     sessionId?: string | undefined
+    correlationId?: string | undefined
+    runtimeTraceId?: string | undefined
   }): Awaitable<{
     conversation: ConversationRecord
     session: SessionRecord
@@ -46,6 +48,8 @@ export interface ConversationCommandRepository {
       body: string
       conversationId?: string | undefined
       sessionId?: string | undefined
+      correlationId?: string | undefined
+      runtimeTraceId?: string | undefined
     },
     outbox: OutboxEnqueueInput
   ) => Awaitable<{
@@ -60,6 +64,10 @@ export interface ReceiveInboundMessageDeps {
   conversations: ConversationCommandRepository
   /** Enables the durable acceptance path when paired with the atomic method. */
   outbox?: DurableOutboxAdapter
+  /** Internal trace root created at the trusted HTTP boundary. */
+  traceId?: string
+  /** Correlation root created at the trusted HTTP boundary. */
+  correlationId?: string
 }
 
 export interface ReceiveInboundMessageResult {
@@ -67,8 +75,9 @@ export interface ReceiveInboundMessageResult {
   messageId: string
   sessionId: string | null
   accepted: boolean
-  runtimeStatus: 'pending' | 'completed'
+  runtimeStatus: 'pending' | 'waiting_approval' | 'completed'
   correlationId?: string
+  traceId?: string
   outbox?: OutboxEventRecord
 }
 
@@ -86,9 +95,15 @@ export async function receiveInboundMessage(
     return {
       conversationId: duplicate.conversationId,
       messageId: duplicate.id,
-      sessionId: null,
+      sessionId: duplicate.sessionId ?? null,
       accepted: false,
-      runtimeStatus: duplicate.runtimeStatus ?? 'completed'
+      runtimeStatus: duplicate.runtimeStatus ?? 'completed',
+      ...(duplicate.correlationId !== undefined
+        ? { correlationId: duplicate.correlationId }
+        : {}),
+      ...(duplicate.runtimeTraceId !== undefined
+        ? { traceId: duplicate.runtimeTraceId }
+        : {})
     }
   }
   if (!input.body.trim()) {
@@ -115,6 +130,7 @@ export async function receiveInboundMessage(
             input.channel,
             input.externalMessageId
           ),
+          ...(deps.traceId !== undefined ? { traceId: deps.traceId } : {}),
           conversationId: null,
           sessionId: null,
           inboundMessageId: null
@@ -128,11 +144,25 @@ export async function receiveInboundMessage(
     }
     if (outboxInput && deps.conversations.createWithSessionAndOutbox) {
       result = await deps.conversations.createWithSessionAndOutbox(
-        input,
+        {
+          ...input,
+          ...(deps.correlationId !== undefined
+            ? { correlationId: deps.correlationId }
+            : {}),
+          ...(deps.traceId !== undefined
+            ? { runtimeTraceId: deps.traceId }
+            : {})
+        },
         outboxInput
       )
     } else {
-      const created = await deps.conversations.createWithSession(input)
+      const created = await deps.conversations.createWithSession({
+        ...input,
+        ...(deps.correlationId !== undefined
+          ? { correlationId: deps.correlationId }
+          : {}),
+        ...(deps.traceId !== undefined ? { runtimeTraceId: deps.traceId } : {})
+      })
       result = { ...created }
     }
   } catch (error) {
@@ -147,9 +177,15 @@ export async function receiveInboundMessage(
         return {
           conversationId: concurrentDuplicate.conversationId,
           messageId: concurrentDuplicate.id,
-          sessionId: null,
+          sessionId: concurrentDuplicate.sessionId ?? null,
           accepted: false,
-          runtimeStatus: concurrentDuplicate.runtimeStatus ?? 'completed'
+          runtimeStatus: concurrentDuplicate.runtimeStatus ?? 'completed',
+          ...(concurrentDuplicate.correlationId !== undefined
+            ? { correlationId: concurrentDuplicate.correlationId }
+            : {}),
+          ...(concurrentDuplicate.runtimeTraceId !== undefined
+            ? { traceId: concurrentDuplicate.runtimeTraceId }
+            : {})
         }
       }
     }
@@ -162,6 +198,9 @@ export async function receiveInboundMessage(
     correlationId: result.conversation.correlationId,
     accepted: true,
     runtimeStatus: result.message.runtimeStatus ?? 'pending',
+    ...(result.message.runtimeTraceId !== undefined
+      ? { traceId: result.message.runtimeTraceId }
+      : {}),
     ...(result.outbox ? { outbox: result.outbox } : {})
   }
 }

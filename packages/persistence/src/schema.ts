@@ -65,7 +65,14 @@ export interface MessageRecord {
   direction: 'inbound' | 'outbound'
   body: string
   /** Inbound runtime work is retryable until its finalizer commits. */
-  runtimeStatus?: 'pending' | 'completed'
+  runtimeStatus?: 'pending' | 'waiting_approval' | 'completed'
+  /** Runtime approval that must be decided before this message can resume. */
+  runtimeApprovalId?: string
+  /** Trace root carried by the durable inbound work item. */
+  runtimeTraceId?: string
+  /** Derived metadata returned by duplicate inbound lookups only. */
+  correlationId?: string
+  sessionId?: string | null
   createdAt: Date
 }
 
@@ -196,6 +203,17 @@ export interface AuditEventRecord {
   createdAt: Date
 }
 
+/** Structural input accepted by the durable runtime audit chain. */
+export interface RuntimeAuditLedgerRecord {
+  eventId: string
+  type: string
+  actor: string
+  tenantId: string
+  correlationId: string
+  timestamp: string
+  payload?: unknown
+}
+
 export type AuditEventType =
   | 'tool_call'
   | 'safety_event'
@@ -242,6 +260,8 @@ export interface OutboxEventRecord {
   /** Persisted ownership. Optional only for legacy fixtures during migration. */
   tenantId?: TenantId
   correlationId?: string
+  /** Trace root propagated across HTTP, durable outbox and worker spans. */
+  traceId?: string
   idempotencyKey?: string
   envelopeVersion?: number
   conversationId?: string | null

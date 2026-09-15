@@ -18,6 +18,8 @@ const envelope = (data: unknown) =>
       meta: { correlationId: 'corr_fixture' }
     })
   } as Response)
+
+const tenantId = 'tenant_00000000-0000-4000-8000-000000000901'
 afterEach(() => {
   cleanup()
   vi.restoreAllMocks()
@@ -64,13 +66,15 @@ describe('attendance approval conflict recovery', () => {
       if (url === '/v1/tasks') return envelope([])
       return envelope([])
     })
-    render(<App />)
-    fireEvent.change(screen.getByLabelText('ID do operador'), {
-      target: { value: 'synthetic.approver' }
-    })
-    fireEvent.change(screen.getByLabelText('Papel operacional'), {
-      target: { value: 'Approver' }
-    })
+    render(
+      <App
+        identity={{
+          operatorId: 'synthetic.approver',
+          role: 'Approver',
+          tenantId
+        }}
+      />
+    )
     const button = await screen.findByRole('button', {
       name: 'Aprovar synthetic_review'
     })
@@ -81,7 +85,7 @@ describe('attendance approval conflict recovery', () => {
         'Esta aprovacao ja foi decidida. A fila foi atualizada.'
       )
     ).toBeTruthy()
-    expect(screen.getByText('low / rejected')).toBeTruthy()
+    expect(screen.getByText('low / Rejeitada')).toBeTruthy()
     expect(
       screen.queryByRole('button', { name: 'Aprovar synthetic_review' })
     ).toBeNull()
@@ -112,19 +116,27 @@ describe('attendance approval conflict recovery', () => {
         })
       return envelope([])
     })
-    render(<App />)
-    fireEvent.change(screen.getByLabelText('ID do operador'), {
-      target: { value: 'synthetic.approver' }
-    })
-    fireEvent.change(screen.getByLabelText('Papel operacional'), {
-      target: { value: 'Approver' }
-    })
+    const view = render(
+      <App
+        identity={{
+          operatorId: 'synthetic.approver',
+          role: 'Approver',
+          tenantId
+        }}
+      />
+    )
     fireEvent.click(
       await screen.findByRole('button', { name: 'Aprovar synthetic_review' })
     )
-    fireEvent.change(screen.getByLabelText('ID do operador'), {
-      target: { value: 'synthetic.next' }
-    })
+    view.rerender(
+      <App
+        identity={{
+          operatorId: 'synthetic.next',
+          role: 'Approver',
+          tenantId
+        }}
+      />
+    )
     await waitFor(() => expect(rejectDecision).toBeTypeOf('function'))
     await act(async () => {
       rejectDecision({
@@ -136,7 +148,7 @@ describe('attendance approval conflict recovery', () => {
         })
       } as Response)
     })
-    await waitFor(() => expect(screen.getByText('low / pending')).toBeTruthy())
+    await waitFor(() => expect(screen.getByText('low / Pendente')).toBeTruthy())
     expect(
       screen.queryByText(
         'Esta aprovacao ja foi decidida. A fila foi atualizada.'

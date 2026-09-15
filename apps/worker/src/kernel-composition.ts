@@ -1,0 +1,1060 @@
+import { z } from 'zod'
+import {
+  createGovernedRuntimeComposition,
+  resolveWorkflowCoordinator,
+  toGovernedTurnInput,
+  type EffectScope,
+  type GovernedTurnEnvelope,
+  type GovernedTurnInput,
+  type GovernedTurnResult,
+  type OutboxEnqueueInput,
+  type ResolvedWorkflowCoordinator,
+  type ToolInvocation,
+  type WorkflowCoordinatorAdapters,
+  type WorkflowPlan,
+  type WorkflowStep
+} from '@cvg/agent-runtime'
+import {
+  DeterministicModelProvider,
+  ModelGateway,
+  ModelInputSchema,
+  ModelProfileNameSchema,
+  PromptRegistry,
+  type ModelProfile
+} from '@cvg/model-gateway'
+import {
+  createTraceContextWithTraceId,
+  HashChainedAuditLedger,
+  InMemoryTelemetry,
+  type TraceContext
+} from '@cvg/observability'
+import {
+  PostgresApprovalAuthority,
+  PostgresEffectJournal,
+  TenantScopedPostgresRuntimeRepository,
+  withTenantContext,
+  type InboundRuntimeContext,
+  type PostgresPoolLike
+} from '@cvg/persistence'
+import {
+  AgentIdSchema,
+  TenantIdSchema,
+  canBotRespond,
+  type AgentId,
+  type TenantId
+} from '@cvg/platform'
+import {
+  AgentProfileNameSchema,
+  CapabilitySchema,
+  PolicyDocumentSchema,
+  PolicyEngine,
+  type Capability,
+  type PolicyDocumentInput
+} from '@cvg/policy-engine'
+import {
+  CorrelationIdSchema,
+  DataClassificationSchema,
+  RoleSchema
+} from '@cvg/shared'
+import type { ControlledWorkerHandlers } from './controlled-worker.ts'
+
+export const WORKER_RUNTIME_ENV = 'CVG_WORKER_RUNTIME'
+export const KERNEL_WORKER_RUNTIME = 'kernel'
+export const PUBLISHED_AGENT_WORKER_RUNTIME = 'published-agent'
+
+export const CONTROLLED_KERNEL_POLICY_ID = 'synthetic.controlled-kernel'
+export const CONTROLLED_KERNEL_POLICY_VERSION = '1.0.0'
+export const CONTROLLED_KERNEL_PROMPT_ID = 'synthetic.controlled-kernel-prompt'
+export const CONTROLLED_KERNEL_PROMPT_VERSION = '1.0.0'
+
+const RuntimeTraceIdSchema = z.string().regex(/^[0-9a-f]{32}$/)
+
+export type KernelRuntimeConfigurationErrorCode =
+  | 'kernel_runtime_prerequisites_missing'
+  | 'unknown_worker_runtime'
+
+export class KernelRuntimeConfigurationError extends Error {
+  readonly code: KernelRuntimeConfigurationErrorCode
+
+  constructor(code: KernelRuntimeConfigurationErrorCode, message: string) {
+    super(message)
+    this.name = 'KernelRuntimeConfigurationError'
+    this.code = code
+  }
+}
+
+/**
+ * Worker runtime selection. The governed kernel is the default; the published
+ * agent is an explicitly quarantined legacy path and unknown values fail closed
+ * at startup.
+ */
+export function resolveWorkerRuntimeKind(
+  env: NodeJS.ProcessEnv
+): 'kernel' | 'published-agent' {
+  const configured = env[WORKER_RUNTIME_ENV]?.trim()
+  if (!configured || configured === KERNEL_WORKER_RUNTIME) return 'kernel'
+  if (configured === PUBLISHED_AGENT_WORKER_RUNTIME) return 'published-agent'
+  throw new KernelRuntimeConfigurationError(
+    'unknown_worker_runtime',
+    `Unknown ${WORKER_RUNTIME_ENV} value: ${configured}`
+  )
+}
+
+/**
+ * SYNTHETIC controlled policy document (marked synthetic; no real institutional
+ * source). It allows a read of an appointment draft and requires approval for
+ * the draft-only write capability `appointment.modify`. Real capabilities
+ * (`appointment.confirm`/`reschedule`/`cancel`) receive no grant here, so the
+ * kernel denies them before any executor call.
+ */
+export const CONTROLLED_KERNEL_POLICY_DOCUMENT: PolicyDocumentInput = {
+  policyId: CONTROLLED_KERNEL_POLICY_ID,
+  version: CONTROLLED_KERNEL_POLICY_VERSION,
+  effectiveFrom: '2026-09-01T00:00:00.000Z',
+  rules: [
+    {
+      id: 'synthetic-allow-schedule-read-appointment-draft',
+      effect: 'ALLOW',
+      priority: 10,
+      capabilities: ['schedule.read'],
+      resourceTypes: ['appointment_draft'],
+      reason: 'Synthetic controlled read of an appointment draft'
+    },
+    {
+      id: 'synthetic-require-approval-appointment-modify',
+      effect: 'REQUIRE_APPROVAL',
+      priority: 20,
+      capabilities: ['appointment.modify'],
+      resourceTypes: ['appointment_draft'],
+      reason: 'Synthetic controlled write requires human approval'
+    }
+  ]
+}
+
+/** Both composed capabilities are explicitly synthetic-only effect scopes. */
+export const CONTROLLED_KERNEL_EFFECT_SCOPES: Partial<
+  Record<Capability, EffectScope>
+> = {
+  'schedule.read': 'controlled_fake',
+  'appointment.modify': 'controlled_fake'
+}
+
+export const CONTROLLED_KERNEL_PAYLOAD_SCHEMA = z.object({
+  text: z.string()
+})
+
+export const KernelContinuationPayloadSchema = z
+  .object({
+    kind: z.literal('runtime_approval.continue'),
+    approvalId: z.string().min(1).max(160),
+    decision: z.enum(['approve', 'reject']).default('approve'),
+    traceId: RuntimeTraceIdSchema.optional()
+  })
+  .strict()
+
+export type KernelContinuationPayload = z.output<
+  typeof KernelContinuationPayloadSchema
+>
+
+/**
+ * Synthetic turn envelope carried in the inbound message body. The kernel
+ * handler refuses any body that is not this JSON shape; free text never picks
+ * a capability by inference.
+ */
+export const KernelTurnEnvelopeSchema = z
+  .object({
+    capability: CapabilitySchema,
+    action: z.string().min(1).max(120),
+    resource: z
+      .object({
+        type: z.string().min(1).max(120),
+        id: z.string().min(1).max(160).optional()
+      })
+      .strict(),
+    dataClassification: DataClassificationSchema.default('INTERNAL'),
+    operatorId: z.string().min(1).max(120).default('op_synthetic_kernel'),
+    operatorRole: RoleSchema.default('Operator'),
+    agentVersion: z.string().min(1).max(120).default('synthetic-v1'),
+    agentProfile: AgentProfileNameSchema.default('secretary'),
+    modelProfile: ModelProfileNameSchema.default('fast'),
+    message: z
+      .string()
+      .min(1)
+      .max(4000)
+      .default('synthetic controlled kernel turn'),
+    idempotencyKey: z.string().min(8).max(200).optional(),
+    approvalId: z.string().min(1).max(160).optional(),
+    task: z.string().min(1).max(120).optional()
+  })
+  .strict()
+
+export type KernelTurnEnvelope = z.output<typeof KernelTurnEnvelopeSchema>
+
+export function parseKernelTurnEnvelope(body: string): KernelTurnEnvelope {
+  let decoded: unknown
+  try {
+    decoded = JSON.parse(body)
+  } catch {
+    throw new Error(
+      'kernel_turn_envelope_invalid: inbound body is not a JSON turn envelope'
+    )
+  }
+  const candidate =
+    decoded !== null && typeof decoded === 'object' && 'cvgTurn' in decoded
+      ? (decoded as { cvgTurn: unknown }).cvgTurn
+      : decoded
+  const parsed = KernelTurnEnvelopeSchema.safeParse(candidate)
+  if (!parsed.success) {
+    const issues = parsed.error.issues
+      .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+      .join('; ')
+    throw new Error(`kernel_turn_envelope_invalid: ${issues}`)
+  }
+  return parsed.data
+}
+
+export interface CreatePostgresKernelRuntimeInput {
+  pool: PostgresPoolLike
+  tenantId: TenantId
+  env: NodeJS.ProcessEnv
+  agentId: AgentId
+  workflowCoordinatorAdapters?: WorkflowCoordinatorAdapters
+  /** Optional process sink bridge; defaults to a bounded local collector. */
+  runtimeTelemetry?: InMemoryTelemetry
+}
+
+export interface PostgresKernelRuntime {
+  tenantId: TenantId
+  agentId: AgentId
+  policy: PolicyEngine
+  approvals: PostgresApprovalAuthority
+  audit: HashChainedAuditLedger
+  telemetry: InMemoryTelemetry
+  conversations: TenantScopedPostgresRuntimeRepository
+  workflowCoordinator: ResolvedWorkflowCoordinator
+  toolInvocations: readonly ToolInvocation[]
+  turnResults: readonly GovernedTurnResult[]
+  runTurn(input: GovernedTurnInput): Promise<GovernedTurnResult>
+  preflight(): Promise<void>
+}
+
+function createControlledModelGateway(): ModelGateway {
+  const prompts = new PromptRegistry()
+  prompts.register({
+    promptId: CONTROLLED_KERNEL_PROMPT_ID,
+    version: CONTROLLED_KERNEL_PROMPT_VERSION,
+    content:
+      'SYNTHETIC controlled kernel prompt. Produce a deterministic appointment draft update; no real data, no external call.',
+    owner: 'platform-synthetic',
+    approvedBy: 'synthetic-reviewer',
+    status: 'approved',
+    effectiveFrom: '2026-09-01T00:00:00.000Z',
+    classification: 'INTERNAL'
+  })
+  const provider = new DeterministicModelProvider({
+    respond: () => ({
+      text: JSON.stringify({ text: 'SYNTHETIC_CONTROLLED_KERNEL_PAYLOAD' }),
+      usage: { inputTokens: 10, outputTokens: 5 },
+      providerId: 'deterministic',
+      model: 'deterministic-v1',
+      externalCall: false
+    })
+  })
+  const profile: ModelProfile = {
+    name: 'fast',
+    providerId: 'deterministic',
+    model: 'deterministic-v1',
+    location: 'local',
+    temperature: 0,
+    maxTokens: 256,
+    timeoutMs: 5_000,
+    maxCostUsd: 1,
+    estimatedCostUsd: 0,
+    maxRetries: 0,
+    pricing: { inputPer1kUsd: 0, outputPer1kUsd: 0 }
+  }
+  return new ModelGateway({
+    providers: [provider],
+    profiles: { fast: profile },
+    prompts,
+    retry: { maxRetries: 0 }
+  })
+}
+
+/**
+ * Durable prerequisites probe: the tenant-scoped `effect_journal` (0013),
+ * `runtime_approvals` (0015) and `runtime_audit_events` (0017) tables must
+ * exist and be reachable. Missing migrations fail closed before any turn runs.
+ */
+export async function assertPostgresKernelPrerequisites(
+  pool: PostgresPoolLike,
+  tenantId: TenantId
+): Promise<void> {
+  try {
+    await withTenantContext(pool, tenantId, async (client) => {
+      await client.query(
+        'SELECT 1 FROM effect_journal WHERE tenant_id = $1 LIMIT 0',
+        [tenantId]
+      )
+      await client.query(
+        'SELECT 1 FROM runtime_approvals WHERE tenant_id = $1 LIMIT 0',
+        [tenantId]
+      )
+      await client.query(
+        'SELECT 1 FROM runtime_audit_events WHERE tenant_id = $1 LIMIT 0',
+        [tenantId]
+      )
+    })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    throw new KernelRuntimeConfigurationError(
+      'kernel_runtime_prerequisites_missing',
+      `Durable kernel runtime prerequisites are missing (effect_journal/runtime_approvals/runtime_audit_events): ${message}`
+    )
+  }
+}
+
+/**
+ * Controlled governed-kernel composition for the worker. The effect journal is
+ * constructed on one client checked out per turn from the pool (released by
+ * `withTenantContext` in a finally), while approvals are the durable
+ * `PostgresApprovalAuthority`. The tool executor is fake and records every
+ * invocation; the outbox enqueues synthetic `message.outbound` events only.
+ */
+export function createPostgresKernelRuntime(
+  input: CreatePostgresKernelRuntimeInput
+): PostgresKernelRuntime {
+  const { pool, tenantId, env, agentId } = input
+  if (
+    pool === undefined ||
+    pool === null ||
+    typeof (pool as { connect?: unknown }).connect !== 'function'
+  ) {
+    throw new KernelRuntimeConfigurationError(
+      'kernel_runtime_prerequisites_missing',
+      'Kernel worker runtime requires a PostgreSQL pool for the durable effect journal and approval authority'
+    )
+  }
+  const workflowCoordinator = resolveWorkflowCoordinator(
+    env,
+    input.workflowCoordinatorAdapters
+  )
+
+  const policy = new PolicyEngine({
+    documents: [PolicyDocumentSchema.parse(CONTROLLED_KERNEL_POLICY_DOCUMENT)]
+  })
+  const approvals = new PostgresApprovalAuthority(pool)
+  const telemetry = input.runtimeTelemetry ?? new InMemoryTelemetry()
+  const audit = new HashChainedAuditLedger()
+  const modelGateway = createControlledModelGateway()
+  const conversations = new TenantScopedPostgresRuntimeRepository(pool)
+
+  const toolInvocations: ToolInvocation[] = []
+  const turnResults: GovernedTurnResult[] = []
+  const toolExecutor = async (
+    invocation: ToolInvocation
+  ): Promise<{ result: unknown }> => {
+    toolInvocations.push(invocation)
+    return { result: { synthetic: true, invocation } }
+  }
+
+  const flushRuntimeAudit = async (traceId: string | undefined) => {
+    if (
+      traceId === undefined ||
+      typeof conversations.appendRuntimeAuditRecords !== 'function'
+    ) {
+      return
+    }
+    const records = audit.recordsForTrace(traceId)
+    if (records.length === 0) return
+    await conversations.appendRuntimeAuditRecords(tenantId, records)
+    const durableAudit = await conversations.verifyRuntimeAuditChain(tenantId)
+    if (!durableAudit.valid) {
+      throw new Error(
+        `Durable runtime audit chain verification failed at ${durableAudit.brokenAt ?? 'unknown'}: ${durableAudit.reason ?? 'invalid'}`
+      )
+    }
+  }
+
+  const runTurn = async (
+    turnInput: GovernedTurnInput
+  ): Promise<GovernedTurnResult> => {
+    let result: GovernedTurnResult
+    try {
+      result = await withTenantContext(pool, tenantId, async (client) => {
+        const effectJournal = new PostgresEffectJournal(client)
+        const outbox = async (
+          event: OutboxEnqueueInput
+        ): Promise<{ eventId: string }> => {
+          const enqueued = await conversations.enqueue({
+            tenantId,
+            type: 'message.outbound',
+            payload: {
+              synthetic: true,
+              sourceEventType: event.eventType,
+              capability: turnInput.capability,
+              action: turnInput.action,
+              resourceType: turnInput.resource.type,
+              correlationId: event.correlationId,
+              traceId: event.traceId
+            },
+            idempotencyKey: `kernel-outbox:${event.idempotencyKey}`,
+            correlationId: event.correlationId,
+            traceId: event.traceId,
+            conversationId: turnInput.conversationId,
+            sessionId: turnInput.sessionId ?? null
+          })
+          return { eventId: enqueued.id }
+        }
+        const composition = createGovernedRuntimeComposition({
+          policy,
+          approvals,
+          modelGateway,
+          telemetry,
+          audit,
+          toolExecutor,
+          outbox,
+          effectJournal,
+          requireDurable: true,
+          durableApprovals: true,
+          effectScopes: CONTROLLED_KERNEL_EFFECT_SCOPES
+        })
+        return composition.runtime.runTurn(turnInput)
+      })
+    } catch (error) {
+      // Persist any audit records emitted before a crash/timeout. The retry is
+      // idempotent by event key, while an audit persistence failure remains a
+      // hard error and prevents the inbound message from being acknowledged.
+      await flushRuntimeAudit(turnInput.traceContext?.traceId)
+      throw error
+    }
+    await flushRuntimeAudit(result.traceId)
+    turnResults.push(result)
+    return result
+  }
+
+  return {
+    tenantId,
+    agentId,
+    policy,
+    approvals,
+    audit,
+    telemetry,
+    conversations,
+    workflowCoordinator,
+    toolInvocations,
+    turnResults,
+    runTurn,
+    preflight: () => assertPostgresKernelPrerequisites(pool, tenantId)
+  }
+}
+
+function resolveKernelAgentId(env: NodeJS.ProcessEnv): AgentId | undefined {
+  const raw = env.CVG_WORKER_AGENT_ID?.trim() || env.INBOUND_AGENT_ID?.trim()
+  if (!raw) return undefined
+  return AgentIdSchema.parse(raw)
+}
+
+function syntheticWorkflowPlan(input: {
+  tenantId: TenantId
+  context: InboundRuntimeContext
+  envelope: KernelTurnEnvelope
+  correlationId: string
+}): WorkflowPlan {
+  return {
+    planId: `synthetic-plan:${input.context.message.id}`,
+    tenantId: input.tenantId,
+    conversationId: input.context.message.conversationId,
+    ...(input.context.session !== null
+      ? { sessionId: input.context.session.id }
+      : {}),
+    correlationId: input.correlationId,
+    steps: [workflowStepFromEnvelope(input.envelope)]
+  }
+}
+
+function workflowStepFromEnvelope(envelope: KernelTurnEnvelope): WorkflowStep {
+  return {
+    stepId: `synthetic-step:${envelope.action}`,
+    capability: envelope.capability,
+    action: envelope.action,
+    resource: {
+      type: envelope.resource.type,
+      ...(envelope.resource.id !== undefined
+        ? { id: envelope.resource.id }
+        : {})
+    },
+    dataClassification: envelope.dataClassification,
+    modelMessages: {
+      messages: [{ role: 'user', content: envelope.message }]
+    },
+    structuredOutput: {
+      schemaName: 'ControlledKernelPayload',
+      schema: CONTROLLED_KERNEL_PAYLOAD_SCHEMA
+    },
+    ...(envelope.idempotencyKey !== undefined
+      ? { idempotencyKey: envelope.idempotencyKey }
+      : {})
+  }
+}
+
+function invalidWorkflowPlan(message: string): never {
+  throw new Error(`runtime_composition_invalid: ${message}`)
+}
+
+function validateWorkflowPlan(input: {
+  plan: WorkflowPlan
+  tenantId: TenantId
+  conversationId: string
+  sessionId: string | null
+  correlationId: string
+}): { plan: WorkflowPlan; step: WorkflowStep } {
+  const { plan } = input
+  if (
+    !plan ||
+    typeof plan !== 'object' ||
+    typeof plan.planId !== 'string' ||
+    plan.planId.trim().length === 0 ||
+    plan.tenantId !== input.tenantId ||
+    plan.conversationId !== input.conversationId ||
+    plan.correlationId !== input.correlationId ||
+    !Array.isArray(plan.steps) ||
+    plan.steps.length !== 1
+  ) {
+    return invalidWorkflowPlan(
+      'workflow plan must contain exactly one step bound to the inbound tenant, conversation and correlation'
+    )
+  }
+
+  if (
+    plan.sessionId !== undefined &&
+    (input.sessionId === null || plan.sessionId !== input.sessionId)
+  ) {
+    return invalidWorkflowPlan(
+      'workflow plan session does not match the inbound session'
+    )
+  }
+
+  const step = plan.steps[0]
+  if (
+    !step ||
+    typeof step !== 'object' ||
+    typeof step.stepId !== 'string' ||
+    step.stepId.trim().length === 0 ||
+    typeof step.action !== 'string' ||
+    step.action.trim().length === 0 ||
+    typeof step.resource !== 'object' ||
+    step.resource === null ||
+    typeof step.resource.type !== 'string' ||
+    step.resource.type.trim().length === 0
+  ) {
+    return invalidWorkflowPlan(
+      'workflow step has an invalid action or resource'
+    )
+  }
+  if (
+    step.resource.tenantId !== undefined &&
+    step.resource.tenantId !== input.tenantId
+  ) {
+    return invalidWorkflowPlan(
+      'workflow resource tenant does not match the inbound tenant'
+    )
+  }
+  const capability = CapabilitySchema.safeParse(step.capability)
+  if (!capability.success) {
+    return invalidWorkflowPlan('workflow capability is invalid')
+  }
+  const dataClassification = DataClassificationSchema.safeParse(
+    step.dataClassification
+  )
+  if (!dataClassification.success) {
+    return invalidWorkflowPlan('workflow data classification is invalid')
+  }
+  if (step.modelMessages !== undefined) {
+    const modelMessages = ModelInputSchema.safeParse(step.modelMessages)
+    if (!modelMessages.success) {
+      return invalidWorkflowPlan('workflow model messages are invalid')
+    }
+  }
+  const normalizedPlan =
+    input.sessionId !== null && plan.sessionId === undefined
+      ? { ...plan, sessionId: input.sessionId }
+      : plan
+  return {
+    plan: normalizedPlan,
+    step: {
+      ...step,
+      capability: capability.data,
+      dataClassification: dataClassification.data,
+      resource: {
+        type: step.resource.type,
+        ...(step.resource.id !== undefined ? { id: step.resource.id } : {}),
+        ...(step.resource.tenantId !== undefined
+          ? { tenantId: step.resource.tenantId }
+          : {})
+      },
+      ...(step.modelMessages !== undefined
+        ? { modelMessages: ModelInputSchema.parse(step.modelMessages) }
+        : {})
+    }
+  }
+}
+
+async function buildKernelTurnInput(input: {
+  tenantId: TenantId
+  agentId: AgentId
+  correlationId: string
+  context: InboundRuntimeContext
+  envelope: KernelTurnEnvelope
+  coordinator: ResolvedWorkflowCoordinator
+  traceContext?: TraceContext
+}): Promise<GovernedTurnInput> {
+  const { envelope } = input
+  const plan =
+    input.coordinator.coordinator === null
+      ? syntheticWorkflowPlan(input)
+      : await input.coordinator.coordinator.planStep({
+          tenantId: input.tenantId,
+          conversationId: input.context.message.conversationId,
+          correlationId: input.correlationId,
+          state: {
+            inboundMessageId: input.context.message.id,
+            sessionId: input.context.session?.id ?? null,
+            channel: input.context.channel,
+            senderRef: input.context.senderRef,
+            envelope
+          }
+        })
+  const validated = validateWorkflowPlan({
+    plan,
+    tenantId: input.tenantId,
+    conversationId: input.context.message.conversationId,
+    sessionId: input.context.session?.id ?? null,
+    correlationId: input.correlationId
+  })
+  const envelopeForRuntime: GovernedTurnEnvelope = {
+    // The inbound JSON is untrusted data. These values are deliberately fixed
+    // to the controlled worker identity and never derive policy authority from
+    // a caller-provided role or operator id.
+    operatorId: 'op_synthetic_kernel',
+    operatorRole: 'Operator',
+    agentId: input.agentId,
+    agentVersion: envelope.agentVersion,
+    agentProfile: envelope.agentProfile,
+    prompt: {
+      promptId: CONTROLLED_KERNEL_PROMPT_ID,
+      version: CONTROLLED_KERNEL_PROMPT_VERSION
+    },
+    modelProfile: envelope.modelProfile,
+    inboundMessageId: input.context.message.id,
+    ...(input.traceContext !== undefined
+      ? { traceContext: input.traceContext }
+      : {}),
+    ...(envelope.approvalId !== undefined
+      ? { approvalId: envelope.approvalId }
+      : {}),
+    ...(envelope.task !== undefined ? { task: envelope.task } : {})
+  }
+  return toGovernedTurnInput(validated.plan, validated.step, envelopeForRuntime)
+}
+
+function kernelOutcomeStatus(outcome: GovernedTurnResult['outcome']): string {
+  switch (outcome) {
+    case 'executed':
+      return 'completed'
+    case 'approval_required':
+      return 'approval_required'
+    case 'shadowed':
+      return 'shadowed'
+    case 'denied':
+      return 'denied'
+  }
+}
+
+/**
+ * Inbound composition for the governed kernel. It mirrors the published-agent
+ * handler's context loading and fail-closed statuses, converts the synthetic
+ * JSON body into a `GovernedTurnInput`, runs the kernel and marks the inbound
+ * message completed. No external effect is ever produced here.
+ */
+export function createPostgresKernelHandlers(
+  env: NodeJS.ProcessEnv,
+  runtime: PostgresKernelRuntime
+): ControlledWorkerHandlers {
+  const configuredAgentId = resolveKernelAgentId(env)
+  if (
+    configuredAgentId !== undefined &&
+    configuredAgentId !== runtime.agentId
+  ) {
+    throw new KernelRuntimeConfigurationError(
+      'kernel_runtime_prerequisites_missing',
+      'Kernel worker agent id does not match the composed runtime'
+    )
+  }
+
+  return {
+    inboundProcess: async (event) => {
+      if (!event.conversationId || !event.inboundMessageId) {
+        throw new Error('Inbound outbox event is missing runtime identifiers')
+      }
+      const conversationId = event.conversationId
+      const inboundMessageId = event.inboundMessageId
+      const sessionId = event.sessionId ?? null
+      const tenantId = TenantIdSchema.parse(event.tenantId)
+      const correlationId = CorrelationIdSchema.parse(event.correlationId)
+      const traceId = RuntimeTraceIdSchema.parse(event.traceId)
+      if (tenantId !== runtime.tenantId) {
+        throw new Error(
+          'Inbound outbox tenant does not match the configured kernel worker tenant'
+        )
+      }
+      const context = await runtime.conversations.findInboundRuntimeContext(
+        tenantId,
+        conversationId,
+        sessionId,
+        inboundMessageId
+      )
+      if (!context) {
+        throw new Error('Inbound runtime context was not found')
+      }
+      if (context.correlationId !== correlationId) {
+        throw new Error(
+          'Inbound runtime correlation does not match the persisted conversation'
+        )
+      }
+      if (
+        context.message.runtimeTraceId !== undefined &&
+        context.message.runtimeTraceId !== traceId
+      ) {
+        throw new Error(
+          'Inbound runtime trace does not match the persisted conversation'
+        )
+      }
+      let continuation = parseKernelContinuationPayload(event.payload)
+      if (
+        continuation?.traceId !== undefined &&
+        continuation.traceId !== traceId
+      ) {
+        throw new Error(
+          'Inbound runtime continuation trace does not match the durable event trace'
+        )
+      }
+      let recoveredContinuation = false
+      if (context.message.runtimeStatus === 'completed') {
+        return { status: 'already_completed', externalEffects: false }
+      }
+      if (
+        context.message.runtimeStatus === 'pending' &&
+        !continuation &&
+        runtime.approvals !== undefined &&
+        typeof runtime.approvals.findByContinuation === 'function'
+      ) {
+        const existingApproval = await runtime.approvals.findByContinuation(
+          tenantId,
+          inboundMessageId
+        )
+        if (existingApproval) {
+          if (
+            existingApproval.status === 'REQUESTED' ||
+            existingApproval.status === 'PENDING'
+          ) {
+            const markedWaiting =
+              await runtime.conversations.markInboundRuntimeWaitingForApproval(
+                inboundMessageId,
+                tenantId,
+                existingApproval.approvalId,
+                existingApproval.continuation?.traceId ?? traceId
+              )
+            if (!markedWaiting) {
+              throw new Error(
+                'Inbound runtime approval recovery marker was not updated'
+              )
+            }
+            return {
+              status: 'approval_required_pending',
+              runtimeStatus: 'approval_required',
+              approvalId: existingApproval.approvalId,
+              externalEffects: false,
+              traceId: existingApproval.continuation?.traceId ?? traceId,
+              correlationId
+            }
+          }
+          if (existingApproval.status === 'REJECTED') {
+            const markedCompleted =
+              await runtime.conversations.markInboundRuntimeCompleted(
+                inboundMessageId,
+                tenantId
+              )
+            if (!markedCompleted) {
+              throw new Error(
+                'Inbound runtime rejection recovery marker was not updated'
+              )
+            }
+            return {
+              status: 'denied',
+              runtimeStatus: 'denied',
+              reason: 'approval_rejected',
+              externalEffects: false,
+              approvalId: existingApproval.approvalId,
+              traceId: existingApproval.continuation?.traceId ?? traceId,
+              correlationId
+            }
+          }
+          if (existingApproval.status === 'APPROVED') {
+            continuation = {
+              kind: 'runtime_approval.continue',
+              approvalId: existingApproval.approvalId,
+              decision: 'approve',
+              ...(existingApproval.continuation?.traceId !== undefined
+                ? { traceId: existingApproval.continuation.traceId }
+                : {})
+            }
+            recoveredContinuation = true
+          } else if (
+            existingApproval.status === 'RESERVED' ||
+            existingApproval.status === 'EXECUTING'
+          ) {
+            // A worker may crash after the durable reservation but before the
+            // inbound event is acknowledged. Re-enter the governed runtime;
+            // its effect journal recovery path decides whether replay is safe,
+            // already in progress or uncertain.
+            continuation = {
+              kind: 'runtime_approval.continue',
+              approvalId: existingApproval.approvalId,
+              decision: 'approve',
+              ...(existingApproval.continuation?.traceId !== undefined
+                ? { traceId: existingApproval.continuation.traceId }
+                : {})
+            }
+            recoveredContinuation = true
+          } else if (existingApproval.status === 'EXECUTED') {
+            const markedCompleted =
+              await runtime.conversations.markInboundRuntimeCompleted(
+                inboundMessageId,
+                tenantId
+              )
+            if (!markedCompleted) {
+              throw new Error(
+                'Inbound runtime executed recovery marker was not updated'
+              )
+            }
+            return {
+              status: 'already_completed',
+              runtimeStatus: 'executed',
+              externalEffects: false,
+              approvalId: existingApproval.approvalId,
+              traceId: existingApproval.continuation?.traceId ?? traceId,
+              correlationId
+            }
+          } else {
+            throw new Error(
+              'Inbound runtime approval is in a non-resumable terminal state'
+            )
+          }
+        }
+      }
+      if (context.message.runtimeStatus === 'waiting_approval') {
+        if (!continuation) {
+          return {
+            status: 'approval_required_pending',
+            runtimeStatus: 'approval_required',
+            approvalId: context.message.runtimeApprovalId,
+            externalEffects: false,
+            traceId: context.message.runtimeTraceId,
+            correlationId
+          }
+        }
+        if (context.message.runtimeApprovalId !== continuation.approvalId) {
+          throw new Error(
+            'Inbound runtime approval continuation does not match the persisted approval'
+          )
+        }
+        const approval = await runtime.approvals.get(
+          tenantId,
+          continuation.approvalId
+        )
+        if (
+          (continuation.decision === 'approve' &&
+            !['APPROVED', 'RESERVED', 'EXECUTING'].includes(approval.status)) ||
+          (continuation.decision === 'reject' && approval.status !== 'REJECTED')
+        ) {
+          throw new Error(
+            'Inbound runtime approval continuation does not match the durable approval decision'
+          )
+        }
+      } else if (continuation && !recoveredContinuation) {
+        throw new Error(
+          'Inbound runtime approval continuation requires a waiting message'
+        )
+      }
+      if (context.session && !canBotRespond(context.session.takeoverState)) {
+        return { status: 'paused_human_takeover', externalEffects: false }
+      }
+
+      const parsedEnvelope = parseKernelTurnEnvelope(context.message.body)
+      if (continuation?.decision === 'reject') {
+        const markedCompleted =
+          await runtime.conversations.markInboundRuntimeCompleted(
+            inboundMessageId,
+            tenantId
+          )
+        if (!markedCompleted) {
+          throw new Error(
+            'Inbound runtime rejection completion marker was not updated'
+          )
+        }
+        return {
+          status: 'denied',
+          runtimeStatus: 'denied',
+          reason: 'approval_rejected',
+          externalEffects: false,
+          approvalId: continuation.approvalId,
+          traceId: context.message.runtimeTraceId ?? traceId,
+          correlationId
+        }
+      }
+      const envelope = continuation
+        ? { ...parsedEnvelope, approvalId: continuation.approvalId }
+        : parsedEnvelope
+      const traceContext = createTraceContextWithTraceId({
+        traceId,
+        correlationId,
+        tenantId,
+        conversationId,
+        ...(sessionId !== null ? { sessionId } : {}),
+        agentId: runtime.agentId
+      })
+      const turnInput = await buildKernelTurnInput({
+        tenantId,
+        agentId: runtime.agentId,
+        correlationId,
+        context,
+        envelope,
+        coordinator: runtime.workflowCoordinator,
+        ...(traceContext !== undefined ? { traceContext } : {})
+      })
+      const result = await runtime.runTurn(turnInput)
+      const runtimeAuditRecords =
+        runtime.audit !== undefined &&
+        typeof runtime.audit.recordsForTrace === 'function'
+          ? runtime.audit.recordsForTrace(result.traceId)
+          : []
+      if (
+        runtimeAuditRecords.length > 0 &&
+        typeof runtime.conversations.appendRuntimeAuditRecords === 'function'
+      ) {
+        await runtime.conversations.appendRuntimeAuditRecords(
+          tenantId,
+          runtimeAuditRecords
+        )
+        const durableAudit =
+          await runtime.conversations.verifyRuntimeAuditChain(tenantId)
+        if (!durableAudit.valid) {
+          throw new Error(
+            `Durable runtime audit chain verification failed at ${durableAudit.brokenAt ?? 'unknown'}: ${durableAudit.reason ?? 'invalid'}`
+          )
+        }
+      }
+      await runtime.conversations.appendAudit(
+        {
+          type: 'integration_event',
+          actorType: 'System',
+          actorId: 'agent-runtime',
+          tenantId,
+          correlationId: result.correlationId,
+          policyVersion: `${CONTROLLED_KERNEL_POLICY_ID}@${CONTROLLED_KERNEL_POLICY_VERSION}`,
+          payload: {
+            tenantId,
+            conversationId,
+            sessionId,
+            inboundMessageId,
+            runtimePath: 'governed-kernel',
+            outcome: result.outcome,
+            reason: result.reason,
+            traceId: result.traceId,
+            ...(result.approvalId !== undefined
+              ? { approvalId: result.approvalId }
+              : {}),
+            ...(result.outboxEventId !== undefined
+              ? { outboxEventId: result.outboxEventId }
+              : {}),
+            ...(result.executionRef !== undefined
+              ? { executionRef: result.executionRef }
+              : {}),
+            ...(result.resultDigest !== undefined
+              ? { resultDigest: result.resultDigest }
+              : {}),
+            ...(result.replayed !== undefined
+              ? { replayed: result.replayed }
+              : {}),
+            ...(result.effectConfirmed !== undefined
+              ? { effectConfirmed: result.effectConfirmed }
+              : {}),
+            auditChainValid: result.auditChainValid,
+            costUsd: result.costUsd,
+            durationMs: result.durationMs
+          }
+        },
+        tenantId
+      )
+      if (result.outcome === 'approval_required') {
+        if (!result.approvalId) {
+          throw new Error(
+            'Governed runtime requested approval without an approval id'
+          )
+        }
+        const markedWaiting =
+          await runtime.conversations.markInboundRuntimeWaitingForApproval(
+            inboundMessageId,
+            tenantId,
+            result.approvalId,
+            result.traceId
+          )
+        if (!markedWaiting) {
+          throw new Error(
+            'Inbound runtime approval waiting marker was not updated'
+          )
+        }
+      } else {
+        const markedCompleted =
+          await runtime.conversations.markInboundRuntimeCompleted(
+            inboundMessageId,
+            tenantId
+          )
+        if (!markedCompleted) {
+          throw new Error('Inbound runtime completion marker was not updated')
+        }
+      }
+      return {
+        status: kernelOutcomeStatus(result.outcome),
+        runtimeStatus: result.outcome,
+        reason: result.reason,
+        externalEffects: false,
+        ...(result.approvalId !== undefined
+          ? { approvalId: result.approvalId }
+          : {}),
+        traceId: result.traceId,
+        correlationId: result.correlationId
+      }
+    },
+    messageOutbound: () => ({
+      status: 'controlled_outbound_suppressed',
+      externalEffects: false
+    })
+  }
+}
+
+function parseKernelContinuationPayload(
+  payload: unknown
+): KernelContinuationPayload | null {
+  if (payload === null || typeof payload !== 'object' || !('kind' in payload)) {
+    return null
+  }
+  const parsed = KernelContinuationPayloadSchema.safeParse(payload)
+  if (!parsed.success) {
+    throw new Error(
+      'runtime_approval_continuation_invalid: continuation payload is invalid'
+    )
+  }
+  return parsed.data
+}

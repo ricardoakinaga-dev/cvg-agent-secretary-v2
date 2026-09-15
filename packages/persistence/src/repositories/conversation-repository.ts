@@ -1,4 +1,5 @@
 import {
+  CorrelationIdSchema,
   createCorrelationId,
   createDomainId,
   DomainError,
@@ -84,18 +85,31 @@ export class ConversationRepository {
     channel: Channel,
     externalMessageId: string
   ): MessageRecord | null {
-    return (
-      this.db.state.messages.find((message) => {
-        const conversation = this.db.state.conversations.find(
-          (item) => item.id === message.conversationId
-        )
-        return (
-          conversation?.tenantId === tenantId &&
-          conversation?.channel === channel &&
-          message.externalMessageId === externalMessageId
-        )
-      }) ?? null
+    const message = this.db.state.messages.find((candidate) => {
+      const conversation = this.db.state.conversations.find(
+        (item) => item.id === candidate.conversationId
+      )
+      return (
+        conversation?.tenantId === tenantId &&
+        conversation?.channel === channel &&
+        candidate.externalMessageId === externalMessageId
+      )
+    })
+    if (!message) return null
+    const conversation = this.db.state.conversations.find(
+      (candidate) => candidate.id === message.conversationId
     )
+    if (!conversation) return null
+    const session = this.db.state.sessions
+      .filter((candidate) => candidate.conversationId === conversation.id)
+      .sort(
+        (left, right) => right.updatedAt.getTime() - left.updatedAt.getTime()
+      )[0]
+    return {
+      ...message,
+      correlationId: conversation.correlationId,
+      sessionId: session?.id ?? null
+    }
   }
 
   createWithSession(input: {
@@ -106,6 +120,8 @@ export class ConversationRepository {
     body: string
     conversationId?: string | undefined
     sessionId?: string | undefined
+    correlationId?: string | undefined
+    runtimeTraceId?: string | undefined
   }): {
     conversation: ConversationRecord
     session: SessionRecord
@@ -154,6 +170,9 @@ export class ConversationRepository {
         direction: 'inbound',
         body: redactSensitiveText(input.body),
         runtimeStatus: 'pending',
+        ...(input.runtimeTraceId !== undefined
+          ? { runtimeTraceId: input.runtimeTraceId }
+          : {}),
         createdAt: now
       }
       this.db.state.conversations = this.db.state.conversations.map(
@@ -170,7 +189,10 @@ export class ConversationRepository {
       senderRef: redactSensitiveText(input.senderRef),
       senderRefHash: createSenderRefFingerprint(tenantId, input.senderRef),
       status: 'active',
-      correlationId: createCorrelationId(),
+      correlationId:
+        input.correlationId !== undefined
+          ? CorrelationIdSchema.parse(input.correlationId)
+          : createCorrelationId(),
       createdAt: now,
       updatedAt: now
     }
@@ -189,6 +211,9 @@ export class ConversationRepository {
       direction: 'inbound',
       body: redactSensitiveText(input.body),
       runtimeStatus: 'pending',
+      ...(input.runtimeTraceId !== undefined
+        ? { runtimeTraceId: input.runtimeTraceId }
+        : {}),
       createdAt: now
     }
     this.db.state.conversations = [...this.db.state.conversations, conversation]
@@ -286,6 +311,38 @@ export class ConversationRepository {
       if (
         message.id !== messageId ||
         message.direction !== 'inbound' ||
+        !['pending', 'waiting_approval'].includes(
+          message.runtimeStatus ?? 'pending'
+        )
+      ) {
+        return false
+      }
+      const conversation = this.db.state.conversations.find(
+        (candidate) => candidate.id === message.conversationId
+      )
+      return conversation?.tenantId === scope
+    })
+    if (!target) return false
+    this.db.state.messages = this.db.state.messages.map((message) => {
+      if (message.id !== messageId) return message
+      const completed = { ...message, runtimeStatus: 'completed' as const }
+      delete completed.runtimeApprovalId
+      return completed
+    })
+    return true
+  }
+
+  markInboundRuntimeWaitingForApproval(
+    messageId: string,
+    tenantId: TenantId,
+    approvalId: string,
+    traceId?: string
+  ): boolean {
+    const scope = TenantIdSchema.parse(tenantId)
+    const target = this.db.state.messages.find((message) => {
+      if (
+        message.id !== messageId ||
+        message.direction !== 'inbound' ||
         message.runtimeStatus !== 'pending'
       ) {
         return false
@@ -298,7 +355,12 @@ export class ConversationRepository {
     if (!target) return false
     this.db.state.messages = this.db.state.messages.map((message) =>
       message.id === messageId
-        ? { ...message, runtimeStatus: 'completed' as const }
+        ? {
+            ...message,
+            runtimeStatus: 'waiting_approval' as const,
+            runtimeApprovalId: approvalId,
+            ...(traceId !== undefined ? { runtimeTraceId: traceId } : {})
+          }
         : message
     )
     return true

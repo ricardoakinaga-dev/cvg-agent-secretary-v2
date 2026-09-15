@@ -26,24 +26,17 @@ const legacyBootstrapSuffix = ['demo', 'controlled'].join('_')
 const legacyConversationTimelinePath = `/v1/conversations/conv_${legacyBootstrapSuffix}/timeline`
 const legacyAuditPath = `/v1/audit/sessions/sess_${legacyBootstrapSuffix}`
 
+const defaultTenantId = 'tenant_00000000-0000-4000-8000-000000000099'
+const identityFor = (
+  operatorId = 'operator.shift-a',
+  role: 'Operator' | 'Approver' | 'Supervisor' | 'Admin' = 'Operator',
+  tenantId = defaultTenantId
+) => ({ operatorId, role, tenantId })
+
 afterEach(() => {
   cleanup()
   vi.restoreAllMocks()
 })
-
-function enterOperatorIdentity(
-  operatorId = 'operator.shift-a',
-  role = 'Operator'
-) {
-  fireEvent.change(screen.getByLabelText('ID do operador'), {
-    target: { value: operatorId }
-  })
-  if (role !== 'Operator') {
-    fireEvent.change(screen.getByLabelText('Papel operacional'), {
-      target: { value: role }
-    })
-  }
-}
 
 describe('web console', () => {
   it('renders loading and then API-backed operational data for conversations, approvals, tasks and audit', async () => {
@@ -116,8 +109,7 @@ describe('web console', () => {
       return Promise.reject(new Error(`Unexpected URL ${url}`))
     })
 
-    render(<App />)
-    enterOperatorIdentity()
+    render(<App identity={identityFor()} />)
 
     expect(screen.getByText('CVG Agent Secretary')).toBeTruthy()
     expect(screen.getAllByText('Carregando...')).toHaveLength(4)
@@ -307,11 +299,9 @@ describe('web console', () => {
       return Promise.reject(new Error(`Unexpected URL ${url}`))
     })
 
-    render(<App />)
-    fireEvent.change(screen.getByLabelText('Tenant ID'), {
-      target: { value: tenantA }
-    })
-    enterOperatorIdentity()
+    const view = render(
+      <App identity={identityFor('operator.shift-a', 'Operator', tenantA)} />
+    )
 
     expect(await screen.findByText('tenant-a-sender')).toBeTruthy()
     expect(await screen.findByText('approval-tenant-a')).toBeTruthy()
@@ -319,9 +309,9 @@ describe('web console', () => {
     expect(await screen.findByText('audit-tenant-a')).toBeTruthy()
     expect(await screen.findByText('Timeline do tenant A')).toBeTruthy()
 
-    fireEvent.change(screen.getByLabelText('Tenant ID'), {
-      target: { value: tenantB }
-    })
+    view.rerender(
+      <App identity={identityFor('operator.shift-a', 'Operator', tenantB)} />
+    )
 
     await waitFor(() => {
       expect(screen.queryByText('tenant-a-sender')).toBeNull()
@@ -421,11 +411,9 @@ describe('web console', () => {
       return Promise.reject(new Error(`Unexpected URL ${url}`))
     })
 
-    render(<App />)
-    fireEvent.change(screen.getByLabelText('Tenant ID'), {
-      target: { value: tenantA }
-    })
-    enterOperatorIdentity('approver.shift-a', 'Approver')
+    const view = render(
+      <App identity={identityFor('approver.shift-a', 'Approver', tenantA)} />
+    )
 
     fireEvent.click(
       await screen.findByRole('button', {
@@ -434,9 +422,9 @@ describe('web console', () => {
     )
     expect(resolveDecision).not.toBeNull()
 
-    fireEvent.change(screen.getByLabelText('Tenant ID'), {
-      target: { value: tenantB }
-    })
+    view.rerender(
+      <App identity={identityFor('approver.shift-a', 'Approver', tenantB)} />
+    )
     expect(await screen.findByText('approval-tenant-b')).toBeTruthy()
 
     await act(async () => {
@@ -521,11 +509,7 @@ describe('web console', () => {
       return Promise.reject(new Error(`Unexpected URL ${url}`))
     })
 
-    render(<App />)
-    fireEvent.change(screen.getByLabelText('Tenant ID'), {
-      target: { value: tenant }
-    })
-    enterOperatorIdentity('approver.scope', 'Approver')
+    render(<App identity={identityFor('approver.scope', 'Approver', tenant)} />)
 
     await screen.findByText('sender-scope-a')
     const initialApprovalReads = approvalReads
@@ -555,7 +539,7 @@ describe('web console', () => {
     })
 
     expect(approvalReads).toBe(initialApprovalReads)
-    expect(screen.getByText('medium / pending')).toBeTruthy()
+    expect(screen.getByText('medium / Pendente')).toBeTruthy()
   })
 
   it('renders empty states when the API returns no operational records', async () => {
@@ -571,8 +555,7 @@ describe('web console', () => {
       return Promise.reject(new Error(`Unexpected URL ${url}`))
     })
 
-    render(<App />)
-    enterOperatorIdentity()
+    render(<App identity={identityFor()} />)
 
     expect(await screen.findByText('Nenhuma conversa carregada.')).toBeTruthy()
     expect(await screen.findByText('Nenhuma aprovacao pendente.')).toBeTruthy()
@@ -669,8 +652,7 @@ describe('web console', () => {
       return Promise.reject(new Error(`Unexpected URL ${url}`))
     })
 
-    render(<App />)
-    enterOperatorIdentity()
+    render(<App identity={identityFor()} />)
 
     expect(await screen.findByText('sender-two')).toBeTruthy()
     fireEvent.click(screen.getByText('sender-two'))
@@ -790,8 +772,9 @@ describe('web console', () => {
       return Promise.reject(new Error(`Unexpected URL ${url}`))
     })
 
-    render(<App />)
-    enterOperatorIdentity('approver.shift-a', 'Approver')
+    const view = render(
+      <App identity={identityFor('approver.shift-a', 'Approver')} />
+    )
 
     expect(await screen.findByText('create_appointment_draft')).toBeTruthy()
     fireEvent.click(
@@ -799,12 +782,9 @@ describe('web console', () => {
         name: 'Aprovar create_appointment_draft'
       })
     )
-    fireEvent.change(screen.getByLabelText('ID do operador'), {
-      target: { value: 'supervisor.shift-a' }
-    })
-    fireEvent.change(screen.getByLabelText('Papel operacional'), {
-      target: { value: 'Supervisor' }
-    })
+    view.rerender(
+      <App identity={identityFor('supervisor.shift-a', 'Supervisor')} />
+    )
     fireEvent.click(
       await screen.findByRole('button', {
         name: 'Assumir handoff handoff_to_operator'
@@ -897,8 +877,7 @@ describe('web console', () => {
       return Promise.reject(new Error(`Unexpected URL ${url}`))
     })
 
-    render(<App />)
-    enterOperatorIdentity()
+    render(<App identity={identityFor()} />)
 
     expect(await screen.findByText('Tarefa via API')).toBeTruthy()
     fireEvent.click(
@@ -981,8 +960,7 @@ describe('web console', () => {
       return Promise.reject(new Error(`Unexpected URL ${url}`))
     })
 
-    render(<App />)
-    enterOperatorIdentity()
+    render(<App identity={identityFor()} />)
 
     expect(await screen.findByText('Cancelar tarefa')).toBeTruthy()
     fireEvent.click(
@@ -994,6 +972,137 @@ describe('web console', () => {
       '/v1/tasks/task_api_2/status',
       expect.any(Object)
     )
+  })
+
+  it('refreshes dead-letter, audit and evidence views after a controlled requeue', async () => {
+    let deadLetters = [
+      {
+        id: 'outbox_dlq_1',
+        type: 'inbound.process',
+        status: 'dead_letter',
+        correlationId: 'corr_dlq_1',
+        traceId: 'trace_dlq_1',
+        conversationId: 'conv_api_1',
+        sessionId: 'sess_api_1',
+        inboundMessageId: 'msg_dlq_1',
+        attempts: 3,
+        lastError: '[redacted-outbox-error]',
+        createdAt: '2026-09-14T12:00:00.000Z',
+        availableAt: null,
+        deadLetteredAt: '2026-09-14T12:02:00.000Z'
+      }
+    ]
+    let auditReads = 0
+    let evidenceReads = 0
+
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const url = String(input)
+      if (url === '/v1/conversations?limit=25&offset=0') {
+        return envelope({
+          items: [
+            {
+              id: 'conv_api_1',
+              channel: 'whatsapp',
+              senderRef: 'fixture-sender',
+              status: 'active',
+              correlationId: 'corr_dlq_1',
+              openSessionId: 'sess_api_1',
+              lastMessageBody: 'DLQ controlada',
+              lastMessageAt: '2026-09-14T12:00:00.000Z',
+              updatedAt: '2026-09-14T12:00:00.000Z'
+            }
+          ],
+          pageInfo: { limit: 25, offset: 0, total: 1, hasNextPage: false }
+        })
+      }
+      if (url === '/v1/conversations/conv_api_1/timeline')
+        return envelope({ messages: [] })
+      if (url === '/v1/approvals') return envelope([])
+      if (url === '/v1/tasks') return envelope([])
+      if (url === '/v1/outbox/dead-letters' && !init?.method)
+        return envelope(deadLetters)
+      if (url === '/v1/outbox/dead-letters/outbox_dlq_1/requeue') {
+        expect(init).toMatchObject({
+          method: 'POST',
+          headers: expect.objectContaining({
+            'x-operator-id': 'supervisor.audit',
+            'x-operator-role': 'Supervisor',
+            'x-tenant-id': defaultTenantId
+          })
+        })
+        deadLetters = []
+        return envelope({
+          id: 'outbox_dlq_1',
+          type: 'inbound.process',
+          status: 'pending',
+          correlationId: 'corr_dlq_1',
+          traceId: 'trace_dlq_1',
+          conversationId: 'conv_api_1',
+          sessionId: 'sess_api_1',
+          inboundMessageId: 'msg_dlq_1',
+          attempts: 0,
+          lastError: null,
+          createdAt: '2026-09-14T12:00:00.000Z',
+          availableAt: '2026-09-14T12:03:00.000Z',
+          deadLetteredAt: null
+        })
+      }
+      if (url === '/v1/audit/sessions/sess_api_1') {
+        auditReads += 1
+        return envelope({
+          events: [
+            {
+              id: `audit_dlq_${auditReads}`,
+              type: auditReads > 1 ? 'outbox_requeue' : 'integration_event',
+              actorType: auditReads > 1 ? 'Supervisor' : 'System',
+              createdAt: '2026-09-14T12:03:00.000Z'
+            }
+          ]
+        })
+      }
+      if (url.startsWith('/v1/observability/audit-evidence?')) {
+        evidenceReads += 1
+        return envelope({
+          summary: {
+            totalEvents: 1,
+            byType: { integration_event: 1 },
+            byActorType: { System: 1 }
+          },
+          page: {
+            items: [],
+            pageInfo: { limit: 10, offset: 0, total: 0, hasNextPage: false }
+          },
+          export: {
+            format: 'json',
+            controlled: true,
+            externalDispatch: false,
+            requestedBy: 'supervisor.audit'
+          }
+        })
+      }
+      if (url === '/v1/observability/audit-evidence/checkpoints')
+        return envelope({ checkpoints: [] })
+      return Promise.reject(new Error(`Unexpected URL ${url}`))
+    })
+
+    render(<App identity={identityFor('supervisor.audit', 'Supervisor')} />)
+
+    const requeue = await screen.findByRole('button', {
+      name: 'Reenfileirar inbound.process'
+    })
+    fireEvent.click(requeue)
+
+    expect(
+      await screen.findByText(
+        'Evento reenfileirado; o payload continua fora do console.'
+      )
+    ).toBeTruthy()
+    await waitFor(() =>
+      expect(document.activeElement?.id).toBe('dead-letters-panel')
+    )
+    expect(auditReads).toBeGreaterThanOrEqual(2)
+    expect(evidenceReads).toBeGreaterThanOrEqual(2)
+    expect(screen.queryByText('outbox_dlq_1')).toBeNull()
   })
 
   it.each([
@@ -1101,8 +1210,11 @@ describe('web console', () => {
         return Promise.reject(new Error(`Unexpected URL ${url}`))
       })
 
-      render(<App />)
-      enterOperatorIdentity(operatorId, role)
+      render(
+        <App
+          identity={identityFor(operatorId, role as 'Supervisor' | 'Admin')}
+        />
+      )
 
       expect(await screen.findByText('Evidencias de auditoria')).toBeTruthy()
       expect(await screen.findByText('2 eventos controlados')).toBeTruthy()
@@ -1111,8 +1223,12 @@ describe('web console', () => {
       expect(await screen.findByText(/Dados reais bloqueados/)).toBeTruthy()
       expect(await screen.findByText('approval_decision')).toBeTruthy()
       expect(
-        await screen.findByText('corr_00000000-0000-4000-8000-000000000001')
-      ).toBeTruthy()
+        (
+          await screen.findAllByText(
+            'corr_00000000-0000-4000-8000-000000000001'
+          )
+        ).length
+      ).toBeGreaterThanOrEqual(2)
       expect(globalThis.fetch).toHaveBeenCalledWith(
         '/v1/observability/audit-evidence?sessionId=sess_api_1&limit=10&offset=0',
         expect.objectContaining({
@@ -1272,8 +1388,7 @@ describe('web console', () => {
       return Promise.reject(new Error(`Unexpected URL ${url}`))
     })
 
-    render(<App />)
-    enterOperatorIdentity('supervisor.audit', 'Supervisor')
+    render(<App identity={identityFor('supervisor.audit', 'Supervisor')} />)
 
     expect(await screen.findByText('Evidencias 1-10 de 12')).toBeTruthy()
     expect(await screen.findAllByText('integration_event')).toHaveLength(2)
@@ -1346,8 +1461,11 @@ describe('web console', () => {
         return Promise.reject(new Error(`Unexpected URL ${url}`))
       })
 
-      render(<App />)
-      enterOperatorIdentity(operatorId, role)
+      render(
+        <App
+          identity={identityFor(operatorId, role as 'Operator' | 'Approver')}
+        />
+      )
 
       expect(
         await screen.findByText(
@@ -1366,8 +1484,7 @@ describe('web console', () => {
       new Error('API indisponivel')
     )
 
-    render(<App />)
-    enterOperatorIdentity()
+    render(<App identity={identityFor()} />)
 
     expect(screen.getAllByText('Conversas')).toHaveLength(1)
     expect(screen.getAllByText('Aprovacoes')).toHaveLength(1)
@@ -1376,5 +1493,33 @@ describe('web console', () => {
     expect(
       await screen.findAllByText('Erro ao carregar dados operacionais.')
     ).toHaveLength(4)
+  })
+
+  it('renders host-provided identity as read-only context and fails closed on logout', async () => {
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(
+      new Error('API indisponivel')
+    )
+    const onSessionEnd = vi.fn()
+
+    render(
+      <App
+        identity={identityFor('operator.readonly')}
+        onSessionEnd={onSessionEnd}
+      />
+    )
+
+    expect(screen.getByText('operator.readonly')).toBeTruthy()
+    expect(screen.getByText('Resolvida pela sessão')).toBeTruthy()
+    expect(screen.queryByLabelText('ID do operador')).toBeNull()
+    expect(screen.queryByLabelText('Papel operacional')).toBeNull()
+    expect(screen.queryByLabelText('Tenant ID')).toBeNull()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Encerrar sessão' }))
+
+    expect(onSessionEnd).toHaveBeenCalledTimes(1)
+    expect(await screen.findByText('Aguardando sessão confiável')).toBeTruthy()
+    expect(
+      screen.getByText(/Nenhum contexto de sessão foi fornecido/)
+    ).toBeTruthy()
   })
 })

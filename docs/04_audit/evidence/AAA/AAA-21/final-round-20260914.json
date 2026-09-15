@@ -1,0 +1,151 @@
+{
+  "runId": "AAA-21-FINAL-20260914",
+  "task": "AAA-21",
+  "phase": "AUDIT",
+  "scope": "controlled-local-only",
+  "productionNoGo": true,
+  "externalEffects": false,
+  "realData": false,
+  "frozenInputs": {
+    "spec": {
+      "path": "docs/02_spec/aaa21_build_execution_contract_20260914.md",
+      "sha256": "fd5c42143c8d52d4e2515c7ea33d9227e48c00a7e49e0f09244b041897cb81a2"
+    },
+    "qualityBarV1": {
+      "path": "docs/04_audit/evidence/AAA/AAA-21/quality-bar-v1.json",
+      "sha256": "181b218ba0e21dd126968701e8e4a3005c27b8f0a9ba0d6c5e74830c2d88bba8"
+    },
+    "qualityBarV2": {
+      "path": "docs/04_audit/evidence/AAA/AAA-21/quality-bar-v2.json",
+      "sha256": "714027875bfa6546eedbc7ecb628ddd1c0da30fdb0d186b5c62fce34858d79d4"
+    }
+  },
+  "fingerprint": {
+    "algorithm": "sha256-v1",
+    "capturedAt": "2026-09-14T06:32:54Z",
+    "sha256": "23d1720f52c2b9830b5c8e228c016eed715b615d99fdac5db76f70c0b15df406",
+    "head": "512bc11e80fbf7c7b8baf6263aacc811ff829309",
+    "indexDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "treeFiles": 24054,
+    "note": "Fingerprint captured after code/snapshot hardening and before final evidence/state append. The evidence files below seal the recorded results without rewriting the frozen inputs."
+  },
+  "implementation": [
+    "Trusted HTTP correlation and trace roots propagate through inbound persistence, duplicate lookup, outbox and worker runtime.",
+    "PostgreSQL outbox heartbeat is tenant/owner/live-lease scoped; initial heartbeat failure prevents the controlled effect from starting and heartbeat exceptions fail closed.",
+    "Runtime approval decision, continuation outbox event and audit are committed in one PostgreSQL transaction; continuation and decision audit are idempotent on retry.",
+    "Governed worker composition persists runtime state, rehydrates trace/approval context, journals controlled effects and verifies the durable audit chain.",
+    "Dead-letter API/UI is tenant scoped, Supervisor/Admin only, metadata-only, sanitized and explicit on requeue; Operator/Approver are denied.",
+    "Aquinas console keeps approval state feedback, keyboard focus, responsive shell and populated DLQ visual evidence."
+  ],
+  "criteria": [
+    {
+      "id": "AAA21-C1-public-composition",
+      "status": "PARTIAL_CONTROLLED_BLOCKED_POSTGRES_VERTICAL",
+      "controlledEvidence": "Local unit/component suite passes; public API-to-worker PostgreSQL composition is skipped without TEST_DATABASE_URL.",
+      "nextProof": "Disposable PostgreSQL execution of the frozen API-to-outbox-to-worker scenario."
+    },
+    {
+      "id": "AAA21-C2-identity-propagation",
+      "status": "PARTIAL_CONTROLLED_BLOCKED_POSTGRES_VERTICAL",
+      "controlledEvidence": "Correlation and runtimeTraceId are persisted for new messages and returned on duplicates; worker validates continuity.",
+      "nextProof": "PostgreSQL vertical trace/audit/outbox assertions, including legacy-row behavior."
+    },
+    {
+      "id": "AAA21-C3-idempotent-replay",
+      "status": "PARTIAL_CONTROLLED_BLOCKED_POSTGRES_CRASH_RESTART",
+      "controlledEvidence": "Memory replay, heartbeat, approval atomicity code and idempotency tests pass; PostgreSQL crash/restart proof was not executable.",
+      "residualRisk": "A heartbeat lost after a handler has started cannot cancel arbitrary in-flight code; governed effects still require durable idempotency and physical proof."
+    },
+    {
+      "id": "AAA21-C4-fail-closed-boundaries",
+      "status": "PASS_CONTROLLED_BLOCKED_COMPOSED_POSTGRES_MATRIX",
+      "controlledEvidence": "Local negative regressions cover tenant, trace, correlation, missing durable configuration, runtime selection and unknown event boundaries.",
+      "nextProof": "Re-run the composed PostgreSQL negative matrix."
+    },
+    {
+      "id": "AAA21-C5-regression-gates",
+      "status": "NO_GO_FORMAL",
+      "controlledEvidence": "Full suite, typecheck, lint, build, audit, licenses, startup, targeted Prettier and plan validation pass.",
+      "blockers": [
+        "Coverage is below the formal 95% bar: 92.10 statements, 87.20 branches, 90.95 functions, 92.71 lines.",
+        "Repository format check reports 277 historical files; touched-file Prettier passes.",
+        "Local runtime is Node 24 while the frozen bar targets Node 22.",
+        "PostgreSQL-dependent tests are skipped because TEST_DATABASE_URL is absent."
+      ]
+    },
+    {
+      "id": "AAA21-C6-no-real-effects",
+      "status": "PASS_CONTROLLED",
+      "controlledEvidence": "Only synthetic fixtures, local process execution and controlled-memory adapters were used; no provider, channel, IdP, RAG, clinical, financial, record or production effect was authorized."
+    },
+    {
+      "id": "AAA21-C7-authorized-dlq-operations",
+      "status": "PASS_CONTROLLED_BLOCKED_POSTGRES_DURABILITY",
+      "controlledEvidence": "API tests cover Supervisor/Admin success, Operator/Approver denial, tenant isolation, metadata-only projection and audit-backed requeue; Playwright passes 4/4 with shell snapshots at 375/768/1024/1440 and populated DLQ panel snapshots at 375/1024.",
+      "nextProof": "PostgreSQL list/requeue/RLS execution and deployment-level visual run."
+    }
+  ],
+  "gates": {
+    "npmTest": {
+      "status": "PASS",
+      "files": 245,
+      "testsPassed": 1719,
+      "testsSkipped": 109
+    },
+    "coverage": {
+      "status": "PASS_BELOW_AAA",
+      "statements": 92.1,
+      "branches": 87.2,
+      "functions": 90.95,
+      "lines": 92.71
+    },
+    "typecheck": "PASS",
+    "lint": "PASS",
+    "build": "PASS",
+    "security": { "status": "PASS", "highOrCriticalVulnerabilities": 0 },
+    "licenses": { "status": "PASS", "denied": 0, "unclassified": 0 },
+    "workerStartup": "PASS",
+    "planValidation": "PASS",
+    "touchedFilesPrettier": "PASS",
+    "postgres": {
+      "status": "PARTIAL_BLOCKED",
+      "filesPassed": 13,
+      "testsPassed": 85,
+      "testsSkipped": 107,
+      "reason": "TEST_DATABASE_URL absent"
+    },
+    "repositoryFormat": { "status": "FAIL_HISTORICAL", "filesReported": 277 },
+    "visualE2E": { "status": "PASS", "testsPassed": 4 },
+    "auditCheckpointE2E": { "status": "PASS", "testsPassed": 1 }
+  },
+  "visualEvidence": {
+    "shellViewports": [375, 768, 1024, 1440],
+    "deadLetterPanelViewports": [375, 1024],
+    "snapshotSha256": {
+      "console-desktop": "cadefc14fca6512612abca703511603b8abe127b30c1fc7404326d7f2e81d297",
+      "console-wide-tablet": "c364bfa7e53d74d75965315edac9b5354bfdc9626fc5526bd6b78afa7bfad61c",
+      "console-tablet": "eca7e79d7796be5f74ca0c9600ab684dfe506fd0595105c4a1ceaf23ec9a617a",
+      "console-mobile": "628f1719b159c640f15158109b2ee255a2fb5e7851009ebac387f03fc7da2d2d",
+      "dead-letter-panel-1024": "0169efd8a32cd536c76bca55dc581c1eb42498c2244da85f356226347d86d5f9",
+      "dead-letter-panel-375": "da13d2908780b999b0deeb9c5b7e0c95724850e251f437cfbba3a0fea9cf6957"
+    }
+  },
+  "independentReview": {
+    "backend": {
+      "verdict": "BLOCKED_C2_C3_C4",
+      "mode": "read-only",
+      "finding": "Code fixes are present; composed PostgreSQL and crash/restart proof remain unavailable."
+    },
+    "frontend": {
+      "verdict": "BLOCKED_C7_FORMAL",
+      "mode": "read-only",
+      "finding": "Controlled RBAC/tenant/redaction/visual evidence passes; PostgreSQL durability remains unavailable."
+    }
+  },
+  "releaseDecision": {
+    "controlledCandidate": "REVIEW",
+    "production": "NO_GO",
+    "humanApproval": "PENDING",
+    "externalAuthorization": "NOT_GRANTED"
+  }
+}

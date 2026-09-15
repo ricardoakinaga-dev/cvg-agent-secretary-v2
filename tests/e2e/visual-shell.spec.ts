@@ -3,12 +3,17 @@ import { expect, test } from '@playwright/test'
 const viewports = [
   { name: 'mobile', width: 375, height: 812 },
   { name: 'tablet', width: 768, height: 900 },
+  { name: 'wide-tablet', width: 1024, height: 900 },
   { name: 'desktop', width: 1440, height: 900 }
 ] as const
 
 test('console shell preserves layout, focus and control sizing across viewports', async ({
   page
 }) => {
+  await page.addInitScript({
+    content:
+      "window.__CVG_OPERATOR_CONTEXT__ = { operatorId: 'supervisor.synthetic', role: 'Supervisor', tenantId: 'tenant_00000000-0000-4000-8000-0000000002c1' }"
+  })
   for (const viewport of viewports) {
     await page.setViewportSize(viewport)
     await page.goto('/', { waitUntil: 'networkidle' })
@@ -41,11 +46,15 @@ test('console shell preserves layout, focus and control sizing across viewports'
     await sessionButton.focus()
     await expect
       .poll(() =>
-        sessionButton.evaluate(
-          (element) => getComputedStyle(element).outlineStyle
-        )
+        sessionButton.evaluate((element) => {
+          const styles = getComputedStyle(element)
+          return (
+            document.activeElement === element &&
+            (styles.outlineStyle !== 'none' || styles.boxShadow !== 'none')
+          )
+        })
       )
-      .toBe('solid')
+      .toBe(true)
     await expect(page).toHaveScreenshot(`console-${viewport.name}.png`, {
       animations: 'disabled',
       caret: 'hide',
@@ -58,13 +67,12 @@ test('console shell preserves layout, focus and control sizing across viewports'
 test('admin control center remains navigable on a narrow viewport', async ({
   page
 }) => {
+  await page.addInitScript({
+    content:
+      "window.__CVG_OPERATOR_CONTEXT__ = { operatorId: 'admin.synthetic', role: 'Admin', tenantId: 'tenant_00000000-0000-4000-8000-000000000199' }"
+  })
   await page.setViewportSize({ width: 375, height: 812 })
   await page.goto('/', { waitUntil: 'networkidle' })
-  await page.getByLabel('ID do operador').fill('operator.fixture')
-  await page.getByLabel('Papel operacional').selectOption('Admin')
-  await page
-    .getByLabel('Tenant ID')
-    .fill('tenant_00000000-0000-4000-8000-000000000199')
 
   await expect(page.locator('#platform-panel')).toBeVisible()
   await expect(
@@ -77,4 +85,85 @@ test('admin control center remains navigable on a narrow viewport', async ({
     scrollWidth: document.documentElement.scrollWidth
   }))
   expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.viewport)
+})
+
+test('dead-letter diagnostics wrap long errors and remain tenant scoped', async ({
+  page
+}) => {
+  await page.addInitScript({
+    content:
+      "window.__CVG_OPERATOR_CONTEXT__ = { operatorId: 'supervisor.synthetic', role: 'Supervisor', tenantId: 'tenant_00000000-0000-4000-8000-0000000002c1' }"
+  })
+  await page.route('**/v1/outbox/dead-letters', async (route) => {
+    if (route.request().method() !== 'GET') {
+      await route.continue()
+      return
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        data: [
+          {
+            id: 'outbox_dlq_visual_1',
+            type: 'inbound.process',
+            status: 'dead_letter',
+            correlationId: 'corr_dlq_visual_1',
+            traceId: 'trace_dlq_visual_1',
+            conversationId: null,
+            sessionId: null,
+            inboundMessageId: 'msg_dlq_visual_1',
+            attempts: 3,
+            lastError: 'x'.repeat(1201),
+            createdAt: '2026-09-14T12:00:00.000Z',
+            availableAt: null,
+            deadLetteredAt: '2026-09-14T12:02:00.000Z'
+          }
+        ]
+      })
+    })
+  })
+  for (const viewport of [
+    { width: 375, height: 812 },
+    { width: 1024, height: 900 }
+  ]) {
+    await page.setViewportSize(viewport)
+    await page.goto('/', { waitUntil: 'networkidle' })
+
+    const panel = page.locator('#dead-letters-panel')
+    await expect(panel).toBeVisible()
+    await expect(panel.locator('.recordSummary')).toBeVisible()
+    const metrics = await panel.evaluate((element) => ({
+      clientWidth: element.clientWidth,
+      scrollWidth: element.scrollWidth
+    }))
+    expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth)
+    await expect(panel).toHaveScreenshot(
+      `dead-letter-panel-${viewport.width}.png`,
+      {
+        animations: 'disabled',
+        caret: 'hide',
+        maxDiffPixelRatio: 0.02
+      }
+    )
+  }
+})
+
+test('tenantless privileged sessions do not render or request the dead-letter queue', async ({
+  page
+}) => {
+  await page.addInitScript({
+    content:
+      "window.__CVG_OPERATOR_CONTEXT__ = { operatorId: 'supervisor.no-tenant', role: 'Supervisor' }"
+  })
+  const deadLetterRequests: string[] = []
+  page.on('request', (request) => {
+    if (request.url().includes('/v1/outbox/dead-letters'))
+      deadLetterRequests.push(request.url())
+  })
+  await page.goto('/', { waitUntil: 'networkidle' })
+
+  await expect(page.locator('#dead-letters-panel')).toHaveCount(0)
+  expect(deadLetterRequests).toHaveLength(0)
 })

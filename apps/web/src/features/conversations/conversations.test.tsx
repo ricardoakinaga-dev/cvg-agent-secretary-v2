@@ -14,7 +14,8 @@ describe('ConversationsPanel', () => {
             senderRef: 'fixture-sender',
             status: 'active',
             openSessionId: 'sess_1',
-            lastMessageBody: 'Mensagem'
+            lastMessageBody: 'Mensagem',
+            correlationId: 'corr_1'
           }
         ]}
         messages={[]}
@@ -26,6 +27,11 @@ describe('ConversationsPanel', () => {
     fireEvent.click(screen.getByText('fixture-sender'))
 
     expect(screen.getByText('whatsapp / active')).toBeTruthy()
+    expect(
+      screen.getByRole('button', {
+        name: 'fixture-sender, whatsapp, Ativa, correlation corr_1'
+      })
+    ).toBeTruthy()
     expect(onSelectConversation).toHaveBeenCalledWith(
       expect.objectContaining({ id: 'conv_1' })
     )

@@ -84,6 +84,54 @@ describe('durable outbox memory adapter', () => {
     ).toEqual(['lease_expired', 'claimed'])
   })
 
+  it('renews only a live lease owned by the same worker', () => {
+    let now = new Date('2026-09-05T12:00:00.000Z')
+    const repository = fixture(() => now)
+    const event = repository.enqueue({
+      tenantId: tenantA,
+      type: 'synthetic.memory',
+      payload: { fixture: true },
+      idempotencyKey: 'memory-heartbeat-151',
+      correlationId
+    })
+    const claimed = repository.claimNext({
+      tenantId: tenantA,
+      workerId: 'worker-heartbeat'
+    })!
+    now = new Date(now.getTime() + 200)
+
+    const renewed = repository.heartbeatClaim({
+      tenantId: tenantA,
+      eventId: event.id,
+      workerId: 'worker-heartbeat',
+      leaseMs: 2_000
+    })
+    expect(renewed).toMatchObject({
+      id: event.id,
+      status: 'processing',
+      leaseOwner: 'worker-heartbeat'
+    })
+    expect(renewed!.leaseUntil!.getTime()).toBe(now.getTime() + 2_000)
+    expect(
+      repository.heartbeatClaim({
+        tenantId: tenantA,
+        eventId: event.id,
+        workerId: 'worker-other',
+        leaseMs: 2_000
+      })
+    ).toBeNull()
+
+    now = new Date(claimed.leaseUntil!.getTime() + 2_001)
+    expect(
+      repository.heartbeatClaim({
+        tenantId: tenantA,
+        eventId: event.id,
+        workerId: 'worker-heartbeat',
+        leaseMs: 2_000
+      })
+    ).toBeNull()
+  })
+
   it('journals one effect, retries failures with bounded attempts, and requeues in place', () => {
     let now = new Date('2026-09-05T12:00:00.000Z')
     const repository = fixture(() => now)

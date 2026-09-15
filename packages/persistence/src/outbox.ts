@@ -55,6 +55,7 @@ export interface OutboxEnqueueInput {
   payload: unknown
   idempotencyKey: string
   correlationId?: string
+  traceId?: string
   envelopeVersion?: number
   conversationId?: string | null
   sessionId?: string | null
@@ -76,6 +77,13 @@ export interface OutboxClaimInput {
   now?: Date
   leaseMs?: number
   eventId?: string
+}
+
+export interface OutboxHeartbeatInput {
+  tenantId: TenantId
+  eventId: string
+  workerId: string
+  leaseMs: number
 }
 
 export type OutboxEffect = (
@@ -125,11 +133,19 @@ export interface DurableOutboxAdapter {
   claimNext(
     input: OutboxClaimInput
   ): OutboxEventRecord | null | Promise<OutboxEventRecord | null>
+  /** Extends an owned lease only while it is still live. */
+  heartbeatClaim(
+    input: OutboxHeartbeatInput
+  ): OutboxEventRecord | null | Promise<OutboxEventRecord | null>
   ack(input: OutboxAckInput): OutboxEventRecord | Promise<OutboxEventRecord>
   fail(input: OutboxFailInput): OutboxEventRecord | Promise<OutboxEventRecord>
   requeueDeadLetter(
     input: OutboxRequeueInput
   ): OutboxEventRecord | Promise<OutboxEventRecord>
+  /** Read-only operator view of terminal queue failures. */
+  listDeadLetters?: (
+    tenantId: TenantId
+  ) => OutboxEventRecord[] | Promise<OutboxEventRecord[]>
 }
 
 /**
@@ -222,6 +238,9 @@ export class OutboxRepository implements DurableOutboxAdapter {
       payload,
       tenantId,
       correlationId,
+      ...(inputOrType.traceId !== undefined
+        ? { traceId: inputOrType.traceId }
+        : {}),
       idempotencyKey,
       envelopeVersion:
         inputOrType.envelopeVersion ?? DEFAULT_OUTBOX_ENVELOPE_VERSION,
@@ -254,6 +273,22 @@ export class OutboxRepository implements DurableOutboxAdapter {
           event.status === 'pending' &&
           (!tenantId || event.tenantId === tenantId)
       )
+      .map(cloneEvent)
+  }
+
+  listDeadLetters(rawTenantId?: TenantId): OutboxEventRecord[] {
+    const tenantId = rawTenantId ? requireTenant(rawTenantId) : undefined
+    return this.db.state.outbox
+      .filter(
+        (event) =>
+          event.status === 'dead_letter' &&
+          (!tenantId || event.tenantId === tenantId)
+      )
+      .sort((left, right) => {
+        const leftAt = left.deadLetteredAt?.getTime() ?? 0
+        const rightAt = right.deadLetteredAt?.getTime() ?? 0
+        return rightAt - leftAt || left.id.localeCompare(right.id)
+      })
       .map(cloneEvent)
   }
 
@@ -323,6 +358,31 @@ export class OutboxRepository implements DurableOutboxAdapter {
       }
     ]
     return cloneEvent(claimed)
+  }
+
+  heartbeatClaim(input: OutboxHeartbeatInput): OutboxEventRecord | null {
+    const tenantId = requireTenant(input.tenantId)
+    const workerId = requireActor(input.workerId, 'workerId')
+    const now = this.currentTime()
+    const leaseMs = positiveInteger(input.leaseMs, 'leaseMs')
+    const current = this.db.state.outbox.find(
+      (event) => event.id === input.eventId && event.tenantId === tenantId
+    )
+    if (
+      !current ||
+      current.status !== 'processing' ||
+      current.leaseOwner !== workerId ||
+      !current.leaseUntil ||
+      current.leaseUntil.getTime() <= now.getTime()
+    ) {
+      return null
+    }
+    const renewed: OutboxEventRecord = {
+      ...cloneEvent(current),
+      leaseUntil: new Date(now.getTime() + leaseMs)
+    }
+    this.replaceEvent(renewed)
+    return cloneEvent(renewed)
   }
 
   ack(input: OutboxAckInput): OutboxEventRecord | Promise<OutboxEventRecord> {

@@ -4,6 +4,10 @@ import {
   type PublishedAgentJobDependencies
 } from '@cvg/agent-core'
 import { TenantIdSchema } from '@cvg/platform'
+import {
+  CONTINUOUS_WORKER_RUN_MODE,
+  parseContinuousWorkerSettings
+} from './continuous-worker.ts'
 
 export type WorkerRuntimeDependencies = PublishedAgentJobDependencies
 
@@ -16,6 +20,9 @@ export interface WorkerStartupFailure {
     | 'postgres_rls_required'
     | 'controlled_mode_required'
     | 'production_controlled_worker_forbidden'
+    | 'worker_run_mode_unsupported'
+    | 'continuous_durable_adapter_required'
+    | 'continuous_settings_invalid'
   message: string
 }
 
@@ -50,27 +57,39 @@ export async function processAgentTurnJob(
 export function getWorkerStartupFailure(
   env: NodeJS.ProcessEnv = process.env
 ): WorkerStartupFailure | null {
-  if (!env.CVG_WORKER_QUEUE_ADAPTER?.trim()) {
+  const adapter = env.CVG_WORKER_QUEUE_ADAPTER?.trim()
+  if (!adapter) {
     return {
       code: 'queue_adapter_missing',
       message: 'Worker queue adapter is not configured'
     }
   }
 
-  if (env.CVG_WORKER_QUEUE_ADAPTER.trim() === 'controlled-memory') {
+  const runMode = env.CVG_WORKER_RUN_MODE?.trim()
+  if (runMode && runMode !== CONTINUOUS_WORKER_RUN_MODE) {
+    return {
+      code: 'worker_run_mode_unsupported',
+      message: 'Worker run mode is not supported'
+    }
+  }
+
+  if (adapter === 'controlled-memory') {
     if (!TenantIdSchema.safeParse(env.CVG_WORKER_TENANT_ID).success) {
       return {
         code: 'controlled_tenant_missing',
         message: 'Controlled worker tenant is not configured'
       }
     }
+    if (runMode === CONTINUOUS_WORKER_RUN_MODE) {
+      return {
+        code: 'continuous_durable_adapter_required',
+        message: 'Continuous worker requires the durable PostgreSQL outbox'
+      }
+    }
     return null
   }
 
-  if (
-    env.CVG_WORKER_QUEUE_ADAPTER.trim() === 'postgres-controlled' ||
-    env.CVG_WORKER_QUEUE_ADAPTER.trim() === 'postgres'
-  ) {
+  if (adapter === 'postgres-controlled' || adapter === 'postgres') {
     if (env.NODE_ENV === 'production') {
       return {
         code: 'production_controlled_worker_forbidden',
@@ -100,6 +119,19 @@ export function getWorkerStartupFailure(
       return {
         code: 'controlled_mode_required',
         message: 'PostgreSQL worker requires explicit controlled mode'
+      }
+    }
+    if (runMode === CONTINUOUS_WORKER_RUN_MODE) {
+      try {
+        parseContinuousWorkerSettings(env)
+      } catch (error) {
+        return {
+          code: 'continuous_settings_invalid',
+          message:
+            error instanceof Error
+              ? error.message
+              : 'Continuous worker settings are invalid'
+        }
       }
     }
     return null

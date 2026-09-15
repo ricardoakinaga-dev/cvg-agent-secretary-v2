@@ -1,0 +1,18 @@
+$ npm run certification:verify
+# runId=run-aaa21-mu0avldy candidateId=3edfe0cadc250cbc205f2c05dd59df32d9cc3d6ac3f2c1f556a813f9d17dc983 gate=certification-verify command=npm run certification:verify
+# exitCode=1 durationMs=194
+
+
+> cvg-agent-secretary-v2@1.0.0 certification:verify
+> node scripts/phase10-verify.mjs
+
+
+[verify] PASS phase10-result.json matches schema
+[verify] PASS manifest.json matches schema
+[verify] FAIL artifact_hash_mismatch:certification/sbom.cyclonedx.json
+[verify] FAIL artifact_hash_mismatch:certification/license-report.json
+[verify] FAIL artifact_hash_mismatch:certification/negative-validation.json
+[verify] PASS decision is coherent: CONDITIONAL_GO
+[verify] PASS certification is coherent: AAA_CONTROLLED
+[verify] LEGACY_MANIFEST_NO_CANDIDATE_BINDING: historical hashes checked; this does not qualify the current candidate
+[verify] 4 failure(s)

@@ -212,7 +212,13 @@ describe('api PostgreSQL persistence mode', () => {
       '0008_session_agent_version_pin',
       '0009_release_candidate_validator_integrity',
       '0010_outbox_durability',
-      '0011_outbox_payload_redaction'
+      '0011_outbox_payload_redaction',
+      '0012_channel_effect_journal',
+      '0013_runtime_effect_journal',
+      '0014_journeys',
+      '0015_runtime_approval_store',
+      '0016_runtime_continuation_trace',
+      '0017_runtime_audit_chain'
     ] as const
     const rows: Array<{
       version: string
@@ -617,7 +623,14 @@ describe('api PostgreSQL persistence mode', () => {
               { table_name, column_name: 'tenant_id' },
               ...(table_name === 'outbox_effects' ||
               table_name === 'outbox_attempts' ||
-              table_name === 'outbox_quarantine'
+              table_name === 'outbox_quarantine' ||
+              table_name === 'channel_effect_journal' ||
+              table_name === 'effect_journal' ||
+              table_name === 'journey_owner_drafts' ||
+              table_name === 'journey_patient_drafts' ||
+              table_name === 'journey_appointment_drafts' ||
+              table_name === 'runtime_approvals' ||
+              table_name === 'runtime_audit_events'
                 ? []
                 : [
                     { table_name, column_name: 'tenant_isolation_quarantined' }
@@ -660,13 +673,27 @@ describe('api PostgreSQL persistence mode', () => {
             qual:
               tablename === 'outbox_effects' ||
               tablename === 'outbox_attempts' ||
-              tablename === 'outbox_quarantine'
+              tablename === 'outbox_quarantine' ||
+              tablename === 'channel_effect_journal' ||
+              tablename === 'effect_journal' ||
+              tablename === 'journey_owner_drafts' ||
+              tablename === 'journey_patient_drafts' ||
+              tablename === 'journey_appointment_drafts' ||
+              tablename === 'runtime_approvals' ||
+              tablename === 'runtime_audit_events'
                 ? "tenant_id = NULLIF(current_setting('cvg.tenant_id', true), '')"
                 : "tenant_isolation_quarantined = false AND tenant_id = NULLIF(current_setting('cvg.tenant_id', true), '')",
             with_check:
               tablename === 'outbox_effects' ||
               tablename === 'outbox_attempts' ||
-              tablename === 'outbox_quarantine'
+              tablename === 'outbox_quarantine' ||
+              tablename === 'channel_effect_journal' ||
+              tablename === 'effect_journal' ||
+              tablename === 'journey_owner_drafts' ||
+              tablename === 'journey_patient_drafts' ||
+              tablename === 'journey_appointment_drafts' ||
+              tablename === 'runtime_approvals' ||
+              tablename === 'runtime_audit_events'
                 ? "tenant_id = NULLIF(current_setting('cvg.tenant_id', true), '')"
                 : "tenant_isolation_quarantined = false AND tenant_id = NULLIF(current_setting('cvg.tenant_id', true), '')"
           }))
@@ -1233,8 +1260,15 @@ describe('api PostgreSQL persistence mode', () => {
         'audit_events',
         'idempotency',
         'outbox_events',
+        'channel_effect_journal',
+        'effect_journal',
         'outbox_effects',
         'outbox_attempts',
+        'journey_owner_drafts',
+        'journey_patient_drafts',
+        'journey_appointment_drafts',
+        'runtime_approvals',
+        'runtime_audit_events',
         'platform_agents',
         'platform_agent_versions',
         'platform_test_runs',

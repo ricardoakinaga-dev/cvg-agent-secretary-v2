@@ -4,6 +4,7 @@
   "private": true,
   "main": "src/main.ts",
   "dependencies": {
+    "@cvg/approval-engine": "1.0.0",
     "@cvg/shared": "1.0.0",
     "@cvg/agent-core": "1.0.0",
     "@cvg/policy": "1.0.0",

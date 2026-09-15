@@ -14,7 +14,7 @@ if (!container) {
 createRoot(container).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <App identity={window.__CVG_OPERATOR_CONTEXT__ ?? null} />
     </QueryClientProvider>
   </React.StrictMode>
 )

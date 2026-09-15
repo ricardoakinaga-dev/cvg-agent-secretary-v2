@@ -1,12 +1,15 @@
-import { createHash } from 'node:crypto'
+import { createHash, randomBytes } from 'node:crypto'
 import { performance } from 'node:perf_hooks'
 import Fastify from 'fastify'
+import type { ApprovalAuthority, ApprovalRecord } from '@cvg/approval-engine'
 import {
   auditEvidenceGovernance,
   createCorrelationId,
   DomainError,
   fail,
+  IDENTITY_MODE_ENV,
   ok,
+  parseIdentityMode,
   parseOperatorIdentity,
   redactSensitiveText,
   roleHasPermission,
@@ -15,7 +18,9 @@ import {
   TaskStatusSchema,
   toSafeError,
   type Channel,
+  type IdentityMode,
   type OperatorIdentity,
+  type OperatorIdentityResolver,
   type TaskStatus
 } from '@cvg/shared'
 import {
@@ -73,10 +78,12 @@ import {
 } from '@cvg/platform'
 import {
   ApprovalRepository,
+  type AtomicRuntimeApprovalDecisionInput,
   type AuditEventRecord,
   type AuditEventType,
   type AuditEvidenceFilters,
   type AuditEvidenceQuery,
+  type OutboxEventRecord,
   AuditEvidenceCheckpointCreateInputSchema,
   AuditEvidenceCheckpointIdSchema,
   AuditEvidenceCheckpointTransitionInputSchema,
@@ -87,16 +94,19 @@ import {
   type DurableOutboxAdapter,
   InMemoryDatabase,
   JourneyRepository,
+  type JourneyRepositoryPort,
   OutboxRepository,
+  PostgresApprovalAuthority,
+  PostgresJourneyRepository,
   PostgresRuntimeRepository,
   PostgresControlPlaneRepository,
   TenantScopedPostgresCapabilityApprovalRepository,
   TenantScopedPostgresRuntimeRepository,
   TenantScopedPostgresControlPlaneRepository,
   type InboundRuntimeCompletionInput,
+  type PostgresPoolClient,
   type PostgresPoolLike,
   type SessionRecord,
-  runInitialPostgresMigration,
   runPostgresMigrations,
   readPostgresMigrationSql,
   TaskRepository,
@@ -122,7 +132,10 @@ import { InMemoryRateLimiter } from './rate-limit.ts'
 import { ControlledRequestMetrics } from './request-metrics.ts'
 import { installResponseCorrelationHook } from './response-correlation.ts'
 import { healthRoute, liveRoute, readyRoute } from './routes/health.ts'
-import { evaluateReadiness } from './readiness.ts'
+import {
+  evaluateReadinessWithProbes,
+  type ReadinessProbe
+} from './readiness.ts'
 import {
   classifyHttpRequestError,
   createInvalidJsonBodyError,
@@ -155,9 +168,7 @@ export interface RuntimeLogEntry {
   errorCode?: string
 }
 
-export type OperatorIdentityResolver = (
-  headers: Record<string, unknown>
-) => OperatorIdentity
+export type { OperatorIdentityResolver } from '@cvg/shared'
 
 export type WebhookVerification = boolean | WebhookVerificationLease | null
 
@@ -214,6 +225,11 @@ export interface BuildServerOptions {
     | { kind: 'postgres-pool'; pool: PostgresPoolLike }
   platform?: ControlPlaneStore
   operatorIdentityResolver?: OperatorIdentityResolver
+  /**
+   * Explicit identity mode. Defaults to `simulation` only for `NODE_ENV=test`;
+   * every other environment defaults to `trusted` and must inject a resolver.
+   */
+  identityMode?: IdentityMode
   webhookVerifier?: WebhookVerifier
   inboundTenantResolver?: InboundTenantResolver
   agentRuntime?: AgentRuntimeOptions
@@ -230,6 +246,21 @@ export interface BuildServerOptions {
   durableInbound?: boolean
   /** Explicit adapter override, useful for deterministic controlled tests. */
   outbox?: DurableOutboxAdapter
+  /**
+   * Extra bounded readiness probes (for example the consumer heartbeat wired
+   * by the integrated composition). The database probe is built from
+   * `persistence` and needs no injection.
+   */
+  readinessProbes?: readonly ReadinessProbe[]
+  /**
+   * Explicit journey persistence override. Omitted: memory uses the in-memory
+   * repository and PostgreSQL constructs PostgresJourneyRepository or fails
+   * startup. `null` keeps the journey routes fail-closed because no journey
+   * adapter is available.
+   */
+  journeyRepository?: JourneyRepositoryPort | null
+  /** Canonical governed-kernel approval authority (distinct from legacy approvals). */
+  runtimeApprovalAuthority?: ApprovalAuthority
 }
 
 export type BuildServerFromEnvOptions = Omit<
@@ -240,6 +271,19 @@ export type BuildServerFromEnvOptions = Omit<
 }
 
 export function buildServer(options: BuildServerOptions = {}) {
+  const identityMode =
+    options.identityMode === undefined
+      ? parseIdentityMode(process.env[IDENTITY_MODE_ENV], process.env.NODE_ENV)
+      : parseIdentityMode(options.identityMode, process.env.NODE_ENV)
+  if (process.env.NODE_ENV === 'production' && identityMode === 'simulation') {
+    throw new Error(
+      'Production requires trusted operator identity mode; simulation is forbidden'
+    )
+  }
+  const operatorIdentityResolver = createEffectiveOperatorIdentityResolver(
+    identityMode,
+    options.operatorIdentityResolver
+  )
   if (
     process.env.NODE_ENV !== 'test' &&
     options.persistence?.kind === 'postgres'
@@ -248,9 +292,22 @@ export function buildServer(options: BuildServerOptions = {}) {
       'Production PostgreSQL requires a tenant-scoped pool and startup preflight'
     )
   }
-  const persistence = createPersistence(options.persistence)
+  const persistence = createPersistence(
+    options.persistence,
+    options.journeyRepository
+  )
   const outbox = options.outbox ?? persistence.outbox
+  const runtimeApprovalAuthority =
+    options.runtimeApprovalAuthority ??
+    createRuntimeApprovalAuthority(options.persistence)
   const durableInbound = options.durableInbound ?? false
+  const databaseProbe = createReadinessDatabaseProbe(options.persistence)
+  const readinessProbes: ReadinessProbe[] = [
+    ...(databaseProbe
+      ? [{ name: 'database', check: databaseProbe, timeoutMs: 1_000 }]
+      : []),
+    ...(options.readinessProbes ?? [])
+  ]
   if (durableInbound && !outbox) {
     throw new Error('Durable inbound processing requires an outbox adapter')
   }
@@ -403,23 +460,14 @@ export function buildServer(options: BuildServerOptions = {}) {
   const requireIdentity = (
     headers: Record<string, unknown>,
     permission: string
-  ) =>
-    requireOperatorIdentity(
-      headers,
-      permission,
-      options.operatorIdentityResolver
-    )
+  ) => requireOperatorIdentity(headers, permission, operatorIdentityResolver)
   const requireAnyIdentity = (
     headers: Record<string, unknown>,
     permissions: string[]
   ) =>
-    requireAnyOperatorPermission(
-      headers,
-      permissions,
-      options.operatorIdentityResolver
-    )
+    requireAnyOperatorPermission(headers, permissions, operatorIdentityResolver)
   const requireAuthenticatedMutations =
-    process.env.NODE_ENV === 'test'
+    process.env.NODE_ENV === 'test' && identityMode === 'simulation'
       ? (options.requireAuthenticatedMutations ?? false)
       : true
 
@@ -432,10 +480,11 @@ export function buildServer(options: BuildServerOptions = {}) {
   )
 
   app.get(readyRoute, async (_request, reply) => {
-    const readiness = evaluateReadiness({
+    const readiness = await evaluateReadinessWithProbes({
       persistenceMode: options.persistence?.kind ?? 'memory',
       durableInbound,
-      production: process.env.NODE_ENV === 'production'
+      production: process.env.NODE_ENV === 'production',
+      probes: readinessProbes
     })
     reply.header('cache-control', 'no-store')
     reply.code(readiness.ready ? 200 : 503)
@@ -494,6 +543,7 @@ export function buildServer(options: BuildServerOptions = {}) {
     '/v1/webhooks/channels/:channel/messages',
     async (request, reply) => {
       const correlationId = createCorrelationId()
+      const traceId = randomBytes(16).toString('hex')
       let webhookLease: WebhookVerificationLease | undefined
       try {
         const params = request.params as { channel: string }
@@ -528,7 +578,12 @@ export function buildServer(options: BuildServerOptions = {}) {
           options.inboundTenantResolver
         )
         const result = await receiveInboundMessage(
-          { conversations, ...(durableInbound ? { outbox } : {}) },
+          {
+            conversations,
+            ...(durableInbound ? { outbox } : {}),
+            correlationId,
+            traceId
+          },
           { ...body, tenantId, channel }
         )
         let runtimeSessionId = result.sessionId
@@ -562,6 +617,7 @@ export function buildServer(options: BuildServerOptions = {}) {
                 messageId: result.messageId
               },
               correlationId: result.correlationId ?? correlationId,
+              traceId: result.traceId ?? traceId,
               idempotencyKey: createInboundIdempotencyKey(
                 channel,
                 String(body.externalMessageId ?? '')
@@ -752,7 +808,7 @@ export function buildServer(options: BuildServerOptions = {}) {
         )
       const query = request.query as { phone?: unknown }
       return ok(
-        { matches: journeys.searchOwnerByPhone(tenantId, query.phone) },
+        { matches: await journeys.searchOwnerByPhone(tenantId, query.phone) },
         correlationId
       )
     } catch (error) {
@@ -782,7 +838,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       }
       return ok(
         {
-          matches: journeys.searchPatient({
+          matches: await journeys.searchPatient({
             tenantId,
             ...(query.ownerDraftId ? { ownerDraftId: query.ownerDraftId } : {}),
             ...(query.ownerCandidateId
@@ -816,9 +872,10 @@ export function buildServer(options: BuildServerOptions = {}) {
           'invalid_action',
           'Journey persistence is unavailable in this mode'
         )
-      const draft = journeys.createOwnerDraft({
+      const draft = await journeys.createOwnerDraft({
         ...(request.body as Record<string, unknown>),
-        tenantId
+        tenantId,
+        auditContext: journeyAuditContext(identity, correlationId)
       } as Parameters<JourneyRepository['createOwnerDraft']>[0])
       return ok(draft, correlationId)
     } catch (error) {
@@ -868,9 +925,10 @@ export function buildServer(options: BuildServerOptions = {}) {
           'invalid_action',
           'Journey persistence is unavailable in this mode'
         )
-      const draft = journeys.createPatientDraft({
+      const draft = await journeys.createPatientDraft({
         ...(request.body as Record<string, unknown>),
-        tenantId
+        tenantId,
+        auditContext: journeyAuditContext(identity, correlationId)
       } as Parameters<JourneyRepository['createPatientDraft']>[0])
       return ok(draft, correlationId)
     } catch (error) {
@@ -893,7 +951,10 @@ export function buildServer(options: BuildServerOptions = {}) {
           'invalid_action',
           'Journey persistence is unavailable in this mode'
         )
-      return ok({ drafts: journeys.listPatientDrafts(tenantId) }, correlationId)
+      return ok(
+        { drafts: await journeys.listPatientDrafts(tenantId) },
+        correlationId
+      )
     } catch (error) {
       const safeError = toSafeError(error)
       reply.code(statusCodeForError(safeError.code))
@@ -923,10 +984,11 @@ export function buildServer(options: BuildServerOptions = {}) {
         if (typeof body.candidateId !== 'string')
           throw new DomainError('validation_failed', 'candidateId is required')
         return ok(
-          journeys.linkPatient({
+          await journeys.linkPatient({
             tenantId,
             patientDraftId: (request.params as { draftId: string }).draftId,
-            candidateId: body.candidateId
+            candidateId: body.candidateId,
+            auditContext: journeyAuditContext(identity, correlationId)
           }),
           correlationId
         )
@@ -951,7 +1013,10 @@ export function buildServer(options: BuildServerOptions = {}) {
           'invalid_action',
           'Journey persistence is unavailable in this mode'
         )
-      return ok({ slots: journeys.findAvailableSlots(tenantId) }, correlationId)
+      return ok(
+        { slots: await journeys.findAvailableSlots(tenantId) },
+        correlationId
+      )
     } catch (error) {
       const safeError = toSafeError(error)
       reply.code(statusCodeForError(safeError.code))
@@ -976,9 +1041,10 @@ export function buildServer(options: BuildServerOptions = {}) {
           'Journey persistence is unavailable in this mode'
         )
       return ok(
-        journeys.createAppointmentDraft({
+        await journeys.createAppointmentDraft({
           ...(request.body as Record<string, unknown>),
-          tenantId
+          tenantId,
+          auditContext: journeyAuditContext(identity, correlationId)
         } as Parameters<JourneyRepository['createAppointmentDraft']>[0]),
         correlationId
       )
@@ -1003,7 +1069,7 @@ export function buildServer(options: BuildServerOptions = {}) {
           'Journey persistence is unavailable in this mode'
         )
       return ok(
-        { drafts: journeys.listAppointmentDrafts(tenantId) },
+        { drafts: await journeys.listAppointmentDrafts(tenantId) },
         correlationId
       )
     } catch (error) {
@@ -1030,9 +1096,10 @@ export function buildServer(options: BuildServerOptions = {}) {
           'Journey persistence is unavailable in this mode'
         )
       const body = request.body as Record<string, unknown>
-      const task = journeys.createJourneyTask({
+      const task = await journeys.createJourneyTask({
         ...(body as Parameters<JourneyRepository['createJourneyTask']>[0]),
-        tenantId
+        tenantId,
+        auditContext: journeyAuditContext(identity, correlationId)
       } as Parameters<JourneyRepository['createJourneyTask']>[0])
       return ok(task, correlationId)
     } catch (error) {
@@ -1288,17 +1355,238 @@ export function buildServer(options: BuildServerOptions = {}) {
     }
   })
 
+  app.get('/v1/runtime-approvals', async (request, reply) => {
+    const correlationId = createCorrelationId()
+    try {
+      if (!runtimeApprovalAuthority) {
+        throw new DomainError(
+          'invalid_action',
+          'Governed runtime approval persistence is unavailable in this mode'
+        )
+      }
+      const identity = requireIdentity(request.headers, 'approval:view')
+      const tenantId = resolveDataPlaneTenant(request.headers, identity)
+      return ok(await runtimeApprovalAuthority.list(tenantId), correlationId)
+    } catch (error) {
+      const safeError = toSafeError(error)
+      reply.code(statusCodeForError(safeError.code))
+      return fail(safeError.code, safeError.message, correlationId)
+    }
+  })
+
+  app.post(
+    '/v1/runtime-approvals/:approvalId/decision',
+    async (request, reply) => {
+      const correlationId = createCorrelationId()
+      try {
+        if (!runtimeApprovalAuthority) {
+          throw new DomainError(
+            'invalid_action',
+            'Governed runtime approval persistence is unavailable in this mode'
+          )
+        }
+        const identity = requireIdentity(request.headers, 'approval:decide')
+        const tenantId = resolveDataPlaneTenant(request.headers, identity)
+        const params = request.params as { approvalId: string }
+        const body = z
+          .object({
+            decision: z.enum(['approve', 'reject']),
+            reason: z.string().trim().min(1).max(500).optional()
+          })
+          .strict()
+          .parse(request.body)
+        const approvalId = params.approvalId
+        const atomicAuthority =
+          runtimeApprovalAuthority as ApprovalAuthority & {
+            decideAndEnqueueContinuation?: (
+              input: AtomicRuntimeApprovalDecisionInput
+            ) => Promise<{
+              approval: ApprovalRecord
+              continuationEvent: OutboxEventRecord
+            }>
+          }
+        let decided: ApprovalRecord
+        let continuationEventId: string | undefined
+        if (
+          typeof atomicAuthority.decideAndEnqueueContinuation === 'function'
+        ) {
+          const result = await atomicAuthority.decideAndEnqueueContinuation({
+            tenantId,
+            approvalId,
+            decision: body.decision,
+            approverId: identity.operatorId,
+            actorType: identity.role,
+            requestCorrelationId: correlationId,
+            ...(body.reason !== undefined ? { reason: body.reason } : {})
+          })
+          decided = result.approval
+          continuationEventId = result.continuationEvent.id
+        } else {
+          let current = await runtimeApprovalAuthority.get(tenantId, approvalId)
+          if (current.status === 'REQUESTED') {
+            current = await runtimeApprovalAuthority.submit(
+              tenantId,
+              approvalId,
+              current.operatorId
+            )
+          }
+          decided = await decideRuntimeApproval({
+            authority: runtimeApprovalAuthority,
+            current,
+            tenantId,
+            approvalId,
+            decision: body.decision,
+            approverId: identity.operatorId,
+            ...(body.reason !== undefined ? { reason: body.reason } : {})
+          })
+
+          if (decided.continuation) {
+            if (!outbox) {
+              throw new DomainError(
+                'invalid_action',
+                'Approved runtime continuation requires a durable outbox'
+              )
+            }
+            const continuation = decided.continuation
+            if (continuation.traceId === undefined) {
+              throw new DomainError(
+                'invalid_action',
+                'Approved runtime continuation is missing its durable trace root'
+              )
+            }
+            const traceId = z
+              .string()
+              .regex(/^[0-9a-f]{32}$/)
+              .safeParse(continuation.traceId)
+            if (!traceId.success) {
+              throw new DomainError(
+                'invalid_action',
+                'Approved runtime continuation has an invalid durable trace root'
+              )
+            }
+            const event = await outbox.enqueue({
+              tenantId,
+              type: 'inbound.process',
+              payload: {
+                kind: 'runtime_approval.continue',
+                approvalId,
+                decision: body.decision
+              },
+              correlationId: decided.correlationId,
+              traceId: traceId.data,
+              idempotencyKey: `runtime-approval-continuation:${approvalId}`,
+              conversationId: continuation.conversationId,
+              sessionId: continuation.sessionId,
+              inboundMessageId: continuation.inboundMessageId
+            })
+            continuationEventId = event.id
+          }
+
+          await audit.append(
+            {
+              type: 'approval_decision',
+              actorType: identity.role,
+              actorId: identity.operatorId,
+              correlationId: decided.correlationId,
+              policyVersion: decided.policyVersion,
+              payload: {
+                approvalId,
+                status: decided.status,
+                tenantId,
+                requestCorrelationId: correlationId,
+                ...(continuationEventId !== undefined
+                  ? { continuationEventId }
+                  : {})
+              }
+            },
+            tenantId
+          )
+        }
+        return ok(
+          {
+            approval: decided,
+            ...(continuationEventId !== undefined
+              ? { continuationEventId }
+              : {})
+          },
+          correlationId
+        )
+      } catch (error) {
+        const safeError = toSafeError(error)
+        reply.code(statusCodeForError(safeError.code))
+        return fail(safeError.code, safeError.message, correlationId)
+      }
+    }
+  )
+
+  app.get('/v1/outbox/dead-letters', async (request, reply) => {
+    const correlationId = createCorrelationId()
+    try {
+      const identity = requireIdentity(request.headers, 'outbox:view')
+      const tenantId = resolveDataPlaneTenant(request.headers, identity)
+      if (typeof outbox.listDeadLetters !== 'function') {
+        throw new DomainError(
+          'invalid_action',
+          'Dead-letter inspection is unavailable in this mode'
+        )
+      }
+      const events = await outbox.listDeadLetters(tenantId)
+      return ok(events.map(toDeadLetterView), correlationId)
+    } catch (error) {
+      const safeError = toSafeError(error)
+      reply.code(statusCodeForError(safeError.code))
+      return fail(safeError.code, safeError.message, correlationId)
+    }
+  })
+
+  app.post(
+    '/v1/outbox/dead-letters/:eventId/requeue',
+    async (request, reply) => {
+      const correlationId = createCorrelationId()
+      try {
+        const identity = requireIdentity(request.headers, 'outbox:requeue')
+        const tenantId = resolveDataPlaneTenant(request.headers, identity)
+        const params = request.params as { eventId: string }
+        const requeued = await outbox.requeueDeadLetter({
+          tenantId,
+          eventId: params.eventId,
+          operatorId: identity.operatorId,
+          correlationId
+        })
+        emitRuntimeLog({
+          event: 'outbox.dead_letter_requeued',
+          correlationId,
+          route: '/v1/outbox/dead-letters/:eventId/requeue',
+          status: 'ok',
+          resourceId: requeued.id
+        })
+        return ok(toDeadLetterView(requeued), correlationId)
+      } catch (error) {
+        const safeError = toSafeError(error)
+        reply.code(statusCodeForError(safeError.code))
+        emitRuntimeLog({
+          event: 'outbox.dead_letter_requeue_failed',
+          correlationId,
+          route: '/v1/outbox/dead-letters/:eventId/requeue',
+          status: 'error',
+          errorCode: safeError.code
+        })
+        return fail(safeError.code, safeError.message, correlationId)
+      }
+    }
+  )
+
   app.post('/v1/admin/capability-approvals', async (request, reply) => {
     const correlationId = createCorrelationId()
     try {
       const scope = requirePlatformScope(
         request.headers,
         'approval:decide',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const identity = resolveOperatorIdentity(
         request.headers,
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const body = CapabilityApprovalIssueRequestSchema.parse(request.body)
       const version = await platform.getVersion(scope, body.versionId)
@@ -1373,7 +1661,7 @@ export function buildServer(options: BuildServerOptions = {}) {
         const scope = requirePlatformScope(
           request.headers,
           'approval:view',
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const params = CapabilityApprovalParamsSchema.parse(request.params)
         const approval = await capabilityApprovalAuthority.get(
@@ -1403,11 +1691,11 @@ export function buildServer(options: BuildServerOptions = {}) {
         const scope = requirePlatformScope(
           request.headers,
           'approval:decide',
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const identity = resolveOperatorIdentity(
           request.headers,
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const params = CapabilityApprovalParamsSchema.parse(request.params)
         const revoked = await capabilityApprovalAuthority.revoke(
@@ -1452,11 +1740,11 @@ export function buildServer(options: BuildServerOptions = {}) {
         const scope = requirePlatformScope(
           request.headers,
           'approval:execute',
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const identity = resolveOperatorIdentity(
           request.headers,
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const params = CapabilityApprovalParamsSchema.parse(request.params)
         const body = CapabilityApprovalExecutionRequestSchema.parse(
@@ -1816,11 +2104,11 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'agent:configure',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const identity = resolveOperatorIdentity(
         request.headers,
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const entry = await platform.createPluginCatalogEntry(
         scope,
@@ -1855,7 +2143,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'agent:configure',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const query = z
         .object({
@@ -1886,7 +2174,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'agent:configure',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const params = z
         .object({ pluginId: PluginCatalogIdSchema })
@@ -1915,11 +2203,11 @@ export function buildServer(options: BuildServerOptions = {}) {
         const scope = requirePlatformScope(
           request.headers,
           'agent:configure',
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const identity = resolveOperatorIdentity(
           request.headers,
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const params = z
           .object({ pluginId: PluginCatalogIdSchema })
@@ -1962,11 +2250,11 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'agent:configure',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const identity = resolveOperatorIdentity(
         request.headers,
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const source = await platform.createKnowledgeSource(
         scope,
@@ -2001,7 +2289,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'agent:configure',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       return ok(await platform.listKnowledgeSources(scope), correlationId)
     } catch (error) {
@@ -2017,7 +2305,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'agent:configure',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const params = z
         .object({ sourceId: KnowledgeSourceIdSchema })
@@ -2043,11 +2331,11 @@ export function buildServer(options: BuildServerOptions = {}) {
         const scope = requirePlatformScope(
           request.headers,
           'agent:configure',
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const identity = resolveOperatorIdentity(
           request.headers,
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const params = z
           .object({ sourceId: KnowledgeSourceIdSchema })
@@ -2090,11 +2378,11 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'agent:configure',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const identity = resolveOperatorIdentity(
         request.headers,
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const candidate = await platform.createReleaseCandidate(
         scope,
@@ -2131,7 +2419,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'agent:configure',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const query = z
         .object({ agentId: AgentIdSchema })
@@ -2156,7 +2444,7 @@ export function buildServer(options: BuildServerOptions = {}) {
         const scope = requirePlatformScope(
           request.headers,
           'agent:configure',
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const params = z
           .object({ candidateId: ReleaseCandidateIdSchema })
@@ -2186,11 +2474,11 @@ export function buildServer(options: BuildServerOptions = {}) {
         const scope = requirePlatformScope(
           request.headers,
           'agent:configure',
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const identity = resolveOperatorIdentity(
           request.headers,
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const params = z
           .object({ candidateId: ReleaseCandidateIdSchema })
@@ -2235,11 +2523,11 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'agent:configure',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const identity = resolveOperatorIdentity(
         request.headers,
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const agent = await platform.createAgent(
         { tenantId: scope.tenantId },
@@ -2277,7 +2565,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'agent:view',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       return ok(await platform.listAgents(scope), correlationId)
     } catch (error) {
@@ -2293,11 +2581,11 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'agent:configure',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const identity = resolveOperatorIdentity(
         request.headers,
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const params = request.params as { agentId: string }
       const agentId = AgentIdSchema.parse(params.agentId)
@@ -2337,11 +2625,11 @@ export function buildServer(options: BuildServerOptions = {}) {
         const scope = requirePlatformScope(
           request.headers,
           'agent:configure',
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const identity = resolveOperatorIdentity(
           request.headers,
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const params = request.params as {
           agentId: string
@@ -2392,7 +2680,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'agent:view',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const params = request.params as { agentId: string }
       const agentId = AgentIdSchema.parse(params.agentId)
@@ -2412,7 +2700,7 @@ export function buildServer(options: BuildServerOptions = {}) {
         const scope = requirePlatformScope(
           request.headers,
           'agent:configure',
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const params = request.params as {
           agentId: string
@@ -2433,7 +2721,7 @@ export function buildServer(options: BuildServerOptions = {}) {
         }
         const identity = resolveOperatorIdentity(
           request.headers,
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const updated = await platform.transitionVersion(
           scope,
@@ -2471,7 +2759,7 @@ export function buildServer(options: BuildServerOptions = {}) {
         const scope = requirePlatformScope(
           request.headers,
           'agent:configure',
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const params = request.params as {
           agentId: string
@@ -2494,7 +2782,7 @@ export function buildServer(options: BuildServerOptions = {}) {
         })
         const identity = resolveOperatorIdentity(
           request.headers,
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         await appendPlatformAudit(
           audit,
@@ -2529,7 +2817,7 @@ export function buildServer(options: BuildServerOptions = {}) {
         const scope = requirePlatformScope(
           request.headers,
           'agent:configure',
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const params = request.params as {
           agentId: string
@@ -2543,7 +2831,7 @@ export function buildServer(options: BuildServerOptions = {}) {
         }
         const identity = resolveOperatorIdentity(
           request.headers,
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const body = z
           .object({
@@ -2627,11 +2915,11 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'agent:configure',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const identity = resolveOperatorIdentity(
         request.headers,
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const params = request.params as { agentId: string }
       const agentId = AgentIdSchema.parse(params.agentId)
@@ -2725,7 +3013,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'test:run',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const body = TestLabRequestSchema.parse(request.body)
       const trace = await runTestLab({
@@ -2744,7 +3032,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       })
       const identity = resolveOperatorIdentity(
         request.headers,
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       await appendPlatformAudit(
         audit,
@@ -2781,11 +3069,11 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'agent:configure',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const identity = resolveOperatorIdentity(
         request.headers,
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const suite = await platform.createTestSuite(
         scope,
@@ -2820,7 +3108,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'test:run',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const query = z
         .object({ agentId: AgentIdSchema })
@@ -2845,11 +3133,11 @@ export function buildServer(options: BuildServerOptions = {}) {
         const scope = requirePlatformScope(
           request.headers,
           'agent:configure',
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const identity = resolveOperatorIdentity(
           request.headers,
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const params = z
           .object({ suiteId: TestSuiteIdSchema })
@@ -2880,11 +3168,11 @@ export function buildServer(options: BuildServerOptions = {}) {
         const scope = requirePlatformScope(
           request.headers,
           'test:run',
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const identity = resolveOperatorIdentity(
           request.headers,
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const params = z
           .object({ suiteId: TestSuiteIdSchema })
@@ -2933,11 +3221,11 @@ export function buildServer(options: BuildServerOptions = {}) {
         const scope = requirePlatformScope(
           request.headers,
           'test:run',
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const identity = resolveOperatorIdentity(
           request.headers,
-          options.operatorIdentityResolver
+          operatorIdentityResolver
         )
         const params = z
           .object({ suiteId: TestSuiteIdSchema })
@@ -3001,7 +3289,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'test:run',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const params = z
         .object({ suiteId: TestSuiteIdSchema })
@@ -3038,7 +3326,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'test:run',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const limit = parseTraceLimit(request.query)
       const items = await platform.listTestRuns(scope, limit)
@@ -3067,7 +3355,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'audit:view_full',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const limit = parseTraceLimit(request.query)
       const items = await platform.listExecutionTraces(scope, limit)
@@ -3096,7 +3384,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       const scope = requirePlatformScope(
         request.headers,
         'test:run',
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       const body = TestLabEvaluationRequestSchema.parse(request.body)
       const result = await evaluateTestLabSuite({
@@ -3111,7 +3399,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       })
       const identity = resolveOperatorIdentity(
         request.headers,
-        options.operatorIdentityResolver
+        operatorIdentityResolver
       )
       await appendPlatformAudit(
         audit,
@@ -3527,6 +3815,28 @@ function resolveDataPlaneTenant(
   )
 }
 
+function journeyAuditContext(
+  identity: OperatorIdentity | null,
+  correlationId: string
+): {
+  actorType: 'Operator' | 'System'
+  actorId: string
+  correlationId: string
+} {
+  if (!identity) {
+    return {
+      actorType: 'System',
+      actorId: 'system.journey-repository',
+      correlationId
+    }
+  }
+  return {
+    actorType: 'Operator',
+    actorId: identity.operatorId,
+    correlationId
+  }
+}
+
 function resolveOptionalRequestTenant(
   headers: Record<string, unknown>
 ): TenantId {
@@ -3739,6 +4049,50 @@ function resolveOperatorIdentity(
   return parseOperatorIdentity(headers)
 }
 
+/**
+ * Trusted mode never falls back to simulation headers: without a resolver it
+ * fails closed, and resolver identities must be tenant-bound so a
+ * self-asserted tenant header can never widen scope. Simulation mode keeps the
+ * controlled header flow, delegating to an injected resolver when present.
+ */
+function createEffectiveOperatorIdentityResolver(
+  identityMode: IdentityMode,
+  resolver: OperatorIdentityResolver | undefined
+): OperatorIdentityResolver | undefined {
+  if (!resolver) {
+    if (identityMode === 'trusted') {
+      return () => {
+        throw new DomainError(
+          'unauthorized',
+          'A trusted operator identity resolver is required in production'
+        )
+      }
+    }
+    return undefined
+  }
+  if (identityMode === 'simulation') return resolver
+  /**
+   * Trusted resolvers enforce replay protection per token. Some platform/admin
+   * routes resolve the identity more than once for the same request, so the
+   * effective resolver memoizes per headers object: a replay is rejected only
+   * when the same token is presented in a different request.
+   */
+  const memo = new WeakMap<object, OperatorIdentity>()
+  return (headers) => {
+    const cached = memo.get(headers)
+    if (cached) return cached
+    const identity = resolver(headers)
+    if (!identity.tenantId) {
+      throw new DomainError(
+        'unauthorized',
+        'Trusted operator identity must be tenant-bound'
+      )
+    }
+    memo.set(headers, identity)
+    return identity
+  }
+}
+
 async function appendPlatformAudit(
   audit: RuntimePersistence['audit'],
   identity: OperatorIdentity,
@@ -3783,8 +4137,15 @@ const tenantIsolationTables = [
   'audit_events',
   'idempotency',
   'outbox_events',
+  'channel_effect_journal',
+  'effect_journal',
   'outbox_effects',
   'outbox_attempts',
+  'journey_owner_drafts',
+  'journey_patient_drafts',
+  'journey_appointment_drafts',
+  'runtime_approvals',
+  'runtime_audit_events',
   'platform_agents',
   'platform_agent_versions',
   'platform_test_runs',
@@ -3802,6 +4163,19 @@ const tenantIsolationQuarantineTables = [
   'tenant_isolation_quarantine',
   'outbox_quarantine'
 ] as const
+
+const tenantOnlyRlsTables = new Set([
+  'outbox_effects',
+  'outbox_attempts',
+  'outbox_quarantine',
+  'channel_effect_journal',
+  'effect_journal',
+  'journey_owner_drafts',
+  'journey_patient_drafts',
+  'journey_appointment_drafts',
+  'runtime_approvals',
+  'runtime_audit_events'
+])
 
 const webhookReplayTables = ['webhook_replay_events'] as const
 
@@ -3824,7 +4198,13 @@ const tenantIsolationMigrationVersions = [
   '0008_session_agent_version_pin',
   '0009_release_candidate_validator_integrity',
   '0010_outbox_durability',
-  '0011_outbox_payload_redaction'
+  '0011_outbox_payload_redaction',
+  '0012_channel_effect_journal',
+  '0013_runtime_effect_journal',
+  '0014_journeys',
+  '0015_runtime_approval_store',
+  '0016_runtime_continuation_trace',
+  '0017_runtime_audit_chain'
 ] as const
 
 const tenantIsolationRequiredConstraints = [
@@ -3893,7 +4273,22 @@ const tenantIsolationRequiredConstraints = [
   'audit_evidence_checkpoints_digest_check',
   'audit_evidence_checkpoints_status_check',
   'audit_evidence_checkpoints_created_by_check',
-  'audit_evidence_checkpoints_updated_by_check'
+  'audit_evidence_checkpoints_updated_by_check',
+  'channel_effect_journal_pkey',
+  'channel_effect_journal_lease_check',
+  'channel_effect_journal_terminal_check',
+  'effect_journal_pkey',
+  'effect_journal_confirmed_check',
+  'effect_journal_reconciliation_check',
+  'journey_owner_drafts_pkey',
+  'journey_owner_drafts_tenant_id_idempotency_key_key',
+  'journey_patient_drafts_pkey',
+  'journey_patient_drafts_tenant_id_idempotency_key_key',
+  'journey_appointment_drafts_pkey',
+  'journey_appointment_drafts_tenant_id_idempotency_key_key',
+  'runtime_approvals_pkey',
+  'runtime_audit_events_pkey',
+  'runtime_audit_events_tenant_id_sequence_key'
 ] as const
 
 const tenantIsolationRequiredIndexes = [
@@ -3927,7 +4322,32 @@ const tenantIsolationRequiredIndexes = [
   'idx_platform_release_candidates_tenant_status',
   'idx_platform_release_candidates_tenant_agent',
   'idx_audit_evidence_checkpoints_tenant_status',
-  'idx_audit_evidence_checkpoints_tenant_created'
+  'idx_audit_evidence_checkpoints_tenant_created',
+  'channel_effect_journal_pkey',
+  'idx_channel_effect_journal_lease',
+  'idx_channel_effect_journal_updated',
+  'effect_journal_pkey',
+  'idx_effect_journal_state_expires',
+  'idx_effect_journal_updated',
+  'journey_owner_drafts_pkey',
+  'journey_owner_drafts_tenant_id_idempotency_key_key',
+  'idx_journey_owner_drafts_tenant_status',
+  'idx_journey_owner_drafts_tenant_phone',
+  'journey_patient_drafts_pkey',
+  'journey_patient_drafts_tenant_id_idempotency_key_key',
+  'idx_journey_patient_drafts_tenant_status',
+  'idx_journey_patient_drafts_tenant_owner',
+  'journey_appointment_drafts_pkey',
+  'journey_appointment_drafts_tenant_id_idempotency_key_key',
+  'idx_journey_appointment_drafts_tenant_status',
+  'runtime_approvals_pkey',
+  'idx_runtime_approvals_status_reservation_expires',
+  'idx_runtime_approvals_operation_key',
+  'idx_messages_runtime_approval',
+  'uq_runtime_approvals_continuation_message',
+  'runtime_audit_events_pkey',
+  'runtime_audit_events_tenant_id_sequence_key',
+  'idx_runtime_audit_events_correlation'
 ] as const
 
 export async function assertTenantIsolationMigrationState(
@@ -4041,15 +4461,11 @@ export async function assertTenantIsolationSchema(
       policy.roles !== '{public}' ||
       policy.cmd !== 'ALL' ||
       normalizePolicyExpression(policy.qual) !==
-        (table === 'outbox_effects' ||
-        table === 'outbox_attempts' ||
-        table === 'outbox_quarantine'
+        (tenantOnlyRlsTables.has(table)
           ? expectedTenantOnlyExpression
           : expectedExpression) ||
       normalizePolicyExpression(policy.with_check) !==
-        (table === 'outbox_effects' ||
-        table === 'outbox_attempts' ||
-        table === 'outbox_quarantine'
+        (tenantOnlyRlsTables.has(table)
           ? expectedTenantOnlyExpression
           : expectedExpression)
     ) {
@@ -4094,9 +4510,7 @@ export async function assertTenantIsolationSchema(
     const tableColumns = columnsByTable.get(table)
     return (
       !tableColumns?.has('tenant_id') ||
-      (!['outbox_effects', 'outbox_attempts', 'outbox_quarantine'].includes(
-        table
-      ) &&
+      (!tenantOnlyRlsTables.has(table) &&
         !tableColumns.has('tenant_isolation_quarantined'))
     )
   })
@@ -4243,6 +4657,76 @@ function normalizePolicyExpression(expression: string | null): string {
 function assertSafeRuntimeSchemaName(schemaName: string | undefined): void {
   if (schemaName && !/^[a-z][a-z0-9_]{0,62}$/.test(schemaName)) {
     throw new Error('Invalid PostgreSQL schema name')
+  }
+}
+
+/**
+ * Builds a bounded database readiness probe from the configured persistence.
+ * Pool connections are returned on success and destroyed on failure/timeout so
+ * repeated probes cannot accumulate leaked clients.
+ */
+function createReadinessDatabaseProbe(
+  persistence: BuildServerOptions['persistence']
+): (() => Promise<void>) | undefined {
+  if (!persistence || persistence.kind === 'memory') return undefined
+  if (persistence.kind === 'postgres') {
+    const client = persistence.client
+    return async () => {
+      await client.query('SELECT 1')
+    }
+  }
+  const pool = persistence.pool
+  // Keep admission occupied until the underlying acquisition/query settles.
+  // A deadline cannot cancel pool.connect(), so admitting another probe while
+  // it is pending would grow the pool queue on every health check.
+  let occupied = false
+  return async () => {
+    if (occupied) throw new Error('readiness probe is still pending')
+    occupied = true
+    let expired = false
+    let releaseClient: ((error?: Error) => void) | undefined
+    const timeoutError = new Error('readiness probe timeout')
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const deadline = new Promise<never>((_resolve, reject) => {
+      timer = setTimeout(() => {
+        expired = true
+        reject(timeoutError)
+        releaseClient?.(timeoutError)
+      }, 900)
+      timer.unref?.()
+    })
+    const operation = (async () => {
+      try {
+        const client = await pool.connect()
+        let released = false
+        releaseClient = (error?: Error): void => {
+          if (released) return
+          released = true
+          client.release(error)
+        }
+        if (expired) {
+          releaseClient(timeoutError)
+          throw timeoutError
+        }
+        try {
+          await client.query('SELECT 1')
+          if (expired) throw timeoutError
+          releaseClient()
+        } catch (error) {
+          releaseClient(
+            error instanceof Error ? error : new Error('readiness failed')
+          )
+          throw error
+        }
+      } finally {
+        occupied = false
+      }
+    })()
+    try {
+      await Promise.race([operation, deadline])
+    } finally {
+      clearTimeout(timer)
+    }
   }
 }
 
@@ -4582,8 +5066,8 @@ interface RuntimePersistence {
   /** Legacy direct-client fixtures do not have the tenant-scoped pin columns. */
   sessionVersionPinning: boolean
   outbox: DurableOutboxAdapter
-  /** R3 controlled journey store; PostgreSQL journey tables remain a separate gate. */
-  journeys: JourneyRepository | null
+  /** R3 controlled journey store: memory or tenant-scoped PostgreSQL adapter. */
+  journeys: JourneyRepositoryPort | null
   conversations:
     | ConversationRepository
     | PostgresRuntimeRepository
@@ -4796,20 +5280,28 @@ function parseOptionalAuditFilter(value: unknown): string | undefined {
 }
 
 function createPersistence(
-  config: BuildServerOptions['persistence']
+  config: BuildServerOptions['persistence'],
+  journeyRepository?: JourneyRepositoryPort | null
 ): RuntimePersistence {
   if (config?.kind === 'postgres' || config?.kind === 'postgres-pool') {
     const postgres =
       config.kind === 'postgres'
         ? new PostgresRuntimeRepository(config.client)
         : new TenantScopedPostgresRuntimeRepository(config.pool)
+    const journeys =
+      journeyRepository !== undefined
+        ? journeyRepository
+        : createPostgresJourneyRepository(config)
     return {
       sessionVersionPinning: config.kind === 'postgres-pool',
       outbox: postgres as unknown as DurableOutboxAdapter,
-      journeys: null,
+      journeys,
       conversations: postgres,
       tasks: {
-        create: (input, tenantId) => postgres.createTask(input, tenantId),
+        create: (
+          input: Parameters<PostgresRuntimeRepository['createTask']>[0],
+          tenantId?: TenantId
+        ) => postgres.createTask(input, tenantId),
         list: (tenantId) => postgres.listTasks(tenantId),
         findById: (id, tenantId) => postgres.findTaskById(id, tenantId),
         updateStatus: (id, status, tenantId) =>
@@ -4864,16 +5356,126 @@ function createPersistence(
 
   const db = new InMemoryDatabase()
   const outbox = new OutboxRepository(db)
-  const journeys = new JourneyRepository(db)
   return {
     sessionVersionPinning: true,
     outbox,
-    journeys,
+    journeys:
+      journeyRepository !== undefined
+        ? journeyRepository
+        : new JourneyRepository(db),
     conversations: new ConversationRepository(db),
     tasks: new TaskRepository(db),
     approvals: new ApprovalRepository(db),
     audit: new AuditRepository(db)
   }
+}
+
+async function decideRuntimeApproval(input: {
+  authority: ApprovalAuthority
+  current: ApprovalRecord
+  tenantId: TenantId
+  approvalId: string
+  decision: 'approve' | 'reject'
+  approverId: string
+  reason?: string
+}): Promise<ApprovalRecord> {
+  if (input.decision === 'approve') {
+    if (input.current.status === 'APPROVED') return input.current
+    if (input.current.status !== 'PENDING') {
+      throw new DomainError(
+        'conflict',
+        `Runtime approval cannot be approved from ${input.current.status}`
+      )
+    }
+    return input.authority.approve(input.tenantId, input.approvalId, {
+      approverId: input.approverId,
+      ...(input.reason !== undefined ? { reason: input.reason } : {})
+    })
+  }
+
+  if (input.current.status === 'REJECTED') return input.current
+  if (input.current.status !== 'PENDING') {
+    throw new DomainError(
+      'conflict',
+      `Runtime approval cannot be rejected from ${input.current.status}`
+    )
+  }
+  return input.authority.reject(input.tenantId, input.approvalId, {
+    approverId: input.approverId,
+    ...(input.reason !== undefined ? { reason: input.reason } : {})
+  })
+}
+
+/**
+ * Safe DLQ projection. Queue payloads are intentionally excluded even though
+ * the persistence adapter already redacts them; operators need disposition
+ * metadata and a stable requeue handle, not a second message viewer.
+ */
+function toDeadLetterView(event: OutboxEventRecord) {
+  return {
+    id: event.id,
+    type: event.type,
+    status: event.status,
+    correlationId: event.correlationId,
+    traceId: event.traceId ?? null,
+    conversationId: event.conversationId,
+    sessionId: event.sessionId,
+    inboundMessageId: event.inboundMessageId,
+    attempts: event.attempts,
+    lastError: event.lastError,
+    createdAt: event.createdAt.toISOString(),
+    availableAt: event.availableAt?.toISOString() ?? null,
+    deadLetteredAt: event.deadLetteredAt?.toISOString() ?? null
+  }
+}
+
+function createRuntimeApprovalAuthority(
+  config: BuildServerOptions['persistence']
+): ApprovalAuthority | undefined {
+  if (config?.kind === 'postgres-pool') {
+    return new PostgresApprovalAuthority(config.pool)
+  }
+  if (config?.kind === 'postgres') {
+    return new PostgresApprovalAuthority(singleConnectionPool(config.client))
+  }
+  return undefined
+}
+
+type PostgresPersistenceConfig = Extract<
+  NonNullable<BuildServerOptions['persistence']>,
+  { kind: 'postgres' } | { kind: 'postgres-pool' }
+>
+
+/**
+ * PostgreSQL persistence mode always exposes a concrete journey repository.
+ * If the configured adapter cannot carry tenant-scoped transactions, startup
+ * fails closed instead of hiding a missing adapter behind a cast.
+ */
+function createPostgresJourneyRepository(
+  config: PostgresPersistenceConfig
+): PostgresJourneyRepository {
+  if (config.kind === 'postgres-pool') {
+    if (typeof config.pool?.connect !== 'function') {
+      throw new Error(
+        'PostgreSQL journey persistence requires a pool adapter with connect()'
+      )
+    }
+    return new PostgresJourneyRepository(config.pool)
+  }
+  if (typeof config.client?.query !== 'function') {
+    throw new Error(
+      'PostgreSQL journey persistence requires a queryable persistence client'
+    )
+  }
+  return new PostgresJourneyRepository(singleConnectionPool(config.client))
+}
+
+function singleConnectionPool(client: PostgresQueryable): PostgresPoolLike {
+  const pooled: PostgresPoolClient = {
+    query: (text, values) => client.query(text, values),
+    release: () => undefined
+  }
+  return { connect: async () => pooled }
 }
 
 function withDefaultCapabilityGateway(
@@ -4944,8 +5546,26 @@ export async function buildServerFromEnv(
       'NODE_ENV must be explicitly set to development, test or production'
     )
   }
-  const persistenceMode = env.API_PERSISTENCE_MODE ?? 'memory'
   const { webhookReplayStore, ...buildOptions } = options
+  /**
+   * The identity mode follows the explicit option, then `CVG_IDENTITY_MODE`,
+   * then the process environment (the source `buildServer` itself reads).
+   * Production always composes as trusted so a simulated environment can never
+   * fall back to self-asserted headers.
+   */
+  const identityMode =
+    buildOptions.identityMode ??
+    (env[IDENTITY_MODE_ENV]?.trim()
+      ? parseIdentityMode(env[IDENTITY_MODE_ENV], env.NODE_ENV)
+      : env.NODE_ENV === 'production'
+        ? ('trusted' as const)
+        : parseIdentityMode(undefined, process.env.NODE_ENV))
+  if (env.NODE_ENV === 'production' && identityMode === 'simulation') {
+    throw new Error(
+      'Production requires trusted operator identity mode; simulation is forbidden'
+    )
+  }
+  const persistenceMode = env.API_PERSISTENCE_MODE ?? 'memory'
   if (persistenceMode !== 'memory' && persistenceMode !== 'postgres') {
     throw new Error('API_PERSISTENCE_MODE must be memory or postgres')
   }
@@ -4963,10 +5583,26 @@ export async function buildServerFromEnv(
       buildOptions.webhookVerifier,
       webhookReplayStore
     )
-    const configuredInboundAgentRuntime = createConfiguredInboundAgentRuntime(
+    let configuredInboundAgentRuntime = createConfiguredInboundAgentRuntime(
       env,
       buildOptions.agentRuntime
     )
+    let controlledAgentId: AgentId | undefined
+    if (env.NODE_ENV === 'development' && !configuredInboundAgentRuntime) {
+      configuredInboundAgentRuntime = {
+        resolveAgentId: () => {
+          if (!controlledAgentId) {
+            throw new Error('Controlled Secretary agent is not initialized')
+          }
+          return controlledAgentId
+        }
+      }
+    }
+    const configuredInboundTenantResolver =
+      createConfiguredInboundTenantResolver(
+        env,
+        buildOptions.inboundTenantResolver
+      )
     const app = buildServer({
       ...buildOptions,
       ...(configuredInboundAgentRuntime
@@ -4975,13 +5611,20 @@ export async function buildServerFromEnv(
       ...(configuredWebhookVerifier
         ? { webhookVerifier: configuredWebhookVerifier }
         : {}),
+      ...(configuredInboundTenantResolver
+        ? { inboundTenantResolver: configuredInboundTenantResolver }
+        : {}),
+      identityMode,
       durableInbound: durableInbound,
       httpSecurity,
       persistence: { kind: 'memory' }
     })
     if (env.NODE_ENV === 'development') {
       try {
-        await ensureControlledSecretaryPreset(app.platform)
+        const controlledAgent = await ensureControlledSecretaryPreset(
+          app.platform
+        )
+        controlledAgentId = controlledAgent.id
       } catch (error) {
         await app.close()
         throw error
@@ -5104,11 +5747,7 @@ export async function buildServerFromEnv(
               ...(env.DATABASE_MIGRATION_URL ? { createSchema: false } : {})
             }
           : {}
-        if (env.POSTGRES_RLS_ENFORCEMENT === 'true') {
-          await runPostgresMigrations(migrationClient, migrationOptions)
-        } else {
-          await runInitialPostgresMigration(migrationClient, migrationOptions)
-        }
+        await runPostgresMigrations(migrationClient, migrationOptions)
       } finally {
         migrationClient.release()
       }
@@ -5161,6 +5800,7 @@ export async function buildServerFromEnv(
     ...(env.NODE_ENV === 'production'
       ? { requireAuthenticatedMutations: true }
       : {}),
+    identityMode,
     durableInbound: durableInbound,
     httpSecurity: configuredHttpSecurity,
     persistence: persistenceConfig
@@ -5208,14 +5848,19 @@ function createConfiguredInboundTenantResolver(
   env: NodeJS.ProcessEnv,
   configuredResolver: InboundTenantResolver | undefined
 ): InboundTenantResolver | undefined {
-  if (configuredResolver || env.NODE_ENV !== 'production') {
-    return configuredResolver
+  if (configuredResolver) return configuredResolver
+  const rawTenantId = env.INBOUND_TENANT_ID?.trim()
+  if (!rawTenantId) {
+    if (env.NODE_ENV === 'production') {
+      throw new Error(
+        'Production requires INBOUND_TENANT_ID or an injected tenant resolver'
+      )
+    }
+    return undefined
   }
-  const tenantId = TenantIdSchema.safeParse(env.INBOUND_TENANT_ID?.trim())
+  const tenantId = TenantIdSchema.safeParse(rawTenantId)
   if (!tenantId.success) {
-    throw new Error(
-      'Production requires INBOUND_TENANT_ID or an injected tenant resolver'
-    )
+    throw new Error('INBOUND_TENANT_ID must be a valid tenant identifier')
   }
   return () => tenantId.data
 }

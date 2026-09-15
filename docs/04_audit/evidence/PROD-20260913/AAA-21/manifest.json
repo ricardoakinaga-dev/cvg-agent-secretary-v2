@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "kind": "aaa-task-evidence-alias",
+  "taskId": "AAA-21",
+  "program": "PROD-20260913",
+  "status": "CANDIDATE_PENDING_INDEPENDENT_REVIEW",
+  "candidateId": "30bbe58f012622019d8cdc395aaccbe321c050524e5895bc31837df7d6de4467",
+  "runId": "run-30bbe58f0126-mu0kq91x",
+  "candidateFiles": 895,
+  "canonicalManifest": "../../AAA/AAA-21/manifest.json",
+  "note": "Alias required by the frozen AAA-06 verification path. The canonical candidate manifest remains evidence only and does not grant BUILD, VERIFIED, DONE or production authority."
+}

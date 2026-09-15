@@ -9,6 +9,7 @@ import { resolve } from 'node:path'
 import { createHash } from 'node:crypto'
 import {
   CorrelationIdSchema,
+  canonicalizeJson,
   createCorrelationId,
   createDomainId,
   DomainError,
@@ -69,6 +70,7 @@ import type {
   MessageRecord,
   PaginationInput,
   OutboxEventRecord,
+  RuntimeAuditLedgerRecord,
   SessionRecord,
   TaskRecord
 } from './schema.ts'
@@ -82,6 +84,7 @@ import {
   type OutboxClaimInput,
   type OutboxEnqueueInput as MemoryOutboxEnqueueInput,
   type OutboxFailInput,
+  type OutboxHeartbeatInput,
   type OutboxRequeueInput as MemoryOutboxRequeueInput,
   type OutboxTakeoverCheck
 } from './outbox.ts'
@@ -113,7 +116,13 @@ const defaultPostgresMigrations = [
   '0008_session_agent_version_pin',
   '0009_release_candidate_validator_integrity',
   '0010_outbox_durability',
-  '0011_outbox_payload_redaction'
+  '0011_outbox_payload_redaction',
+  '0012_channel_effect_journal',
+  '0013_runtime_effect_journal',
+  '0014_journeys',
+  '0015_runtime_approval_store',
+  '0016_runtime_continuation_trace',
+  '0017_runtime_audit_chain'
 ]
 
 export interface PostgresQueryable {
@@ -149,6 +158,19 @@ export interface InboundRuntimeCompletionInput {
 }
 
 export type DurableOutboxStatus = OutboxEventRecord['status']
+
+export interface RuntimeAuditChainVerification {
+  valid: boolean
+  count: number
+  brokenAt?: number
+  reason?:
+    | 'sequence_mismatch'
+    | 'previous_hash_mismatch'
+    | 'payload_hash_mismatch'
+    | 'event_hash_mismatch'
+    | 'invalid_hash'
+    | 'invalid_timestamp'
+}
 
 export type DurableOutboxEventRecord = OutboxEventRecord & {
   tenantId: TenantId
@@ -200,6 +222,7 @@ const SAFE_LEGACY_OUTBOX_ERRORS = new Set([
 
 const outboxSelectColumns = `
   id, tenant_id, type, envelope_version, correlation_id, idempotency_key,
+  trace_id,
   conversation_id, session_id, agent_id, agent_version_id,
   inbound_message_id, payload, status, created_at, available_at, attempts,
   lease_owner, lease_until, last_error, processed_at, dead_lettered_at,
@@ -212,6 +235,7 @@ interface DurableOutboxRow {
   envelope_version: number
   correlation_id: string
   idempotency_key: string
+  trace_id: string | null
   conversation_id: string | null
   session_id: string | null
   agent_id: string | null
@@ -315,6 +339,78 @@ function createInboundIdempotencyKey(
   return `inbound:${channel}:sha256:${digest}`
 }
 
+const RUNTIME_AUDIT_GENESIS_HASH = '0'.repeat(64)
+
+function runtimeAuditSha256(value: string): string {
+  return createHash('sha256').update(value, 'utf8').digest('hex')
+}
+
+function runtimeAuditPayloadHash(payload: unknown): string {
+  return runtimeAuditSha256(canonicalizeJson(payload ?? null))
+}
+
+function runtimeAuditEventHash(input: {
+  sequence: number
+  previousHash: string
+  payloadHash: string
+  eventId: string
+  type: string
+  actor: string
+  tenantId: string
+  correlationId: string
+  timestamp: string
+}): string {
+  return runtimeAuditSha256(
+    canonicalizeJson({
+      sequence: input.sequence,
+      previousHash: input.previousHash,
+      payloadHash: input.payloadHash,
+      eventId: input.eventId,
+      type: input.type,
+      actor: input.actor,
+      tenantId: input.tenantId,
+      correlationId: input.correlationId,
+      timestamp: input.timestamp
+    })
+  )
+}
+
+function runtimeAuditEventKey(input: {
+  eventId: string
+  type: string
+  actor: string
+  tenantId: string
+  correlationId: string
+  payloadHash: string
+}): string {
+  return runtimeAuditSha256(canonicalizeJson(input))
+}
+
+function assertRuntimeAuditRecord(
+  record: RuntimeAuditLedgerRecord,
+  tenantId: TenantId
+): void {
+  if (
+    !record ||
+    record.tenantId !== tenantId ||
+    typeof record.eventId !== 'string' ||
+    record.eventId.trim().length === 0 ||
+    typeof record.type !== 'string' ||
+    record.type.trim().length === 0 ||
+    typeof record.actor !== 'string' ||
+    record.actor.trim().length === 0 ||
+    typeof record.correlationId !== 'string' ||
+    record.correlationId.trim().length === 0 ||
+    typeof record.timestamp !== 'string' ||
+    Number.isNaN(Date.parse(record.timestamp))
+  ) {
+    throw new DomainError(
+      'validation_failed',
+      'Durable runtime audit record is invalid or outside the tenant scope'
+    )
+  }
+}
+
 async function resolveTakeoverCheck(
   value: OutboxTakeoverCheck | undefined
 ): Promise<boolean> {
@@ -345,6 +441,7 @@ function mapDurableOutboxRow(row: DurableOutboxRow): DurableOutboxEventRecord {
     envelopeVersion: row.envelope_version,
     correlationId: row.correlation_id,
     idempotencyKey: row.idempotency_key,
+    ...(row.trace_id !== null ? { traceId: row.trace_id } : {}),
     conversationId: row.conversation_id,
     sessionId: row.session_id,
     agentId: row.agent_id,
@@ -953,12 +1050,13 @@ export class PostgresRuntimeRepository {
       const insert = await client.query<DurableOutboxRow>(
         `INSERT INTO outbox_events
            (id, tenant_id, type, envelope_version, correlation_id, idempotency_key,
+            trace_id,
             conversation_id, session_id, agent_id, agent_version_id,
             inbound_message_id, payload, payload_protection_version, status, created_at, available_at,
             attempts, lease_owner, lease_until, last_error, processed_at,
             dead_lettered_at, parent_event_id, tenant_isolation_quarantined)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb,
-                 $13, 'pending', $14, $15, 0, NULL, NULL, NULL, NULL, NULL, $16, false)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13::jsonb,
+                 $14, 'pending', $15, $16, 0, NULL, NULL, NULL, NULL, NULL, $17, false)
          ON CONFLICT (tenant_id, idempotency_key) DO NOTHING
          RETURNING ${outboxSelectColumns}`,
         [
@@ -968,6 +1066,7 @@ export class PostgresRuntimeRepository {
           envelopeVersion,
           correlationId,
           idempotencyKey,
+          rawInput.traceId ?? null,
           rawInput.conversationId ?? null,
           rawInput.sessionId ?? null,
           rawInput.agentId ?? null,
@@ -1018,6 +1117,28 @@ export class PostgresRuntimeRepository {
       [tenantId, id]
     )
     return result.rows[0] ? mapDurableOutboxRow(result.rows[0]) : null
+  }
+
+  async listDeadLetters(
+    rawTenantId: TenantId,
+    limit = 100
+  ): Promise<DurableOutboxEventRecord[]> {
+    const tenantId = TenantIdSchema.parse(rawTenantId)
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+      throw new DomainError(
+        'validation_failed',
+        'Dead-letter list limit must be between 1 and 100'
+      )
+    }
+    const result = await this.client.query<DurableOutboxRow>(
+      `SELECT ${outboxSelectColumns}
+         FROM outbox_events
+        WHERE tenant_id = $1 AND status = 'dead_letter'
+        ORDER BY dead_lettered_at DESC NULLS LAST, id ASC
+        LIMIT $2`,
+      [tenantId, limit]
+    )
+    return result.rows.map(mapDurableOutboxRow)
   }
 
   async claimNext(
@@ -1086,6 +1207,32 @@ export class PostgresRuntimeRepository {
         [tenantId, claimedRow.id, claimedRow.attempts, workerId, now]
       )
       return mapDurableOutboxRow(claimedRow)
+    })
+  }
+
+  async heartbeatClaim(
+    rawInput: OutboxHeartbeatInput
+  ): Promise<DurableOutboxEventRecord | null> {
+    const tenantId = TenantIdSchema.parse(rawInput.tenantId)
+    const eventId = assertOutboxText(rawInput.eventId, 'eventId', 160)
+    const workerId = validateOutboxWorker(rawInput.workerId)
+    const now = this.repositoryNow()
+    const leaseMs = validateOutboxLeaseMs(rawInput.leaseMs)
+    const leaseUntil = new Date(now.getTime() + leaseMs)
+
+    return withOutboxTransaction(this.client, async () => {
+      const renewed = await this.client.query<DurableOutboxRow>(
+        `UPDATE outbox_events
+            SET lease_until = $4
+          WHERE tenant_id = $1
+            AND id = $2
+            AND status = 'processing'
+            AND lease_owner = $3
+            AND lease_until > $5
+          RETURNING ${outboxSelectColumns}`,
+        [tenantId, eventId, workerId, leaseUntil, now]
+      )
+      return renewed.rows[0] ? mapDurableOutboxRow(renewed.rows[0]) : null
     })
   }
 
@@ -1519,15 +1666,21 @@ export class PostgresRuntimeRepository {
       external_message_id: string
       direction: 'inbound' | 'outbound'
       body: string
-      runtime_status: 'pending' | 'completed' | null
+      runtime_status: 'pending' | 'waiting_approval' | 'completed' | null
+      runtime_approval_id: string | null
+      runtime_trace_id: string | null
+      correlation_id: string
+      session_id: string | null
       created_at: Date
     }>(
-      `SELECT messages.id, messages.conversation_id, messages.external_message_id, messages.direction, messages.body, messages.runtime_status, messages.created_at
+      `SELECT messages.id, messages.conversation_id, messages.external_message_id, messages.direction, messages.body, messages.runtime_status, messages.runtime_approval_id, messages.runtime_trace_id, conversations.correlation_id, sessions.id AS session_id, messages.created_at
        FROM messages
        INNER JOIN conversations ON conversations.id = messages.conversation_id
+       LEFT JOIN sessions ON sessions.conversation_id = messages.conversation_id
        WHERE conversations.tenant_id = $1
          AND conversations.channel = $2
          AND messages.external_message_id = $3
+       ORDER BY sessions.updated_at DESC NULLS LAST
        LIMIT 1`,
       [tenantId, channel, externalMessageId]
     )
@@ -1541,8 +1694,18 @@ export class PostgresRuntimeRepository {
       direction: row.direction,
       body: redactSensitiveText(row.body),
       ...(row.direction === 'inbound'
-        ? { runtimeStatus: row.runtime_status ?? 'pending' }
+        ? {
+            runtimeStatus: row.runtime_status ?? 'pending',
+            ...(row.runtime_approval_id !== null
+              ? { runtimeApprovalId: row.runtime_approval_id }
+              : {}),
+            ...(row.runtime_trace_id !== null
+              ? { runtimeTraceId: row.runtime_trace_id }
+              : {})
+          }
         : {}),
+      correlationId: row.correlation_id,
+      sessionId: row.session_id,
       createdAt: row.created_at
     }
   }
@@ -1556,6 +1719,8 @@ export class PostgresRuntimeRepository {
       body: string
       conversationId?: string | undefined
       sessionId?: string | undefined
+      correlationId?: string | undefined
+      runtimeTraceId?: string | undefined
     },
     durableOutbox?: PostgresOutboxEnqueueInput
   ): Promise<{
@@ -1682,7 +1847,10 @@ export class PostgresRuntimeRepository {
           senderRef: redactSensitiveText(input.senderRef),
           senderRefHash: createSenderRefFingerprint(tenantId, input.senderRef),
           status: 'active',
-          correlationId: createCorrelationId(),
+          correlationId:
+            input.correlationId !== undefined
+              ? CorrelationIdSchema.parse(input.correlationId)
+              : createCorrelationId(),
           createdAt: now,
           updatedAt: now
         }
@@ -1745,6 +1913,9 @@ export class PostgresRuntimeRepository {
         direction: 'inbound',
         body: redactSensitiveText(input.body),
         runtimeStatus: 'pending',
+        ...(input.runtimeTraceId !== undefined
+          ? { runtimeTraceId: input.runtimeTraceId }
+          : {}),
         createdAt: now
       }
       await this.client.query(
@@ -1752,7 +1923,23 @@ export class PostgresRuntimeRepository {
          VALUES ($1, $2, $3, $4)`,
         [tenantId, idempotencyKey, message.id, now]
       )
-      if (this.tenantIsolation) {
+      if (this.tenantIsolation && message.runtimeTraceId !== undefined) {
+        await this.client.query(
+          `INSERT INTO messages (tenant_id, id, conversation_id, external_message_id, direction, body, runtime_status, runtime_trace_id, created_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+          [
+            tenantId,
+            message.id,
+            message.conversationId,
+            message.externalMessageId,
+            message.direction,
+            message.body,
+            message.runtimeStatus,
+            message.runtimeTraceId,
+            message.createdAt
+          ]
+        )
+      } else if (this.tenantIsolation) {
         await this.client.query(
           `INSERT INTO messages (tenant_id, id, conversation_id, external_message_id, direction, body, runtime_status, created_at)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
@@ -1764,6 +1951,21 @@ export class PostgresRuntimeRepository {
             message.direction,
             message.body,
             message.runtimeStatus,
+            message.createdAt
+          ]
+        )
+      } else if (message.runtimeTraceId !== undefined) {
+        await this.client.query(
+          `INSERT INTO messages (id, conversation_id, external_message_id, direction, body, runtime_status, runtime_trace_id, created_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+          [
+            message.id,
+            message.conversationId,
+            message.externalMessageId,
+            message.direction,
+            message.body,
+            message.runtimeStatus,
+            message.runtimeTraceId,
             message.createdAt
           ]
         )
@@ -2005,7 +2207,7 @@ export class PostgresRuntimeRepository {
            WHERE id = $1
              AND tenant_id = $2
              AND direction = 'inbound'
-             AND runtime_status = 'pending'
+             AND runtime_status IN ('pending', 'waiting_approval')
            RETURNING id`,
           [messageId, tenantId]
         )
@@ -2014,9 +2216,43 @@ export class PostgresRuntimeRepository {
            SET runtime_status = 'completed'
            WHERE id = $1
              AND direction = 'inbound'
-             AND runtime_status = 'pending'
+             AND runtime_status IN ('pending', 'waiting_approval')
            RETURNING id`,
           [messageId]
+        )
+    return result.rows.length > 0
+  }
+
+  async markInboundRuntimeWaitingForApproval(
+    messageId: string,
+    rawTenantId: TenantId,
+    approvalId: string,
+    traceId?: string
+  ): Promise<boolean> {
+    const tenantId = TenantIdSchema.parse(rawTenantId)
+    const result = this.tenantIsolation
+      ? await this.client.query(
+          `UPDATE messages
+           SET runtime_status = 'waiting_approval',
+               runtime_approval_id = $3,
+               runtime_trace_id = COALESCE($4, runtime_trace_id)
+           WHERE id = $1
+             AND tenant_id = $2
+             AND direction = 'inbound'
+             AND runtime_status = 'pending'
+           RETURNING id`,
+          [messageId, tenantId, approvalId, traceId ?? null]
+        )
+      : await this.client.query(
+          `UPDATE messages
+           SET runtime_status = 'waiting_approval',
+               runtime_approval_id = $2,
+               runtime_trace_id = COALESCE($3, runtime_trace_id)
+           WHERE id = $1
+             AND direction = 'inbound'
+             AND runtime_status = 'pending'
+           RETURNING id`,
+          [messageId, approvalId, traceId ?? null]
         )
     return result.rows.length > 0
   }
@@ -2037,8 +2273,10 @@ export class PostgresRuntimeRepository {
       external_message_id: string
       direction: 'inbound' | 'outbound'
       body: string
-      runtime_status: 'pending' | 'completed'
+      runtime_status: 'pending' | 'waiting_approval' | 'completed'
       message_created_at: Date
+      runtime_approval_id: string | null
+      runtime_trace_id: string | null
       channel: Channel
       sender_ref: string
       correlation_id: string
@@ -2056,6 +2294,8 @@ export class PostgresRuntimeRepository {
               messages.direction,
               messages.body,
               messages.runtime_status,
+              messages.runtime_approval_id,
+              messages.runtime_trace_id,
               messages.created_at AS message_created_at,
               conversations.channel,
               conversations.sender_ref,
@@ -2090,6 +2330,12 @@ export class PostgresRuntimeRepository {
       direction: row.direction,
       body: redactSensitiveText(row.body),
       runtimeStatus: row.runtime_status,
+      ...(row.runtime_approval_id !== null
+        ? { runtimeApprovalId: row.runtime_approval_id }
+        : {}),
+      ...(row.runtime_trace_id !== null
+        ? { runtimeTraceId: row.runtime_trace_id }
+        : {}),
       createdAt: row.message_created_at
     }
     const session = row.session_id
@@ -2417,6 +2663,237 @@ export class PostgresRuntimeRepository {
       )
     }
     return event
+  }
+
+  /**
+   * Appends runtime ledger entries to a durable tenant chain. The durable
+   * sequence is assigned by PostgreSQL, not trusted from a worker-local
+   * process, so a second worker can continue the same chain safely. Replayed
+   * semantic entries are idempotent by their event key.
+   */
+  async appendRuntimeAuditRecords(
+    rawTenantId: TenantId,
+    records: readonly RuntimeAuditLedgerRecord[]
+  ): Promise<number> {
+    const tenantId = TenantIdSchema.parse(rawTenantId)
+    if (records.length === 0) return 0
+    await this.client.query('BEGIN')
+    try {
+      // A head-only FOR UPDATE cannot lock an empty chain. Serialize writers
+      // per tenant before reading the head so two first writers cannot both
+      // derive sequence=1 and race on the unique constraint.
+      await this.client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [
+        tenantId
+      ])
+      let appended = 0
+      for (const record of records) {
+        assertRuntimeAuditRecord(record, tenantId)
+        const sanitizedPayload = sanitizeAuditEvidencePayload(
+          record.payload
+        ).payload
+        const payloadHash = runtimeAuditPayloadHash(sanitizedPayload)
+        const eventKey = runtimeAuditEventKey({
+          eventId: record.eventId,
+          type: record.type,
+          actor: record.actor,
+          tenantId,
+          correlationId: record.correlationId,
+          payloadHash
+        })
+        const existing = await this.client.query<{
+          event_id: string
+          event_hash: string
+          payload_hash: string
+        }>(
+          `SELECT event_id, event_hash, payload_hash
+             FROM runtime_audit_events
+            WHERE tenant_id = $1 AND event_key = $2
+            FOR UPDATE`,
+          [tenantId, eventKey]
+        )
+        if (existing.rows[0]) {
+          if (
+            existing.rows[0].event_id !== record.eventId ||
+            existing.rows[0].payload_hash !== payloadHash
+          ) {
+            throw new DomainError(
+              'conflict',
+              'Durable runtime audit event key is bound to different content'
+            )
+          }
+          continue
+        }
+
+        const eventTimestamp = new Date(record.timestamp)
+        if (Number.isNaN(eventTimestamp.getTime())) {
+          throw new DomainError(
+            'validation_failed',
+            'Durable runtime audit timestamp is invalid'
+          )
+        }
+        const normalizedTimestamp = eventTimestamp.toISOString()
+
+        const head = await this.client.query<{
+          sequence: number | string
+          event_hash: string
+        }>(
+          `SELECT sequence, event_hash
+             FROM runtime_audit_events
+            WHERE tenant_id = $1
+            ORDER BY sequence DESC
+            LIMIT 1
+            FOR UPDATE`,
+          [tenantId]
+        )
+        const sequence = Number(head.rows[0]?.sequence ?? 0) + 1
+        const previousHash =
+          head.rows[0]?.event_hash ?? RUNTIME_AUDIT_GENESIS_HASH
+        const eventHash = runtimeAuditEventHash({
+          sequence,
+          previousHash,
+          payloadHash,
+          eventId: record.eventId,
+          type: record.type,
+          actor: record.actor,
+          tenantId,
+          correlationId: record.correlationId,
+          timestamp: normalizedTimestamp
+        })
+        await this.client.query(
+          `INSERT INTO runtime_audit_events
+             (tenant_id, event_key, sequence, previous_hash, payload_hash,
+              event_hash, event_id, event_type, actor, correlation_id,
+              event_timestamp, payload)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb)`,
+          [
+            tenantId,
+            eventKey,
+            sequence,
+            previousHash,
+            payloadHash,
+            eventHash,
+            record.eventId,
+            record.type,
+            record.actor,
+            record.correlationId,
+            normalizedTimestamp,
+            JSON.stringify(sanitizedPayload ?? null)
+          ]
+        )
+        appended += 1
+      }
+      await this.client.query('COMMIT')
+      return appended
+    } catch (error) {
+      await this.client.query('ROLLBACK')
+      throw error
+    }
+  }
+
+  /**
+   * Verifies the committed tenant chain from PostgreSQL's durable rows. This
+   * is intentionally a read-only operation: it never repairs or reorders
+   * evidence and therefore fails closed when an invariant is broken.
+   */
+  async verifyRuntimeAuditChain(
+    rawTenantId: TenantId
+  ): Promise<RuntimeAuditChainVerification> {
+    const tenantId = TenantIdSchema.parse(rawTenantId)
+    const result = await this.client.query<{
+      sequence: number | string
+      previous_hash: string
+      payload_hash: string
+      event_hash: string
+      event_id: string
+      event_type: string
+      actor: string
+      correlation_id: string
+      event_timestamp: Date | string
+      payload: unknown
+    }>(
+      `SELECT sequence, previous_hash, payload_hash, event_hash,
+              event_id, event_type, actor, correlation_id,
+              event_timestamp, payload
+         FROM runtime_audit_events
+        WHERE tenant_id = $1
+        ORDER BY sequence ASC`,
+      [tenantId]
+    )
+    let previousHash = RUNTIME_AUDIT_GENESIS_HASH
+    for (const [index, row] of result.rows.entries()) {
+      const sequence = Number(row.sequence)
+      if (!Number.isSafeInteger(sequence) || sequence !== index + 1) {
+        return {
+          valid: false,
+          count: result.rows.length,
+          brokenAt: index,
+          reason: 'sequence_mismatch'
+        }
+      }
+      if (
+        !/^[0-9a-f]{64}$/.test(row.previous_hash) ||
+        !/^[0-9a-f]{64}$/.test(row.payload_hash) ||
+        !/^[0-9a-f]{64}$/.test(row.event_hash)
+      ) {
+        return {
+          valid: false,
+          count: result.rows.length,
+          brokenAt: index,
+          reason: 'invalid_hash'
+        }
+      }
+      if (row.previous_hash !== previousHash) {
+        return {
+          valid: false,
+          count: result.rows.length,
+          brokenAt: index,
+          reason: 'previous_hash_mismatch'
+        }
+      }
+      const payloadHash = runtimeAuditPayloadHash(row.payload)
+      if (row.payload_hash !== payloadHash) {
+        return {
+          valid: false,
+          count: result.rows.length,
+          brokenAt: index,
+          reason: 'payload_hash_mismatch'
+        }
+      }
+      const eventTimestamp =
+        row.event_timestamp instanceof Date
+          ? row.event_timestamp
+          : new Date(row.event_timestamp)
+      if (Number.isNaN(eventTimestamp.getTime())) {
+        return {
+          valid: false,
+          count: result.rows.length,
+          brokenAt: index,
+          reason: 'invalid_timestamp'
+        }
+      }
+      const timestamp = eventTimestamp.toISOString()
+      const eventHash = runtimeAuditEventHash({
+        sequence,
+        previousHash: row.previous_hash,
+        payloadHash: row.payload_hash,
+        eventId: row.event_id,
+        type: row.event_type,
+        actor: row.actor,
+        tenantId,
+        correlationId: row.correlation_id,
+        timestamp
+      })
+      if (row.event_hash !== eventHash) {
+        return {
+          valid: false,
+          count: result.rows.length,
+          brokenAt: index,
+          reason: 'event_hash_mismatch'
+        }
+      }
+      previousHash = row.event_hash
+    }
+    return { valid: true, count: result.rows.length }
   }
 
   async listAuditBySession(
@@ -2857,7 +3334,9 @@ export class PostgresRuntimeRepository {
       source: string
       idempotencyKey: string
     },
-    rawTenantId?: TenantId
+    rawTenantId?: TenantId,
+    // Runs only for a new row on this client; the caller owns the transaction.
+    onCreated?: (task: TaskRecord) => Promise<void>
   ): Promise<TaskRecord> {
     const tenantId = rawTenantId ? TenantIdSchema.parse(rawTenantId) : undefined
     if (this.tenantIsolation && !tenantId) {
@@ -2907,62 +3386,65 @@ export class PostgresRuntimeRepository {
       idempotencyKey: input.idempotencyKey,
       createdAt: new Date()
     }
-    try {
-      if (this.tenantIsolation) {
-        await this.client.query(
-          `INSERT INTO tasks (tenant_id, id, session_id, title, description, priority, source, status, idempotency_key, created_at)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-          [
-            tenantId,
-            task.id,
-            task.sessionId,
-            task.title,
-            task.description,
-            task.priority,
-            task.source,
-            task.status,
-            task.idempotencyKey,
-            task.createdAt
-          ]
-        )
-      } else {
-        await this.client.query(
-          `INSERT INTO tasks (id, session_id, title, description, priority, source, status, idempotency_key, created_at)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-          [
-            task.id,
-            task.sessionId,
-            task.title,
-            task.description,
-            task.priority,
-            task.source,
-            task.status,
-            task.idempotencyKey,
-            task.createdAt
-          ]
-        )
-      }
-    } catch (error) {
-      if (isUniqueViolation(error)) {
-        const winner = await this.client.query<(typeof existing.rows)[number]>(
-          `SELECT tasks.id, tasks.session_id, tasks.title, tasks.description, tasks.priority, tasks.source, tasks.status, tasks.idempotency_key, tasks.created_at
+    let inserted
+    if (this.tenantIsolation) {
+      inserted = await this.client.query(
+        `INSERT INTO tasks (tenant_id, id, session_id, title, description, priority, source, status, idempotency_key, created_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+           ON CONFLICT (session_id, source, idempotency_key) DO NOTHING
+           RETURNING id`,
+        [
+          tenantId,
+          task.id,
+          task.sessionId,
+          task.title,
+          task.description,
+          task.priority,
+          task.source,
+          task.status,
+          task.idempotencyKey,
+          task.createdAt
+        ]
+      )
+    } else {
+      inserted = await this.client.query(
+        `INSERT INTO tasks (id, session_id, title, description, priority, source, status, idempotency_key, created_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+           ON CONFLICT (session_id, source, idempotency_key) DO NOTHING
+           RETURNING id`,
+        [
+          task.id,
+          task.sessionId,
+          task.title,
+          task.description,
+          task.priority,
+          task.source,
+          task.status,
+          task.idempotencyKey,
+          task.createdAt
+        ]
+      )
+    }
+    if (inserted.rows.length === 0) {
+      const winner = await this.client.query<(typeof existing.rows)[number]>(
+        `SELECT tasks.id, tasks.session_id, tasks.title, tasks.description, tasks.priority, tasks.source, tasks.status, tasks.idempotency_key, tasks.created_at
            FROM tasks
            ${scopeJoin}
            WHERE session_id = $1 AND source = $2 AND idempotency_key = $3
            ${scopeFilter}
            LIMIT 1`,
-          [
-            input.sessionId,
-            input.source,
-            input.idempotencyKey,
-            ...(tenantId ? [tenantId] : [])
-          ]
-        )
-        const winnerRow = winner.rows[0]
-        if (winnerRow) return this.mapTask(winnerRow)
-      }
-      throw error
+        [
+          input.sessionId,
+          input.source,
+          input.idempotencyKey,
+          ...(tenantId ? [tenantId] : [])
+        ]
+      )
+      const winnerRow = winner.rows[0]
+      if (winnerRow) return this.mapTask(winnerRow)
+      throw new DomainError('conflict', 'Task insert was not stored')
     }
+    await onCreated?.(task)
     return task
   }
 

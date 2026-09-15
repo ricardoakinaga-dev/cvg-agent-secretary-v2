@@ -10,6 +10,7 @@
     "@cvg/tools": "1.0.0",
     "@cvg/policy": "1.0.0",
     "@cvg/memory": "1.0.0",
+    "@cvg/observability": "1.0.0",
     "@cvg/persistence": "1.0.0",
     "pg": "^8.20.0"
   }

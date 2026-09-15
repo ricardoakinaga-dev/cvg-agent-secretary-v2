@@ -1,0 +1,5 @@
+$ git diff --check
+# runId=run-aaa21-mu0avldy candidateId=3edfe0cadc250cbc205f2c05dd59df32d9cc3d6ac3f2c1f556a813f9d17dc983 gate=diff_check command=git diff --check
+# exitCode=0 durationMs=29
+
+

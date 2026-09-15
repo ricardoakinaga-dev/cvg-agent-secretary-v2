@@ -135,13 +135,15 @@ describe('App audit evidence checkpoint flow', () => {
       return Promise.reject(new Error(`Unexpected URL ${url}`))
     })
 
-    render(<App />)
-    fireEvent.change(screen.getByLabelText('ID do operador'), {
-      target: { value: 'supervisor.app' }
-    })
-    fireEvent.change(screen.getByLabelText('Papel operacional'), {
-      target: { value: 'Supervisor' }
-    })
+    render(
+      <App
+        identity={{
+          operatorId: 'supervisor.app',
+          role: 'Supervisor',
+          tenantId: 'tenant_00000000-0000-4000-8000-000000000201'
+        }}
+      />
+    )
 
     const sealButton = await screen.findByRole('button', {
       name: 'Selar checkpoint'

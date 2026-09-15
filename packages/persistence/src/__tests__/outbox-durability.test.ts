@@ -316,6 +316,26 @@ describe('durable PostgreSQL outbox', () => {
         const ownerRepository = owner === 'worker-a' ? a : b
         const ownerWorkerId = owner ?? 'worker-a'
 
+        const renewed = await ownerRepository.heartbeatClaim({
+          tenantId: tenantA,
+          eventId: claimed.id,
+          workerId: ownerWorkerId,
+          leaseMs: 60_000
+        })
+        expect(renewed).toMatchObject({
+          id: claimed.id,
+          status: 'processing',
+          leaseOwner: ownerWorkerId
+        })
+        await expect(
+          ownerRepository.heartbeatClaim({
+            tenantId: tenantB,
+            eventId: claimed.id,
+            workerId: ownerWorkerId,
+            leaseMs: 60_000
+          })
+        ).resolves.toBeNull()
+
         await expect(b.findOutboxById(tenantB, created.id)).resolves.toBeNull()
         await expect(
           b.ack({

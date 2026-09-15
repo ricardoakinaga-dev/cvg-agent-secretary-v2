@@ -1,0 +1,9 @@
+$ npm run lint
+# runId=run-bf035ddfe187-mu0ldbpd candidateId=bf035ddfe1874918cc01fdca99a7f199393894cbf7fa0e803063f3085c43f426 gate=lint command=npm run lint
+# exitCode=0 durationMs=8116
+
+
+> cvg-agent-secretary-v2@1.0.0 lint
+> eslint .
+
+

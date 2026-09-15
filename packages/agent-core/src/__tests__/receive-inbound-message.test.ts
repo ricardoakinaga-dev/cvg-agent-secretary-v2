@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   ConversationRepository,
   InMemoryDatabase,
+  OutboxRepository,
   TaskRepository
 } from '@cvg/persistence'
 import {
@@ -51,6 +52,8 @@ describe('agent-core commands', () => {
     expect(first.accepted).toBe(true)
     expect(duplicate.accepted).toBe(false)
     expect(duplicate.conversationId).toBe(first.conversationId)
+    expect(duplicate.correlationId).toBe(first.correlationId)
+    expect(duplicate.sessionId).toBe(first.sessionId)
     expect(
       (
         await getConversationTimeline(
@@ -60,6 +63,43 @@ describe('agent-core commands', () => {
         )
       ).messages
     ).toHaveLength(1)
+  })
+
+  it('propagates a trusted trace root into the durable inbound envelope', async () => {
+    const database = new InMemoryDatabase()
+    const conversations = new ConversationRepository(database)
+    const outbox = new OutboxRepository(database)
+    const traceId = '0123456789abcdef0123456789abcdef'
+
+    const result = await receiveInboundMessage(
+      { conversations, outbox, traceId },
+      messageInput({ externalMessageId: 'ext-trace-1' })
+    )
+
+    expect(result.outbox).toMatchObject({
+      type: 'inbound.process',
+      traceId,
+      correlationId: result.correlationId
+    })
+    expect(
+      database.state.messages.find((message) => message.id === result.messageId)
+    ).toMatchObject({ runtimeTraceId: traceId })
+  })
+
+  it('preserves the trusted HTTP correlation root in the conversation and outbox', async () => {
+    const database = new InMemoryDatabase()
+    const conversations = new ConversationRepository(database)
+    const outbox = new OutboxRepository(database)
+    const correlationId = 'corr_00000000-0000-4000-8000-000000000076'
+
+    const result = await receiveInboundMessage(
+      { conversations, outbox, correlationId },
+      messageInput({ externalMessageId: 'ext-correlation-1' })
+    )
+
+    expect(result.correlationId).toBe(correlationId)
+    expect(result.outbox).toMatchObject({ correlationId })
+    expect(database.state.conversations[0]?.correlationId).toBe(correlationId)
   })
 
   it('rejects empty bodies and creates idempotent internal tasks', async () => {
@@ -93,6 +133,9 @@ describe('agent-core commands', () => {
       externalMessageId: 'concurrent-1',
       direction: 'inbound' as const,
       body: 'Mensagem já persistida',
+      correlationId: 'corr_00000000-0000-4000-8000-000000000001',
+      sessionId: 'sess_00000000-0000-4000-8000-000000000001',
+      runtimeTraceId: '0123456789abcdef0123456789abcdef',
       createdAt: new Date()
     }
     const conversations = {
@@ -114,7 +157,9 @@ describe('agent-core commands', () => {
       accepted: false,
       conversationId: duplicateMessage.conversationId,
       messageId: duplicateMessage.id,
-      sessionId: null
+      sessionId: duplicateMessage.sessionId,
+      correlationId: duplicateMessage.correlationId,
+      traceId: duplicateMessage.runtimeTraceId
     })
   })
 

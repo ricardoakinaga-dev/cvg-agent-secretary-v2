@@ -1,0 +1,52 @@
+AAA-21-FINAL-20260914
+scope=controlled-local-only
+production=NO_GO
+external_effects=none
+real_data=none
+
+frozen_inputs
+spec=fd5c42143c8d52d4e2515c7ea33d9227e48c00a7e49e0f09244b041897cb81a2
+quality_bar_v1=181b218ba0e21dd126968701e8e4a3005c27b8f0a9ba0d6c5e74830c2d88bba8
+quality_bar_v2=714027875bfa6546eedbc7ecb628ddd1c0da30fdb0d186b5c62fce34858d79d4
+
+fingerprint_pre_document_seal
+algorithm=sha256-v1
+captured_at=2026-09-14T06:32:54Z
+sha256=23d1720f52c2b9830b5c8e228c016eed715b615d99fdac5db76f70c0b15df406
+head=512bc11e80fbf7c7b8baf6263aacc811ff829309
+index_diff_sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+tree_files=24054
+
+gates
+npm_test=PASS files=245 tests_passed=1719 tests_skipped=109
+npm_run_test_coverage=PASS statements=92.10 branches=87.20 functions=90.95 lines=92.71
+npm_run_typecheck=PASS
+npm_run_lint=PASS
+npm_run_build=PASS
+npm_audit_high=PASS vulnerabilities=0
+npm_run_licenses_check=PASS denied=0 unclassified=0 invalidExceptions=0
+npm_run_test_worker_startup=PASS
+python3_docs_03_build_tracking_validate_aaa_plan_py=PASS tasks=42 areas=20 findings=15 dag=acyclic authority=planning_only productQualified=false
+npx_prettier_check_touched_files=PASS
+npm_run_test_postgres=PARTIAL_BLOCKED files_passed=13 tests_passed=85 tests_skipped=107 reason=TEST_DATABASE_URL_absent
+npm_run_format_check=FAIL files_reported=277 reason=historical_worktree_artifacts
+targeted_git_diff_check=PASS
+full_git_diff_check=FAIL reason=pre-existing_certification_log_whitespace
+
+e2e
+visual_shell=PASS tests=4 viewports=shell_375_768_1024_1440_and_dlq_375_1024
+audit_evidence_checkpoint=PASS tests=1
+
+independent_review
+backend_final=BLOCKED C2_C3_C4; durable_postgresql_vertical_proof_unavailable
+frontend_final=BLOCKED C7; durable_postgresql_proof_unavailable
+reviewers_read_only=true
+
+quality_disposition
+C1=PARTIAL_CONTROLLED_BLOCKED_POSTGRES_VERTICAL
+C2=PARTIAL_CONTROLLED_BLOCKED_POSTGRES_VERTICAL
+C3=PARTIAL_CONTROLLED_BLOCKED_POSTGRES_CRASH_RESTART
+C4=PASS_CONTROLLED_BLOCKED_COMPOSED_POSTGRES_MATRIX
+C5=NO_GO_FORMAL
+C6=PASS_CONTROLLED
+C7=PASS_CONTROLLED_BLOCKED_POSTGRES_DURABILITY

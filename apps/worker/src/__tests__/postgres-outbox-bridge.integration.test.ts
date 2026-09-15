@@ -9,6 +9,7 @@ import {
 import { ensureControlledSecretaryPreset } from '@cvg/platform'
 import { buildServer } from '../../../api/src/server.ts'
 import { createPostgresControlledWorker } from '../postgres-controlled.ts'
+import { PUBLISHED_AGENT_WORKER_RUNTIME } from '../kernel-composition.ts'
 
 const testDatabaseUrl = process.env.TEST_DATABASE_URL
 const tenantId = 'tenant_00000000-0000-4000-8000-000000000173'
@@ -70,6 +71,7 @@ describe('API to PostgreSQL worker outbox bridge', () => {
           CVG_WORKER_CONTROLLED_MODE: 'true',
           CVG_WORKER_TENANT_ID: tenantId,
           CVG_WORKER_ID: 'worker-bridge-173',
+          CVG_WORKER_RUNTIME: PUBLISHED_AGENT_WORKER_RUNTIME,
           CVG_WORKER_AGENT_ID: agent.id
         })
         const processed = await worker.worker.processNext()

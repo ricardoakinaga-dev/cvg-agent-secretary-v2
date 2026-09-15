@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { JourneysPanel } from './index.tsx'
 
@@ -20,7 +26,10 @@ const envelope = <T,>(data: T) =>
       })
   } as Response)
 
-afterEach(() => vi.restoreAllMocks())
+afterEach(() => {
+  cleanup()
+  vi.restoreAllMocks()
+})
 
 describe('controlled journeys panel', () => {
   it('walks identify, draft, link and approval-blocked scheduling steps', async () => {
@@ -121,5 +130,54 @@ describe('controlled journeys panel', () => {
       expect(screen.getByText(/Tarefa operacional criada/)).toBeTruthy()
     )
     expect(screen.queryByRole('button', { name: /Confirmar/ })).toBeNull()
+  })
+
+  it('announces failures as errors and retries a draft with the same idempotency key', async () => {
+    let attempts = 0
+    const idempotencyKeys: string[] = []
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const url = String(input)
+      if (url === '/v1/journeys/owner-drafts' && init?.method === 'POST') {
+        const body = JSON.parse(String(init.body)) as {
+          idempotencyKey: string
+        }
+        idempotencyKeys.push(body.idempotencyKey)
+        attempts += 1
+        if (attempts === 1) {
+          return Promise.reject(new Error('Falha de persistência sintética.'))
+        }
+        return envelope({
+          id: 'owner-draft-retried',
+          candidateIds: [],
+          status: 'draft'
+        })
+      }
+      return Promise.reject(new Error(`Unexpected URL ${url}`))
+    })
+
+    render(<JourneysPanel identity={identity} selectedSessionId="sess-901" />)
+    fireEvent.change(screen.getByLabelText('Telefone sintético'), {
+      target: { value: '+5511999990001' }
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar rascunho' }))
+
+    expect((await screen.findByRole('alert')).textContent).toContain(
+      'Falha de persistência sintética.'
+    )
+    expect(
+      screen.getByRole('button', {
+        name: 'Tentar novamente a última etapa da jornada'
+      })
+    ).toBeTruthy()
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Tentar novamente a última etapa da jornada'
+      })
+    )
+
+    expect(await screen.findByText(/Rascunho de tutor persistido/)).toBeTruthy()
+    expect(idempotencyKeys).toHaveLength(2)
+    expect(idempotencyKeys[0]).toBe(idempotencyKeys[1])
   })
 })

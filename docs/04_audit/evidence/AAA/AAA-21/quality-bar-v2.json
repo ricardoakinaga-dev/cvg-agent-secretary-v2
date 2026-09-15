@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "version": "AAA-21-v2",
+  "frozen_at": "2026-09-14T01:22:00-03:00",
+  "goal": "Comprovar a composição controlada API→outbox→worker→kernel→policy/journal→efeito falso→audit com identidade, replay e recuperação operacional seguros.",
+  "sources": [
+    {
+      "type": "REPO",
+      "location": "docs/04_audit/evidence/AAA/AAA-21/quality-bar-v1.json",
+      "version": "AAA-21-v1",
+      "snapshot_sha256": "181b218ba0e21dd126968701e8e4a3005c27b8f0a9ba0d6c5e74830c2d88bba8",
+      "license_notes": "Bar anterior preservada; esta versão somente estende o escopo por change control."
+    },
+    {
+      "type": "REPO",
+      "location": "docs/02_spec/aaa21_build_execution_contract_20260914.md",
+      "version": "working-tree-before-build",
+      "snapshot_sha256": null,
+      "license_notes": "Documento local do repositório."
+    },
+    {
+      "type": "REPO",
+      "location": "docs/10_phase10/PHASE10_BACKLOG.json §P10-B09",
+      "version": "working-tree-2026-09-14",
+      "snapshot_sha256": null,
+      "license_notes": "Backlog local; UI de dead letters é requisito de operação controlada."
+    },
+    {
+      "type": "USER",
+      "location": "Solicitação atual do usuário nesta sessão",
+      "version": "user-current-2026-09-14",
+      "snapshot_sha256": null,
+      "license_notes": "Instrução do usuário; sem conteúdo de terceiros."
+    }
+  ],
+  "criteria": [
+    {
+      "id": "AAA21-C1-public-composition",
+      "source_type": "REPO",
+      "source": "aaa21_build_execution_contract_20260914.md §Objetivo verificável",
+      "dimension": "architecture/correctness",
+      "target": "Mensagem HTTP sintética atravessa persistência, outbox, worker, runtime governado, policy/journal, modelo/tool falso, audit e outbox sem bypass.",
+      "evidence_method": "Teste de integração no entrypoint público com IDs e estados observados em cada fronteira.",
+      "required": true,
+      "priority": "critical",
+      "baseline": {"status": "NOT_RUN", "actual": "Prova vertical final ainda requer execução integrada com todos os adapters aplicáveis."},
+      "conditions": "Fixture sintética; sem provider/canal externo; banco descartável quando disponível.",
+      "version": "AAA-21-v2",
+      "snapshot_sha256": null,
+      "license_notes": "Código e fixtures locais.",
+      "validity_notes": "Falha se uma etapa for simulada fora do entrypoint público."
+    },
+    {
+      "id": "AAA21-C2-identity-propagation",
+      "source_type": "REPO",
+      "source": "aaa21_build_execution_contract_20260914.md §Invariantes 7–8",
+      "dimension": "observability/data-governance",
+      "target": "Casos aceitos preservam tenantId, correlationId e traceId lógico entre webhook, outbox, worker, runtime, modelo/tool, outbox de saída e audit; payloads sensíveis são redigidos.",
+      "evidence_method": "Asserções de trace/audit/outbox e testes de redaction em sucesso, erro e replay.",
+      "required": true,
+      "priority": "critical",
+      "baseline": {"status": "FAIL", "actual": "O inbound/outbox não possuía trace durável e o runtime criava trace novo no worker."},
+      "conditions": "IDs sintéticos determinísticos; sem conteúdo clínico/financeiro.",
+      "version": "AAA-21-v2",
+      "snapshot_sha256": null,
+      "license_notes": "Código local.",
+      "validity_notes": "Correlação textual isolada não prova continuidade de trace."
+    },
+    {
+      "id": "AAA21-C3-idempotent-replay",
+      "source_type": "REPO",
+      "source": "aaa_execution_contract.md §1–§4 e §9",
+      "dimension": "reliability/data-integrity",
+      "target": "Replay, inclusive após crash/restart, não produz segundo efeito ou operação equivalente; estado incerto permanece honesto.",
+      "evidence_method": "Teste com chave idempotente, lease/restart e contagem de tool/effect/outbox.",
+      "required": true,
+      "priority": "critical",
+      "baseline": {"status": "NOT_RUN", "actual": "Há testes de componentes; a prova vertical final ainda não está vinculada a este bar."},
+      "conditions": "Worker controlado; banco descartável; nenhum efeito externo.",
+      "version": "AAA-21-v2",
+      "snapshot_sha256": null,
+      "license_notes": "Código local.",
+      "validity_notes": "Resposta HTTP não é prova de unicidade do efeito."
+    },
+    {
+      "id": "AAA21-C4-fail-closed-boundaries",
+      "source_type": "REPO",
+      "source": "aaa_composition_contract.md §2–§4 e aaa_execution_contract.md §1/§10",
+      "dimension": "security/governance",
+      "target": "F01–F05, F15, T-19, tenant mismatch, correlation mismatch, frontier sem adapter e configuração durável ausente negam antes de efeito.",
+      "evidence_method": "Matriz negativa com spies que falham se model/tool/outbox forem chamados indevidamente.",
+      "required": true,
+      "priority": "critical",
+      "baseline": {"status": "PASS", "actual": "Regressões unitárias existentes passam; integração composta requer reexecução."},
+      "conditions": "Fixtures sintéticas e dependências determinísticas.",
+      "version": "AAA-21-v2",
+      "snapshot_sha256": null,
+      "license_notes": "Código local.",
+      "validity_notes": "PASS final depende do caminho composto."
+    },
+    {
+      "id": "AAA21-C5-regression-gates",
+      "source_type": "REPO",
+      "source": "docs/07_agents/AGENTS.md §Regras de Build",
+      "dimension": "engineering-quality",
+      "target": "Testes, typecheck, lint e build passam; nenhum resultado obrigatório é omitido ou convertido de BLOCKED em PASS.",
+      "evidence_method": "Comandos exatos no candidato; stdout/stderr bruto preservado por hash.",
+      "required": true,
+      "priority": "high",
+      "baseline": {"status": "FAIL", "actual": "Testes/typecheck/lint passam; format falha em 276 arquivos e PostgreSQL está bloqueado sem TEST_DATABASE_URL."},
+      "conditions": "Node 22 alvo; ambiente local; sem tocar serviços externos.",
+      "version": "AAA-21-v2",
+      "snapshot_sha256": null,
+      "license_notes": "Procedimento local.",
+      "validity_notes": "Node 24 local não qualifica runtime Node 22."
+    },
+    {
+      "id": "AAA21-C6-no-real-effects",
+      "source_type": "USER",
+      "source": "Solicitação atual + AGENTS.md",
+      "dimension": "safety/operations",
+      "target": "Zero provider, canal, IdP, RAG institucional, dado real, ação clínica/financeira/prontuário, deploy ou produção irrestrita.",
+      "evidence_method": "Inspeção de configuração, fixtures, logs e processos; guardas de startup; declaração explícita.",
+      "required": true,
+      "priority": "critical",
+      "baseline": {"status": "PASS", "actual": "Nenhuma integração real foi autorizada ou acionada nesta rodada."},
+      "conditions": "Somente ambiente local controlado.",
+      "version": "AAA-21-v2",
+      "snapshot_sha256": null,
+      "license_notes": "Instrução do usuário.",
+      "validity_notes": "Não substitui homologação nem signoff humano."
+    },
+    {
+      "id": "AAA21-C7-authorized-dlq-operations",
+      "source_type": "REPO",
+      "source": "docs/10_phase10/PHASE10_BACKLOG.json §P10-B09 + descoberta independente da rodada AAA-21",
+      "dimension": "operations/security/ux",
+      "target": "Supervisor/Admin conseguem inspecionar dead letters por API/UI e reenfileirar explicitamente com tenant scope, auditoria e projeção sem payload; Operator/Approver não obtêm autoridade.",
+      "evidence_method": "Teste de rota HTTP, teste de componente, render Playwright em 1440/1024/375 px, verificação de redaction, foco, overflow e console/requisições.",
+      "required": true,
+      "priority": "high",
+      "baseline": {"status": "NOT_RUN", "actual": "O backlog tinha o requisito; o console anterior não expunha uma superfície DLQ verificável."},
+      "conditions": "Fixtures sintéticas; requeue local; nenhum payload ou efeito externo exposto.",
+      "version": "AAA-21-v2",
+      "snapshot_sha256": null,
+      "license_notes": "Código, testes e render local.",
+      "validity_notes": "Não aceitar apenas existência de endpoint; autorização, escopo, redaction e interação precisam ser observados."
+    }
+  ],
+  "change_control": {
+    "previous_version": "AAA-21-v1",
+    "previous_sha256": "181b218ba0e21dd126968701e8e4a3005c27b8f0a9ba0d6c5e74830c2d88bba8",
+    "reason": "Adicionar explicitamente P10-B09/DLQ à barra depois que a crítica independente identificou a lacuna operacional; nenhum critério v1 foi removido ou enfraquecido.",
+    "scope": "Somente BUILD local controlado AAA-21; gates de produção, externos e humanos permanecem inalterados.",
+    "approved_by": "lead controlled build under current user authorization",
+    "approved_at": "2026-09-14T01:22:00-03:00"
+  },
+  "revision_log": [
+    {"version": "AAA-21-v1", "at": "2026-09-14T00:00:00-03:00", "reason": "Bar congelada antes da implementação; preservada como histórico imutável."},
+    {"version": "AAA-21-v2", "at": "2026-09-14T01:22:00-03:00", "reason": "Extensão controlada para P10-B09: inspeção/requeue de DLQ autorizado, tenant-scoped e sem payload."}
+  ]
+}

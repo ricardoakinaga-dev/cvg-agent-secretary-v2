@@ -1,0 +1,2 @@
+# runId=run-bf035ddfe187-mu0ldbpd candidateId=bf035ddfe1874918cc01fdca99a7f199393894cbf7fa0e803063f3085c43f426 gate=candidate-schema command=canonical candidate validation
+{"schema":"PASS","recordedCandidateId":"bf035ddfe1874918cc01fdca99a7f199393894cbf7fa0e803063f3085c43f426","currentCandidateId":"bf035ddfe1874918cc01fdca99a7f199393894cbf7fa0e803063f3085c43f426","candidateFiles":895,"drift":[]}

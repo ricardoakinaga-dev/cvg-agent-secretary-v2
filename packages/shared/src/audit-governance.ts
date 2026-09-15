@@ -133,8 +133,11 @@ const outboxSafeStringKeys = new Set([
   'correlationid',
   'eventid',
   'eventtype',
+  'kind',
+  'decision',
   'inboundmessageid',
   'messageid',
+  'approvalid',
   'policy',
   'sessionid',
   'tenantid',
@@ -378,9 +381,10 @@ function isSafeOutboxString(key: string, value: string): boolean {
   if (!outboxSafeStringKeys.has(key)) return false
   if (key === 'channel') return /^(?:internal|web|whatsapp)$/.test(value)
   if (key === 'policy') return /^outbox-r[0-9]{1,3}$/.test(value)
-  if (key === 'type' || key === 'eventtype') {
+  if (key === 'type' || key === 'eventtype' || key === 'kind') {
     return /^[a-z][a-z0-9_.:-]{1,127}$/.test(value)
   }
+  if (key === 'decision') return /^(?:approve|reject)$/.test(value)
   if (key === 'correlationid') return /^corr_[0-9a-f-]{36}$/.test(value)
   if (key === 'tenantid') return /^tenant_[0-9a-f-]{36}$/.test(value)
   if (key === 'agentid') return /^agent_[0-9a-f-]{36}$/.test(value)
@@ -390,6 +394,9 @@ function isSafeOutboxString(key: string, value: string): boolean {
   if (key === 'conversationid') return /^conv_[0-9a-f-]{36}$/.test(value)
   if (key === 'sessionid') return /^sess_[0-9a-f-]{36}$/.test(value)
   if (key === 'inboundmessageid' || key === 'messageid') {
+    return /^[a-z][a-z0-9]*_[0-9a-f-]{36}$/.test(value)
+  }
+  if (key === 'approvalid') {
     return /^[a-z][a-z0-9]*_[0-9a-f-]{36}$/.test(value)
   }
   if (key === 'eventid') {

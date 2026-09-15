@@ -31,6 +31,7 @@
         "src/__tests__/health.test.ts"
       ],
       "allowed_dependencies": [
+        "@cvg/approval-engine",
         "@cvg/shared",
         "@cvg/agent-core",
         "@cvg/policy",
@@ -64,6 +65,7 @@
         "@cvg/tools",
         "@cvg/policy",
         "@cvg/memory",
+        "@cvg/observability",
         "@cvg/persistence",
         "pg"
       ],
@@ -79,6 +81,7 @@
         "src/api/client.ts",
         "src/features/conversations/index.tsx",
         "src/features/approvals/index.tsx",
+        "src/features/dead-letters/index.tsx",
         "src/features/tasks/index.tsx",
         "src/features/audit/index.tsx",
         "src/__tests__/app.test.tsx"

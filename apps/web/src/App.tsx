@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { AuditPanel } from './features/audit/index.tsx'
 import { ApprovalsPanel } from './features/approvals/index.tsx'
 import { ConversationsPanel } from './features/conversations/index.tsx'
+import { DeadLettersPanel } from './features/dead-letters/index.tsx'
 import { TasksPanel } from './features/tasks/index.tsx'
 import { JourneysPanel } from './features/journeys/index.tsx'
 import { PlatformPanel } from './features/platform/index.tsx'
@@ -14,17 +15,37 @@ import {
   type AuditEvidenceReviewView,
   type AuditEventView,
   type ConversationView,
+  type DeadLetterView,
   type OperatorIdentity,
   type OperatorRole,
   type TaskStatus,
   type TaskView,
+  type TenantScopedOperatorIdentity,
   type TimelineItem
 } from './api/client.ts'
+
+declare global {
+  interface Window {
+    /** Host-provided session context; the console never lets the user edit it. */
+    __CVG_OPERATOR_CONTEXT__?: OperatorIdentity | null
+  }
+}
 
 interface PanelState<T> {
   data: T
   error: string | null
   isLoading: boolean
+}
+
+interface PanelNotice {
+  text: string
+  tone: 'success' | 'info' | 'error'
+}
+
+export interface AppProps {
+  /** Identity resolved by the host session; never collected from the UI. */
+  identity?: OperatorIdentity | null
+  onSessionEnd?: () => void
 }
 
 const loading = <T,>(data: T): PanelState<T> => ({
@@ -47,9 +68,16 @@ function canReviewAuditEvidence(role: OperatorRole): boolean {
   return role === 'Supervisor' || role === 'Admin'
 }
 
+function canReviewDeadLetters(role: OperatorRole): boolean {
+  return role === 'Supervisor' || role === 'Admin'
+}
+
 const auditEvidenceLimit = 10
 
-export function App() {
+export function App({
+  identity: sessionIdentity = null,
+  onSessionEnd
+}: AppProps = {}) {
   const [conversations, setConversations] = useState<
     PanelState<ConversationView[]>
   >(loading([]))
@@ -60,6 +88,9 @@ export function App() {
     loading([])
   )
   const [tasks, setTasks] = useState<PanelState<TaskView[]>>(loading([]))
+  const [deadLetters, setDeadLetters] = useState<PanelState<DeadLetterView[]>>(
+    loading([])
+  )
   const [auditEvents, setAuditEvents] = useState<PanelState<AuditEventView[]>>(
     loading([])
   )
@@ -87,20 +118,35 @@ export function App() {
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
     null
   )
-  const [approvalMessage, setApprovalMessage] = useState<string | null>(null)
+  const [approvalMessage, setApprovalMessage] = useState<PanelNotice | null>(
+    null
+  )
   const [approvalActionId, setApprovalActionId] = useState<string | null>(null)
   const [taskActionId, setTaskActionId] = useState<string | null>(null)
-  const [operatorIdentity, setOperatorIdentity] = useState<OperatorIdentity>({
-    operatorId: '',
-    role: 'Operator'
-  })
-  const [tenantId, setTenantId] = useState('')
+  const [taskMessage, setTaskMessage] = useState<PanelNotice | null>(null)
+  const [deadLetterActionId, setDeadLetterActionId] = useState<string | null>(
+    null
+  )
+  const [deadLetterMessage, setDeadLetterMessage] =
+    useState<PanelNotice | null>(null)
+  const [sessionClosed, setSessionClosed] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
 
-  const normalizedOperatorId = operatorIdentity.operatorId.trim()
-  const normalizedTenantId = tenantId.trim()
+  const sourceIdentityKey = JSON.stringify([
+    sessionIdentity?.operatorId ?? null,
+    sessionIdentity?.role ?? null,
+    sessionIdentity?.tenantId ?? null
+  ])
+  useEffect(() => {
+    setSessionClosed(false)
+  }, [sourceIdentityKey])
+
+  const operatorIdentity = sessionClosed ? null : sessionIdentity
+  const normalizedOperatorId = operatorIdentity?.operatorId.trim() ?? ''
+  const normalizedTenantId = operatorIdentity?.tenantId?.trim() ?? ''
   const identityKey = JSON.stringify([
     normalizedOperatorId,
-    operatorIdentity.role,
+    operatorIdentity?.role ?? null,
     normalizedTenantId
   ])
   const identityScopeRef = useRef(identityKey)
@@ -131,10 +177,16 @@ export function App() {
     return normalizedOperatorId.length > 0
       ? {
           operatorId: normalizedOperatorId,
-          role: operatorIdentity.role,
+          role: operatorIdentity?.role ?? 'Operator',
           ...(normalizedTenantId ? { tenantId: normalizedTenantId } : {})
         }
       : null
+  }
+
+  const currentTenantIdentity = (): TenantScopedOperatorIdentity | null => {
+    const identity = currentOperatorIdentity()
+    const tenantId = identity?.tenantId?.trim()
+    return identity && tenantId ? { ...identity, tenantId } : null
   }
 
   useEffect(() => {
@@ -144,6 +196,7 @@ export function App() {
       setMessages(loaded([]))
       setApprovals(loaded([]))
       setTasks(loaded([]))
+      setDeadLetters(loaded([]))
       setAuditEvents(loaded([]))
       setAuditEvidence(loaded(null))
       setAuditEvidenceOffset(0)
@@ -155,6 +208,9 @@ export function App() {
       setApprovalActionId(null)
       setApprovalMessage(null)
       setTaskActionId(null)
+      setTaskMessage(null)
+      setDeadLetterActionId(null)
+      setDeadLetterMessage(null)
       setIsManagingAuditEvidenceCheckpoint(false)
       setIsRequestingAuditEvidenceExport(false)
       return
@@ -165,6 +221,7 @@ export function App() {
     setMessages(loading([]))
     setApprovals(loading([]))
     setTasks(loading([]))
+    setDeadLetters(loading([]))
     setAuditEvents(loading([]))
     setAuditEvidence(loaded(null))
     setAuditEvidenceOffset(0)
@@ -176,6 +233,9 @@ export function App() {
     setApprovalActionId(null)
     setApprovalMessage(null)
     setTaskActionId(null)
+    setTaskMessage(null)
+    setDeadLetterActionId(null)
+    setDeadLetterMessage(null)
     setIsManagingAuditEvidenceCheckpoint(false)
     setIsRequestingAuditEvidenceExport(false)
     const scope = identityKey
@@ -219,10 +279,24 @@ export function App() {
         if (active && isCurrentIdentity(scope)) setTasks(failed([]))
       })
 
+    const deadLetterIdentity = currentTenantIdentity()
+    if (deadLetterIdentity && canReviewDeadLetters(deadLetterIdentity.role)) {
+      apiClient
+        .listDeadLetters(deadLetterIdentity)
+        .then((data) => {
+          if (active && isCurrentIdentity(scope)) setDeadLetters(loaded(data))
+        })
+        .catch(() => {
+          if (active && isCurrentIdentity(scope)) setDeadLetters(failed([]))
+        })
+    } else {
+      setDeadLetters(loaded([]))
+    }
+
     return () => {
       active = false
     }
-  }, [identityKey])
+  }, [identityKey, reloadNonce])
 
   useEffect(() => {
     const identity = currentOperatorIdentity()
@@ -245,7 +319,13 @@ export function App() {
     return () => {
       active = false
     }
-  }, [selectedConversationId, identityKey, identityChanged, viewScopeToken])
+  }, [
+    selectedConversationId,
+    identityKey,
+    identityChanged,
+    viewScopeToken,
+    reloadNonce
+  ])
 
   useEffect(() => {
     const identity = currentOperatorIdentity()
@@ -278,7 +358,8 @@ export function App() {
     selectedSessionId,
     identityKey,
     identityChanged,
-    viewScopeToken
+    viewScopeToken,
+    reloadNonce
   ])
 
   useEffect(() => {
@@ -328,7 +409,8 @@ export function App() {
     identityKey,
     identityChanged,
     auditEvidenceOffset,
-    viewScopeToken
+    viewScopeToken,
+    reloadNonce
   ])
 
   useEffect(() => {
@@ -368,7 +450,13 @@ export function App() {
     return () => {
       active = false
     }
-  }, [selectedSessionId, identityKey, identityChanged, viewScopeToken])
+  }, [
+    selectedSessionId,
+    identityKey,
+    identityChanged,
+    viewScopeToken,
+    reloadNonce
+  ])
 
   const selectConversation = (
     conversation: Pick<ConversationView, 'id' | 'openSessionId'>
@@ -549,6 +637,19 @@ export function App() {
     setTasks(loaded(data))
   }
 
+  const refreshDeadLetters = async (scope = viewScopeToken) => {
+    const identity = currentTenantIdentity()
+    if (
+      !identity ||
+      !isCurrentViewScope(scope) ||
+      !canReviewDeadLetters(identity.role)
+    )
+      return
+    const data = await apiClient.listDeadLetters(identity)
+    if (!isCurrentViewScope(scope)) return
+    setDeadLetters(loaded(data))
+  }
+
   const decideApproval = async (
     approvalRequestId: string,
     decision: ApprovalDecision,
@@ -574,6 +675,17 @@ export function App() {
       await refreshApprovals(scope)
       await refreshAudit(scope)
       await refreshAuditEvidence(scope)
+      if (isCurrentViewScope(scope)) {
+        setApprovalMessage({
+          tone: 'success',
+          text:
+            decision === 'approved'
+              ? 'Aprovação registrada; a continuação permanece no outbox controlado.'
+              : decision === 'rejected'
+                ? 'Rejeição registrada; nenhuma ação externa foi autorizada.'
+                : 'Handoff assumido; a automação permanece suspensa.'
+        })
+      }
     } catch (error) {
       if (!isCurrentViewScope(scope)) return
       if (isApiConflict(error)) {
@@ -581,9 +693,10 @@ export function App() {
           await refreshApprovals(scope)
           await refreshAudit(scope)
           if (isCurrentViewScope(scope))
-            setApprovalMessage(
-              'Esta aprovacao ja foi decidida. A fila foi atualizada.'
-            )
+            setApprovalMessage({
+              tone: 'info',
+              text: 'Esta aprovacao ja foi decidida. A fila foi atualizada.'
+            })
         } catch {
           if (isCurrentViewScope(scope)) setApprovals(failed(approvals.data))
         }
@@ -603,30 +716,85 @@ export function App() {
       setTasks(failed(tasks.data))
       return
     }
+    setTaskMessage(null)
     setTaskActionId(taskId)
     try {
       await apiClient.updateTaskStatus({ taskId, status, identity })
       if (!isCurrentViewScope(scope)) return
       await refreshTasks(scope)
       await refreshAudit(scope)
+      if (isCurrentViewScope(scope)) {
+        setTaskMessage({
+          tone: 'success',
+          text: 'Tarefa atualizada; a transicao ficou registrada na auditoria.'
+        })
+      }
     } catch {
       if (!isCurrentViewScope(scope)) return
       setTasks(failed(tasks.data))
+      setTaskMessage({
+        tone: 'error',
+        text: 'Nao foi possivel atualizar a tarefa. Tente novamente com a mesma transicao.'
+      })
     } finally {
       if (isCurrentViewScope(scope)) setTaskActionId(null)
     }
   }
 
-  const identityReady = operatorIdentity.operatorId.trim().length > 0
+  const requeueDeadLetter = async (eventId: string) => {
+    const scope = viewScopeToken
+    const identity = currentTenantIdentity()
+    if (
+      !identity ||
+      !isCurrentViewScope(scope) ||
+      !canReviewDeadLetters(identity.role)
+    )
+      return
+    setDeadLetterActionId(eventId)
+    setDeadLetterMessage(null)
+    try {
+      await apiClient.requeueDeadLetter({ identity, eventId })
+      if (!isCurrentViewScope(scope)) return
+      await refreshDeadLetters(scope)
+      await Promise.allSettled([
+        refreshAudit(scope),
+        refreshAuditEvidence(scope)
+      ])
+      if (isCurrentViewScope(scope)) {
+        setDeadLetterMessage({
+          tone: 'success',
+          text: 'Evento reenfileirado; o payload continua fora do console.'
+        })
+      }
+    } catch {
+      if (!isCurrentViewScope(scope)) return
+      setDeadLetters(failed(deadLetters.data))
+      setDeadLetterMessage({
+        tone: 'error',
+        text: 'Nao foi possivel reenfileirar o evento. Tente novamente.'
+      })
+    } finally {
+      if (isCurrentViewScope(scope)) setDeadLetterActionId(null)
+    }
+  }
+
+  const identityReady = Boolean(currentOperatorIdentity())
   const canDecideApproval =
     identityReady &&
-    (operatorIdentity.role === 'Approver' ||
-      operatorIdentity.role === 'Supervisor')
+    (operatorIdentity?.role === 'Approver' ||
+      operatorIdentity?.role === 'Supervisor')
   const canAssumeHandoff =
-    identityReady && operatorIdentity.role === 'Supervisor'
-  const canUpdateTasks = identityReady && operatorIdentity.role === 'Operator'
+    identityReady && operatorIdentity?.role === 'Supervisor'
+  const canUpdateTasks = identityReady && operatorIdentity?.role === 'Operator'
   const canReviewEvidence =
-    identityReady && canReviewAuditEvidence(operatorIdentity.role)
+    identityReady &&
+    operatorIdentity !== null &&
+    canReviewAuditEvidence(operatorIdentity.role)
+  const canReviewDeadLetterQueue =
+    identityReady &&
+    normalizedTenantId.length > 0 &&
+    operatorIdentity !== null &&
+    canReviewDeadLetters(operatorIdentity.role)
 
   return (
     <main className="shell">
@@ -642,72 +810,80 @@ export function App() {
             bloqueadas.
           </p>
         </div>
-        <form className="identityControls" aria-label="Identidade operacional">
-          <label>
-            ID do operador
-            <input
-              aria-label="ID do operador"
-              value={operatorIdentity.operatorId}
-              onChange={(event) =>
-                setOperatorIdentity({
-                  ...operatorIdentity,
-                  operatorId: event.target.value
-                })
+        <div
+          className="identityContext"
+          aria-label="Contexto confiável da sessão"
+        >
+          <div className="identityContextHeader">
+            <div>
+              <p className="eyebrow">CONTEXTO DA SESSÃO</p>
+              <h2>Identidade operacional</h2>
+            </div>
+            <span
+              className={
+                operatorIdentity
+                  ? 'identityTrust identityTrustReady'
+                  : 'identityTrust identityTrustMissing'
               }
-              placeholder="operator.shift-a"
-            />
-          </label>
-          <label>
-            Papel operacional
-            <select
-              aria-label="Papel operacional"
-              value={operatorIdentity.role}
-              onChange={(event) =>
-                setOperatorIdentity({
-                  ...operatorIdentity,
-                  role: event.target.value as OperatorRole
-                })
-              }
+              role="status"
             >
-              <option value="Operator">Operator</option>
-              <option value="Approver">Approver</option>
-              <option value="Supervisor">Supervisor</option>
-              <option value="Admin">Admin</option>
-            </select>
-          </label>
-          <label>
-            Tenant ID
-            <input
-              aria-label="Tenant ID"
-              value={tenantId}
-              onChange={(event) => setTenantId(event.target.value)}
-              placeholder="tenant_<uuid>"
-            />
-          </label>
-          <span className="status">{operatorIdentity.role}</span>
-          <span
-            className="scopeSummary"
-            title={tenantId.trim() || 'Tenant não definido'}
-          >
-            <span>Escopo</span>
-            <code>{tenantId.trim() || 'Não definido'}</code>
-          </span>
+              <span aria-hidden="true">●</span>
+              {operatorIdentity
+                ? 'Resolvida pela sessão'
+                : 'Aguardando sessão confiável'}
+            </span>
+          </div>
+          {operatorIdentity ? (
+            <dl className="identityMeta">
+              <div>
+                <dt>Operador autenticado</dt>
+                <dd>
+                  <code>{normalizedOperatorId}</code>
+                </dd>
+              </div>
+              <div>
+                <dt>Papel atribuído</dt>
+                <dd>
+                  <span className="status">{operatorIdentity.role}</span>
+                </dd>
+              </div>
+              <div>
+                <dt>Tenant vinculado</dt>
+                <dd>
+                  <code>{normalizedTenantId || 'Não informado'}</code>
+                </dd>
+              </div>
+            </dl>
+          ) : (
+            <p className="identityUnavailable" role="alert">
+              Nenhum contexto de sessão foi fornecido. Leituras e ações estão
+              bloqueadas até o host disponibilizar uma identidade confiável.
+            </p>
+          )}
+          <p className="identityAuthorityNote">
+            Contexto somente leitura; permissões e autoridade são sempre
+            validadas pelo serviço.
+          </p>
           <button
             type="button"
             className="sessionButton"
             onClick={() => {
-              setOperatorIdentity({ operatorId: '', role: 'Operator' })
-              setTenantId('')
+              setSessionClosed(true)
+              onSessionEnd?.()
             }}
+            disabled={!operatorIdentity}
           >
             Encerrar sessão
           </button>
-        </form>
+        </div>
       </header>
       <nav className="sectionNav" aria-label="Seções do console">
         <a href="#console-operacional">Operação</a>
         <a href="#journeys-panel">Jornadas</a>
-        {operatorIdentity.role === 'Admin' ? (
+        {canReviewDeadLetterQueue ? (
+          <a href="#dead-letters-panel">Dead letters</a>
+        ) : null}
+        {operatorIdentity?.role === 'Admin' ? (
           <a href="#platform-panel">Admin console</a>
         ) : null}
       </nav>
@@ -724,16 +900,19 @@ export function App() {
           error={conversations.error ?? messages.error}
           isLoading={conversations.isLoading}
           isTimelineLoading={!conversations.isLoading && messages.isLoading}
+          onRetry={() => setReloadNonce((current) => current + 1)}
           onSelectConversation={selectConversation}
         />
         <ApprovalsPanel
-          message={approvalMessage}
+          message={approvalMessage?.text ?? null}
+          messageTone={approvalMessage?.tone ?? 'info'}
           approvals={approvals.data}
           actionId={approvalActionId}
           error={approvals.error}
           isLoading={approvals.isLoading}
           canApproveReject={canDecideApproval}
           canAssumeHandoff={canAssumeHandoff}
+          onRetry={() => setReloadNonce((current) => current + 1)}
           onApprove={(approvalId) =>
             void decideApproval(
               approvalId,
@@ -758,10 +937,13 @@ export function App() {
         />
         <TasksPanel
           tasks={tasks.data}
+          message={taskMessage?.text ?? null}
+          messageTone={taskMessage?.tone ?? 'info'}
           actionId={taskActionId}
           error={tasks.error}
           isLoading={tasks.isLoading}
           canUpdateTasks={canUpdateTasks}
+          onRetry={() => setReloadNonce((current) => current + 1)}
           onStart={(taskId) => void updateTaskStatus(taskId, 'in_progress')}
           onComplete={(taskId) => void updateTaskStatus(taskId, 'done')}
           onCancel={(taskId) => void updateTaskStatus(taskId, 'canceled')}
@@ -784,6 +966,7 @@ export function App() {
           }
           checkpointMessage={auditEvidenceCheckpointMessage}
           isManagingEvidenceCheckpoint={isManagingAuditEvidenceCheckpoint}
+          onRetry={() => setReloadNonce((current) => current + 1)}
           onSealEvidenceCheckpoint={() => void sealAuditEvidenceCheckpoint()}
           onArchiveEvidenceCheckpoint={() =>
             void archiveAuditEvidenceCheckpoint()
@@ -799,13 +982,26 @@ export function App() {
         identity={currentOperatorIdentity()}
         selectedSessionId={selectedSessionId}
       />
-      {operatorIdentity.role === 'Admin' &&
-      /^tenant_[0-9a-f-]{36}$/.test(tenantId.trim()) ? (
+      {canReviewDeadLetterQueue ? (
+        <DeadLettersPanel
+          deadLetters={deadLetters.data}
+          error={deadLetters.error}
+          isLoading={deadLetters.isLoading}
+          actionId={deadLetterActionId}
+          canRequeue={canReviewDeadLetterQueue}
+          message={deadLetterMessage?.text ?? null}
+          messageTone={deadLetterMessage?.tone ?? 'info'}
+          onRetry={() => setReloadNonce((current) => current + 1)}
+          onRequeue={(eventId) => void requeueDeadLetter(eventId)}
+        />
+      ) : null}
+      {operatorIdentity?.role === 'Admin' &&
+      /^tenant_[0-9a-f-]{36}$/.test(normalizedTenantId) ? (
         <PlatformPanel
           identity={{
-            operatorId: operatorIdentity.operatorId,
+            operatorId: normalizedOperatorId,
             role: operatorIdentity.role,
-            tenantId: tenantId.trim()
+            tenantId: normalizedTenantId
           }}
         />
       ) : null}

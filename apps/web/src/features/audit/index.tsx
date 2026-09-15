@@ -47,6 +47,7 @@ export interface AuditPanelProps {
   evidenceError?: string | null
   evidenceIsLoading?: boolean
   canReviewEvidence?: boolean
+  onRetry?: () => void
   evidenceExportMessage?: string | null
   isRequestingEvidenceExport?: boolean
   onNextEvidencePage?: () => void
@@ -78,6 +79,7 @@ export function AuditPanel({
   evidenceError = null,
   evidenceIsLoading = false,
   canReviewEvidence = false,
+  onRetry,
   evidenceExportMessage = null,
   isRequestingEvidenceExport = false,
   onNextEvidencePage,
@@ -106,7 +108,12 @@ export function AuditPanel({
     <section className="panel auditPanel" aria-labelledby="audit-title">
       <header className="panelHeader">
         <h2 id="audit-title">Auditoria</h2>
-        <span className="counter">{events.length}</span>
+        <span
+          className="counter"
+          aria-label={`${events.length} eventos de auditoria`}
+        >
+          {events.length}
+        </span>
       </header>
       <div className="list">
         {isLoading ? (
@@ -115,12 +122,26 @@ export function AuditPanel({
           </p>
         ) : null}
         {!isLoading && error ? (
-          <p className="state stateError" role="alert">
-            {error}
-          </p>
+          <div className="stateErrorBlock">
+            <p className="state stateError" role="alert">
+              {error}
+            </p>
+            {onRetry ? (
+              <button
+                className="stateRetry"
+                type="button"
+                onClick={onRetry}
+                aria-label="Tentar novamente carregar auditoria"
+              >
+                Tentar novamente
+              </button>
+            ) : null}
+          </div>
         ) : null}
         {!isLoading && !error && events.length === 0 ? (
-          <p className="state">Nenhum evento de auditoria.</p>
+          <p className="state" role="status">
+            Nenhum evento de auditoria.
+          </p>
         ) : null}
         {!isLoading && !error
           ? events.map((event) => (
@@ -152,9 +173,21 @@ export function AuditPanel({
           </p>
         ) : null}
         {canReviewEvidence && !evidenceIsLoading && evidenceError ? (
-          <p className="state stateError" role="alert">
-            {evidenceError}
-          </p>
+          <div className="stateErrorBlock">
+            <p className="state stateError" role="alert">
+              {evidenceError}
+            </p>
+            {onRetry ? (
+              <button
+                className="stateRetry"
+                type="button"
+                onClick={onRetry}
+                aria-label="Tentar novamente carregar evidencias"
+              >
+                Tentar novamente
+              </button>
+            ) : null}
+          </div>
         ) : null}
         {canReviewEvidence &&
         !evidenceIsLoading &&
@@ -222,7 +255,13 @@ export function AuditPanel({
               </div>
             </div>
             {evidenceExportMessage ? (
-              <p className="state stateCompact">{evidenceExportMessage}</p>
+              <p
+                className="state stateCompact"
+                role="status"
+                aria-live="polite"
+              >
+                {evidenceExportMessage}
+              </p>
             ) : null}
             <div className="list">
               {evidence.page.items.length === 0 ? (
