@@ -1,20 +1,38 @@
 $ npm run test:e2e
-# runId=run-bf035ddfe187-mu0ldbpd candidateId=bf035ddfe1874918cc01fdca99a7f199393894cbf7fa0e803063f3085c43f426 gate=e2e command=npm run test:e2e
-# exitCode=0 durationMs=14885
+# runId=run-377be94c8c49-mu2imrjq candidateId=377be94c8c49457611a06eb22efd24e080bb0323456b76f37bee5540af05bf86 gate=e2e command=npm run test:e2e
+# exitCode=0 durationMs=22476
 
 
 > cvg-agent-secretary-v2@1.0.0 test:e2e
 > playwright test
 
 
-Running 6 tests using 5 workers
 
-  ✓  4 [chromium] › tests/e2e/http-security.spec.ts:6:5 › API HTTP security boundary enforces origin and preflight policy (218ms)
-  ✓  5 [chromium] › tests/e2e/session-version-pinning.spec.ts:44:5 › keeps a browser/API conversation on its first published snapshot (1.3s)
-  ✓  1 [chromium] › tests/e2e/audit-evidence-checkpoint.spec.ts:3:5 › seals and archives an audit evidence checkpoint without payload export (2.6s)
-  ✓  2 [chromium] › tests/e2e/visual-shell.spec.ts:9:5 › console shell preserves layout, focus and control sizing across viewports (5.7s)
-  ✓  6 [chromium] › tests/e2e/visual-shell.spec.ts:58:5 › admin control center remains navigable on a narrow viewport (1.3s)
-  ✓  3 [chromium] › tests/e2e/platform-control-center.spec.ts:4:5 › configures, publishes and dry-runs an agent through the real web/API boundary (10.5s)
 
-  6 passed (14.0s)
 
+Running 8 tests using 1 worker
+
+
+
+
+
+[1A[2K[1/8] [chromium] › tests/e2e/audit-evidence-checkpoint.spec.ts:3:5 › seals and archives an audit evidence checkpoint without payload export
+[1A[2K[2/8] [chromium] › tests/e2e/http-security.spec.ts:6:5 › API HTTP security boundary enforces origin and preflight policy
+[1A[2K[3/8] [chromium] › tests/e2e/platform-control-center.spec.ts:4:5 › configures, publishes and dry-runs an agent through the real web/API boundary
+[1A[2K[4/8] [chromium] › tests/e2e/session-version-pinning.spec.ts:44:5 › keeps a browser/API conversation on its first published snapshot
+[1A[2K[5/8] [chromium] › tests/e2e/visual-shell.spec.ts:10:5 › console shell preserves layout, focus and control sizing across viewports
+[1A[2K[6/8] [chromium] › tests/e2e/visual-shell.spec.ts:76:5 › admin control center remains navigable on a narrow viewport
+[1A[2K[7/8] [chromium] › tests/e2e/visual-shell.spec.ts:99:5 › dead-letter diagnostics wrap long errors and remain tenant scoped
+[1A[2K[8/8] [chromium] › tests/e2e/visual-shell.spec.ts:162:5 › tenantless privileged sessions do not render or request the dead-letter queue
+[1A[2K  8 passed (21.8s)
+
+[1A[2K[WebServer] (node:3741730) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[1A[2K[WebServer] (node:3741741) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[1A[2K[WebServer] (node:3741826) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[1A[2K(node:3741929) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1A[2K(node:3741929) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)

@@ -1,6 +1,6 @@
 $ npm run build
-# runId=run-27cce90eab75-mu0lx19j candidateId=27cce90eab7554eaf42b5a6e49519a3b70d51f67f8bb11a0be82932c9ddc07c3 gate=build command=npm run build
-# exitCode=0 durationMs=10702
+# runId=run-377be94c8c49-mu2imrjq candidateId=377be94c8c49457611a06eb22efd24e080bb0323456b76f37bee5540af05bf86 gate=build command=npm run build
+# exitCode=0 durationMs=15837
 
 
 > cvg-agent-secretary-v2@1.0.0 build
@@ -16,12 +16,12 @@ $ npm run build
 
 vite v8.2.2 building client environment for production...
 transforming...
-✓ 163 modules transformed.
+✓ 166 modules transformed.
 rendering chunks...
 computing gzip size...
 apps/web/dist/index.html                   0.40 kB │ gzip:   0.27 kB
-apps/web/dist/assets/index-BUjBxes9.css   10.97 kB │ gzip:   3.05 kB
-apps/web/dist/assets/index-BIkJoSbj.js   364.63 kB │ gzip: 105.20 kB
+apps/web/dist/assets/index-B5jYI1hn.css   18.31 kB │ gzip:   4.47 kB
+apps/web/dist/assets/index-Nlcet-pL.js   386.01 kB │ gzip: 110.07 kB
 
-✓ built in 241ms
+✓ built in 409ms
 

@@ -2,225 +2,225 @@
   "schemaVersion": 1,
   "phase": "10",
   "kind": "phase10-manifest",
-  "commit": "512bc11e80fbf7c7b8baf6263aacc811ff829309",
-  "timestamp": "2026-09-14T02:09:04.115Z",
+  "commit": "a9151e9cff8922e9206fbd84b9c6136d2b0f54be",
+  "timestamp": "2026-09-15T10:27:17.114Z",
   "artifacts": [
     {
       "path": "certification/findings.json",
       "sha256": "5be5b7ea915da5e39748843b4bbe2c77e751e888818f037f9c5a9b00b48fbcf8",
       "size": 2384,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.113Z"
+      "recordedAt": "2026-09-15T10:27:17.114Z"
     },
     {
       "path": "certification/external-gates.json",
       "sha256": "ccaecccf62b52cb02ce278ec84dd15cf3a0f13ca2d691f7ca20f9b86fed60ca9",
       "size": 361,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.113Z"
+      "recordedAt": "2026-09-15T10:27:17.114Z"
     },
     {
       "path": "certification/phase10-result.json",
-      "sha256": "0b4a203dc145aa68f899e831265e392865477cce3b82e68dbcda775363d04146",
-      "size": 211663,
+      "sha256": "949caeaddc6a38555bf6b07127f715f91db58c8baab79d792de574c1de9b2435",
+      "size": 222766,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.113Z"
+      "recordedAt": "2026-09-15T10:27:17.114Z"
     },
     {
       "path": "certification/baseline.json",
       "sha256": "300b79d59ab8f71ac145a430eb742f569318caa6dee6da87ab19e90580edcbb0",
       "size": 5090,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.113Z"
+      "recordedAt": "2026-09-15T10:27:17.114Z"
     },
     {
       "path": "certification/negative-validation.json",
-      "sha256": "35df87fb4fffb8080e764db9a60c715b488d90bada8151d0afec842d494bc08d",
+      "sha256": "c0859ba7f3dc7c670c71d9eb41af7e4bd5e39cb83b7f67566412910d65212118",
       "size": 17677,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.114Z"
+      "recordedAt": "2026-09-15T10:27:17.114Z"
     },
     {
       "path": "certification/candidate-manifest.json",
-      "sha256": "0777a3ff63c908c92447f51389f05708ac5a2b2bda4903e899be0220c71936ce",
-      "size": 184553,
+      "sha256": "4f36f38bb082963b1447dbadb8200a24af582aec3267b1de0663cec79188786d",
+      "size": 194925,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z"
+      "recordedAt": "2026-09-15T10:27:17.114Z"
     },
     {
       "path": "certification/logs/format.log",
-      "sha256": "d3cb23784cc406ae1c9c36575ef2632e89bd5f3c0d5b572e6cd685c24957cdc0",
-      "size": 23561,
+      "sha256": "ebf54bba25fc3d35fbf0bdc5c12b8cd1b33fc60d088f3888d7daf62cf9a35047",
+      "size": 340,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "format"
     },
     {
       "path": "certification/logs/typecheck.log",
-      "sha256": "088548ed77d2000c34f0de0fe1d400b8c700d3b4a51871aea83bb948241471b0",
+      "sha256": "25c3c1c58519b738ee9af0b68212fb8cc3b23e8ca91ee036a542839cac7d5a18",
       "size": 289,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "typecheck"
     },
     {
       "path": "certification/logs/lint.log",
-      "sha256": "cdf75bba73490623028717589c89537ab50c0ac120d5faa6cc9575ca695b2d52",
-      "size": 237,
+      "sha256": "1654e53cf039544e379bc5c0a781da7d0720c19e9ed77bfb47c05ae805950a93",
+      "size": 238,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "lint"
     },
     {
       "path": "certification/logs/build.log",
-      "sha256": "ca9e1006e8682ce88e3606cf3a2f479ebaf99709a9af8c40c4d4ed365f1a473c",
+      "sha256": "263c3a00083fc00a6de4785d6e53be326efb201480e5d7092881814c69c5b53e",
       "size": 826,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "build"
     },
     {
       "path": "certification/logs/unit.log",
-      "sha256": "7254e27c893f5aa5cd24430066d598d19caed64709da52f5bcfc466055e35ca1",
-      "size": 40543,
+      "sha256": "91cb601a8f0ea304a3e8a99ea0910344a8ab69628b41266215a0a02925d4e0e2",
+      "size": 28582,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "unit"
     },
     {
       "path": "certification/logs/coverage.log",
-      "sha256": "2d8740248311c96871dd2ead26070a2900913fca7add8960021ffa1248529e2e",
-      "size": 50123,
+      "sha256": "890f040ce83bfa1487219f664aa0f50ad90c45be316d98589d1bcf3215c13e8a",
+      "size": 38558,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "coverage"
     },
     {
       "path": "coverage/coverage-summary.json",
-      "sha256": "648e7a1edaa167f5879d778a1c7b6ac4244f5dfedd5c6c07955c1061236ae5f8",
-      "size": 61174,
+      "sha256": "4686fd4e69395e7135ed4535a7a9c90cb9061c2efaf1a3f0a76ff02b14a23b59",
+      "size": 61831,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "coverage"
     },
     {
       "path": "certification/logs/security.log",
-      "sha256": "03ca520e631b2df31fb979f21d969bd55053553ef0d7816293b4ed07bec958a1",
+      "sha256": "d12102e9795418f99fb6b30fd6fa28ac8a9adde95a25a11b51a474be9643503a",
       "size": 314,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "security"
     },
     {
       "path": "certification/logs/worker_startup.log",
-      "sha256": "78f84fb2e0916461a66dd11e8501d4392220015e482cede27d651f66dd5fb4ba",
+      "sha256": "006d56ee588a3a0d134cf8c5f5012fb46a27615717b57972374cb09b77aa4366",
       "size": 525,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "worker_startup"
     },
     {
       "path": "certification/logs/postgres.log",
-      "sha256": "15bee14b0d8ca1ee1f6c8e72dae9b8159f22920f4e1512fd78ea5db5b6a667ec",
-      "size": 14932,
+      "sha256": "8f8be542c141aba9f79a048a1740709a7a3cfee3c8d8d1c61eca87d42c0d5fbd",
+      "size": 12458,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "postgres"
     },
     {
       "path": "certification/logs/e2e.log",
-      "sha256": "2910b567d3ef51f940fc9769e3060f950f9972c2361b4c70cae241183b6ec91d",
-      "size": 1182,
+      "sha256": "2a2ed0776abc71a305c8d528eebebf709b6cc8484873c7ca6a5992aa4a2b8e01",
+      "size": 2407,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "e2e"
     },
     {
       "path": "certification/logs/evals.log",
-      "sha256": "788cd16be8b17a2d608050cf32fc383d1ce786ec9ebe7a1a9556fba8b31833cd",
+      "sha256": "a3f0cd5c25a32ecc87c0b48156ebe3a6a9501de203d02f96887f810307350206",
       "size": 406,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "evals"
     },
     {
       "path": "certification/agent-eval-report.json",
-      "sha256": "0144557cc47c310bff80e245cdb33fded3ab685d3bb1656605bce92152e526db",
+      "sha256": "d98851f4a75918a8c14f8b031895cb28dd1033b881c706262465db5dbbfd0ef6",
       "size": 1271,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "evals"
     },
     {
       "path": "certification/logs/chaos.log",
-      "sha256": "6e82e8ce4a94d7e3d86bc1736581a9e44b27e8bea22b7c952c1b2afb0ffe98ba",
+      "sha256": "69312cb1d5093725de2b5d94b3a4cabccc2c3122e18650d34f4a3ddb5daee47f",
       "size": 511,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "chaos"
     },
     {
       "path": "certification/chaos-report.json",
-      "sha256": "580a3a093dc52d141f0cf3bd77ee4556dc7ce9f4381fa483b376ea03d7546217",
-      "size": 7355,
+      "sha256": "a398c6452589f781ce4754758b8a0b617f0af0829d71ee8037ba0c423c05a439",
+      "size": 7293,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "chaos"
     },
     {
       "path": "certification/logs/load.log",
-      "sha256": "40648d7fcf93fb1c3f311f792f93b24395d28ed1e1cd23abfd9df30b67f582cb",
-      "size": 650,
+      "sha256": "a5206a88fee2582dea5db52dd1e225a8fbb9eca50b95452f589a4eac77fee52e",
+      "size": 645,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "load"
     },
     {
       "path": "certification/load-report.json",
-      "sha256": "00598373b8a2fcbb52b7c137870a67e50d9fcfeba46616d6058ea98ed925378b",
-      "size": 477,
+      "sha256": "f1b3e7d1406fa1588a52696ed56ac4a1db928975bcf89d166f03f561f735c7ef",
+      "size": 472,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "load"
     },
     {
       "path": "certification/logs/restore.log",
-      "sha256": "7849208a74c8e1fe90d28cfcafab7cc2ffe9208318b48c2f2f05b9b6f44e45c2",
+      "sha256": "ca961f44e082ba7c4107e2591e28398e33fdb4e6d7fb8dbc8f40dea9118028c6",
       "size": 838,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "restore"
     },
     {
       "path": "certification/restore-report.json",
-      "sha256": "138250ff11cd3651e9125e1bcb19e3c7c02b15e930b006088077c07a31a8e361",
+      "sha256": "3c3d3882f09d5ceaa9c2d44bc0d7815d974183746e7dcf28c7312dbe1be44792",
       "size": 672,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "restore"
     },
     {
       "path": "certification/logs/sbom.log",
-      "sha256": "f4959df43ef19597cfc0784a05609e33a371a2286a54f048294dcdbb69f6eb85",
+      "sha256": "acb742e40fdee3d5568045f74c576546b67c7ebae5816e47f5bd87d681aebed5",
       "size": 385,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "sbom"
     },
     {
       "path": "certification/sbom.cyclonedx.json",
-      "sha256": "749770f5d09ceb949a364c120d5a0304fd2f4645a310b81bc3b442fcb83b918c",
+      "sha256": "3bbd09f8ccbd21761007563eca97ebb8e241aa40121edf290d8c68aa30a30f10",
       "size": 253169,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "sbom"
     },
     {
       "path": "certification/logs/licenses.log",
-      "sha256": "8cde368994a17486c320b1fb15828cb76a8a9b1b6414b4da409a5890a0877382",
+      "sha256": "1ed64028795b575f434be0fa79d564540b2c33aaefcd87404451483d108e08dd",
       "size": 333,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "licenses"
     },
     {
@@ -228,13 +228,13 @@
       "sha256": "55787d37f7d42d1e0348c2d0df9db269838c7175a31f5bdec70473bb17f0dda9",
       "size": 258,
       "producer": "scripts/phase10-certify.mjs",
-      "recordedAt": "2026-09-14T02:09:04.115Z",
+      "recordedAt": "2026-09-15T10:27:17.114Z",
       "gateId": "licenses"
     }
   ],
-  "decision": "NO_GO",
-  "certification": "NO_GO",
-  "candidateId": "bf035ddfe1874918cc01fdca99a7f199393894cbf7fa0e803063f3085c43f426",
+  "decision": "CONDITIONAL_GO",
+  "certification": "AAA_CONTROLLED",
+  "candidateId": "377be94c8c49457611a06eb22efd24e080bb0323456b76f37bee5540af05bf86",
   "candidateManifest": "certification/candidate-manifest.json",
-  "runId": "run-bf035ddfe187-mu0ldbpd"
+  "runId": "run-377be94c8c49-mu2imrjq"
 }

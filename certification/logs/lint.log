@@ -1,6 +1,6 @@
 $ npm run lint
-# runId=run-27cce90eab75-mu0lx19j candidateId=27cce90eab7554eaf42b5a6e49519a3b70d51f67f8bb11a0be82932c9ddc07c3 gate=lint command=npm run lint
-# exitCode=0 durationMs=8793
+# runId=run-377be94c8c49-mu2imrjq candidateId=377be94c8c49457611a06eb22efd24e080bb0323456b76f37bee5540af05bf86 gate=lint command=npm run lint
+# exitCode=0 durationMs=10772
 
 
 > cvg-agent-secretary-v2@1.0.0 lint
