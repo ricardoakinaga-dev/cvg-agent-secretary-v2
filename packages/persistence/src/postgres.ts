@@ -123,7 +123,8 @@ const defaultPostgresMigrations = [
   '0015_runtime_approval_store',
   '0016_runtime_continuation_trace',
   '0017_runtime_audit_chain',
-  '0018_outbox_lease_fencing'
+  '0018_outbox_lease_fencing',
+  '0019_orchestrator_state'
 ]
 
 export interface PostgresQueryable {

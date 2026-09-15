@@ -1,14 +1,19 @@
 import { z } from 'zod'
 import {
   createGovernedRuntimeComposition,
+  GoalPlanOrchestrator,
   resolveWorkflowCoordinator,
   toGovernedTurnInput,
   type EffectScope,
   type GovernedTurnEnvelope,
   type GovernedTurnInput,
   type GovernedTurnResult,
+  type GoalEvaluation,
+  type OrchestrationRunResult,
   type OutboxEnqueueInput,
+  type PlanStepDraft,
   type ResolvedWorkflowCoordinator,
+  type StepExecutionResult,
   type ToolInvocation,
   type WorkflowCoordinatorAdapters,
   type WorkflowPlan,
@@ -31,6 +36,7 @@ import {
 import {
   PostgresApprovalAuthority,
   PostgresEffectJournal,
+  PostgresGoalPlanStore,
   TenantScopedPostgresRuntimeRepository,
   withTenantContext,
   type InboundRuntimeContext,
@@ -231,11 +237,21 @@ export interface PostgresKernelRuntime {
   audit: HashChainedAuditLedger
   telemetry: InMemoryTelemetry
   conversations: TenantScopedPostgresRuntimeRepository
+  goalStore: PostgresGoalPlanStore
+  orchestrator: GoalPlanOrchestrator
   workflowCoordinator: ResolvedWorkflowCoordinator
   toolInvocations: readonly ToolInvocation[]
   turnResults: readonly GovernedTurnResult[]
   runTurn(input: GovernedTurnInput): Promise<GovernedTurnResult>
+  runDurableGoal(input: DurableKernelGoalInput): Promise<OrchestrationRunResult>
   preflight(): Promise<void>
+}
+
+export interface DurableKernelGoalInput {
+  context: InboundRuntimeContext
+  envelope: KernelTurnEnvelope
+  correlationId: string
+  traceContext?: TraceContext
 }
 
 function createControlledModelGateway(): ModelGateway {
@@ -302,6 +318,10 @@ export async function assertPostgresKernelPrerequisites(
       )
       await client.query(
         'SELECT 1 FROM runtime_audit_events WHERE tenant_id = $1 LIMIT 0',
+        [tenantId]
+      )
+      await client.query(
+        'SELECT 1 FROM orchestrator_goals WHERE tenant_id = $1 LIMIT 0',
         [tenantId]
       )
     })
@@ -433,6 +453,185 @@ export function createPostgresKernelRuntime(
     return result
   }
 
+  const goalStore = new PostgresGoalPlanStore(pool)
+  const durableContexts = new Map<string, DurableKernelGoalInput>()
+  const workerId = env.CVG_WORKER_ID?.trim() || `kernel-worker:${process.pid}`
+  const orchestrator = new GoalPlanOrchestrator({
+    store: goalStore,
+    workerId,
+    planner: {
+      async plan({ goal, previousPlan, steps }) {
+        const context = durableContexts.get(goal.id)
+        if (context !== undefined) {
+          return {
+            reason:
+              previousPlan === null
+                ? 'controlled durable goal plan'
+                : 'controlled durable goal replan',
+            steps: [
+              durableStepDraft({
+                tenantId,
+                context: context.context,
+                envelope: context.envelope
+              })
+            ]
+          }
+        }
+        if (previousPlan !== null && steps.length > 0) {
+          const previous = steps[0]
+          if (previous !== undefined) {
+            return {
+              reason: 'recovered durable plan re-evaluation',
+              steps: [
+                {
+                  id: previous.id,
+                  type: previous.type,
+                  description: previous.description,
+                  dependencies: previous.dependencies,
+                  requiredCapabilities: previous.requiredCapabilities,
+                  riskLevel: previous.riskLevel,
+                  approvalRequirement: previous.approvalRequirement,
+                  input: previous.input,
+                  expectedOutcome: previous.expectedOutcome,
+                  timeoutMs: previous.timeoutMs,
+                  intent: previous.intent,
+                  ...(previous.toolId !== null
+                    ? { toolId: previous.toolId }
+                    : {}),
+                  ...(previous.toolVersion !== null
+                    ? { toolVersion: previous.toolVersion }
+                    : {})
+                }
+              ]
+            }
+          }
+        }
+        throw new Error('durable goal planner context is unavailable')
+      }
+    },
+    evaluator: {
+      async evaluate({ steps, observations }): Promise<GoalEvaluation> {
+        const evidence = observations.flatMap((observation) =>
+          observation.evidence.filter((item) => item.verified)
+        )
+        if (
+          steps.length > 0 &&
+          steps.every((step) => step.status === 'SUCCEEDED') &&
+          evidence.length > 0
+        ) {
+          return {
+            result: 'satisfied',
+            reason: 'controlled operational evidence was recorded',
+            evidence
+          }
+        }
+        if (steps.some((step) => step.status === 'FAILED')) {
+          return {
+            result: 'not_satisfied',
+            reason: 'controlled step failed; replanning is bounded',
+            evidence
+          }
+        }
+        return {
+          result: 'not_satisfied',
+          reason: 'verified operational evidence is still pending',
+          evidence
+        }
+      }
+    },
+    executor: {
+      async execute({ goal, step }): Promise<StepExecutionResult> {
+        const workflowStep: WorkflowStep = {
+          stepId: step.id,
+          capability: step.intent.capability,
+          action: step.intent.action,
+          resource: step.intent.resource,
+          dataClassification: step.intent.dataClassification,
+          ...(step.intent.modelMessages !== null
+            ? { modelMessages: step.intent.modelMessages }
+            : {}),
+          ...(step.intent.structuredOutput !== null
+            ? { structuredOutput: step.intent.structuredOutput }
+            : {}),
+          ...(step.intent.idempotencyKey !== null
+            ? { idempotencyKey: step.intent.idempotencyKey }
+            : {})
+        }
+        const workflowPlan: WorkflowPlan = {
+          planId: `durable:${goal.activePlanId ?? step.planId}`,
+          tenantId,
+          conversationId: goal.conversationId ?? 'durable-goal-conversation',
+          ...(goal.sessionId !== null ? { sessionId: goal.sessionId } : {}),
+          correlationId: goal.correlationId,
+          steps: [workflowStep]
+        }
+        const input =
+          step.input !== null && typeof step.input === 'object'
+            ? (step.input as { messageId?: unknown })
+            : {}
+        const governedEnvelope: GovernedTurnEnvelope = {
+          operatorId: 'op_synthetic_kernel',
+          operatorRole: 'Operator',
+          agentId,
+          agentVersion: goal.executionSnapshot.agentVersion ?? 'synthetic-v1',
+          agentProfile: 'secretary',
+          prompt: {
+            promptId: CONTROLLED_KERNEL_PROMPT_ID,
+            version: CONTROLLED_KERNEL_PROMPT_VERSION
+          },
+          modelProfile:
+            goal.executionSnapshot.modelProfile === 'fast' ? 'fast' : 'fast',
+          ...(typeof input.messageId === 'string'
+            ? { inboundMessageId: input.messageId }
+            : {}),
+          ...(step.approvalId !== null ? { approvalId: step.approvalId } : {})
+        }
+        const turnInput = toGovernedTurnInput(
+          workflowPlan,
+          workflowStep,
+          governedEnvelope
+        )
+        return durableTurnResult(await runTurn(turnInput))
+      }
+    }
+  })
+
+  const runDurableGoal = async (
+    goalInput: DurableKernelGoalInput
+  ): Promise<OrchestrationRunResult> => {
+    const correlationId = CorrelationIdSchema.parse(goalInput.correlationId)
+    const created = await goalStore.createGoal({
+      tenantId,
+      ...(goalInput.context.session !== null
+        ? { sessionId: goalInput.context.session.id }
+        : {}),
+      conversationId: goalInput.context.message.conversationId,
+      objective: goalInput.envelope.task ?? goalInput.envelope.message,
+      successCriteria: [
+        {
+          kind: 'EVENT',
+          eventType: 'controlled.governed_turn.evidence',
+          source: 'outbox',
+          correlationId
+        }
+      ],
+      correlationId,
+      executionSnapshot: {
+        agentVersion: goalInput.envelope.agentVersion,
+        promptVersion: CONTROLLED_KERNEL_PROMPT_VERSION,
+        policyVersion: `${CONTROLLED_KERNEL_POLICY_ID}@${CONTROLLED_KERNEL_POLICY_VERSION}`,
+        modelProfile: goalInput.envelope.modelProfile,
+        toolVersions: { 'controlled-kernel-tool': '1.0.0' }
+      }
+    })
+    durableContexts.set(created.id, goalInput)
+    try {
+      return await orchestrator.run(tenantId, created.id)
+    } finally {
+      durableContexts.delete(created.id)
+    }
+  }
+
   return {
     tenantId,
     agentId,
@@ -441,10 +640,13 @@ export function createPostgresKernelRuntime(
     audit,
     telemetry,
     conversations,
+    goalStore,
+    orchestrator,
     workflowCoordinator,
     toolInvocations,
     turnResults,
     runTurn,
+    runDurableGoal,
     preflight: () => assertPostgresKernelPrerequisites(pool, tenantId)
   }
 }
@@ -656,6 +858,132 @@ async function buildKernelTurnInput(input: {
     ...(envelope.task !== undefined ? { task: envelope.task } : {})
   }
   return toGovernedTurnInput(validated.plan, validated.step, envelopeForRuntime)
+}
+
+function durableStepDraft(input: {
+  tenantId: TenantId
+  context: InboundRuntimeContext
+  envelope: KernelTurnEnvelope
+}): PlanStepDraft {
+  return {
+    id: 'durable-kernel-step',
+    type: 'governed_kernel_turn',
+    description: input.envelope.action,
+    dependencies: [],
+    requiredCapabilities: [input.envelope.capability],
+    riskLevel:
+      input.envelope.capability === 'schedule.read'
+        ? 'READ_ONLY'
+        : 'MEDIUM_RISK_WRITE',
+    approvalRequirement:
+      input.envelope.capability === 'appointment.modify' ? 'approval' : 'none',
+    input: {
+      messageId: input.context.message.id,
+      action: input.envelope.action,
+      resourceType: input.envelope.resource.type
+    },
+    expectedOutcome: {
+      governedRuntime: 'executed',
+      operationalEvidenceRequired: true
+    },
+    timeoutMs: 30_000,
+    intent: {
+      capability: input.envelope.capability,
+      action: input.envelope.action,
+      resource: {
+        type: input.envelope.resource.type,
+        ...(input.envelope.resource.id !== undefined
+          ? { id: input.envelope.resource.id }
+          : {}),
+        tenantId: input.tenantId
+      },
+      dataClassification: input.envelope.dataClassification,
+      modelMessages: {
+        messages: [{ role: 'user', content: input.envelope.message }]
+      },
+      // Zod schemas are executable registry objects and are not serialized in
+      // durable plan state. The governed runtime can validate the controlled
+      // response through its prompt/model contract when the step is resumed.
+      structuredOutput: null,
+      idempotencyKey:
+        input.envelope.idempotencyKey ?? `durable:${input.context.message.id}`
+    },
+    toolId: 'controlled-kernel-tool',
+    toolVersion: '1.0.0'
+  }
+}
+
+function durableTurnResult(result: GovernedTurnResult): StepExecutionResult {
+  if (result.outcome === 'approval_required') {
+    return {
+      outcome: 'approval_required',
+      reason: result.reason,
+      ...(result.approvalId !== undefined
+        ? { approvalId: result.approvalId }
+        : {}),
+      ...(result.resultDigest !== undefined
+        ? { resultDigest: result.resultDigest }
+        : {}),
+      toolCalls: 0,
+      modelCalls: result.modelResult === undefined ? 0 : 1,
+      costUsd: result.costUsd
+    }
+  }
+  if (result.outcome === 'denied') {
+    return {
+      outcome: 'failed',
+      reason: result.reason,
+      ...(result.resultDigest !== undefined
+        ? { resultDigest: result.resultDigest }
+        : {}),
+      toolCalls: 0,
+      modelCalls: result.modelResult === undefined ? 0 : 1,
+      costUsd: result.costUsd
+    }
+  }
+  if (result.outcome === 'shadowed') {
+    return {
+      outcome: 'waiting_external',
+      reason: result.reason,
+      ...(result.resultDigest !== undefined
+        ? { resultDigest: result.resultDigest }
+        : {}),
+      toolCalls: 0,
+      modelCalls: result.modelResult === undefined ? 0 : 1,
+      costUsd: result.costUsd
+    }
+  }
+  const evidence = []
+  if (result.effectConfirmed === true) {
+    evidence.push({
+      source: 'effect_journal' as const,
+      reference: result.executionRef ?? result.resultDigest ?? result.traceId,
+      verified: true,
+      ...(result.resultDigest !== undefined
+        ? { digest: result.resultDigest }
+        : {})
+    })
+  } else if (result.outboxEventId !== undefined) {
+    evidence.push({
+      source: 'outbox' as const,
+      reference: result.outboxEventId,
+      verified: true,
+      ...(result.resultDigest !== undefined
+        ? { digest: result.resultDigest }
+        : {})
+    })
+  }
+  return {
+    outcome: 'succeeded',
+    reason: result.reason,
+    ...(result.resultDigest !== undefined
+      ? { resultDigest: result.resultDigest }
+      : {}),
+    evidence,
+    toolCalls: result.toolResult === undefined ? 0 : 1,
+    modelCalls: result.modelResult === undefined ? 0 : 1,
+    costUsd: result.costUsd
+  }
 }
 
 function kernelOutcomeStatus(outcome: GovernedTurnResult['outcome']): string {

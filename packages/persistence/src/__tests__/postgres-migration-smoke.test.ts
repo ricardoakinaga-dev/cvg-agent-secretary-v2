@@ -43,6 +43,28 @@ describe('postgres migration smoke', () => {
     expect(fencing).toContain('ADD COLUMN IF NOT EXISTS lease_token')
     expect(fencing).toContain('outbox_events_processing_fencing_check')
     expect(fencing).toContain('idx_outbox_events_tenant_lease_token')
+
+    const orchestrator = await readPostgresMigrationSql(
+      '0019_orchestrator_state'
+    )
+    expect(orchestrator).toContain(
+      'CREATE TABLE IF NOT EXISTS orchestrator_goals'
+    )
+    expect(orchestrator).toContain(
+      'CREATE TABLE IF NOT EXISTS orchestrator_plans'
+    )
+    expect(orchestrator).toContain(
+      'CREATE TABLE IF NOT EXISTS orchestrator_steps'
+    )
+    expect(orchestrator).toContain(
+      'CREATE TABLE IF NOT EXISTS orchestrator_attempts'
+    )
+    expect(orchestrator).toContain(
+      'CREATE TABLE IF NOT EXISTS orchestrator_evaluations'
+    )
+    expect(orchestrator).toContain('FORCE ROW LEVEL SECURITY')
+    expect(orchestrator).toContain('lease_token')
+    expect(orchestrator).toContain('budget_usage')
   })
 
   it('ships an additive release-candidate validator integrity migration', async () => {
