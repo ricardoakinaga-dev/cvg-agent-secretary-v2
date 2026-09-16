@@ -2,6 +2,7 @@ import {
   type DurableOutboxAdapter,
   OUTBOX_TAKEOVER_SUPPRESSED_ERROR,
   type OutboxEffect,
+  type OutboxDispatchRevalidation,
   type OutboxEventRecord,
   type OutboxTakeoverCheck
 } from '@cvg/persistence'
@@ -19,6 +20,8 @@ export interface ProcessOutboxEventInput {
   eventId?: string
   leaseMs?: number
   effect?: OutboxEffect
+  /** Revalidates policy, approval, tenant and current state before dispatch. */
+  revalidate?: OutboxDispatchRevalidation
   /** The adapter rechecks this inside its ack boundary before any effect. */
   takeoverActive?: OutboxTakeoverCheck
   /** Used only when an effect intentionally returns no value. */
@@ -39,12 +42,24 @@ export type ProcessOutboxEventResult =
 
 export type ClaimedOutboxEventResult = Exclude<ProcessOutboxEventResult, null>
 
+/** A permanent governance/state rejection must not silently retry an effect. */
+export class OutboxDispatchRejectedError extends Error {
+  readonly code = 'outbox_dispatch_rejected'
+
+  constructor(message: string) {
+    super(message)
+    this.name = 'OutboxDispatchRejectedError'
+  }
+}
+
 export interface CompleteClaimedOutboxEventInput {
   tenantId: TenantId
   workerId: string
   adapter: DurableOutboxAdapter
   event: OutboxEventRecord
   effect?: OutboxEffect
+  /** Revalidates policy, approval, tenant and current state before dispatch. */
+  revalidate?: OutboxDispatchRevalidation
   /** The adapter rechecks this inside its ack boundary before any effect. */
   takeoverActive?: OutboxTakeoverCheck
   /** Used only when an effect intentionally returns no value. */
@@ -118,6 +133,9 @@ export async function completeClaimedOutboxEvent(
       workerId: input.workerId,
       leaseToken: event.leaseToken ?? undefined,
       effect: input.effect,
+      ...(input.revalidate !== undefined
+        ? { revalidate: input.revalidate }
+        : {}),
       ...(input.takeoverActive !== undefined
         ? { takeoverActive: input.takeoverActive }
         : {}),
@@ -145,7 +163,10 @@ export async function completeClaimedOutboxEvent(
         eventId: event.id,
         workerId: input.workerId,
         leaseToken: event.leaseToken ?? undefined,
-        error
+        error,
+        ...(error instanceof OutboxDispatchRejectedError
+          ? { terminal: true }
+          : {})
       })
     } catch {
       throw error

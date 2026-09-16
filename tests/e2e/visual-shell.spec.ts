@@ -221,7 +221,12 @@ test('orchestration console exposes the synthetic state matrix read-only', async
     makeGoal('goal_matrix_approval', 'WAITING_APPROVAL', 'approval_pending'),
     makeGoal('goal_matrix_handoff', 'HUMAN_HANDOFF', 'human_handoff_required'),
     makeGoal('goal_matrix_budget', 'BUDGET_EXHAUSTED', 'budget_exhausted'),
-    makeGoal('goal_matrix_failed', 'FAILED', 'execution_failed')
+    makeGoal('goal_matrix_failed', 'FAILED', 'execution_failed'),
+    makeGoal(
+      'goal_matrix_uncertain',
+      'UNCERTAIN',
+      'effect_reconciliation_required'
+    )
   ]
   const detail = {
     ...goals[0],
@@ -408,6 +413,7 @@ test('orchestration console exposes the synthetic state matrix read-only', async
     panel.getByText('Orçamento esgotado', { exact: true }).first()
   ).toBeVisible()
   await expect(panel.getByText('Falhou', { exact: true }).first()).toBeVisible()
+  await expect(panel.getByLabel('Incerto: 1')).toBeVisible()
   await expect(panel.getByText('Iterações', { exact: true })).toBeVisible()
   await expect(panel).toHaveScreenshot('orchestration-state-matrix.png', {
     animations: 'disabled',

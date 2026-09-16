@@ -229,7 +229,8 @@ describe('api PostgreSQL persistence mode', () => {
       '0018_outbox_lease_fencing',
       '0019_orchestrator_state',
       '0020_orchestrator_lineage_hardening',
-      '0021_orchestrator_iteration_budget'
+      '0021_orchestrator_iteration_budget',
+      '0022_orchestrator_evaluation_lineage'
     ] as const
     const rows: Array<{
       version: string
@@ -260,7 +261,8 @@ describe('api PostgreSQL persistence mode', () => {
             expect.arrayContaining([
               '0019_orchestrator_state',
               '0020_orchestrator_lineage_hardening',
-              '0021_orchestrator_iteration_budget'
+              '0021_orchestrator_iteration_budget',
+              '0022_orchestrator_evaluation_lineage'
             ])
           )
         }

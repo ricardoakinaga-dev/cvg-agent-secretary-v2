@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Phase 11.1 formal-closure certification runner.
+ * Phase 11.2 State of Art Triple AAA certification runner.
  *
  * This runner creates one canonical, commit-bound package. It executes only
  * local/synthetic checks and records external qualification as pending unless
@@ -14,8 +14,9 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   DEPLOYMENT_PROFILES,
-  PHASE11_FORMAL_PROMPT_SHA256,
-  PHASE11_REQUIRED_GATES,
+  PHASE11_2_PROMPT_SHA256,
+  PHASE11_2_REQUIRED_GATES,
+  PHASE11_REQUIRED_INVARIANTS,
   Phase11CurrentResultSchema,
   Phase11ManifestSchema,
   REQUIRED_EXTERNAL_STATUS,
@@ -40,9 +41,8 @@ const resultRelative = 'certification/phase11/phase11-result.json'
 const manifestRelative = 'certification/phase11/manifest.json'
 const pointerRelative = 'certification/current.json'
 const qualityBarRelative =
-  'docs/04_audit/evidence/AAA/AAA-21/quality-bar-phase11-1-v1.json'
-const consoleCriticRelative =
-  'docs/04_audit/evidence/AAA/AAA-21/console-visual-critic-20260916.json'
+  'docs/04_audit/evidence/AAA/AAA-21/quality-bar-phase11-2-v1.json'
+const consoleCriticRelative = 'docs/phase11/PHASE11_INDEPENDENT_CRITIC.md'
 
 fs.mkdirSync(logDir, { recursive: true })
 fs.mkdirSync(integrationsDir, { recursive: true })
@@ -65,6 +65,7 @@ const databaseConfigured =
   process.env.PHASE11_ALLOW_DISPOSABLE_POSTGRES === '1'
 
 const commandEntries = [
+  ['verify', 'npm run verify'],
   ['format', 'npm run format:check'],
   ['typecheck', 'npm run typecheck'],
   ['lint', 'npm run lint'],
@@ -76,7 +77,7 @@ const commandEntries = [
   ['worker_startup', 'npm run test:worker:startup'],
   ['postgres', 'npm run test:postgres'],
   ['e2e', 'npm run test:e2e'],
-  ['evals', 'npx tsx scripts/phase10-eval-report.ts'],
+  ['evals', 'npm run test:evals && npx tsx scripts/phase10-eval-report.ts'],
   [
     'chaos',
     'npm run test:chaos -- --reporter=json --outputFile=certification/chaos-report.json'
@@ -91,7 +92,35 @@ const commandEntries = [
   [
     'phase10_historical_verification',
     'node scripts/phase10-verify.mjs --historical --base certification/logs/historical/2026-09-11-phase10'
-  ]
+  ],
+  [
+    'production_preflight',
+    'node scripts/production-preflight.mjs --profile=PRODUCTION --expect=REJECT'
+  ],
+  ['evidence_reports', 'node scripts/phase11-2-evidence-check.mjs --reports'],
+  ['independent_critic', 'node scripts/phase11-2-evidence-check.mjs --critic'],
+  [
+    'trace_lineage',
+    'npm test -- --run apps/api/src/__tests__/orchestration-observability.test.ts packages/observability/src/__tests__/observability.test.ts'
+  ],
+  [
+    'governance_redteam',
+    'npm test -- --run packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts packages/platform/src/__tests__/tool-invocation-boundary-hardening.test.ts packages/platform/src/__tests__/critical-safety-preflight.test.ts'
+  ],
+  [
+    'tenant_redteam',
+    'npm test -- --run apps/api/src/__tests__/tenant-inbound-isolation.test.ts packages/persistence/src/__tests__/tenant-isolation.test.ts'
+  ],
+  [
+    'certification_redteam',
+    'node scripts/phase11-2-redteam.mjs --suite=certification'
+  ],
+  ['adversarial_proof', 'node scripts/phase11-2-redteam.mjs --suite=all'],
+  [
+    'outbox_replay',
+    'npm test -- --run packages/persistence/src/__tests__/outbox-durability.test.ts apps/worker/src/__tests__/outbox-recovery.test.ts'
+  ],
+  ['clone_verify', 'node scripts/phase11-2-redteam.mjs --suite=clone']
 ]
 
 const sourceReports = {
@@ -107,7 +136,11 @@ const reportTargets = {
   load: 'certification/phase11/load-report.json',
   recovery: 'certification/phase11/recovery-report.json',
   postgres: 'certification/phase11/postgres-report.json',
-  supply_chain: 'certification/phase11/supply-report.json'
+  supply_chain: 'certification/phase11/supply-report.json',
+  production_preflight: 'certification/phase11/preflight-report.json',
+  certification_redteam: 'certification/phase11/redteam-report.json',
+  trace_lineage: 'certification/phase11/trace-report.json',
+  adversarial_proof: 'certification/phase11/adversarial-report.json'
 }
 
 const requiredPackageFiles = [
@@ -126,19 +159,33 @@ const requiredPackageFiles = [
   'certification/phase11/postgres-report.json',
   'certification/phase11/integration-report.json',
   'certification/phase11/integrations/status.json',
-  'certification/phase11/prompt-integrity.json'
+  'certification/phase11/prompt-integrity.json',
+  'certification/phase11/supply-report.json',
+  'certification/phase11/preflight-report.json',
+  'certification/phase11/redteam-report.json',
+  'certification/phase11/trace-report.json',
+  'certification/phase11/adversarial-report.json'
 ]
 
 const evidenceSourceFiles = [
-  ...Object.keys(PHASE11_FORMAL_PROMPT_SHA256).map(
-    (file) =>
-      `docs/11_phase11/prompt-master/20260915-formal-closure/source/${file}`
+  ...Object.keys(PHASE11_2_PROMPT_SHA256).map(
+    (file) => `docs/11_phase11/prompt-master/20260916-triple-aaa/source/${file}`
   ),
-  'docs/11_phase11/prompt-master/20260915-formal-closure/README.md',
+  'docs/11_phase11/prompt-master/20260916-triple-aaa/README.md',
   qualityBarRelative,
   consoleCriticRelative,
-  'docs/02_spec/phase11_1_formal_closure_contract_20260915.md',
-  'docs/phase11/PHASE11_DELTA_AUDIT.md',
+  'docs/01_prd/phase11_2_state_of_art_triple_aaa_20260916.md',
+  'docs/02_spec/phase11_2_state_of_art_triple_aaa_20260916.md',
+  'docs/phase11/PHASE11_2_DELTA_AUDIT.md',
+  'docs/phase11/PHASE11_FORMAL_CLOSURE.md',
+  'docs/phase11/PHASE11_ORCHESTRATOR_PROOF.md',
+  'docs/phase11/PHASE11_SECURITY_REVIEW.md',
+  'docs/phase11/PHASE11_ADVERSARIAL_REPORT.md',
+  'docs/phase11/PHASE11_RECOVERY_REPORT.md',
+  'docs/phase11/PHASE11_CHAOS_REPORT.md',
+  'docs/phase11/PHASE11_LOAD_REPORT.md',
+  'docs/phase11/PHASE11_INTEGRATION_REPORT.md',
+  'docs/phase11/PHASE11_INDEPENDENT_CRITIC.md',
   'certification/external-gates.json',
   'certification/historical/phase10/README.md',
   'certification/sbom.cyclonedx.json',
@@ -277,6 +324,169 @@ const gateMap = {
   'P11.1-NO-PRODUCTION-EFFECT': ['bypass_audit']
 }
 
+Object.assign(implementationMap, {
+  'P11.2-PROMPT': [
+    'docs/11_phase11/prompt-master/20260916-triple-aaa/README.md'
+  ],
+  'P11.2-CANONICAL': [
+    '.gitignore',
+    'scripts/lib/certification-rules.mjs',
+    'scripts/lib/phase11-rules.mjs',
+    'scripts/phase11-certify.mjs',
+    'scripts/phase11-verify.mjs'
+  ],
+  'P11.2-CALCULUS': [
+    'scripts/lib/phase11-rules.mjs',
+    'scripts/phase11-2-redteam.mjs',
+    'scripts/phase11-2-evidence-check.mjs',
+    'scripts/phase11-self-test.mjs',
+    'scripts/promotion-check.mjs'
+  ],
+  'P11.2-ORCHESTRATION': [
+    'packages/agent-runtime/src/orchestration.ts',
+    'packages/persistence/src/orchestrator-postgres.ts',
+    'packages/persistence/migrations/0021_orchestrator_iteration_budget.sql',
+    'packages/persistence/migrations/0022_orchestrator_evaluation_lineage.sql'
+  ],
+  'P11.2-FENCING': [
+    'packages/persistence/src/orchestrator-postgres.ts',
+    'packages/persistence/migrations/0018_outbox_lease_fencing.sql'
+  ],
+  'P11.2-EFFECT': [
+    'packages/persistence/src/effect-journal-postgres.ts',
+    'packages/persistence/src/outbox.ts',
+    'apps/worker/src/outbox-revalidation.ts',
+    'apps/worker/src/jobs/process-outbox-event.ts',
+    'packages/persistence/migrations/0013_runtime_effect_journal.sql'
+  ],
+  'P11.2-LINEAGE': [
+    'packages/observability/src',
+    'packages/agent-runtime/src/orchestration.ts',
+    'apps/api/src/orchestration-observability.ts',
+    'scripts/lib/phase11-rules.mjs'
+  ],
+  'P11.2-REDTEAM': [
+    'scripts/phase11-2-redteam.mjs',
+    'scripts/phase11-2-evidence-check.mjs',
+    'packages/policy-engine/src',
+    'apps/api/src/orchestration-observability.ts'
+  ],
+  'P11.2-POSTGRES': [
+    'packages/persistence/migrations/0019_orchestrator_state.sql',
+    'packages/persistence/migrations/0020_orchestrator_lineage_hardening.sql',
+    'packages/persistence/migrations/0021_orchestrator_iteration_budget.sql',
+    'packages/persistence/migrations/0022_orchestrator_evaluation_lineage.sql'
+  ],
+  'P11.2-CONSOLE': [
+    'apps/web/src/features/orchestration/index.tsx',
+    'apps/web/src/styles.css',
+    'tests/e2e/visual-shell.spec.ts'
+  ],
+  'P11.2-PREFLIGHT': [
+    'scripts/production-preflight.mjs',
+    'tests/production-preflight.test.js',
+    'packages/shared/src/env.ts'
+  ],
+  'P11.2-SUPPLY': [
+    'scripts/generate-sbom.mjs',
+    'scripts/check-licenses.mjs',
+    '.github/workflows/verify.yml',
+    '.github/workflows/security.yml'
+  ],
+  'P11.2-EXTERNAL': ['certification/external-gates.json'],
+  'P11.2-NO-PRODUCTION-EFFECT': [
+    'scripts/production-preflight.mjs',
+    'scripts/phase11-bypass-audit.mjs',
+    'certification/external-gates.json'
+  ]
+})
+
+Object.assign(testMap, {
+  'P11.2-PROMPT': ['scripts/phase11-2-redteam.mjs'],
+  'P11.2-CANONICAL': [
+    'tests/phase11-certification.test.js',
+    'tests/phase11-formal-certification.test.js',
+    'tests/phase11-2-certification.test.js'
+  ],
+  'P11.2-CALCULUS': [
+    'scripts/phase11-2-redteam.mjs',
+    'scripts/phase11-2-evidence-check.mjs',
+    'scripts/phase11-self-test.mjs'
+  ],
+  'P11.2-ORCHESTRATION': [
+    'packages/agent-runtime/src/__tests__/orchestration.test.ts',
+    'packages/agent-runtime/src/__tests__/runtime-limits.test.ts',
+    'packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts'
+  ],
+  'P11.2-FENCING': [
+    'packages/persistence/src/__tests__/orchestrator-postgres.test.ts',
+    'packages/persistence/src/__tests__/outbox-durability.test.ts'
+  ],
+  'P11.2-EFFECT': [
+    'packages/persistence/src/__tests__/effect-journal-postgres.test.ts',
+    'apps/worker/src/__tests__/outbox-recovery.test.ts',
+    'packages/persistence/src/__tests__/outbox-durability.test.ts'
+  ],
+  'P11.2-LINEAGE': [
+    'apps/api/src/__tests__/orchestration-observability.test.ts',
+    'packages/observability/src/__tests__/observability.test.ts'
+  ],
+  'P11.2-REDTEAM': [
+    'scripts/phase11-2-redteam.mjs',
+    'apps/api/src/__tests__/tenant-inbound-isolation.test.ts',
+    'packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts'
+  ],
+  'P11.2-POSTGRES': ['npm run test:postgres'],
+  'P11.2-CONSOLE': [
+    'tests/e2e/visual-shell.spec.ts',
+    'apps/web/src/features/orchestration/orchestration.test.tsx'
+  ],
+  'P11.2-PREFLIGHT': ['tests/production-preflight.test.js'],
+  'P11.2-SUPPLY': [
+    'npm run audit:security',
+    'npm run licenses:check',
+    'npm run sbom'
+  ],
+  'P11.2-EXTERNAL': [],
+  'P11.2-NO-PRODUCTION-EFFECT': [
+    'scripts/phase11-2-redteam.mjs',
+    'scripts/phase11-bypass-audit.mjs'
+  ]
+})
+
+Object.assign(gateMap, {
+  'P11.2-PROMPT': ['prompt_integrity'],
+  'P11.2-CANONICAL': [
+    'certification_self_test',
+    'evidence_graph',
+    'clone_verify'
+  ],
+  'P11.2-CALCULUS': ['certification_self_test', 'certification_redteam'],
+  'P11.2-ORCHESTRATION': ['unit', 'recovery', 'evals', 'outbox_replay'],
+  'P11.2-FENCING': ['postgres', 'recovery', 'tenant_redteam'],
+  'P11.2-EFFECT': ['postgres', 'recovery', 'chaos', 'outbox_replay'],
+  'P11.2-LINEAGE': ['trace_lineage', 'evidence_graph', 'e2e'],
+  'P11.2-REDTEAM': [
+    'governance_redteam',
+    'tenant_redteam',
+    'certification_redteam'
+  ],
+  'P11.2-POSTGRES': ['postgres', 'recovery'],
+  'P11.2-CONSOLE': ['unit', 'e2e', 'independent_critic'],
+  'P11.2-PREFLIGHT': ['production_preflight'],
+  'P11.2-SUPPLY': [
+    'security',
+    'supply_chain',
+    'phase10_historical_verification'
+  ],
+  'P11.2-EXTERNAL': [],
+  'P11.2-NO-PRODUCTION-EFFECT': [
+    'production_preflight',
+    'bypass_audit',
+    'adversarial_proof'
+  ]
+})
+
 function writeJson(relativePath, value) {
   const absolute = path.join(root, relativePath)
   fs.mkdirSync(path.dirname(absolute), { recursive: true })
@@ -335,6 +545,22 @@ function commandEnvironment(id) {
     'JWT_SECRET'
   ]) {
     delete environment[key]
+  }
+  if (id === 'production_preflight') {
+    Object.assign(environment, {
+      NODE_ENV: 'test',
+      API_PERSISTENCE_MODE: 'memory',
+      CVG_DURABLE_KERNEL_ORCHESTRATOR: 'false',
+      CVG_WORKER_RUNTIME: 'published-agent',
+      CVG_EXTERNAL_PROVIDER_APPROVED: 'false',
+      CVG_EXTERNAL_CHANNEL_APPROVED: 'false',
+      CVG_EXTERNAL_IDENTITY_APPROVED: 'false',
+      CVG_EXTERNAL_RAG_APPROVED: 'false',
+      CVG_RPO_RTO_MEASURED: 'false',
+      CVG_SUPERVISED_PILOT_COMPLETE: 'false',
+      CVG_ROLLBACK_VERIFIED: 'false',
+      CVG_HUMAN_SIGNOFF: 'false'
+    })
   }
   return environment
 }
@@ -402,7 +628,7 @@ function runCommand(id, command) {
   }
 }
 
-const promptIntegrity = verifyPromptIntegrity(root, 'formal')
+const promptIntegrity = verifyPromptIntegrity(root, 'phase11_2')
 const gates = [
   gateFor(
     'prompt_integrity',
@@ -452,147 +678,171 @@ function gateStatusFor(ids) {
   return 'NOT_RUN'
 }
 
-function criticStatus() {
-  const report = readJson(consoleCriticRelative)
-  if (!report) return 'NOT_RUN'
-  return report.status === 'PASS' || report.verdict === 'PASS'
-    ? 'PASS'
-    : 'BLOCKED'
-}
-
-function buildInvariant(id, title, severity, status, evidence, rationale) {
-  return { id, title, severity, status, evidence, rationale }
-}
-
-function buildInvariants(pointerReady) {
-  const packageReady = requiredPackageFiles.every(pathExists)
-  const critic = criticStatus()
-  return [
-    buildInvariant(
-      'INV-CERT-PACKAGE',
-      'Canonical Phase 11 package is complete',
-      'critical',
-      packageReady ? 'PASS' : 'NOT_RUN',
-      ['certification/phase11/manifest.json', resultRelative],
-      packageReady
-        ? 'All required canonical files exist in the namespaced package.'
-        : 'The seal has not yet produced every required canonical file.'
-    ),
-    buildInvariant(
-      'INV-CERT-POINTER',
-      'Current pointer resolves Phase 11 only',
-      'critical',
-      pointerReady && pathExists(pointerRelative) ? 'PASS' : 'NOT_RUN',
-      [pointerRelative, manifestRelative, resultRelative],
-      pointerReady
-        ? 'The current pointer is written after the canonical result and manifest.'
-        : 'Pointer validation is intentionally deferred to the second seal pass.'
-    ),
-    buildInvariant(
-      'INV-CERT-CALCULUS',
-      'Certification calculus is shared and fail-closed',
-      'critical',
-      gateStatusFor(['certification_self_test']),
-      ['certification/phase11/negative-validation.json'],
-      'Negative validation must reject false-go, dirty, stale and non-zero PASS cases.'
-    ),
-    buildInvariant(
-      'INV-BYPASS',
-      'Production-target bypass inventory is empty',
-      'high',
-      gateStatusFor(['bypass_audit']),
-      ['certification/phase11/logs/bypass_audit.log'],
-      'Direct outbound application call-sites must remain outside production entrypoints.'
-    ),
-    buildInvariant(
-      'INV-REPLAN',
-      'Replan lineage is preserved',
-      'high',
-      gateStatusFor(['unit', 'recovery']),
-      ['certification/phase11/recovery-report.json'],
-      'The unit and recovery lanes are the evidence boundary for parent-plan continuation.'
-    ),
-    buildInvariant(
-      'INV-LOOP-BUDGET',
-      'Loop and budget limits are bounded',
-      'high',
-      gateStatusFor(['unit', 'recovery', 'evals']),
+function buildInvariants() {
+  const definitions = [
+    [
+      'INV-001',
+      'Model cannot grant authority',
+      ['governance_redteam'],
+      ['scripts/phase11-2-redteam.mjs']
+    ],
+    [
+      'INV-002',
+      'Orchestrator cannot bypass governance',
+      ['governance_redteam', 'bypass_audit'],
       [
-        'certification/phase11/eval-report.json',
-        'certification/phase11/recovery-report.json'
-      ],
-      'Repeated fingerprints and persisted usage must terminate safely.'
-    ),
-    buildInvariant(
-      'INV-FENCING',
-      'Lease and claim fencing is current',
-      'critical',
-      gateStatusFor(['postgres', 'recovery']),
+        'scripts/phase11-2-redteam.mjs',
+        'certification/phase11/logs/bypass_audit.log'
+      ]
+    ],
+    [
+      'INV-003',
+      'Planner cannot grant capability',
+      ['governance_redteam'],
+      ['packages/policy-engine/src']
+    ],
+    [
+      'INV-004',
+      'Replanner cannot escalate capability',
+      ['unit', 'recovery', 'governance_redteam'],
+      ['certification/phase11/recovery-report.json']
+    ],
+    [
+      'INV-005',
+      'Risk cannot be downgraded by model',
+      ['governance_redteam'],
+      ['packages/policy-engine/src']
+    ],
+    [
+      'INV-006',
+      'Approval is payload-bound',
+      ['governance_redteam', 'outbox_replay'],
+      ['certification/phase11/logs/governance_redteam.log']
+    ],
+    [
+      'INV-007',
+      'Approval is single-use',
+      ['postgres', 'governance_redteam'],
+      ['certification/phase11/postgres-report.json']
+    ],
+    [
+      'INV-008',
+      'Execution chain is tenant-bound',
+      ['tenant_redteam', 'postgres', 'trace_lineage'],
+      [
+        'certification/phase11/postgres-report.json',
+        'certification/phase11/evidence-graph.json'
+      ]
+    ],
+    [
+      'INV-009',
+      'Critical effects are idempotent/reconcilable',
+      ['postgres', 'recovery', 'chaos', 'outbox_replay'],
+      [
+        'certification/phase11/postgres-report.json',
+        'certification/phase11/chaos-report.json'
+      ]
+    ],
+    [
+      'INV-010',
+      'Stale worker cannot commit',
+      ['postgres', 'recovery'],
       [
         'certification/phase11/postgres-report.json',
         'certification/phase11/recovery-report.json'
-      ],
-      'A stale worker must not settle work after a takeover.'
-    ),
-    buildInvariant(
-      'INV-EFFECT',
-      'Effect journal is idempotent across crash ambiguity',
-      'critical',
-      gateStatusFor(['postgres', 'recovery']),
+      ]
+    ],
+    [
+      'INV-011',
+      'Budget survives restart',
+      ['unit', 'recovery', 'evals'],
       [
-        'certification/phase11/postgres-report.json',
-        'certification/phase11/recovery-report.json'
-      ],
-      'Irreversible effects require durable idempotency and UNCERTAIN reconciliation.'
-    ),
-    buildInvariant(
-      'INV-LINEAGE',
-      'Durable lineage reaches operator evidence',
-      'high',
-      gateStatusFor(['unit', 'e2e', 'recovery']),
-      ['certification/phase11/evidence-graph.json'],
-      'Goal, plan, step, attempt, observation, evaluation, effect and audit links must be reconstructable.'
-    ),
-    buildInvariant(
-      'INV-TENANT-GOVERNANCE',
-      'Tenant and actor boundaries are governed',
-      'critical',
-      gateStatusFor(['unit', 'security', 'postgres']),
+        'certification/phase11/recovery-report.json',
+        'certification/phase11/eval-report.json'
+      ]
+    ],
+    [
+      'INV-012',
+      'Orchestration loop is bounded',
+      ['unit', 'recovery', 'evals'],
       [
-        'certification/phase11/logs/security.log',
-        'certification/phase11/postgres-report.json'
-      ],
-      'Cross-tenant access and untrusted actor paths must fail closed.'
-    ),
-    buildInvariant(
-      'INV-POSTGRES',
-      'Disposable PostgreSQL evidence is real or explicitly not run',
-      'critical',
-      gateStatusFor(['postgres']),
-      ['certification/phase11/postgres-report.json'],
-      databaseConfigured
-        ? 'This run was explicitly authorized for a disposable TEST_DATABASE_URL.'
-        : 'No disposable TEST_DATABASE_URL was authorized; this invariant remains NOT_RUN.'
-    ),
-    buildInvariant(
-      'INV-CONSOLE',
-      'Operator console exposes safe operational states',
-      'high',
-      critic === 'PASS' && gatePasses(['unit', 'e2e']) ? 'PASS' : critic,
+        'certification/phase11/recovery-report.json',
+        'certification/phase11/eval-report.json'
+      ]
+    ],
+    [
+      'INV-013',
+      'Goal completion requires verified evidence',
+      ['unit', 'recovery'],
+      ['certification/phase11/recovery-report.json']
+    ],
+    [
+      'INV-014',
+      'Human takeover suppresses automation',
+      ['governance_redteam', 'e2e'],
       [
-        'certification/phase11/logs/e2e.log',
-        'certification/phase11/integration-report.json',
-        consoleCriticRelative
+        'certification/phase11/logs/governance_redteam.log',
+        'certification/phase11/logs/e2e.log'
+      ]
+    ],
+    [
+      'INV-015',
+      'Certification is candidate-bound',
+      [
+        'certification_redteam',
+        'evidence_graph',
+        'candidate_clean',
+        'clone_verify'
       ],
-      critic === 'PASS'
-        ? 'Fresh visual/state evidence is present and the automated console lanes pass.'
-        : 'Automated smoke coverage or a fresh independent visual/state critic is still missing.'
-    )
+      [
+        manifestRelative,
+        pointerRelative,
+        'certification/phase11/evidence-graph.json'
+      ]
+    ],
+    [
+      'INV-016',
+      'Production claims require real proof',
+      ['production_preflight', 'certification_redteam'],
+      [
+        'certification/phase11/preflight-report.json',
+        'certification/phase11/negative-validation.json'
+      ]
+    ]
   ]
+  if (
+    definitions.map(([id]) => id).join(',') !==
+    PHASE11_REQUIRED_INVARIANTS.join(',')
+  ) {
+    throw new Error(
+      'phase11 invariant definition set is not the required INV-001..INV-016 contract'
+    )
+  }
+  return definitions.map(([id, title, gateIds, evidenceRefs]) => {
+    const status = gateStatusFor(gateIds)
+    const refs =
+      implementationMap[`P11.2-${id}`] ?? implementationMap['P11.2-REDTEAM']
+    const testRefs = testMap[`P11.2-${id}`] ?? ['scripts/phase11-2-redteam.mjs']
+    return {
+      id,
+      title,
+      description: title,
+      severity: 'critical',
+      implementationRefs: refs,
+      testRefs,
+      evidenceRefs,
+      status,
+      evidence: evidenceRefs,
+      rationale:
+        status === 'PASS'
+          ? 'The mapped executable gates passed in the controlled synthetic scope.'
+          : `At least one mapped gate is not PASS: ${gateIds.join(', ')}.`
+    }
+  })
 }
 
 function criterionStatus(id) {
-  if (id === 'P11.1-EXTERNAL') {
+  if (id === 'P11.2-EXTERNAL') {
     return Object.entries(REQUIRED_EXTERNAL_STATUS).every(
       ([key, expected]) => externalGates[key] === expected
     )
@@ -627,9 +877,19 @@ function buildFindings(invariants, pointerReady) {
   const finding = (definition) => ({
     id: definition.id,
     title: definition.title,
+    description: definition.description ?? definition.title,
     status: definition.closed ? 'CLOSED' : (definition.status ?? 'PARTIAL'),
     severity: definition.severity,
     blocking: definition.blocking,
+    rootCause: definition.rootCause,
+    fix: definition.fix,
+    testRefs: definition.testRefs,
+    evidenceRefs: definition.evidence,
+    blockingProfiles: definition.blockingProfiles ?? [
+      'STAGING',
+      'SUPERVISED_PILOT',
+      'PRODUCTION'
+    ],
     evidence: definition.evidence,
     remainingRisk: definition.closed
       ? (definition.closedRisk ??
@@ -639,114 +899,152 @@ function buildFindings(invariants, pointerReady) {
   const local = [
     finding({
       id: 'AUD-11-01',
-      title: 'Canonical Phase 11 package was absent',
+      title: 'Canonical Phase 11 package and pointer',
+      description:
+        'The current certification source of truth must be visible and complete.',
       severity: 'P1',
       blocking: true,
-      closed:
-        pathExists('certification/phase11/manifest.json') &&
-        pathExists(resultRelative),
+      closed: pointerReady && requiredPackageFiles.every(pathExists),
+      rootCause:
+        'Canonical output was previously ignored and not bound to the default branch.',
+      fix: 'Track the namespaced package and seal the current pointer after evidence generation.',
+      testRefs: ['tests/phase11-2-certification.test.js'],
       evidence: [manifestRelative, resultRelative],
       remainingRisk: 'Canonical package is incomplete or not hash-bound.'
     }),
     finding({
       id: 'AUD-11-02',
-      title: 'Phase 10 artifacts could be mistaken for current',
-      severity: 'P1',
+      title: 'Candidate binding and descendant reanchor',
+      description:
+        'A package commit may follow the source anchor only when the behavior scope is unchanged.',
+      severity: 'P2',
       blocking: true,
-      closed: pointerReady && pathExists(pointerRelative),
-      evidence: [pointerRelative, 'certification/historical/phase10/README.md'],
+      closed: closed('INV-015'),
+      rootCause:
+        'Git tree identity and behavior candidate identity were conflated.',
+      fix: 'Bind the certificate to the source commit plus a stable behavior-scope hash and accept only descendants.',
+      testRefs: ['tests/phase11-2-certification.test.js'],
+      evidence: [
+        pointerRelative,
+        manifestRelative,
+        'certification/phase11/evidence-graph.json'
+      ],
       remainingRisk:
-        'Current certification could still resolve to a stale historical artifact.'
+        'A behavior mutation after sealing must invalidate the package.'
     }),
     finding({
       id: 'AUD-11-03',
-      title: 'Legacy production bypass inventory',
-      severity: 'P1',
+      title: 'Replan proof and parent lineage',
+      description:
+        'A failed or conflicting step must produce a new plan without overwriting prior evidence or replaying effects.',
+      severity: 'P2',
       blocking: true,
-      closed: closed('INV-BYPASS'),
-      evidence: ['certification/phase11/logs/bypass_audit.log'],
+      closed: closed('INV-004'),
+      rootCause:
+        'Replan safety depends on durable observation/evaluation and parent-plan links.',
+      fix: 'Persist the evaluation and replan lineage through the runtime and PostgreSQL stores.',
+      testRefs: ['packages/agent-runtime/src/__tests__/orchestration.test.ts'],
+      evidence: ['certification/phase11/recovery-report.json'],
       remainingRisk:
-        'A direct outbound call-site could bypass the governed kernel.'
+        'A false completion or effect replay could otherwise be accepted.'
     }),
     finding({
       id: 'AUD-11-04',
-      title: 'Replan lineage and safe continuation',
-      severity: 'P1',
-      blocking: true,
-      closed: closed('INV-REPLAN'),
-      evidence: ['certification/phase11/recovery-report.json'],
-      remainingRisk:
-        'A false evaluation could replace a plan without durable parent lineage.'
-    }),
-    finding({
-      id: 'AUD-11-05',
       title: 'Loop, budget and restart controls',
-      severity: 'P1',
+      description:
+        'Semantic cycles and cumulative limits must stop safely and survive restart.',
+      severity: 'P2',
       blocking: true,
-      closed: closed('INV-LOOP-BUDGET'),
+      closed: closed('INV-011') && closed('INV-012'),
+      rootCause:
+        'Autonomous iteration can be unsafe if usage is reset or only wall-clock bounded.',
+      fix: 'Persist iteration and usage counters and terminate with explicit safe states.',
+      testRefs: ['packages/agent-runtime/src/__tests__/runtime-limits.test.ts'],
       evidence: [
         'certification/phase11/recovery-report.json',
         'certification/phase11/eval-report.json'
       ],
       remainingRisk:
-        'Autonomous work could exceed a persisted budget or restart unsafely.'
+        'A restart or equivalent-cycle detector regression could extend execution.'
     }),
     finding({
-      id: 'AUD-11-06',
-      title: 'Lease and fencing proof',
-      severity: 'P0',
+      id: 'AUD-11-05',
+      title: 'Stale worker and distributed fencing',
+      description:
+        'A worker that loses its lease must not settle current work.',
+      severity: 'P2',
       blocking: true,
-      closed: closed('INV-FENCING'),
-      evidence: ['certification/phase11/postgres-report.json'],
-      remainingRisk:
-        'A stale worker could acknowledge or settle work after takeover.'
-    }),
-    finding({
-      id: 'AUD-11-07',
-      title: 'Crash-aware effect journal',
-      severity: 'P0',
-      blocking: true,
-      closed: closed('INV-EFFECT'),
+      closed: closed('INV-010'),
+      rootCause:
+        'Distributed claims require lease versions and compare-and-swap settlement.',
+      fix: 'Enforce current lease token/version on claim, heartbeat and settlement paths.',
+      testRefs: [
+        'packages/persistence/src/__tests__/orchestrator-postgres.test.ts'
+      ],
       evidence: [
         'certification/phase11/postgres-report.json',
         'certification/phase11/recovery-report.json'
       ],
       remainingRisk:
-        'An ambiguous external effect could be repeated or incorrectly marked complete.'
+        'An untested driver or database isolation change could weaken fencing.'
+    }),
+    finding({
+      id: 'AUD-11-06',
+      title: 'Crash-after-effect and unknown-effect reconciliation',
+      description:
+        'Ambiguous external effects must remain unresolved until reconciled and never blindly retry.',
+      severity: 'P2',
+      blocking: true,
+      closed: closed('INV-009'),
+      rootCause:
+        'A process crash can occur after the provider effect and before acknowledgement.',
+      fix: 'Use the durable effect journal, idempotency scope and explicit reconciliation/handoff states.',
+      testRefs: [
+        'packages/persistence/src/__tests__/effect-journal-postgres.test.ts'
+      ],
+      evidence: [
+        'certification/phase11/postgres-report.json',
+        'certification/phase11/chaos-report.json'
+      ],
+      remainingRisk:
+        'Real provider semantics remain external and are not validated locally.'
+    }),
+    finding({
+      id: 'AUD-11-07',
+      title: 'End-to-end trace and evidence lineage',
+      description:
+        'Inbound through response must be reconstructable with redacted safe attributes.',
+      severity: 'P2',
+      blocking: true,
+      closed:
+        gatePasses(['trace_lineage', 'evidence_graph']) && closed('INV-008'),
+      rootCause:
+        'Operator evidence needs an explicit stage graph in addition to source references.',
+      fix: 'Emit the required runtime stage chain and bind it to artifacts, gates and invariants.',
+      testRefs: ['apps/api/src/__tests__/orchestration-observability.test.ts'],
+      evidence: [
+        'certification/phase11/evidence-graph.json',
+        'certification/phase11/trace-report.json'
+      ],
+      remainingRisk:
+        'Hosted telemetry exporters remain a CI/operations integration boundary.'
     }),
     finding({
       id: 'AUD-11-08',
-      title: 'Operator console state matrix',
-      severity: 'P1',
-      blocking: true,
-      closed: closed('INV-CONSOLE'),
-      evidence: ['certification/phase11/logs/e2e.log', consoleCriticRelative],
-      remainingRisk:
-        'Operators may not distinguish active, blocked, failed, handoff and budget states safely.'
-    }),
-    finding({
-      id: 'AUD-11-10',
-      title: 'Current supply-chain evidence',
-      severity: 'P1',
-      blocking: true,
-      closed: gatePasses(['security', 'supply_chain']),
-      evidence: [
-        'certification/phase11/supply-report.json',
-        'certification/phase11/logs/security.log'
-      ],
-      remainingRisk:
-        'Dependency, license, SBOM or static-security evidence is not current.'
-    })
-  ]
-  const external = [
-    finding({
-      id: 'AUD-11-09',
-      title: 'External qualification and human release authority',
+      title:
+        'External provider, channel, identity, RAG, pilot and release proof',
+      description:
+        'Production Triple AAA requires authorized real-stack evidence and human release authority.',
       severity: 'EXTERNAL',
       blocking: true,
       closed: Object.entries(REQUIRED_EXTERNAL_STATUS).every(
         ([key, expected]) => externalGates[key] === expected
       ),
+      rootCause:
+        'The local task authorizes synthetic controlled verification only.',
+      fix: 'Run separately authorized provider/channel/identity/RAG, RPO/RTO, pilot, rollback and signoff gates.',
+      testRefs: [],
+      blockingProfiles: ['SUPERVISED_PILOT', 'PRODUCTION'],
       evidence: [
         'certification/external-gates.json',
         'certification/phase11/integration-report.json'
@@ -755,8 +1053,9 @@ function buildFindings(invariants, pointerReady) {
         'Real provider, channel, identity, approved institutional RAG, RPO/RTO, pilot, rollback and human signoff are not proven in this controlled run.'
     })
   ]
+  const external = local.filter((item) => item.severity === 'EXTERNAL')
   return {
-    P0: local.filter((item) => item.severity === 'P0'),
+    P0: [],
     P1: local.filter((item) => item.severity === 'P1'),
     P2: local.filter((item) => item.severity === 'P2'),
     external
@@ -765,7 +1064,11 @@ function buildFindings(invariants, pointerReady) {
 
 function sourceReport(gateId, gate) {
   const sourcePath = sourceReports[gateId]
-  const raw = sourcePath ? readJson(sourcePath) : null
+  const raw = sourcePath
+    ? readJson(sourcePath)
+    : gate?.log
+      ? readJsonFromLog(gate.log)
+      : null
   const sourceExists = !sourcePath || raw !== null
   if (sourcePath && gate.status === 'PASS' && !sourceExists) {
     gate.status = 'INVALID'
@@ -802,6 +1105,22 @@ const supplyReport = sourceReport(
 )
 const recoveryReport = sourceReport('recovery', reportByGate.get('recovery'))
 const postgresReport = sourceReport('postgres', reportByGate.get('postgres'))
+const preflightReport = sourceReport(
+  'production_preflight',
+  reportByGate.get('production_preflight')
+)
+const redteamReport = sourceReport(
+  'certification_redteam',
+  reportByGate.get('certification_redteam')
+)
+const traceReport = sourceReport(
+  'trace_lineage',
+  reportByGate.get('trace_lineage')
+)
+const adversarialReport = sourceReport(
+  'adversarial_proof',
+  reportByGate.get('adversarial_proof')
+)
 
 const rawExternal = readJson('certification/external-gates.json') ?? {}
 const externalGates = normalizeExternalGates(rawExternal)
@@ -879,6 +1198,10 @@ function writeOperationalReports() {
   writeJson(reportTargets.recovery, recoveryReport)
   writeJson(reportTargets.postgres, postgresReport)
   writeJson(reportTargets.supply_chain, supplyReport)
+  writeJson(reportTargets.production_preflight, preflightReport)
+  writeJson(reportTargets.certification_redteam, redteamReport)
+  writeJson(reportTargets.trace_lineage, traceReport)
+  writeJson(reportTargets.adversarial_proof, adversarialReport)
   writeJson('certification/phase11/integration-report.json', integrationReport)
   writeJson('certification/phase11/integrations/status.json', integrationReport)
   const negativeGate = reportByGate.get('certification_self_test')
@@ -943,7 +1266,7 @@ function releaseManifest() {
     migrationDigest: null,
     agentVersion: readJson('package.json')?.version ?? null,
     policyVersion: null,
-    promptVersions: PHASE11_FORMAL_PROMPT_SHA256,
+    promptVersions: PHASE11_2_PROMPT_SHA256,
     toolVersions: {
       node: process.versions.node,
       npm:
@@ -967,7 +1290,7 @@ function releaseManifest() {
 
 function seal(pointerReady) {
   const preliminaryRequirements = buildRequirements()
-  const preliminaryInvariants = buildInvariants(pointerReady)
+  const preliminaryInvariants = buildInvariants()
   const graph = buildEvidenceGraph(
     preliminaryRequirements,
     gates,
@@ -987,8 +1310,40 @@ function seal(pointerReady) {
     )
   )
 
-  const invariants = buildInvariants(pointerReady)
+  const initialInvariants = buildInvariants()
   const requirements = buildRequirements()
+  const initialFindings = buildFindings(initialInvariants, pointerReady)
+  const closurePrerequisites = PHASE11_2_REQUIRED_GATES.filter(
+    (id) => id !== 'PHASE11_FORMAL_CLOSURE'
+  )
+  const localFindingsClosed = [
+    ...initialFindings.P0,
+    ...initialFindings.P1,
+    ...initialFindings.P2
+  ].every(
+    (finding) => finding.blocking === false || finding.status === 'CLOSED'
+  )
+  const criticalInvariantsPass = initialInvariants
+    .filter((invariant) => invariant.severity === 'critical')
+    .every((invariant) => invariant.status === 'PASS')
+  const closurePass =
+    gatePasses(closurePrerequisites) &&
+    localFindingsClosed &&
+    criticalInvariantsPass &&
+    graphValidation.valid &&
+    promptIntegrity.status === 'PASS'
+  upsertGate(
+    'PHASE11_FORMAL_CLOSURE',
+    gateFor(
+      'PHASE11_FORMAL_CLOSURE',
+      closurePass ? 'PASS' : 'FAIL',
+      closurePass
+        ? undefined
+        : 'mandatory local gates, findings, invariants, graph or prompt integrity are incomplete'
+    )
+  )
+
+  const invariants = buildInvariants()
   const findings = buildFindings(invariants, pointerReady)
   const graphWithFinalState = buildEvidenceGraph(
     requirements,
@@ -998,6 +1353,17 @@ function seal(pointerReady) {
   )
   graphWithFinalState.certificationId = certificationId
   graphWithFinalState.candidateCommit = candidate.commit
+  const finalGraphValidation = verifyEvidenceGraph(graphWithFinalState)
+  if (!finalGraphValidation.valid) {
+    upsertGate(
+      'evidence_graph',
+      gateFor(
+        'evidence_graph',
+        'INVALID',
+        finalGraphValidation.errors.join(',')
+      )
+    )
+  }
 
   writeJson('certification/phase11/gates.json', {
     schemaVersion: 1,
@@ -1005,7 +1371,7 @@ function seal(pointerReady) {
     certificationId,
     candidateCommit: candidate.commit,
     generatedAt: new Date().toISOString(),
-    gates: PHASE11_REQUIRED_GATES.map(
+    gates: PHASE11_2_REQUIRED_GATES.map(
       (id) =>
         gates.find((gate) => gate.id === id) ??
         gateFor(id, 'MISSING', 'gate_missing')
@@ -1048,7 +1414,8 @@ function seal(pointerReady) {
     deploymentProfile,
     requestedProfile,
     evidenceComplete,
-    implementationComplete
+    implementationComplete,
+    requiredGates: PHASE11_2_REQUIRED_GATES
   })
   const scores = computeScores({
     gates,
@@ -1068,7 +1435,7 @@ function seal(pointerReady) {
     requestedProfile,
     scores,
     findings,
-    gates: PHASE11_REQUIRED_GATES.map(
+    gates: PHASE11_2_REQUIRED_GATES.map(
       (id) =>
         gates.find((gate) => gate.id === id) ??
         gateFor(id, 'MISSING', 'gate_missing')
@@ -1191,4 +1558,6 @@ process.stdout.write(
 process.stderr.write(
   `[phase11] decision=${finalSeal.report.decision} certification=${finalSeal.report.certification} certificationId=${certificationId}\n`
 )
-process.exitCode = finalSeal.report.decision === 'GO' ? 0 : 1
+process.exitCode = ['GO', 'CONDITIONAL_GO'].includes(finalSeal.report.decision)
+  ? 0
+  : 1

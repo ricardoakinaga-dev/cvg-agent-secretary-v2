@@ -1,0 +1,985 @@
+# CONCLUSÃO DO ITEM 511
+
+Valide a stack real somente onde houver:
+
+```text id="i2ib5e"
+authorized environment
+real credentials
+safe staging scope
+synthetic data
+allowlisted destinations
+```
+
+Não transforme ausência desses elementos em falsa validação.
+
+Depois execute o certification calculus e deixe **a evidência determinar a classificação final**.
+
+---
+
+# 512. REQUIRED DELIVERABLES
+
+Ao concluir todo trabalho local, devem existir — ou possuir equivalentes canônicos claramente documentados — os seguintes artifacts.
+
+## Machine-readable
+
+```text id="5rs4qx"
+certification/current.json
+
+certification/phase11/
+├── phase11-result.json
+├── gates.json
+├── invariants.json
+├── evidence-graph.json
+├── findings.json
+├── negative-validation.json
+├── manifest.json
+├── release-manifest.json
+├── postgres-report.json
+├── eval-report.json
+├── chaos-report.json
+├── load-report.json
+├── recovery-report.json
+└── integrations/
+```
+
+---
+
+# 513. CONDITIONAL INTEGRATION ARTIFACTS
+
+Quando realmente executados:
+
+```text id="k14g8p"
+certification/phase11/integrations/
+├── evolutionapi.json
+├── chatwoot.json
+├── model-provider.json
+└── external-identity.json
+```
+
+---
+
+# 514. DO NOT CREATE FAKE PASS ARTIFACTS
+
+Se integração não foi executada:
+
+o artifact pode registrar:
+
+```text id="x59r8m"
+NOT_CONFIGURED
+CONTROLLED_ONLY
+NOT_EXECUTED
+```
+
+conforme schema.
+
+Nunca:
+
+```text id="c4n84r"
+VALIDATED_REAL
+```
+
+sem execução real.
+
+---
+
+# 515. HUMAN-READABLE DELIVERABLES
+
+Atualize ou produza equivalentes a:
+
+```text id="it2v04"
+docs/phase11/
+├── PHASE11_DELTA_AUDIT.md
+├── PHASE11_FORMAL_CLOSURE.md
+├── PHASE11_ORCHESTRATOR_PROOF.md
+├── PHASE11_SECURITY_REVIEW.md
+├── PHASE11_ADVERSARIAL_REPORT.md
+├── PHASE11_RECOVERY_REPORT.md
+├── PHASE11_CHAOS_REPORT.md
+├── PHASE11_LOAD_REPORT.md
+├── PHASE11_INTEGRATION_REPORT.md
+└── PHASE11_INDEPENDENT_CRITIC.md
+```
+
+Não crie duplicatas se documentação equivalente já existir.
+
+---
+
+# 516. FINAL FINDING LEDGER
+
+Cada finding fechado precisa possuir:
+
+```text id="a6hdkv"
+root cause
+fix
+regression test
+evidence
+candidate
+closure status
+```
+
+---
+
+# 517. FINAL OPEN FINDING LEDGER
+
+Cada finding ainda aberto:
+
+```text id="v46r18"
+severity
+reason
+owner
+blocking profile
+required action
+required evidence
+```
+
+---
+
+# 518. EXTERNAL BLOCKER LEDGER
+
+Use estrutura machine-readable.
+
+Exemplo conceitual:
+
+```json id="dlr0f3"
+{
+  "id": "EXT-001",
+  "type": "INTEGRATION",
+  "description": "EvolutionAPI staging validation requires authorized endpoint and credentials.",
+  "blockingProfiles": ["SUPERVISED_PILOT", "PRODUCTION"],
+  "requiredEvidence": "certification/phase11/integrations/evolutionapi.json"
+}
+```
+
+---
+
+# 519. NO GENERIC "FUTURE WORK"
+
+Todo blocker relevante deve ser específico.
+
+---
+
+# 520. FINAL COMMAND EVIDENCE
+
+Registre comandos e resultados para os gates realmente executados.
+
+---
+
+# 521. FINAL REPRODUCIBILITY
+
+Outro engenheiro deve conseguir entender:
+
+```text id="f3q3g4"
+which candidate was tested
+which commands were run
+which evidence was generated
+which gates passed
+which gates remain external
+```
+
+---
+
+# 522. FINAL CURRENT CERTIFICATION
+
+Depois da formal closure:
+
+```text id="1i76p9"
+certification/current.json
+```
+
+deve apontar inequivocamente para Phase 11.
+
+---
+
+# 523. PHASE 10 HISTORICAL
+
+Phase 10 permanece verificável, mas não current.
+
+---
+
+# 524. NO DUAL CURRENT STATE
+
+Obrigatório.
+
+---
+
+# 525. FINAL PACKAGE SCRIPT STATE
+
+Preferencialmente:
+
+```text id="3kuxbc"
+npm run certify
+→ current Phase 11 certification
+
+npm run certification:verify
+→ current Phase 11 verification
+
+npm run certify:phase11
+→ explicit Phase 11
+
+npm run certification:verify:phase11
+→ explicit Phase 11
+
+npm run certification:verify:historical
+→ historical certification
+```
+
+Adapte se houver design melhor.
+
+---
+
+# 526. PACKAGE SCRIPT REGRESSION TEST
+
+Prove que defaults não voltam silenciosamente para Phase 10.
+
+---
+
+# 527. FINAL CI STATE
+
+CI deve conhecer explicitamente a Phase 11 current.
+
+---
+
+# 528. PR CHECKS
+
+Mantenha rápidos o suficiente para desenvolvimento.
+
+---
+
+# 529. EXTENDED CHECKS
+
+Suites pesadas podem ser:
+
+```text id="v9wd6k"
+nightly
+manual
+release
+```
+
+---
+
+# 530. RELEASE CERTIFICATION
+
+Deve executar a cadeia forte necessária ao profile.
+
+---
+
+# 531. REAL INTEGRATION CI
+
+Separada e protegida.
+
+---
+
+# 532. PRODUCTION DEPLOYMENT
+
+Continua separado da certification.
+
+---
+
+# 533. CERTIFICATION DOES NOT DEPLOY
+
+Obrigatório.
+
+---
+
+# 534. PROMOTION DOES NOT DEPLOY
+
+Obrigatório.
+
+---
+
+# 535. DEPLOYMENT REQUIRES EXPLICIT AUTHORIZATION
+
+Obrigatório.
+
+---
+
+# 536. FINAL SECURITY ASSERTION
+
+O sistema deve continuar seguro mesmo se o modelo:
+
+```text id="c80pgj"
+hallucinates
+is prompt-injected
+returns malformed plan
+requests forbidden tool
+tries tenant switch
+tries risk downgrade
+tries approval bypass
+```
+
+porque authority não pertence ao modelo.
+
+---
+
+# 537. FINAL DISTRIBUTED ASSERTION
+
+O sistema deve continuar consistente sob:
+
+```text id="6f0m55"
+worker crash
+lease expiration
+worker takeover
+DB transient failure
+duplicate webhook
+out-of-order event
+provider timeout
+```
+
+dentro das garantias documentadas.
+
+---
+
+# 538. FINAL EFFECT ASSERTION
+
+Para efeito crítico:
+
+```text id="gb9k22"
+execute at most once when provider/idempotency semantics permit
+```
+
+ou:
+
+```text id="yabihb"
+detect/reconcile uncertainty before retry
+```
+
+---
+
+# 539. DO NOT CLAIM UNIVERSAL EXACTLY-ONCE
+
+Se sistema externo não puder oferecer essa semântica.
+
+Use terminologia correta:
+
+```text id="yrwj83"
+effectively-once
+idempotent
+reconcilable
+```
+
+conforme a garantia real.
+
+---
+
+# 540. FINAL GOAL ASSERTION
+
+Goal só termina como concluído quando SuccessCriteria forem comprovados.
+
+---
+
+# 541. FINAL REPLAN ASSERTION
+
+Replanning:
+
+```text id="gk83o3"
+preserves lineage
+preserves prior effects
+preserves budget
+preserves tenant
+preserves governance
+```
+
+---
+
+# 542. FINAL LOOP ASSERTION
+
+Nenhum loop autônomo é ilimitado.
+
+---
+
+# 543. FINAL BUDGET ASSERTION
+
+Restart não renova autonomia.
+
+---
+
+# 544. FINAL LEASE ASSERTION
+
+Tempo expirado + stale worker não equivale a authority válida.
+
+---
+
+# 545. FINAL TENANT ASSERTION
+
+Nenhuma nova entidade do Orchestrator cria caminho cross-tenant.
+
+---
+
+# 546. FINAL HUMAN ASSERTION
+
+Human takeover vence automation antes do side-effect boundary.
+
+---
+
+# 547. FINAL CERTIFICATION ASSERTION
+
+Nenhuma combinação de:
+
+```text id="8phu55"
+high scores
+nice documentation
+controlled mocks
+stale evidence
+```
+
+pode produzir Production Triple AAA.
+
+---
+
+# 548. FINAL REAL-PROOF ASSERTION
+
+Production claims dependem de real proof.
+
+---
+
+# 549. FINAL AUDITOR ASSERTION
+
+O independent critic deve tentar refutar todos os claims anteriores.
+
+---
+
+# 550. FINAL QUALITY REVIEW
+
+Depois dos fixes, revise se houve overengineering.
+
+---
+
+# 551. REMOVE DUPLICATION
+
+Especialmente entre:
+
+```text id="3up8r7"
+Phase 10 certification
+Phase 11 certification
+legacy runtime
+kernel runtime
+duplicate evidence generators
+duplicate decision functions
+```
+
+---
+
+# 552. DO NOT REMOVE HISTORICAL PROVENANCE
+
+Consolidar não significa apagar histórico.
+
+---
+
+# 553. NO NEW GOD OBJECT
+
+Orchestrator deve permanecer composto.
+
+---
+
+# 554. NO NEW UNNECESSARY SERVICE
+
+Obrigatório.
+
+---
+
+# 555. DATABASE CONSTRAINT REVIEW
+
+Quando invariant puder ser protegido também pelo PostgreSQL:
+
+avalie constraint/unique/CAS/transaction.
+
+---
+
+# 556. APPLICATION + DATABASE DEFENSE
+
+Para invariants críticos de concorrência, defense-in-depth é desejável.
+
+---
+
+# 557. FINAL ERROR TAXONOMY
+
+Garanta erros estruturados para:
+
+```text id="u2htj5"
+STALE_LEASE
+BUDGET_EXHAUSTED
+LOOP_DETECTED
+POLICY_DENIED
+APPROVAL_REQUIRED
+APPROVAL_EXPIRED
+APPROVAL_CONSUMED
+TENANT_MISMATCH
+UNKNOWN_EFFECT
+RECONCILIATION_REQUIRED
+GOAL_EXPIRED
+```
+
+ou equivalentes.
+
+---
+
+# 558. NO STRING-MATCH RETRY POLICY
+
+Obrigatório.
+
+---
+
+# 559. RETRYABLE CLASSIFICATION
+
+Erro deve indicar explicitamente quando retry é seguro.
+
+---
+
+# 560. UNKNOWN EFFECT IS NOT NORMAL RETRYABLE FAILURE
+
+Obrigatório.
+
+---
+
+# 561. FINAL OPERATOR UX
+
+Operador deve conseguir diferenciar:
+
+```text id="e5i41o"
+waiting approval
+waiting external input
+human handoff
+unknown effect
+failed
+blocked
+budget exhausted
+loop detected
+completed
+```
+
+---
+
+# 562. FINAL OPERATOR SECURITY
+
+Sem secrets/raw sensitive payloads.
+
+---
+
+# 563. FINAL AUDITABILITY
+
+Uma execução crítica deve poder responder:
+
+```text id="e6u00q"
+What was observed?
+What Goal was created?
+Which Plan ran?
+Which Step caused an effect?
+Which policy applied?
+Which risk applied?
+Was approval required?
+Who approved?
+Which effect occurred?
+What evidence confirmed it?
+Was replanning needed?
+Why did execution stop?
+```
+
+---
+
+# 564. NO CHAIN-OF-THOUGHT REQUIREMENT
+
+Auditabilidade deve usar decisões estruturadas, não raciocínio privado de LLM.
+
+---
+
+# 565. FINAL MACHINE RESULT IS AUTHORITATIVE
+
+Reforço final.
+
+---
+
+# 566. FINAL DECISION MUST BE CALCULATED
+
+Não selecionada manualmente.
+
+---
+
+# 567. FINAL CERTIFICATION MUST BE CALCULATED
+
+Mesmo princípio.
+
+---
+
+# 568. FINAL ELIGIBLE PROFILE MUST BE CALCULATED
+
+Mesmo princípio.
+
+---
+
+# 569. FINAL BLOCKERS MUST BE DERIVED
+
+Dos gates/findings/external evidence.
+
+---
+
+# 570. FINAL RESPONSE MUST BE HONEST
+
+Se resultado for:
+
+```text id="oj67rb"
+AAA_CANDIDATE
+```
+
+não escreva:
+
+```text id="8jjym4"
+Production ready
+```
+
+---
+
+# 571. USE PRECISE LANGUAGE
+
+Prefira:
+
+```text id="dnt7sg"
+Eligible for staging
+Eligible for supervised pilot
+Production validation pending
+```
+
+---
+
+# 572. IF FULL PRODUCTION PROOF EXISTS
+
+Aí sim declare elegibilidade correspondente.
+
+---
+
+# 573. FINAL EXECUTION CHECKLIST
+
+Antes de terminar:
+
+```text id="b7avxg"
+[ ] Current HEAD inspected
+[ ] Delta matrix created
+[ ] Phase 11 canonical certification closed
+[ ] Current pointer verified
+[ ] Candidate binding verified
+[ ] Replan proof PASS
+[ ] Loop proof PASS
+[ ] Budget persistence PASS
+[ ] Fencing PASS
+[ ] Crash-after-effect PASS
+[ ] Trace lineage PASS
+[ ] Governance red-team PASS
+[ ] Tenant red-team PASS
+[ ] Certification red-team PASS
+[ ] PostgreSQL suite executed or honestly external-blocked
+[ ] Restore/recovery executed
+[ ] Chaos executed
+[ ] Load executed
+[ ] Evals executed
+[ ] Supply-chain checks executed
+[ ] Evidence graph verified
+[ ] Certification verified
+[ ] Independent critic completed
+[ ] Critic blockers resolved
+[ ] Real integrations correctly classified
+[ ] Final promotion check executed
+[ ] Final Success State generated
+```
+
+---
+
+# 574. CHECKLIST DOES NOT CREATE PASS
+
+Cada item precisa de evidence.
+
+---
+
+# 575. UNPROVEN ITEM
+
+Permanece desmarcado.
+
+---
+
+# 576. TERMINAL CONDITION — LOCAL
+
+Você pode terminar localmente quando:
+
+```text id="b15b92"
+Phase 11 Formal Closure = PASS
+Local Engineering Closure = PASS
+Adversarial Proof = PASS
+Critical Invariants = PASS
+Evidence Closure = PASS
+```
+
+e qualquer restante for genuinamente externo.
+
+---
+
+# 577. EXPECTED LOCAL MAXIMUM
+
+Nessa situação:
+
+```text id="9jj98g"
+AAA_CANDIDATE
+```
+
+é provavelmente o máximo apropriado até stack real/pilot.
+
+---
+
+# 578. TERMINAL CONDITION — PRODUCTION
+
+Somente quando:
+
+```text id="8o49be"
+External Integration Closure = PASS
+Supervised Pilot Closure = PASS
+Production Assurance Closure = PASS
+```
+
+além da closure local.
+
+---
+
+# 579. PRODUCTION MAXIMUM
+
+Somente então o calculus pode produzir:
+
+```text id="a96hmy"
+STATE_OF_ART_TRIPLE_AAA
+```
+
+---
+
+# 580. TERMINAL CONDITION — FAILURE
+
+Critical local invariant não resolvido:
+
+```text id="e64wkj"
+NO_GO
+```
+
+---
+
+# 581. NO OTHER TERMINAL CONDITION
+
+Obrigatório.
+
+---
+
+# 582. FINAL RESPONSE ORDER
+
+Use:
+
+```text id="o2pr44"
+1. Decision / Certification / Eligible Profile
+2. Candidate Identity
+3. Delta Implemented
+4. AUD-11 Findings Closure
+5. Orchestrator Proof
+6. Governance & Tenant Proof
+7. Distributed Safety Proof
+8. Test/Eval/Chaos/Load/Recovery Results
+9. Certification Integrity
+10. Real Stack Status
+11. Independent Critic
+12. Scores
+13. Remaining Blockers
+14. Final Success State
+```
+
+---
+
+# 583. RESULTS FIRST
+
+Sem longa introdução.
+
+---
+
+# 584. NO ESTIMATED RESULTS
+
+Somente execução observada.
+
+---
+
+# 585. INCLUDE EXACT FAILED GATES
+
+Se houver.
+
+---
+
+# 586. INCLUDE EXACT EXTERNAL GATES
+
+Se houver.
+
+---
+
+# 587. INCLUDE EXACT ARTIFACT PATHS
+
+Obrigatório.
+
+---
+
+# 588. FINAL ONE-PARAGRAPH VERDICT
+
+Termine explicando por que o candidate recebeu aquela classificação.
+
+---
+
+# 589. FINAL MASTER PRINCIPLE
+
+O objetivo não é fazer o repositório **parecer** State of Art.
+
+O objetivo é fazer com que ele consiga **provar** suas garantias mais importantes.
+
+---
+
+# 590. FINAL MASTER ARCHITECTURE
+
+```text id="o07k9v"
+Model
+  ↓ proposes
+
+Orchestrator
+  ↓ coordinates
+
+Governance
+  ↓ authorizes
+
+Tool / Effect Boundary
+  ↓ executes
+
+Real World
+  ↓ produces facts
+
+Observer
+  ↓ captures evidence
+
+Evaluator
+  ↓ determines progress
+
+Replanner / Stop
+```
+
+Tudo isso dentro de:
+
+```text id="pkylk1"
+Tenant
+Identity
+Policy
+Capability
+Risk
+Approval
+Budget
+Audit
+Evidence
+Telemetry
+```
+
+---
+
+# 591. FINAL MASTER SAFETY RULE
+
+```text id="pg4p9x"
+Planning intelligence
+≠
+Execution authority
+```
+
+---
+
+# 592. FINAL MASTER RELIABILITY RULE
+
+```text id="9e2dlp"
+Process restart
+≠
+State reset
+```
+
+---
+
+# 593. FINAL MASTER EFFECT RULE
+
+```text id="ffm7n7"
+Timeout
+≠
+Safe retry
+```
+
+---
+
+# 594. FINAL MASTER SUCCESS RULE
+
+```text id="ixvx8d"
+Tool success
+≠
+Goal success
+```
+
+---
+
+# 595. FINAL MASTER CERTIFICATION RULE
+
+```text id="cf1c4n"
+Confidence
+≠
+Evidence
+```
+
+---
+
+# 596. START EXECUTION NOW
+
+Agora pare de planejar.
+
+Inspecione o estado atual real do `cvg-agent-secretary-v2`.
+
+Determine o delta entre esse estado e os requisitos deste prompt.
+
+Implemente todo trabalho local necessário.
+
+Feche os sete findings técnicos.
+
+Torne Phase 11 a source of truth canônica.
+
+Prove candidate binding.
+
+Prove replanning.
+
+Prove loop/budget safety.
+
+Prove stale-worker fencing.
+
+Prove crash-after-effect safety.
+
+Prove lineage.
+
+Ataque Governance.
+
+Ataque tenant isolation.
+
+Ataque o próprio certification engine.
+
+Execute PostgreSQL, recovery, chaos, load e evals.
+
+Gere evidence candidate-bound.
+
+Verifique a certificação.
+
+Execute independent critic.
+
+Corrija qualquer blocker local encontrado.
+
+Recertifique.
+
+Somente então valide os gates reais disponíveis.
+
+Execute promotion calculus.
+
+Gere o Final Success State.
+
+E deixe a evidência decidir entre:
+
+```text id="0crkgu"
+NO_GO
+AAA_CONTROLLED
+AAA_CANDIDATE
+STATE_OF_ART_TRIPLE_AAA
+```
+
+## END OF MASTER PROMPT

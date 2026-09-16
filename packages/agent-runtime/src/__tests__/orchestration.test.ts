@@ -279,6 +279,43 @@ describe('durable Goal/Plan/Step orchestration', () => {
     ).toThrow(/cycle/)
   })
 
+  it('binds plan intent to declared capability, risk and tenant', () => {
+    const plan = {
+      id: 'plan_1',
+      goalId: 'goal_1',
+      tenantId: TENANT,
+      version: 1
+    }
+    const stable = [
+      step('generated_a', [], 'first'),
+      step('generated_b', ['generated_a'], 'second')
+    ]
+    const renamed = [
+      step('retry_a', [], 'first'),
+      step('retry_b', ['retry_a'], 'second')
+    ]
+    expect(validatePlanGraph(plan, stable).fingerprint).toBe(
+      validatePlanGraph(plan, renamed).fingerprint
+    )
+    expect(() =>
+      validatePlanGraph(plan, [{ ...step('unsafe'), riskLevel: 'READ_ONLY' }])
+    ).toThrow(/cannot cover capability/)
+    expect(() =>
+      validatePlanGraph(plan, [
+        {
+          ...step('cross_tenant'),
+          intent: {
+            ...step('cross_tenant').intent,
+            resource: {
+              ...step('cross_tenant').intent.resource,
+              tenantId: OTHER_TENANT
+            }
+          }
+        }
+      ])
+    ).toThrow(/resource tenant/)
+  })
+
   it('enforces explicit state transitions instead of independent flags', () => {
     expect(() => assertGoalTransition('OBSERVING', 'COMPLETED')).toThrow(
       /cannot transition/
@@ -500,6 +537,7 @@ describe('durable Goal/Plan/Step orchestration', () => {
       'COMPLETED'
     ])
     expect(plans[1]?.parentPlanId).toBe(plans[0]?.id)
+    expect(plans[1]?.triggeringEvaluationId).toMatch(/^evaluation_/)
     expect(plannerCalls).toBe(2)
   })
 

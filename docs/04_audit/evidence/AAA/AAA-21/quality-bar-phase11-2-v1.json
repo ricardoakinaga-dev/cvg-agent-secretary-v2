@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "PHASE11.2-QUALITY-BAR-V1",
+  "phase": "11.2",
+  "frozenAt": "2026-09-16T00:00:00-03:00",
+  "scope": "controlled-local-state-of-art-triple-aaa",
+  "authorization": "user-requested-local-build-only",
+  "constraints": [
+    "synthetic data only",
+    "controlled effect adapter only",
+    "no production deployment",
+    "no real provider/channel/identity/RAG/pilot",
+    "no clinical, financial, record or real appointment mutation"
+  ],
+  "criteria": [
+    { "id": "P11.2-PROMPT", "title": "Six-source prompt provenance", "priority": "P1", "target": "All six sources are byte-identical and hash-bound; earlier source sets remain historical.", "required": true, "evidence": "prompt archive README and prompt-integrity artifact" },
+    { "id": "P11.2-CANONICAL", "title": "Visible candidate-bound certification", "priority": "P0", "target": "Current pointer and Phase 11 package are tracked, candidate scoped, descendant-reanchored and tamper-detecting.", "required": true, "evidence": "current/evidence verifier and package manifest" },
+    { "id": "P11.2-CALCULUS", "title": "Fail-closed certification calculus", "priority": "P0", "target": "False GO, profile escalation, stale/dirty/tampered/non-executed evidence and non-zero PASS are rejected.", "required": true, "evidence": "negative-validation.json and verifier" },
+    { "id": "P11.2-ORCHESTRATION", "title": "Replan, loop and budget safety", "priority": "P1", "target": "Semantic cycles, persisted iteration/cost/tool/model limits and restart continuation terminate safely with lineage.", "required": true, "evidence": "runtime and recovery tests" },
+    { "id": "P11.2-FENCING", "title": "Distributed fencing and CAS", "priority": "P0", "target": "Stale lease, double claim, approval race and lost optimistic update cannot settle current work.", "required": true, "evidence": "PostgreSQL and race tests" },
+    { "id": "P11.2-EFFECT", "title": "Crash-aware effectively-once effects", "priority": "P0", "target": "Ambiguous effects remain UNKNOWN/UNCERTAIN and never blindly retry; idempotency is tenant and lineage scoped.", "required": true, "evidence": "effect journal, outbox and chaos reports" },
+    { "id": "P11.2-LINEAGE", "title": "End-to-end trace and evidence lineage", "priority": "P1", "target": "Inbound through response is reconstructable with bounded safe attributes and redacted logs.", "required": true, "evidence": "trace tests and evidence graph" },
+    { "id": "P11.2-REDTEAM", "title": "Tenant and governance red team", "priority": "P0", "target": "Cross-tenant, untrusted actor, prompt/tool/channel injection and approval replay fail closed.", "required": true, "evidence": "security and negative tests" },
+    { "id": "P11.2-POSTGRES", "title": "PostgreSQL and recovery proof", "priority": "P1", "target": "Migrations 0019/0020/0021, RLS, restart and restore paths are executed or honestly NOT_EXECUTED.", "required": true, "evidence": "postgres/recovery raw reports" },
+    { "id": "P11.2-CONSOLE", "title": "AAA operator console state matrix", "priority": "P1", "target": "Read-only operator states are accessible and usable at 375/768/1440 with fresh visual critique.", "required": true, "evidence": "Playwright matrix, screenshots and independent critic" },
+    { "id": "P11.2-PREFLIGHT", "title": "Production fail-closed preflight", "priority": "P0", "target": "Production-like config cannot start on memory/legacy runtime or missing durable identity/policy/risk/approval/journal/migrations.", "required": true, "evidence": "production:preflight output and tests" },
+    { "id": "P11.2-SUPPLY", "title": "CI and supply-chain integrity", "priority": "P1", "target": "Pinned CI, npm ci portability, secret/dependency/license/SBOM evidence and historical Phase 10 verification remain intact.", "required": true, "evidence": "CI and supply reports" },
+    { "id": "P11.2-EXTERNAL", "title": "External qualification is separate", "priority": "P0", "target": "Real provider/channel/identity/RAG/RPO-RTO/pilot/rollback/signoff are validated only with authorized evidence.", "required": true, "evidence": "external-gates.json and integration report" },
+    { "id": "P11.2-NO-PRODUCTION-EFFECT", "title": "Production remains protected", "priority": "P0", "target": "No real data, deployment or sensitive external effect occurs in this round.", "required": true, "evidence": "preflight, bypass audit and execution log" }
+  ]
+}

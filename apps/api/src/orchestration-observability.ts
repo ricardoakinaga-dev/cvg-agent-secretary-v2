@@ -25,6 +25,7 @@ function iso(value: Date | null | undefined): string | null {
 export function toOrchestrationGoalView(goal: Goal) {
   return {
     id: goal.id,
+    tenantId: goal.tenantId,
     status: goal.status,
     objective: safeText(goal.objective),
     correlationId: goal.correlationId,
@@ -55,8 +56,10 @@ function toPlanView(plan: Plan) {
   return {
     id: plan.id,
     goalId: plan.goalId,
+    tenantId: plan.tenantId,
     version: plan.version,
     parentPlanId: plan.parentPlanId,
+    triggeringEvaluationId: plan.triggeringEvaluationId,
     status: plan.status,
     reason: safeText(plan.reason),
     fingerprint: plan.fingerprint,

@@ -1,0 +1,1066 @@
+# MASTER PROMPT — CVG-AGENT-SECRETARY-V2
+
+## PHASE 11.2 — FINAL CLOSURE, ADVERSARIAL CERTIFICATION & PRODUCTION PROOF
+
+Repository:
+
+`https://github.com/ricardoakinaga-dev/cvg-agent-secretary-v2`
+
+---
+
+# 0. MISSION
+
+Você está atuando como:
+
+* Principal Software Architect;
+* Principal Agent Runtime Engineer;
+* Distributed Systems Engineer;
+* Security Engineer;
+* PostgreSQL Engineer;
+* SRE;
+* QA Architect;
+* Red-Team Engineer;
+* Release Engineer;
+* Independent Certification Auditor.
+
+O `cvg-agent-secretary-v2` já possui uma arquitetura avançada.
+
+NÃO reconstrua o sistema.
+
+NÃO crie uma nova arquitetura paralela.
+
+NÃO introduza novos subsistemas grandes sem necessidade.
+
+Sua missão é executar o **delta final de fechamento da Phase 11**, corrigindo todos os findings ainda abertos, produzindo evidências mecanicamente verificáveis e levando o sistema ao máximo nível que a evidência real permitir.
+
+Target desejado:
+
+# STATE OF ART — TRIPLE AAA
+
+Porém:
+
+**NUNCA conceda esse status antecipadamente.**
+
+A certificação deve ser consequência dos gates.
+
+---
+
+# 1. CURRENT AUDIT BASELINE
+
+A última auditoria externa avaliou aproximadamente:
+
+```text id="m0slm5"
+Architecture:              97
+Engineering:               97
+Testing:                   96
+Security:                  96
+Reliability:               97
+Agent Engineering:         96
+Orchestrator Engineering:  97
+Governance:                97
+Observability:             96
+Auditability:              95
+DevEx:                     95
+Production Readiness:      86
+
+Overall:
+96/100
+```
+
+Findings estimados:
+
+```text id="6w82ox"
+P0 = 0
+P1 = 1
+P2 = 7
+```
+
+Não confie cegamente nisso.
+
+Reaudite o HEAD.
+
+---
+
+# 2. CURRENT HEAD CONTEXT
+
+A última inspeção encontrou como HEAD:
+
+```text id="hnk72x"
+e2655d6ba01e73891cb68e268eb8029fc44ff0e6
+```
+
+Mensagem:
+
+```text id="69wz8n"
+chore: refresh certification evidence
+```
+
+Isso pode já ter mudado.
+
+Confirme.
+
+---
+
+# 3. KNOWN GOOD ARCHITECTURE
+
+Preserve:
+
+```text id="3ox8x8"
+durable Goal execution
+durable Plan execution
+durable Steps
+Attempts
+Observations
+Evaluations
+
+PostgresGoalPlanStore
+
+Goal resume
+governed inbound Goals
+inbound identity binding
+
+Policy
+Capability
+Approval
+Risk/Governance boundaries
+
+Outbox
+Effect Journal
+Channel Effect Journal
+
+session version pinning
+
+kernel runtime
+
+tenant isolation
+PostgreSQL RLS
+
+operator Goal inspection
+lineage
+structured logging
+
+agent evals
+chaos
+load
+security CI
+SBOM
+CodeQL
+Gitleaks
+```
+
+---
+
+# 4. CURRENT ORCHESTRATOR STORAGE
+
+O projeto já contém migrations equivalentes a:
+
+```text id="28obfe"
+0019_orchestrator_state
+0020_orchestrator_lineage_hardening
+0021_orchestrator_iteration_budget
+```
+
+Preserve-as e evolua somente quando necessário.
+
+---
+
+# 5. CURRENT TENANT TABLES
+
+O Orchestrator já possui:
+
+```text id="tct0bq"
+orchestrator_goals
+orchestrator_plans
+orchestrator_steps
+orchestrator_attempts
+orchestrator_observations
+orchestrator_evaluations
+```
+
+com tenant isolation/RLS.
+
+Não reimplemente.
+
+---
+
+# 6. CURRENT LINEAGE
+
+O projeto já relaciona Orchestrator com:
+
+```text id="1d93uq"
+effect_journal
+outbox_events
+```
+
+através de IDs equivalentes a:
+
+```text id="8ewfkt"
+orchestration_goal_id
+orchestration_plan_id
+orchestration_step_id
+orchestration_attempt_id
+```
+
+Preserve e teste.
+
+---
+
+# 7. CURRENT OPERATOR STATE
+
+A API operacional já expõe informações como:
+
+```text id="6h7oqd"
+activePlanVersion
+currentStepId
+currentStepStatus
+leaseOwner
+leaseUntil
+approvalId
+handoffRequired
+evidenceCount
+verifiedEvidenceCount
+lastObservationAt
+lastEvaluation
+```
+
+Preserve redaction e tenant boundaries.
+
+---
+
+# 8. CURRENT PRIMARY BLOCKER
+
+O principal problema atual NÃO é arquitetura.
+
+É:
+
+# PHASE 11 CERTIFICATION CLOSURE
+
+Os artifacts canônicos:
+
+```text id="2hnc7k"
+certification/current.json
+certification/phase11/phase11-result.json
+```
+
+não estavam presentes/visíveis no default branch na última auditoria.
+
+Isso deve ser resolvido primeiro.
+
+---
+
+# 9. FINDINGS TO CLOSE
+
+Revalide e feche:
+
+```text id="1w21eu"
+AUD-11-01 P1
+Canonical Phase 11 certification/current source of truth incomplete.
+
+AUD-11-02 P2
+HEAD ↔ certified candidate binding not unequivocally proven.
+
+AUD-11-03 P2
+Explicit candidate-bound replan v1→v2 proof required.
+
+AUD-11-04 P2
+Loop/budget/restart persistence evidence required.
+
+AUD-11-05 P2
+Stale-worker/fencing concurrent proof required.
+
+AUD-11-06 P2
+Crash-after-effect effectively-once proof required.
+
+AUD-11-07 P2
+End-to-end Orchestrator trace/lineage proof required.
+
+AUD-11-08 P2 EXTERNAL
+Real provider/channel/identity/RPO-RTO/pilot/signoff remain external gates.
+```
+
+Se algum já estiver fechado:
+
+prove.
+
+Não implemente novamente.
+
+---
+
+# 10. EXECUTION PHASES
+
+Execute:
+
+```text id="qmyukp"
+11.2.0 Repository Truth
+11.2.1 Certification Canonicalization
+11.2.2 Candidate Binding
+11.2.3 Replan Proof
+11.2.4 Loop/Budget Proof
+11.2.5 Fencing/Concurrency Proof
+11.2.6 Crash/Effect Proof
+11.2.7 Trace/Lineage Proof
+11.2.8 Governance/Tenant Red-Team
+11.2.9 Certification Red-Team
+11.2.10 PostgreSQL/Recovery Closure
+11.2.11 CI/Release Closure
+11.2.12 Independent Critic
+11.2.13 Real Stack Gate
+11.2.14 Final Certification
+```
+
+---
+
+# 11. PHASE 11.2.0 — REPOSITORY TRUTH
+
+Execute equivalentes a:
+
+```bash id="4b8d7u"
+git status --porcelain
+git rev-parse HEAD
+git rev-parse HEAD^{tree}
+git branch --show-current
+node --version
+npm --version
+```
+
+---
+
+# 12. INSPECT
+
+Inspecione:
+
+```text id="f1tbrg"
+AGENTS.md
+package.json
+
+apps/api
+apps/worker
+apps/web
+
+packages/agent-runtime
+packages/persistence
+packages/policy*
+packages/approval*
+packages/agent-evals
+packages/chaos
+
+certification/
+scripts/
+.github/workflows/
+docs/
+```
+
+Adapte aos nomes reais.
+
+---
+
+# 13. CREATE DELTA MATRIX
+
+Antes de alterar código:
+
+```text id="5dhwo7"
+Finding
+Current Reality
+Gap
+Required Code
+Required Test
+Required Evidence
+Status
+```
+
+---
+
+# 14. DO NOT DUPLICATE EXISTING WORK
+
+Obrigatório.
+
+---
+
+# 15. CERTIFICATION CURRENT SOURCE OF TRUTH
+
+Após fechamento, deve existir um mecanismo inequívoco:
+
+```text id="c2ib8b"
+certification/current.json
+```
+
+ou equivalente melhor já existente.
+
+---
+
+# 16. RECOMMENDED CURRENT POINTER
+
+Estrutura conceitual:
+
+```json id="av8nux"
+{
+  "schemaVersion": "current-certification-v1",
+  "phase": "11",
+  "result": "phase11/phase11-result.json"
+}
+```
+
+Adapte ao schema real.
+
+---
+
+# 17. PHASE 11 CANONICAL PACKAGE
+
+Garanta estrutura coerente:
+
+```text id="zh98uv"
+certification/
+├── current.json
+├── historical/
+│   └── phase10/
+└── phase11/
+    ├── phase11-result.json
+    ├── gates.json
+    ├── invariants.json
+    ├── evidence-graph.json
+    ├── manifest.json
+    ├── release-manifest.json
+    ├── findings.json
+    ├── negative-validation.json
+    ├── postgres-report.json
+    ├── eval-report.json
+    ├── chaos-report.json
+    ├── load-report.json
+    ├── recovery-report.json
+    └── integrations/
+```
+
+Não force essa estrutura se o repositório já tiver equivalente melhor.
+
+O requisito é a semântica.
+
+---
+
+# 18. PHASE 10
+
+Phase 10 deve permanecer histórica.
+
+Não apagar.
+
+---
+
+# 19. DEFAULT CERTIFICATION
+
+Depois do fechamento:
+
+```text id="96y0fx"
+npm run certify
+```
+
+deve apontar para a current certification, preferencialmente Phase 11.
+
+---
+
+# 20. DEFAULT VERIFIER
+
+```text id="ln2s8g"
+npm run certification:verify
+```
+
+deve verificar a current certification.
+
+---
+
+# 21. HISTORICAL VERIFIER
+
+Preserve comando explícito para Phase 10/historical.
+
+---
+
+# 22. NO SOURCE-OF-TRUTH AMBIGUITY
+
+Prove que:
+
+```text id="fdk97h"
+current = Phase11
+historical = Phase10
+```
+
+---
+
+# 23. CURRENT POINTER TEST
+
+Teste que:
+
+```text id="r3yxt8"
+current.json
+```
+
+aponta para artifact existente, válido e current.
+
+---
+
+# 24. PHASE 10 CANNOT BECOME CURRENT ACCIDENTALLY
+
+Regression test obrigatório.
+
+---
+
+# 25. CANDIDATE IDENTITY
+
+Formalize:
+
+```text id="kkdb2r"
+candidateCommit
+candidateTreeHash
+behaviorHash if used
+deploymentProfile
+```
+
+---
+
+# 26. CLEAN CANDIDATE
+
+Final production certification exige:
+
+```text id="e7qolb"
+dirty = false
+untracked = 0
+```
+
+---
+
+# 27. HEAD BINDING
+
+Prove:
+
+```text id="gmopcr"
+candidateCommit == expected HEAD/behavior candidate
+```
+
+conforme certification model.
+
+---
+
+# 28. CERTIFICATION ARTIFACT PROBLEM
+
+Não crie ciclo impossível:
+
+```text id="iyfq9u"
+commit
+→ generate evidence
+→ evidence changes commit
+→ candidate changes
+→ regenerate forever
+```
+
+---
+
+# 29. SOLVE CERTIFICATION IDENTITY CORRECTLY
+
+Use conceito já existente de:
+
+```text id="khv4gl"
+behavior candidate
+documentation/evidence reanchor
+```
+
+se adequado.
+
+---
+
+# 30. BEHAVIOR HASH
+
+Se usado:
+
+hash deve cobrir a superfície comportamental relevante.
+
+---
+
+# 31. DOC-ONLY REANCHOR
+
+Só permitido se behavior hash permanecer idêntico.
+
+---
+
+# 32. BEHAVIOR CHANGE
+
+Invalida reanchor.
+
+---
+
+# 33. REANCHOR TEST
+
+Teste ambos:
+
+```text id="wvg4cm"
+docs-only change → permitted according to policy
+
+runtime change → stale / recertification required
+```
+
+---
+
+# 34. SINGLE CERTIFICATION CALCULUS
+
+Crie/garanta uma única função autoritativa.
+
+---
+
+# 35. NO DUPLICATE GO LOGIC
+
+`certify`, `verify`, `promotion` devem consumir a mesma regra.
+
+---
+
+# 36. GATE STATES
+
+Use:
+
+```text id="6b8pfj"
+PASS
+FAIL
+NOT_EXECUTED
+NOT_APPLICABLE
+STALE
+INVALID
+```
+
+---
+
+# 37. REQUIRED GATE
+
+Para mandatory profile gate:
+
+```text id="pzbz4j"
+status != PASS
+```
+
+bloqueia promoção, salvo `NOT_APPLICABLE` válido.
+
+---
+
+# 38. FALSE-GO REGRESSION
+
+```text id="x6jxtg"
+scores=100
+mandatoryGate=FAIL
+```
+
+Resultado:
+
+```text id="uv0hdq"
+NO_GO
+```
+
+---
+
+# 39. FALSE EXTERNAL VALIDATION
+
+```text id="hfl0ik"
+provider=CONTROLLED_ONLY
+requestedProfile=PRODUCTION
+```
+
+Não pode retornar Production Triple AAA.
+
+---
+
+# 40. FALSE HUMAN SIGNOFF
+
+Fixture/model output não satisfaz human signoff.
+
+---
+
+# 41. FALSE RPO/RTO
+
+Target documentado não satisfaz medição.
+
+---
+
+# 42. FALSE PILOT
+
+Shadow mode não satisfaz supervised pilot.
+
+---
+
+# 43. PHASE 11 RESULT
+
+Gere:
+
+```text id="gh63sw"
+certification/phase11/phase11-result.json
+```
+
+---
+
+# 44. RESULT FIELDS
+
+No mínimo:
+
+```text id="dny97n"
+schemaVersion
+phase
+certificationId
+candidate
+deploymentProfile
+
+scores
+findings
+gates
+invariants
+
+evals
+chaos
+load
+recovery
+postgres
+integrations
+
+rpoRto
+pilot
+humanSignoff
+
+successState
+
+decision
+certification
+eligibleProfile
+remainingBlockers
+```
+
+---
+
+# 45. REPLAN PROOF
+
+Agora feche AUD-11-03.
+
+---
+
+# 46. REQUIRED SCENARIO
+
+Teste real de runtime:
+
+```text id="wzngfi"
+Goal G1
+↓
+Plan P1 version=1
+↓
+Step executes
+↓
+result conflicts/fails
+↓
+Observation persisted
+↓
+Evaluation = GOAL_NOT_REACHED
+↓
+Replanner creates P2
+↓
+P2.version = 2
+P2.parentPlanId = P1
+↓
+previous successful effects preserved
+↓
+new Step executes
+↓
+verified evidence
+↓
+Goal COMPLETED
+```
+
+---
+
+# 47. PLAN V1 MUST REMAIN
+
+Não sobrescrever.
+
+---
+
+# 48. REPLAN REASON
+
+Persistir.
+
+---
+
+# 49. EVALUATION LINK
+
+P2 deve poder ser relacionado à evaluation que provocou replan.
+
+---
+
+# 50. NO EFFECT REPLAY DURING REPLAN
+
+Teste.
+
+---
+
+# 51. FALSE COMPLETION
+
+Tool pode retornar success, mas:
+
+```text id="prvco1"
+SuccessCriteria = false
+```
+
+Goal permanece incompleto.
+
+---
+
+# 52. COMMAND SUCCESS != GOAL SUCCESS
+
+Transforme em invariant/test explícito.
+
+---
+
+# 53. REPLAN EVIDENCE
+
+Gere candidate-bound artifact.
+
+---
+
+# 54. LOOP PROOF
+
+Feche parte de AUD-11-04.
+
+---
+
+# 55. PLAN CYCLE
+
+Teste:
+
+```text id="3tr98r"
+P1
+→ failure X
+→ P2
+→ failure X
+→ semantic equivalent P1
+```
+
+Resultado:
+
+```text id="w8mqbp"
+LOOP_DETECTED
+```
+
+ou stop-policy equivalente.
+
+---
+
+# 56. REPEATED TOOL LOOP
+
+Teste:
+
+```text id="4a6j7q"
+same tool
+same canonical args
+same result
+```
+
+acima do threshold.
+
+---
+
+# 57. MAX ITERATIONS
+
+Prove `maxIterations`.
+
+---
+
+# 58. MAX REPLANS
+
+Prove.
+
+---
+
+# 59. MAX STEPS
+
+Prove.
+
+---
+
+# 60. MAX MODEL CALLS
+
+Prove quando Model Gateway fizer parte do fluxo.
+
+---
+
+# 61. MAX TOOL CALLS
+
+Prove.
+
+---
+
+# 62. MAX COST
+
+Prove no accounting controlado.
+
+---
+
+# 63. MAX DURATION
+
+Use clock controlado nos testes.
+
+---
+
+# 64. BUDGET PERSISTENCE
+
+Teste:
+
+```text id="j7xgrq"
+Goal consumes budget
+↓
+persist
+↓
+worker/process recreated
+↓
+Goal resumed
+```
+
+Usage não reseta.
+
+---
+
+# 65. REPLAN COUNT PERSISTENCE
+
+Mesmo requisito.
+
+---
+
+# 66. ITERATION COUNT PERSISTENCE
+
+Mesmo requisito.
+
+---
+
+# 67. BUDGET EXHAUSTED
+
+Estado explícito:
+
+```text id="k0g5gc"
+BUDGET_EXHAUSTED
+```
+
+ou equivalente.
+
+---
+
+# 68. SAFE STOP
+
+Budget exhaustion não deve continuar efeitos.
+
+---
+
+# 69. FENCING PROOF
+
+Feche AUD-11-05.
+
+---
+
+# 70. REQUIRED CONCURRENCY SCENARIO
+
+```text id="yr5c5c"
+Worker A
+claims Step S
+lease generation/fence = N
+
+A stalls
+
+lease expires
+
+Worker B
+claims S
+fence = N+1
+
+B completes
+
+A resumes
+attempts completion with N
+```
+
+Resultado:
+
+```text id="0fp5zp"
+A = REJECTED
+```
+
+---
+
+# 71. FENCING IMPLEMENTATION
+
+Use mecanismo mais simples que garanta o invariant:
+
+```text id="clnhqr"
+version CAS
+fencing token
+lease generation
+atomic conditional UPDATE
+```
+
+---
+
+# 72. DO NOT RELY ON CLOCK CHECK ALONE
+
+`leaseUntil > now` sozinho pode ser insuficiente para stale completion.
+
+---
+
+# 73. DOUBLE CLAIM
+
+Dois workers simultâneos:
+
+apenas um owner válido.
+
+---
+
+# 74. APPROVAL RACE
+
+Dois workers:
+
+apenas um consome approval.
+
+---
+
+# 75. GOAL UPDATE CONCURRENCY
+
+Use optimistic concurrency/versioning.
+
+---
+
+# 76. LOST UPDATE
+
+Teste.
+
+---
+
+# 77. FENCING EVIDENCE
+
+Candidate-bound.
+
+---
+
+# 78. CRASH-AFTER-EFFECT PROOF
+
+Feche AUD-11-06.
+
+---
+
+# 79. SCENARIO A — BEFORE EFFECT
+
+```text id="fdhjsu"
+claim
+↓
+crash
+↓
+no effect
+↓
+lease takeover
+↓
+effect executed once
+```
+
+---
+
+# 80. SCENARIO B — AFTER EFFECT BEFORE ACK
+
+```text id="od1tcs"
+claim
+↓
+external effect succeeds
+↓
+effect journal records
+```

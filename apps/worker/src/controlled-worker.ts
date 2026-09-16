@@ -1,4 +1,8 @@
-import { type DurableOutboxAdapter, type OutboxEffect } from '@cvg/persistence'
+import {
+  type DurableOutboxAdapter,
+  type OutboxDispatchRevalidation,
+  type OutboxEffect
+} from '@cvg/persistence'
 import type { TenantId } from '@cvg/platform'
 import type { GoalRecoverySweepResult } from '@cvg/agent-runtime'
 import {
@@ -20,6 +24,8 @@ export type ControlledOutboxEventType =
 export interface ControlledWorkerHandlers {
   inboundProcess: OutboxEffect
   messageOutbound: OutboxEffect
+  /** Revalidates a recovered/requeued event immediately before dispatch. */
+  revalidateOutbox?: OutboxDispatchRevalidation
   /**
    * Optional durable Goal recovery hook. It is consumed only by the
    * supervised sweep and never by outbox dispatch, so a recovery pass cannot
@@ -66,6 +72,9 @@ export function createControlledWorker(
       ...(options.takeoverActive !== undefined
         ? { takeoverActive: options.takeoverActive }
         : {}),
+      ...(options.handlers.revalidateOutbox !== undefined
+        ? { revalidate: options.handlers.revalidateOutbox }
+        : {}),
       effect: dispatch
     })
 
@@ -82,6 +91,9 @@ export function createControlledWorker(
         ...(options.leaseMs ? { leaseMs: options.leaseMs } : {}),
         ...(options.takeoverActive !== undefined
           ? { takeoverActive: options.takeoverActive }
+          : {}),
+        ...(options.handlers.revalidateOutbox !== undefined
+          ? { revalidate: options.handlers.revalidateOutbox }
           : {}),
         effect: dispatch
       })

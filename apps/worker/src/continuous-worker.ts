@@ -428,6 +428,9 @@ export function createContinuousWorker(
             }
             return dispatch(claimedEvent)
           },
+          ...(options.handlers.revalidateOutbox !== undefined
+            ? { revalidate: options.handlers.revalidateOutbox }
+            : {}),
           ...(options.takeoverActive !== undefined
             ? { takeoverActive: options.takeoverActive }
             : {})

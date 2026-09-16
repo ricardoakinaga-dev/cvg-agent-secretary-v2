@@ -332,7 +332,8 @@ export function createGovernedRuntimeComposition(
       : {}),
     ...(input.effectJournal !== undefined
       ? { effectJournal: input.effectJournal }
-      : {})
+      : {}),
+    requireDurable
   })
 
   return { runtime, requireDurable }

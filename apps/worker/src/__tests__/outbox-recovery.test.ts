@@ -1,7 +1,10 @@
 import { TenantIdSchema } from '@cvg/platform'
 import { InMemoryDatabase, OutboxRepository } from '@cvg/persistence'
 import { describe, expect, it } from 'vitest'
-import { processOutboxEvent } from '../jobs/process-outbox-event.ts'
+import {
+  OutboxDispatchRejectedError,
+  processOutboxEvent
+} from '../jobs/process-outbox-event.ts'
 
 const tenantId = TenantIdSchema.parse(
   'tenant_00000000-0000-4000-8000-000000000161'
@@ -100,5 +103,38 @@ describe('worker outbox recovery', () => {
       tenantId
     })
     expect(effects).toBe(0)
+  })
+
+  it('revalidates a recovered claim before the effect and terminally rejects stale state', async () => {
+    const adapter = new OutboxRepository(new InMemoryDatabase())
+    adapter.enqueue({
+      tenantId,
+      type: 'message.outbound',
+      payload: { fixture: true },
+      idempotencyKey: 'worker-revalidation-161',
+      correlationId
+    })
+    const order: string[] = []
+
+    const result = await processOutboxEvent({
+      tenantId,
+      workerId: 'worker-revalidation',
+      adapter,
+      revalidate: (event) => {
+        order.push(`revalidate:${event.id}`)
+        throw new OutboxDispatchRejectedError('approval was revoked')
+      },
+      effect: () => {
+        order.push('effect')
+        return { delivered: true }
+      }
+    })
+
+    expect(result).toMatchObject({
+      status: 'dead_letter',
+      lastError: 'outbox_error:outbox_dispatch_rejected'
+    })
+    expect(order).toHaveLength(1)
+    expect(order[0]).toMatch(/^revalidate:/)
   })
 })

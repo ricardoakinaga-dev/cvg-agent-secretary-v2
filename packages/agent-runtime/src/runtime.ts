@@ -361,14 +361,17 @@ export class GovernedAgentRuntime {
   }
 
   /**
-   * A capability can produce a real effect when it is a high-risk write
-   * (including ADMIN) or explicitly declared `real_authorized`. Such effects
-   * require a durable effect journal; without it the runtime fails closed.
+   * In the durable governed composition every non-read capability is
+   * effect-bearing, including low/medium-risk drafts and messages. Synthetic
+   * unit harnesses retain the explicit legacy fake scope; production/kernel
+   * composition sets `requireDurable` and cannot bypass the journal.
    */
   #requiresDurableEffect(capability: Capability): boolean {
-    if (this.#options.effectScopes?.[capability] === 'real_authorized') {
-      return true
+    if (this.#options.requireDurable) {
+      return capabilityRisk(capability) !== 'READ_ONLY'
     }
+    const declared = this.#options.effectScopes?.[capability]
+    if (declared === 'real_authorized') return true
     return isHighRiskCapability(capability)
   }
 
@@ -923,54 +926,285 @@ export class GovernedAgentRuntime {
         })
       }
 
-      const toolStage = beginStage('tool.execute', decision, { modelResult })
-      if ('denied' in toolStage) return toolStage.denied
-      const toolSpan = toolStage.span
+      const durableAllowedEffect =
+        effectJournal !== undefined &&
+        this.#requiresDurableEffect(input.capability)
+      let allowOperationKey: string | undefined
+      let allowAttemptId: string | undefined
+      let allowExecutionRef: string | undefined
+      let allowResultDigest: string | undefined
+      let allowEffectConfirmed = false
+      let allowEffectOccurred = false
+      let allowReplayed = false
+
+      if (durableAllowedEffect && effectJournal !== undefined) {
+        try {
+          const proposalHash = computeExecutionProposalHash({
+            schemaVersion: EXECUTION_PROPOSAL_SCHEMA_VERSION,
+            tenantId: input.tenantId,
+            operatorId: input.operatorId,
+            agentId: input.agentId,
+            agentVersion: input.agentVersion,
+            agentProfile: input.agentProfile,
+            capability: input.capability,
+            action: input.action,
+            resource: normalizedResource(input.resource),
+            dataClassification: input.dataClassification,
+            payload: payloadForEffect
+          })
+          const operationKey = computeOperationKey({
+            tenantId: input.tenantId,
+            ...(input.idempotencyKey !== undefined
+              ? { callerIdempotencyKey: input.idempotencyKey }
+              : {}),
+            capability: input.capability,
+            action: input.action,
+            resource: normalizedResource(input.resource),
+            proposalHash
+          })
+          allowOperationKey = operationKey
+          const attemptId = createDomainId('att')
+          const reserveOutcome = await effectJournal.reserve({
+            tenantId: input.tenantId,
+            operationKey,
+            proposalHash,
+            attemptId,
+            expiresAt: new Date(
+              clock().getTime() + reservationTtlMs
+            ).toISOString(),
+            ...(input.orchestrationContext !== undefined
+              ? { orchestrationContext: input.orchestrationContext }
+              : {})
+          })
+          if (reserveOutcome.outcome === 'in_progress') {
+            appendAudit('runtime.denied', {
+              code: 'operation_in_progress',
+              phase: 'journal'
+            })
+            return finish('denied', 'operation_in_progress', decision, {
+              modelResult
+            })
+          }
+          if (reserveOutcome.outcome === 'uncertain') {
+            appendAudit('runtime.denied', {
+              code: 'operation_uncertain',
+              phase: 'journal'
+            })
+            return finish('denied', 'operation_uncertain', decision, {
+              modelResult
+            })
+          }
+          if (reserveOutcome.outcome === 'replay') {
+            allowReplayed = true
+            allowEffectOccurred = true
+            allowEffectConfirmed = true
+            allowExecutionRef =
+              reserveOutcome.record.executionRef ?? `exec_${traceId}`
+            allowResultDigest = reserveOutcome.record.resultDigest ?? undefined
+            appendAudit('journal.effect_replayed', {
+              operationKey,
+              executionRef: allowExecutionRef
+            })
+          } else {
+            allowAttemptId = attemptId
+            await effectJournal.markEffectStarted({
+              tenantId: input.tenantId,
+              operationKey,
+              attemptId
+            })
+            appendAudit('journal.effect_started', {
+              operationKey,
+              attemptId
+            })
+          }
+        } catch (error) {
+          if (
+            effectJournal !== undefined &&
+            allowOperationKey !== undefined &&
+            allowAttemptId !== undefined
+          ) {
+            await effectJournal
+              .failEffect({
+                tenantId: input.tenantId,
+                operationKey: allowOperationKey,
+                attemptId: allowAttemptId,
+                errorCode: 'effect_reservation_failed'
+              })
+              .catch(() => undefined)
+          }
+          const code =
+            error instanceof EffectJournalError
+              ? error.code
+              : 'journal_unavailable'
+          appendAudit('runtime.denied', { code, phase: 'journal' })
+          return finish('denied', code, decision, { modelResult })
+        }
+      }
+
       let toolResult: unknown
-      try {
-        const executed = await this.#options.toolExecutor({
-          tenantId: input.tenantId,
-          capability: input.capability,
-          action: input.action,
-          resource: input.resource,
-          payload: payloadForEffect,
-          modelResult,
-          correlationId,
-          traceId,
-          shadowMode: false as const,
-          ...(input.cancelSignal !== undefined
-            ? { signal: input.cancelSignal }
-            : {})
-        })
-        toolResult = executed.result
-        const postToolStop = stopDenial(decision, { modelResult, toolResult })
-        if (postToolStop !== undefined) {
-          endSpan(toolSpan, 'error', postToolStop.reason)
-          return postToolStop
+      if (!allowReplayed) {
+        const toolStage = beginStage('tool.execute', decision, { modelResult })
+        if ('denied' in toolStage) {
+          if (
+            effectJournal !== undefined &&
+            allowOperationKey !== undefined &&
+            allowAttemptId !== undefined
+          ) {
+            await effectJournal
+              .failEffect({
+                tenantId: input.tenantId,
+                operationKey: allowOperationKey,
+                attemptId: allowAttemptId,
+                errorCode: toolStage.denied.reason
+              })
+              .catch(() => undefined)
+          }
+          return toolStage.denied
         }
-        telemetry.recordMetric('tool_calls_total', 1, {
-          capability: input.capability,
-          status: 'ok'
-        })
-        appendAudit('tool.executed', {
-          capability: input.capability,
-          action: input.action
-        })
-        endSpan(toolSpan, 'ok')
-      } catch (error) {
-        const postToolStop = stopDenial(decision, { modelResult })
-        if (postToolStop !== undefined) {
-          endSpan(toolSpan, 'error', postToolStop.reason)
-          return postToolStop
+        const toolSpan = toolStage.span
+        try {
+          const executed = await this.#options.toolExecutor({
+            tenantId: input.tenantId,
+            capability: input.capability,
+            action: input.action,
+            resource: input.resource,
+            payload: payloadForEffect,
+            modelResult,
+            correlationId,
+            traceId,
+            shadowMode: false as const,
+            ...(input.cancelSignal !== undefined
+              ? { signal: input.cancelSignal }
+              : {})
+          })
+          toolResult = executed.result
+          allowEffectOccurred = true
+          const postToolStop = stopDenial(decision, { modelResult, toolResult })
+          if (postToolStop !== undefined) {
+            endSpan(toolSpan, 'error', postToolStop.reason)
+            if (
+              effectJournal !== undefined &&
+              allowOperationKey !== undefined &&
+              allowAttemptId !== undefined
+            ) {
+              await effectJournal
+                .markUncertain({
+                  tenantId: input.tenantId,
+                  operationKey: allowOperationKey,
+                  attemptId: allowAttemptId,
+                  reason: postToolStop.reason
+                })
+                .catch(() => undefined)
+            }
+            return postToolStop
+          }
+          telemetry.recordMetric('tool_calls_total', 1, {
+            capability: input.capability,
+            status: 'ok'
+          })
+          appendAudit('tool.executed', {
+            capability: input.capability,
+            action: input.action
+          })
+          endSpan(toolSpan, 'ok')
+        } catch (error) {
+          const postToolStop = stopDenial(decision, { modelResult })
+          if (postToolStop !== undefined) {
+            endSpan(toolSpan, 'error', postToolStop.reason)
+            return postToolStop
+          }
+          const failure =
+            error instanceof ToolExecutionError
+              ? error
+              : new ToolExecutionError(
+                  'tool_failed',
+                  error instanceof Error
+                    ? error.message
+                    : 'tool execution failed',
+                  { certainty: 'unknown' }
+                )
+          if (
+            effectJournal !== undefined &&
+            allowOperationKey !== undefined &&
+            allowAttemptId !== undefined
+          ) {
+            if (failure.certainty === 'no_effect') {
+              await effectJournal
+                .failEffect({
+                  tenantId: input.tenantId,
+                  operationKey: allowOperationKey,
+                  attemptId: allowAttemptId,
+                  errorCode: failure.code
+                })
+                .catch(() => undefined)
+            } else {
+              await effectJournal
+                .markUncertain({
+                  tenantId: input.tenantId,
+                  operationKey: allowOperationKey,
+                  attemptId: allowAttemptId,
+                  reason: `tool failure without proof of no effect: ${failure.code}`
+                })
+                .catch(() => undefined)
+            }
+          }
+          telemetry.recordMetric('tool_failures_total', 1, {
+            capability: input.capability
+          })
+          endSpan(toolSpan, 'error', failure.code)
+          appendAudit('runtime.denied', { code: failure.code, phase: 'tool' })
+          return finish(
+            'denied',
+            durableAllowedEffect && failure.certainty !== 'no_effect'
+              ? 'effect_uncertain'
+              : failure.code,
+            decision,
+            { modelResult }
+          )
         }
-        const code =
-          error instanceof ToolExecutionError ? error.code : 'tool_failed'
-        telemetry.recordMetric('tool_failures_total', 1, {
-          capability: input.capability
-        })
-        endSpan(toolSpan, 'error', code)
-        appendAudit('runtime.denied', { code, phase: 'tool' })
-        return finish('denied', code, decision, { modelResult })
+      }
+
+      if (
+        durableAllowedEffect &&
+        effectJournal !== undefined &&
+        allowOperationKey !== undefined &&
+        allowAttemptId !== undefined
+      ) {
+        allowExecutionRef = `exec_${traceId}`
+        try {
+          allowResultDigest = computeResultDigest(toolResult)
+          await effectJournal.confirmEffect({
+            tenantId: input.tenantId,
+            operationKey: allowOperationKey,
+            attemptId: allowAttemptId,
+            executionRef: allowExecutionRef,
+            resultDigest: allowResultDigest
+          })
+          allowEffectConfirmed = true
+          appendAudit('journal.effect_confirmed', {
+            operationKey: allowOperationKey,
+            executionRef: allowExecutionRef
+          })
+        } catch (error) {
+          await effectJournal
+            .markUncertain({
+              tenantId: input.tenantId,
+              operationKey: allowOperationKey,
+              attemptId: allowAttemptId,
+              reason: `effect confirm failed: ${
+                error instanceof Error ? error.message : 'unknown'
+              }`
+            })
+            .catch(() => undefined)
+          appendAudit('runtime.denied', {
+            code: 'effect_uncertain',
+            phase: 'journal'
+          })
+          return finish('denied', 'effect_uncertain', decision, {
+            modelResult,
+            toolResult
+          })
+        }
       }
 
       const outboxStage = beginStage('outbox.enqueue', decision, {
@@ -988,7 +1222,13 @@ export class GovernedAgentRuntime {
           modelResult,
           toolResult,
           outboxPending: true,
-          effectConfirmed: true
+          effectConfirmed: allowEffectConfirmed || allowEffectOccurred,
+          ...(allowExecutionRef !== undefined
+            ? { executionRef: allowExecutionRef }
+            : {}),
+          ...(allowResultDigest !== undefined
+            ? { resultDigest: allowResultDigest }
+            : {})
         })
       }
       const outboxSpan = outboxStage.span
@@ -998,6 +1238,7 @@ export class GovernedAgentRuntime {
           tenantId: input.tenantId,
           eventType: `${input.capability}.executed`,
           idempotencyKey:
+            allowOperationKey ??
             input.idempotencyKey ??
             `${input.tenantId}:${input.capability}:${traceId}`,
           correlationId,
@@ -1023,6 +1264,24 @@ export class GovernedAgentRuntime {
         endSpan(outboxSpan, 'ok')
       } catch {
         endSpan(outboxSpan, 'error', 'outbox_failed')
+        if (allowEffectConfirmed) {
+          appendAudit('runtime.outbox_pending', {
+            code: 'outbox_failed',
+            effectConfirmed: true
+          })
+          return finish('executed', 'outbox_pending', decision, {
+            modelResult,
+            toolResult,
+            outboxPending: true,
+            effectConfirmed: true,
+            ...(allowExecutionRef !== undefined
+              ? { executionRef: allowExecutionRef }
+              : {}),
+            ...(allowResultDigest !== undefined
+              ? { resultDigest: allowResultDigest }
+              : {})
+          })
+        }
         appendAudit('runtime.denied', {
           code: 'outbox_failed',
           phase: 'outbox'
@@ -1037,7 +1296,17 @@ export class GovernedAgentRuntime {
       return finish('executed', decision.reason, decision, {
         modelResult,
         toolResult,
-        outboxEventId
+        outboxEventId,
+        ...(allowOperationKey !== undefined && allowExecutionRef !== undefined
+          ? {
+              executionRef: allowExecutionRef,
+              effectConfirmed: allowEffectConfirmed
+            }
+          : {}),
+        ...(allowResultDigest !== undefined
+          ? { resultDigest: allowResultDigest }
+          : {}),
+        ...(allowReplayed ? { replayed: true } : {})
       })
     } catch (error) {
       // Safety net: no unexpected exception may leave root or child spans

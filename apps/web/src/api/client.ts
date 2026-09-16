@@ -362,6 +362,7 @@ export type OrchestrationGoalStatus =
 
 export interface OrchestrationGoalView {
   id: string
+  tenantId: string
   status: OrchestrationGoalStatus
   objective: string | null
   correlationId: string
@@ -429,8 +430,10 @@ export interface OrchestrationGoalDetailView extends OrchestrationGoalView {
   plans: Array<{
     id: string
     goalId: string
+    tenantId: string
     version: number
     parentPlanId: string | null
+    triggeringEvaluationId: string | null
     status: string
     reason: string | null
     fingerprint: string

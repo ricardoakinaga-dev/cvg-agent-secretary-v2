@@ -1,0 +1,1196 @@
+# CONTINUAÇÃO — FINAL SUCCESS STATE
+
+```text
+Lost Committed Messages:
+<ZERO | NONZERO>
+
+Cross-Tenant Effects:
+<ZERO | NONZERO>
+
+Unauthorized Critical Effects:
+<ZERO | NONZERO>
+
+
+ENGINEERING GATES
+------------------------------------------------------------
+Format:
+<PASS | FAIL>
+
+Typecheck:
+<PASS | FAIL>
+
+Lint:
+<PASS | FAIL>
+
+Build:
+<PASS | FAIL>
+
+Unit:
+<PASS | FAIL>
+
+Coverage:
+<PASS | FAIL>
+
+Critical Branch Coverage:
+<value | NOT_MEASURED>
+
+Architecture Tests:
+<PASS | FAIL>
+
+PostgreSQL:
+<PASS | FAIL | NOT_EXECUTED>
+
+RLS:
+<PASS | FAIL | NOT_EXECUTED>
+
+E2E:
+<PASS | FAIL>
+
+Agent Evals:
+<PASS | FAIL>
+
+Orchestrator Evals:
+<PASS | FAIL>
+
+Adversarial Evals:
+<PASS | FAIL>
+
+Chaos:
+<PASS | FAIL>
+
+Load:
+<PASS | FAIL>
+
+Recovery:
+<PASS | FAIL>
+
+Restore:
+<PASS | FAIL>
+
+Supply Chain:
+<PASS | FAIL>
+
+
+OBSERVABILITY
+------------------------------------------------------------
+Structured Logging:
+<PASS | FAIL>
+
+Redaction:
+<PASS | FAIL>
+
+Correlation:
+<PASS | FAIL>
+
+Causation:
+<PASS | FAIL>
+
+Goal/Plan/Step Lineage:
+<PASS | FAIL>
+
+Effect Lineage:
+<PASS | FAIL>
+
+Distributed Tracing:
+<PASS | FAIL>
+
+Metrics:
+<PASS | FAIL>
+
+Audit:
+<PASS | FAIL>
+
+Operator Inspection:
+<PASS | FAIL>
+
+
+CERTIFICATION INTEGRITY
+------------------------------------------------------------
+Phase 11 Current Source of Truth:
+<PASS | FAIL>
+
+Current Pointer:
+<PASS | FAIL>
+
+Candidate Binding:
+<PASS | FAIL>
+
+Tree Binding:
+<PASS | FAIL>
+
+Behavior Binding:
+<PASS | FAIL | N/A>
+
+Evidence Graph:
+<PASS | FAIL>
+
+Gate Matrix:
+<PASS | FAIL>
+
+Invariant Matrix:
+<PASS | FAIL>
+
+Manifest:
+<PASS | FAIL>
+
+Release Manifest:
+<PASS | FAIL>
+
+Artifact Hashes:
+<PASS | FAIL>
+
+Freshness:
+<PASS | FAIL>
+
+Historical Phase 10 Separation:
+<PASS | FAIL>
+
+False-GO Tests:
+<PASS | FAIL>
+
+Mutation Tests:
+<PASS | FAIL>
+
+Independent Critic:
+<PASS | FAIL>
+
+
+REAL STACK
+------------------------------------------------------------
+PostgreSQL Representative Environment:
+<VALIDATED | CONTROLLED_ONLY | NOT_CONFIGURED | FAILED | STALE>
+
+EvolutionAPI:
+<VALIDATED_REAL | VALIDATED_STAGING | CONTROLLED_ONLY |
+ NOT_CONFIGURED | FAILED | STALE>
+
+Chatwoot:
+<VALIDATED_REAL | VALIDATED_STAGING | CONTROLLED_ONLY |
+ NOT_CONFIGURED | FAILED | STALE>
+
+Model Provider:
+<VALIDATED_REAL | VALIDATED_STAGING | CONTROLLED_ONLY |
+ NOT_CONFIGURED | FAILED | STALE>
+
+External Identity:
+<VALIDATED_REAL | VALIDATED_STAGING | CONTROLLED_ONLY |
+ NOT_CONFIGURED | FAILED | STALE>
+
+RPO:
+<value | NOT_VALIDATED>
+
+RTO:
+<value | NOT_VALIDATED>
+
+Shadow Mode:
+<PASS | FAIL | NOT_EXECUTED>
+
+Supervised Pilot:
+<PASS | FAIL | NOT_EXECUTED>
+
+Rollback:
+<PASS | FAIL | NOT_EXECUTED>
+
+Human Signoff:
+<VALIDATED | PENDING | NOT_EXECUTED>
+
+
+FINDING COUNTS
+------------------------------------------------------------
+P0:
+<count>
+
+P1:
+<count>
+
+P2:
+<count>
+
+Critical P2:
+<count>
+
+P3:
+<count>
+
+P4:
+<count>
+
+
+SCORES
+------------------------------------------------------------
+Architecture:
+<0-100>
+
+Engineering:
+<0-100>
+
+Testing:
+<0-100>
+
+Security:
+<0-100>
+
+Reliability:
+<0-100>
+
+Agent Engineering:
+<0-100>
+
+Orchestrator Engineering:
+<0-100>
+
+Governance:
+<0-100>
+
+Observability:
+<0-100>
+
+Auditability:
+<0-100>
+
+Data Governance:
+<0-100>
+
+DevEx:
+<0-100>
+
+Production Readiness:
+<0-100>
+
+
+CLOSURE STATE
+------------------------------------------------------------
+Phase 11 Formal Closure:
+<PASS | FAIL>
+
+Local Engineering Closure:
+<PASS | FAIL>
+
+Adversarial Proof:
+<PASS | FAIL>
+
+Critical Invariants:
+<PASS | FAIL>
+
+Evidence Closure:
+<PASS | FAIL>
+
+External Integration Closure:
+<PASS | FAIL>
+
+Supervised Pilot Closure:
+<PASS | FAIL>
+
+Production Assurance Closure:
+<PASS | FAIL>
+
+
+PROMOTION
+------------------------------------------------------------
+Current Profile:
+<CONTROLLED_LOCAL | STAGING | SUPERVISED_PILOT | PRODUCTION>
+
+Requested Profile:
+<CONTROLLED_LOCAL | STAGING | SUPERVISED_PILOT | PRODUCTION>
+
+Eligible Profile:
+<CONTROLLED_LOCAL | STAGING | SUPERVISED_PILOT | PRODUCTION>
+
+Decision:
+<GO | CONDITIONAL_GO | NO_GO>
+
+Certification:
+<STATE_OF_ART_TRIPLE_AAA |
+ AAA_CANDIDATE |
+ AAA_CONTROLLED |
+ NO_GO>
+
+
+REMAINING BLOCKERS
+------------------------------------------------------------
+1. <blocker | NONE>
+2. <blocker | NONE>
+3. <blocker | NONE>
+4. <blocker | NONE>
+
+
+CANONICAL MACHINE EVIDENCE
+------------------------------------------------------------
+Current Certification:
+certification/current.json
+
+Phase 11 Result:
+certification/phase11/phase11-result.json
+
+Gate Matrix:
+certification/phase11/gates.json
+
+Invariant Matrix:
+certification/phase11/invariants.json
+
+Evidence Graph:
+certification/phase11/evidence-graph.json
+
+Findings:
+certification/phase11/findings.json
+
+Negative Validation:
+certification/phase11/negative-validation.json
+
+Manifest:
+certification/phase11/manifest.json
+
+Release Manifest:
+certification/phase11/release-manifest.json
+
+
+FINAL TECHNICAL VERDICT
+------------------------------------------------------------
+<Write a concise evidence-based verdict.
+
+Explicitly distinguish:
+
+1. local engineering quality;
+2. adversarial proof;
+3. formal certification;
+4. real-stack validation;
+5. production eligibility.
+
+Do not use promotional language.
+Do not claim validation that was not executed.>
+
+============================================================
+END PHASE 11 FINAL CLOSURE
+============================================================
+```
+
+---
+
+# 441. SUCCESS BLOCK IS GENERATED
+
+O bloco anterior deve ser derivado do machine-readable result.
+
+Não mantenha valores manualmente independentes.
+
+---
+
+# 442. MACHINE RESULT WINS
+
+Se houver divergência:
+
+```text
+phase11-result.json
+```
+
+é a source of truth.
+
+---
+
+# 443. HUMAN REPORT CANNOT UPGRADE RESULT
+
+Obrigatório.
+
+---
+
+# 444. README CANNOT UPGRADE RESULT
+
+Obrigatório.
+
+---
+
+# 445. SCORE CANNOT UPGRADE RESULT
+
+Obrigatório.
+
+---
+
+# 446. FINAL CERTIFICATION CALCULUS
+
+Calcule nesta ordem:
+
+```text
+Candidate validity
+↓
+Evidence validity
+↓
+Mandatory gates
+↓
+Critical invariants
+↓
+Open findings
+↓
+External validation strength
+↓
+Pilot
+↓
+Human signoff
+↓
+Requested profile
+↓
+Decision
+↓
+Certification
+```
+
+---
+
+# 447. CANDIDATE INVALID
+
+Se candidate identity for inválida:
+
+```text
+NO_GO
+```
+
+para certification correspondente.
+
+---
+
+# 448. EVIDENCE INVALID
+
+Mesmo princípio.
+
+---
+
+# 449. CRITICAL INVARIANT FAIL
+
+Mesmo princípio.
+
+---
+
+# 450. LOCAL P0/P1
+
+Bloqueiam local closure.
+
+---
+
+# 451. EXTERNAL GATE ABSENT
+
+Não necessariamente invalida `AAA_CANDIDATE`.
+
+Bloqueia profile que exige esse gate.
+
+---
+
+# 452. PROFILE-AWARE RESULT
+
+Obrigatório.
+
+---
+
+# 453. EXAMPLE — EXPECTED STRONG LOCAL RESULT
+
+Se tudo local fechar mas stack real continuar pendente:
+
+```text
+Phase 11 Formal Closure:
+PASS
+
+Local Engineering Closure:
+PASS
+
+Adversarial Proof:
+PASS
+
+Critical Invariants:
+PASS
+
+External Integration Closure:
+FAIL
+
+Supervised Pilot Closure:
+FAIL
+
+Production Assurance Closure:
+FAIL
+
+Decision:
+CONDITIONAL_GO
+
+Certification:
+AAA_CANDIDATE
+
+Eligible Profile:
+STAGING
+```
+
+ou `SUPERVISED_PILOT` se os respectivos gates permitirem.
+
+---
+
+# 454. THIS IS NOT A FAILURE
+
+É uma certificação honesta de engenharia.
+
+---
+
+# 455. EXAMPLE — FULL RESULT
+
+Somente com real proof:
+
+```text
+Phase 11 Formal Closure:
+PASS
+
+Local Engineering Closure:
+PASS
+
+Adversarial Proof:
+PASS
+
+External Integration Closure:
+PASS
+
+Supervised Pilot Closure:
+PASS
+
+Production Assurance Closure:
+PASS
+
+Decision:
+GO
+
+Certification:
+STATE_OF_ART_TRIPLE_AAA
+
+Eligible Profile:
+PRODUCTION
+```
+
+---
+
+# 456. EXAMPLE — GOVERNANCE FAILURE
+
+```text
+Orchestrator Cannot Bypass Governance:
+FAIL
+```
+
+Resultado:
+
+```text
+Decision:
+NO_GO
+
+Certification:
+NO_GO
+```
+
+---
+
+# 457. EXAMPLE — CRASH SAFETY FAILURE
+
+```text
+Crash After Effect:
+FAIL
+
+Duplicate Critical Effects:
+NONZERO
+```
+
+Resultado:
+
+```text
+NO_GO
+```
+
+para profiles dependentes da garantia.
+
+---
+
+# 458. EXAMPLE — STALE CERTIFICATION
+
+```text
+Certification Fresh:
+FAIL
+```
+
+Não permita current production certification.
+
+---
+
+# 459. FINAL STOP CONDITION A
+
+Encerrar quando:
+
+```text
+all locally implementable mandatory work complete
+all local mandatory gates PASS
+all critical invariants PASS
+local P0/P1 = 0
+critical local P2 = 0
+Phase 11 formal certification PASS
+adversarial proof PASS
+remaining blockers genuinely external
+```
+
+Resultado máximo provável:
+
+```text
+AAA_CANDIDATE
+```
+
+até fechamento externo.
+
+---
+
+# 460. FINAL STOP CONDITION B
+
+Encerrar com Triple AAA somente quando:
+
+```text
+all Condition A
++
+real required integrations validated
++
+RPO/RTO validated
++
+pilot PASS
++
+rollback PASS
++
+human signoff VALIDATED
++
+Production promotion PASS
+```
+
+---
+
+# 461. FINAL STOP CONDITION C
+
+Se houver blocker técnico que não possa ser corrigido com segurança:
+
+```text
+NO_GO
+```
+
+com finding explícito.
+
+---
+
+# 462. INVALID STOP CONDITIONS
+
+Não encerre porque:
+
+```text
+"já há muitos testes"
+"o código parece bom"
+"o prompt é grande"
+"o Orchestrator funciona no happy path"
+"restante pode ficar para outra fase"
+```
+
+se ainda houver trabalho local mandatory executável.
+
+---
+
+# 463. DO NOT RETURN A PLAN
+
+Execute.
+
+---
+
+# 464. DO NOT STOP AFTER CODING
+
+Teste.
+
+---
+
+# 465. DO NOT STOP AFTER TESTS
+
+Red-team.
+
+---
+
+# 466. DO NOT STOP AFTER RED-TEAM
+
+Chaos/recovery.
+
+---
+
+# 467. DO NOT STOP AFTER CHAOS
+
+Evidence.
+
+---
+
+# 468. DO NOT STOP AFTER EVIDENCE
+
+Certification verification.
+
+---
+
+# 469. DO NOT STOP AFTER CERTIFICATION
+
+Independent critic.
+
+---
+
+# 470. IF CRITIC FINDS BLOCKER
+
+Corrija e recertifique.
+
+---
+
+# 471. EXTERNAL GATES DO NOT BLOCK LOCAL WORK
+
+Obrigatório.
+
+---
+
+# 472. DO NOT INVENT CREDENTIALS
+
+Obrigatório.
+
+---
+
+# 473. DO NOT INVENT PROVIDER RESULTS
+
+Obrigatório.
+
+---
+
+# 474. DO NOT INVENT PILOT
+
+Obrigatório.
+
+---
+
+# 475. DO NOT INVENT HUMAN SIGNOFF
+
+Obrigatório.
+
+---
+
+# 476. DO NOT INVENT RPO/RTO
+
+Obrigatório.
+
+---
+
+# 477. DO NOT DEPLOY PRODUCTION
+
+Sem autorização explícita.
+
+---
+
+# 478. DO NOT MESSAGE REAL CUSTOMERS
+
+Sem autorização explícita.
+
+---
+
+# 479. DO NOT MODIFY REAL PATIENT DATA
+
+Sem autorização explícita.
+
+---
+
+# 480. NORMAL LOCAL ENGINEERING
+
+Não peça confirmação para:
+
+```text
+inspect
+edit
+refactor
+write tests
+write migrations
+run local tests
+run controlled Postgres
+generate controlled evidence
+```
+
+quando permitido pelo ambiente.
+
+---
+
+# 481. BLOCKER HANDLING
+
+Quando blocker for externo:
+
+registre uma vez e continue.
+
+---
+
+# 482. NO QUESTION LOOP
+
+Obrigatório.
+
+---
+
+# 483. FINAL CODE QUALITY PASS
+
+Antes de candidate final:
+
+audite:
+
+```text
+TODO
+FIXME
+unsafe any
+unsafe cast
+debug logs
+dead code
+duplicate certification logic
+legacy runtime
+unused dependency
+temporary feature flag
+```
+
+---
+
+# 484. DO NOT REMOVE TEST FIXTURES NEEDED FOR CONTROLLED PROOF
+
+Somente isole claramente.
+
+---
+
+# 485. NO PRODUCTION TEST-ONLY PATH
+
+Obrigatório.
+
+---
+
+# 486. ARCHITECTURE SIMPLICITY REVIEW
+
+Pergunte:
+
+```text
+Did closure introduce unnecessary abstractions?
+Can any duplicate layer be removed?
+Can PostgreSQL enforce this invariant more simply?
+```
+
+---
+
+# 487. SIMPLIFY WITHOUT WEAKENING INVARIANTS
+
+Faça quando apropriado.
+
+---
+
+# 488. NO NEW MICROSERVICES FOR STATUS
+
+Obrigatório.
+
+---
+
+# 489. NO KAFKA FOR STATUS
+
+Obrigatório.
+
+---
+
+# 490. NO KUBERNETES FOR STATUS
+
+Obrigatório.
+
+---
+
+# 491. STATE OF ART ≠ MAXIMUM COMPLEXITY
+
+Obrigatório.
+
+---
+
+# 492. FINAL ARCHITECTURAL INVARIANT
+
+A arquitetura final continua:
+
+```text
+OBSERVE
+   ↓
+UNDERSTAND
+   ↓
+ORCHESTRATOR
+   ↓
+GOVERN
+   ↓
+ACT
+   ↓
+OBSERVE RESULT
+   ↓
+EVALUATE
+   ↓
+goal reached?
+  /          \
+YES          NO
+ │            │
+RESPOND     REPLAN
+ │            │
+STOP ◄────────┘
+```
+
+---
+
+# 493. CROSS-CUTTING BOUNDARIES
+
+```text
+Identity
+Tenant
+Policy
+Capability
+Risk
+Approval
+Budget
+Audit
+Evidence
+Telemetry
+```
+
+---
+
+# 494. MODEL ROLE
+
+```text
+reason
+classify
+propose
+plan
+evaluate semantically
+```
+
+---
+
+# 495. MODEL DOES NOT
+
+```text
+authorize
+grant capability
+change tenant
+approve itself
+declare operational facts without evidence
+```
+
+---
+
+# 496. ORCHESTRATOR ROLE
+
+```text
+coordinate
+track Goal
+track Plan
+route
+replan
+budget
+stop
+```
+
+---
+
+# 497. ORCHESTRATOR DOES NOT
+
+```text
+self-authorize
+bypass Governance
+fabricate success
+```
+
+---
+
+# 498. GOVERNANCE ROLE
+
+Authority boundary.
+
+---
+
+# 499. OUTBOX/EFFECT JOURNAL ROLE
+
+Side-effect safety boundary.
+
+---
+
+# 500. OBSERVER ROLE
+
+Discover what actually happened.
+
+---
+
+# 501. EVALUATOR ROLE
+
+Determine whether evidence satisfies Goal.
+
+---
+
+# 502. REPLANNER ROLE
+
+Adapt within the same authority/budget envelope.
+
+---
+
+# 503. HUMAN ROLE
+
+Retain control at approval/handoff boundaries.
+
+---
+
+# 504. CERTIFICATION ROLE
+
+State only what has been proven.
+
+---
+
+# 505. MASTER QUALITY PRINCIPLE
+
+```text
+Deterministic where possible.
+Agentic where valuable.
+Governed everywhere effects matter.
+Durable where failure matters.
+Human where authority requires it.
+```
+
+---
+
+# 506. MASTER FAILURE PRINCIPLE
+
+When authority is uncertain:
+
+```text
+FAIL CLOSED
+```
+
+When effect outcome is uncertain:
+
+```text
+RECONCILE BEFORE RETRY
+```
+
+When Goal success is uncertain:
+
+```text
+DO NOT CLAIM COMPLETION
+```
+
+---
+
+# 507. MASTER CERTIFICATION PRINCIPLE
+
+```text
+Evidence before confidence.
+```
+
+---
+
+# 508. TERMINAL EXECUTION ORDER
+
+Agora execute:
+
+```text
+RE-INSPECT HEAD
+      ↓
+BUILD DELTA MATRIX
+      ↓
+FIX CERTIFICATION SOURCE OF TRUTH
+      ↓
+PROVE CANDIDATE BINDING
+      ↓
+PROVE REPLAN
+      ↓
+PROVE LOOP/BUDGET
+      ↓
+PROVE FENCING
+      ↓
+PROVE CRASH-AFTER-EFFECT
+      ↓
+PROVE TRACE/LINEAGE
+      ↓
+RED-TEAM GOVERNANCE/TENANT
+      ↓
+RED-TEAM CERTIFICATION
+      ↓
+POSTGRES/RESTORE
+      ↓
+CHAOS
+      ↓
+LOAD
+      ↓
+EVALS
+      ↓
+GENERATE EVIDENCE GRAPH
+      ↓
+VERIFY PHASE 11
+      ↓
+INDEPENDENT CRITIC
+      ↓
+FIX/RECERTIFY IF NECESSARY
+      ↓
+VALIDATE REAL STACK WHEN AVAILABLE
+      ↓
+PROMOTION CHECK
+      ↓
+FINAL SUCCESS STATE
+```
+
+---
+
+# 509. FINAL OBJECTIVE
+
+Transformar o estado atual — já tecnicamente forte — em uma Phase 11:
+
+```text
+FORMALLY CLOSED
+CANDIDATE-BOUND
+ADVERSARIALLY PROVEN
+TENANT-SAFE
+GOVERNED
+DURABLE
+RECOVERABLE
+OBSERVABLE
+MECHANICALLY CERTIFIABLE
+```
+
+e então avançar para a stack real sem reduzir a barra.
+
+---
+
+# 510. FINAL TARGET
+
+O máximo desejado é:
+
+# STATE OF ART — TRIPLE AAA
+
+Mas o resultado correto será aquele que os gates determinarem.
+
+Se a engenharia local fechar e apenas integrações/piloto/RPO-RTO/signoff permanecerem:
+
+# AAA_CANDIDATE
+
+é o resultado correto.
+
+Se todos os production proofs reais fecharem:
+
+# STATE_OF_ART_TRIPLE_AAA
+
+pode ser concedido.
+
+Se um critical invariant falhar:
+
+# NO_GO
+
+é obrigatório.
+
+---
+
+# 511. START NOW
+
+Não responda com outro blueprint.
+
+Não me peça para escolher entre alternativas técnicas comuns.
+
+Inspecione o HEAD atual.
+
+Implemente todas as melhorias localmente executáveis.
+
+Execute os testes.
+
+Ataque os invariants.
+
+Prove recovery.
+
+Feche a certificação canônica da Phase 11.
+
+Faça a auditoria independente.
+
+Valide a stack real somente onde

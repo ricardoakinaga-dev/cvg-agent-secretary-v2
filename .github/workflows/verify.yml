@@ -59,6 +59,9 @@ jobs:
       - name: Worker startup fail-closed smoke
         run: npm run test:worker:startup
 
+      - name: Production preflight remains fail-closed
+        run: npm run production:preflight -- --expect=REJECT
+
       - name: Agent evals
         run: npm run test:evals
 

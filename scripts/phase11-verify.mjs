@@ -9,9 +9,10 @@
  */
 import fs from 'node:fs'
 import path from 'node:path'
+import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import {
-  PHASE11_REQUIRED_GATES,
+  PHASE11_2_REQUIRED_GATES,
   Phase11CurrentResultSchema,
   Phase11ManifestSchema,
   artifactRecord,
@@ -99,6 +100,26 @@ function fileListMatches(recorded, current) {
   return recorded.every((file) => same(file, currentByPath.get(file.path)))
 }
 
+function gitStatus(args) {
+  return spawnSync('git', args, {
+    cwd: root,
+    encoding: 'utf8'
+  })
+}
+
+function isAncestor(ancestor, descendant) {
+  if (!/^[0-9a-f]{7,64}$/.test(ancestor)) return false
+  return (
+    gitStatus(['merge-base', '--is-ancestor', ancestor, descendant]).status ===
+    0
+  )
+}
+
+function gitTreeForCommit(commit) {
+  const result = gitStatus(['rev-parse', `${commit}^{tree}`])
+  return result.status === 0 ? result.stdout.trim() : null
+}
+
 const pointer = readJson(pointerRelative)
 const resultRaw = readJson(resultRelative)
 const manifestRaw = readJson(manifestRelative)
@@ -140,10 +161,14 @@ if (manifestRaw) {
 const liveCandidate = buildPhase11Candidate(root)
 if (result && manifest && pointer) {
   if (result.phase !== '11') fail('result_not_phase11')
-  if (result.commit !== liveCandidate.commit) {
-    fail('candidate_commit_stale', `${result.commit}:${liveCandidate.commit}`)
+  const anchorCommit = result.commit
+  if (!isAncestor(anchorCommit, liveCandidate.commit)) {
+    fail(
+      'candidate_anchor_not_ancestor',
+      `${anchorCommit}:${liveCandidate.commit}`
+    )
   }
-  if (result.candidate.commit !== liveCandidate.commit) {
+  if (result.candidate.commit !== anchorCommit) {
     fail('result_candidate_commit_stale')
   }
   if (result.candidate.treeHash !== liveCandidate.treeHash) {
@@ -168,13 +193,20 @@ if (result && manifest && pointer) {
   if (!fileListMatches(result.candidate.files, liveCandidate.files)) {
     fail('candidate_file_hash_changed')
   }
+  const anchorTreeHash = gitTreeForCommit(anchorCommit)
+  if (
+    result.candidate.gitTreeHash &&
+    result.candidate.gitTreeHash !== anchorTreeHash
+  ) {
+    fail('candidate_git_tree_stale')
+  }
   const drift = candidateDrift(root, result.candidate)
   if (drift.length > 0)
     fail('candidate_scope_drift', JSON.stringify(drift.slice(0, 5)))
 
   for (const [key, expected] of [
     ['candidateId', liveCandidate.candidateId],
-    ['commit', liveCandidate.commit],
+    ['commit', anchorCommit],
     ['treeHash', liveCandidate.treeHash],
     ['branch', liveCandidate.branch]
   ]) {
@@ -186,27 +218,27 @@ if (result && manifest && pointer) {
     fail('manifest_certification_mismatch')
   if (manifest.candidateId !== liveCandidate.candidateId)
     fail('manifest_candidate_mismatch')
-  if (manifest.candidateCommit !== liveCandidate.commit)
-    fail('manifest_commit_stale')
+  if (manifest.candidateCommit !== anchorCommit) fail('manifest_commit_stale')
   if (manifest.treeHash !== liveCandidate.treeHash) fail('manifest_tree_stale')
 }
 
-const promptIntegrity = verifyPromptIntegrity(root, 'formal')
+const promptIntegrity = verifyPromptIntegrity(root, 'phase11_2')
 if (
   requiredGateStatus(result?.gates ?? [], 'prompt_integrity') !==
   promptIntegrity.status
 ) {
   fail('prompt_integrity_gate_mismatch')
 }
-if (promptIntegrity.status !== 'PASS') fail('formal_prompt_integrity_failed')
+if (promptIntegrity.status !== 'PASS') fail('phase11_2_prompt_integrity_failed')
 
 if (result) {
   const gateIds = new Set(result.gates.map((gate) => gate.id))
-  for (const id of PHASE11_REQUIRED_GATES) {
+  for (const id of PHASE11_2_REQUIRED_GATES) {
     if (!gateIds.has(id)) fail('required_gate_missing', id)
   }
   for (const gate of result.gates) {
-    if (!PHASE11_REQUIRED_GATES.includes(gate.id)) fail('unknown_gate', gate.id)
+    if (!PHASE11_2_REQUIRED_GATES.includes(gate.id))
+      fail('unknown_gate', gate.id)
   }
   const integrity = gateSetIntegrity(result.gates)
   if (!integrity.valid) fail('gate_set_invalid', integrity.errors.join(','))
@@ -226,7 +258,7 @@ function verifyArtifact(artifact, label) {
   if (current.sha256 !== artifact.sha256 || current.size !== artifact.size) {
     artifactFailures.push(`${label}:changed:${artifact.path}`)
   }
-  if (artifact.candidateCommit !== liveCandidate.commit) {
+  if (artifact.candidateCommit !== result?.commit) {
     artifactFailures.push(`${label}:candidate_commit:${artifact.path}`)
   }
   if (artifact.path === manifestRelative)
@@ -273,6 +305,10 @@ if (manifest) {
 for (const packageFile of requiredPackageFiles) {
   if (!exists(packageFile))
     artifactFailures.push(`required_package_missing:${packageFile}`)
+  else if (
+    gitStatus(['ls-files', '--error-unmatch', '--', packageFile]).status !== 0
+  )
+    artifactFailures.push(`required_package_not_tracked:${packageFile}`)
 }
 for (const artifactFailure of artifactFailures)
   fail('artifact_invalid', artifactFailure)
@@ -321,7 +357,7 @@ const release = readJson(releaseRelative)
 if (release && result) {
   if (release.candidate?.candidateId !== liveCandidate.candidateId)
     fail('release_candidate_mismatch')
-  if (release.candidate?.commit !== liveCandidate.commit)
+  if (release.candidate?.commit !== result.commit)
     fail('release_commit_mismatch')
   if (release.candidate?.treeHash !== liveCandidate.treeHash)
     fail('release_tree_mismatch')
@@ -352,7 +388,8 @@ if (result) {
     deploymentProfile: result.deploymentProfile,
     requestedProfile: result.requestedProfile,
     evidenceComplete,
-    implementationComplete
+    implementationComplete,
+    requiredGates: PHASE11_2_REQUIRED_GATES
   })
   if (result.decision !== recalculated.decision)
     fail('decision_recalculation_mismatch')

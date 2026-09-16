@@ -93,7 +93,9 @@ function normalizeStatus(value: string): string {
 }
 
 function countStatus(goals: OrchestrationGoalView[], status: string): number {
-  return goals.filter((goal) => goal.status === status).length
+  const normalized = normalizeStatus(status)
+  return goals.filter((goal) => normalizeStatus(goal.status) === normalized)
+    .length
 }
 
 function getCurrentPlan(detail: OrchestrationGoalDetailView): PlanView | null {
@@ -316,6 +318,7 @@ export function OrchestrationPanel({
       className="panel orchestrationPanel"
       id="orchestration-panel"
       aria-labelledby="orchestration-title"
+      aria-busy={isLoading || isDetailLoading}
       ref={panelRef}
       tabIndex={-1}
     >
@@ -878,6 +881,9 @@ function GoalDetail({ detail }: { detail: OrchestrationGoalDetailView }) {
                 </span>
                 {plan.parentPlanId ? (
                   <code>origem: {plan.parentPlanId}</code>
+                ) : null}
+                {plan.triggeringEvaluationId ? (
+                  <code>avaliação: {plan.triggeringEvaluationId}</code>
                 ) : null}
               </div>
               <p className="orchestrationPlanReason">

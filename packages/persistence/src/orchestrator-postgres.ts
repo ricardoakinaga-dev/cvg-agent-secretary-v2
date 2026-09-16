@@ -79,6 +79,7 @@ interface PlanRow extends QueryResultRow {
   reason: string
   status: string
   fingerprint: string
+  triggering_evaluation_id: string | null
   created_at: Date
   updated_at: Date
 }
@@ -245,6 +246,7 @@ function toPlan(row: PlanRow): Plan {
     version: Number(row.version),
     parentPlanId: row.parent_plan_id,
     reason: row.reason,
+    triggeringEvaluationId: row.triggering_evaluation_id,
     status: PlanStatusSchema.parse(row.status),
     createdAt: new Date(row.created_at),
     updatedAt: new Date(row.updated_at),
@@ -745,6 +747,7 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
         version: input.planVersion,
         parentPlanId: input.parentPlanId,
         reason: input.reason,
+        triggeringEvaluationId: input.triggeringEvaluationId ?? null,
         status: 'ACTIVE',
         createdAt,
         updatedAt: createdAt,
@@ -766,8 +769,8 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
       await client.query(
         `INSERT INTO orchestrator_plans
           (tenant_id, id, goal_id, version, parent_plan_id, reason, status,
-           fingerprint, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6, 'ACTIVE', $7, $8, $8)`,
+           fingerprint, triggering_evaluation_id, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, 'ACTIVE', $7, $8, $9, $9)`,
         [
           scope,
           plan.id,
@@ -776,6 +779,7 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
           plan.parentPlanId,
           plan.reason,
           plan.fingerprint,
+          plan.triggeringEvaluationId,
           createdAt
         ]
       )

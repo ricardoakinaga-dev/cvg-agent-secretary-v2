@@ -310,6 +310,26 @@ export function computeCandidateId(files) {
   )
 }
 
+/**
+ * Hashes only the declared behavior candidate scope. This is intentionally
+ * different from Git's commit tree: canonical certification output is sealed
+ * after the source candidate and may be committed later without changing the
+ * product bytes that were certified.
+ */
+export function computeCandidateTreeHash(files) {
+  const normalized = [...files]
+    .map(({ path: filePath, sha256, size, tracked }) => ({
+      path: filePath,
+      sha256,
+      size,
+      tracked
+    }))
+    .sort((left, right) => (left.path < right.path ? -1 : 1))
+  return sha256Bytes(
+    canonicalJson({ schemaVersion: 'aaa-candidate-tree-v1', files: normalized })
+  )
+}
+
 export function buildCandidateRecord({ root, files, now = new Date() }) {
   const head = spawnSync('git', ['rev-parse', 'HEAD'], {
     cwd: root,

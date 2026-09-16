@@ -73,6 +73,13 @@ describe('postgres migration smoke', () => {
     )
     expect(iterationBudget).toContain("budget ? 'maxIterations'")
     expect(iterationBudget).toContain("budget_usage ? 'iterations'")
+
+    const evaluationLineage = await readPostgresMigrationSql(
+      '0022_orchestrator_evaluation_lineage'
+    )
+    expect(evaluationLineage).toContain('triggering_evaluation_id')
+    expect(evaluationLineage).toContain('orchestrator_evaluations')
+    expect(evaluationLineage).toContain('NOT VALID')
   })
 
   it('ships an additive release-candidate validator integrity migration', async () => {

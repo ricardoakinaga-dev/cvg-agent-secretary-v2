@@ -1,0 +1,1168 @@
+# CONTINUAÇÃO FINAL — REAL STACK, PROMOTION & TERMINAL CONTRACT
+
+## ITEMS 199–END
+
+---
+
+# 199. PHASE 11 COMMANDS
+
+Garanta comandos canônicos e reais:
+
+```text id="my0unh"
+npm run verify
+npm run test:postgres
+npm run test:e2e
+npm run test:evals
+npm run test:chaos
+
+npm run certify
+npm run certification:verify
+
+npm run certify:phase11
+npm run certification:verify:phase11
+
+npm run evidence:verify:phase11
+npm run promotion:check
+npm run production:preflight
+```
+
+Adapte nomes aos scripts reais.
+
+Não documente comando inexistente.
+
+---
+
+# 200. `verify`
+
+Deve agregar os gates locais essenciais sem executar efeitos reais.
+
+---
+
+# 201. `certify`
+
+Após formal closure, deve operar sobre a certificação current.
+
+---
+
+# 202. `certification:verify`
+
+Deve validar:
+
+```text id="hrc7af"
+schema
+candidate identity
+freshness
+hashes
+gate consistency
+invariant consistency
+decision consistency
+```
+
+---
+
+# 203. `promotion:check`
+
+Input:
+
+```text id="jcl53d"
+requestedProfile
+candidate
+```
+
+Output estruturado:
+
+```text id="03t09k"
+eligible
+decision
+blockingGates
+blockingFindings
+externalBlockers
+```
+
+---
+
+# 204. `production:preflight`
+
+Não executa negócio.
+
+Verifica readiness.
+
+---
+
+# 205. PRODUCTION PREFLIGHT
+
+Verifique:
+
+```text id="24hnh1"
+NODE_ENV
+kernel runtime
+PostgreSQL
+required migrations
+RLS
+durable inbound
+durable Goal/Plan store
+durable approval store
+outbox
+effect journal
+identity
+policy
+risk
+required integrations
+```
+
+---
+
+# 206. UNSAFE PRODUCTION CONFIG
+
+Resultado:
+
+```text id="z6vmg3"
+FAIL CLOSED
+```
+
+---
+
+# 207. MEMORY ORCHESTRATOR STORE IN PRODUCTION
+
+Proibido se durability for requisito do profile.
+
+---
+
+# 208. LEGACY RUNTIME IN PRODUCTION
+
+Proibido.
+
+---
+
+# 209. MISSING IDENTITY
+
+Proibido para produção.
+
+---
+
+# 210. INVALID POLICY
+
+Proibido.
+
+---
+
+# 211. INVALID RISK CONFIGURATION
+
+Proibido quando requerida.
+
+---
+
+# 212. PHASE 11 FORMAL CLOSURE GATE
+
+Crie gate agregador:
+
+```text id="k3t5fo"
+PHASE11_FORMAL_CLOSURE
+```
+
+---
+
+# 213. PHASE11_FORMAL_CLOSURE PASS
+
+Somente quando:
+
+```text id="57l4sw"
+AUD-11-01 closed
+AUD-11-02 closed
+AUD-11-03 closed
+AUD-11-04 closed
+AUD-11-05 closed
+AUD-11-06 closed
+AUD-11-07 closed
+
+local P0 = 0
+local P1 = 0
+critical local P2 = 0
+
+critical invariants PASS
+
+Phase 11 current source of truth PASS
+evidence graph PASS
+negative certification validation PASS
+```
+
+---
+
+# 214. AUD-11-08
+
+Não precisa estar fechado para local engineering closure se for genuinamente externo.
+
+Mas deve impedir Production certification conforme profile.
+
+---
+
+# 215. LOCAL ENGINEERING CLOSURE
+
+Calcule:
+
+```text id="j1g9y8"
+localEngineeringClosure
+```
+
+---
+
+# 216. LOCAL ENGINEERING CLOSURE PASS
+
+Exige:
+
+```text id="dts47v"
+Phase11 formal closure PASS
+all mandatory local gates PASS
+local evidence complete
+independent critic has no local blocker
+```
+
+---
+
+# 217. EXTERNAL INTEGRATION CLOSURE
+
+Calcule separadamente.
+
+---
+
+# 218. REAL STACK VALIDATION
+
+Não confunda com contract tests.
+
+---
+
+# 219. REAL STACK COMPONENTS
+
+Conforme deployment final:
+
+```text id="byh4ko"
+PostgreSQL
+EvolutionAPI
+Chatwoot
+Model Provider
+External Identity
+CVG HIS/ERP adapter if required
+```
+
+---
+
+# 220. VALIDATION STATUS ENUM
+
+Use:
+
+```text id="k6z2l0"
+NOT_CONFIGURED
+CONTROLLED_ONLY
+VALIDATED_STAGING
+VALIDATED_REAL
+FAILED
+STALE
+```
+
+---
+
+# 221. CONTROLLED TEST
+
+Prova contrato.
+
+Não prova provider real.
+
+---
+
+# 222. STAGING
+
+Prova integração contra ambiente real de homologação.
+
+---
+
+# 223. VALIDATED_REAL
+
+Use somente conforme política explicitamente definida para o profile real.
+
+Não invente.
+
+---
+
+# 224. EVOLUTIONAPI
+
+Quando credenciais/ambiente estiverem disponíveis:
+
+teste pelo adapter real.
+
+---
+
+# 225. EVOLUTIONAPI INBOUND
+
+Escopo esperado quando suportado:
+
+```text id="9x4an1"
+text
+image
+audio
+video
+document
+reply/quoted message
+```
+
+---
+
+# 226. EVOLUTIONAPI OUTBOUND
+
+Mesmo escopo requerido pelo produto.
+
+---
+
+# 227. DUPLICATE WEBHOOK
+
+Prove idempotência.
+
+---
+
+# 228. OUT-OF-ORDER
+
+Prove comportamento seguro.
+
+---
+
+# 229. PROVIDER OUTAGE
+
+Prove:
+
+```text id="1qk7v7"
+no silent loss
+bounded retry
+outbox preservation
+```
+
+---
+
+# 230. RECONNECT
+
+Teste quando ambiente permitir.
+
+---
+
+# 231. EVOLUTIONAPI ARTIFACT
+
+Gere:
+
+```text id="clz4t5"
+certification/phase11/integrations/evolutionapi.json
+```
+
+---
+
+# 232. CHATWOOT
+
+Valide:
+
+```text id="fnj5zt"
+conversation mapping
+contact mapping
+message sync
+attachments
+human takeover
+return-to-bot
+outage behavior
+```
+
+---
+
+# 233. CHATWOOT CRITICAL INVARIANT
+
+```text id="bh8r5o"
+human ownership
+→ autonomous outbound blocked
+```
+
+---
+
+# 234. CHATWOOT ARTIFACT
+
+```text id="j1w97j"
+certification/phase11/integrations/chatwoot.json
+```
+
+---
+
+# 235. MODEL PROVIDER
+
+Valide pelo menos um provider que faça parte da topologia alvo.
+
+---
+
+# 236. PROVIDER CONTRACT
+
+Teste:
+
+```text id="11bs7g"
+success
+structured output
+malformed output
+timeout
+cancellation
+429
+5xx
+connection loss
+usage accounting
+```
+
+---
+
+# 237. MODEL OUTPUT STILL UNTRUSTED
+
+Provider real passando eval não recebe authority.
+
+---
+
+# 238. MODEL PROVIDER ARTIFACT
+
+```text id="67o78h"
+certification/phase11/integrations/model-provider.json
+```
+
+---
+
+# 239. EXTERNAL IDENTITY
+
+Valide mecanismo final ou staging representativo.
+
+---
+
+# 240. IDENTITY TESTS
+
+```text id="tt4pda"
+authentication
+tenant mapping
+role mapping
+session expiration
+revocation
+forbidden mutation
+cross-tenant denial
+```
+
+---
+
+# 241. EXTERNAL IDENTITY ARTIFACT
+
+```text id="8pg12h"
+certification/phase11/integrations/external-identity.json
+```
+
+---
+
+# 242. NO CREDENTIALS
+
+Não peça repetidamente.
+
+Registre blocker estruturado e continue trabalho independente.
+
+---
+
+# 243. NO REAL CUSTOMER TRAFFIC
+
+Sem autorização explícita.
+
+---
+
+# 244. NO REAL PATIENT MUTATION
+
+Sem autorização explícita.
+
+---
+
+# 245. STAGING DATA
+
+Use dados sintéticos.
+
+---
+
+# 246. TEST CONTACT ALLOWLIST
+
+Obrigatório para channel staging.
+
+---
+
+# 247. RPO/RTO
+
+Meça em infraestrutura representativa quando disponível.
+
+---
+
+# 248. RPO/RTO ARTIFACT
+
+Inclua:
+
+```text id="u4a84h"
+targetRPO
+measuredRPO
+targetRTO
+measuredRTO
+environment
+candidate
+procedure
+```
+
+---
+
+# 249. TARGET IS NOT MEASUREMENT
+
+Obrigatório.
+
+---
+
+# 250. RPO/RTO NOT MEASURED
+
+```text id="umkhwq"
+NOT_VALIDATED
+```
+
+---
+
+# 251. SHADOW MODE
+
+Antes do pilot:
+
+```text id="c8r3wx"
+Observe
+Understand
+Plan
+Govern
+Evaluate
+```
+
+permitidos.
+
+External writes:
+
+```text id="eckg9s"
+BLOCKED
+```
+
+---
+
+# 252. SHADOW METRICS
+
+Compare:
+
+```text id="nlpyk3"
+agent proposal
+human decision
+agreement
+safe escalation
+```
+
+---
+
+# 253. SUPERVISED PILOT
+
+Não execute sem autorização.
+
+---
+
+# 254. PILOT INITIAL SCOPE
+
+Prefira algo restrito:
+
+```text id="4ptw2n"
+informações de agendamento
+confirmação
+agendamento simples
+```
+
+---
+
+# 255. PILOT DENYLIST
+
+```text id="xt1tfp"
+clinical.write
+prescription.*
+exam.release
+finance.write
+admin.*
+```
+
+---
+
+# 256. PILOT RISK CEILING
+
+Defina explicitamente.
+
+---
+
+# 257. PILOT CAPABILITY ALLOWLIST
+
+Obrigatório.
+
+---
+
+# 258. PILOT KILL SWITCH
+
+Obrigatório.
+
+---
+
+# 259. KILL SWITCH
+
+Ao ativar:
+
+```text id="gddo22"
+new autonomous effects = BLOCKED
+```
+
+---
+
+# 260. PILOT HUMAN SUPERVISOR
+
+Obrigatório.
+
+---
+
+# 261. PILOT HUMAN TAKEOVER
+
+Obrigatório.
+
+---
+
+# 262. PILOT ROLLBACK
+
+Teste em staging antes.
+
+---
+
+# 263. PILOT METRICS
+
+Meça:
+
+```text id="8g5y8s"
+task success
+safe refusal
+correct escalation
+human takeover
+user correction
+policy violation
+duplicate effects
+message loss
+latency
+```
+
+---
+
+# 264. PILOT ZERO-TOLERANCE
+
+```text id="jqmmv1"
+crossTenantLeak = 0
+unauthorizedCriticalEffect = 0
+duplicateCriticalEffect = 0
+clinicalAutonomyViolation = 0
+```
+
+---
+
+# 265. PILOT INCIDENT
+
+P0/P1:
+
+```text id="dt0brk"
+pause promotion
+```
+
+---
+
+# 266. PILOT ARTIFACT
+
+Somente se realmente executado.
+
+---
+
+# 267. HUMAN SIGNOFF
+
+Somente humano real autorizado.
+
+---
+
+# 268. HUMAN SIGNOFF STRUCTURE
+
+Inclua:
+
+```text id="bgd8p5"
+candidate
+scope
+period
+metrics
+incidents
+limitations
+decision
+approver
+timestamp
+```
+
+---
+
+# 269. CODEX CANNOT SELF-SIGN
+
+Obrigatório.
+
+---
+
+# 270. EXTERNAL INTEGRATION CLOSURE PASS
+
+Somente quando todos os required external components do requested profile atingirem o nível requerido.
+
+---
+
+# 271. SUPERVISED PILOT CLOSURE PASS
+
+Somente:
+
+```text id="wwt89u"
+pilot = PASS
+```
+
+---
+
+# 272. PRODUCTION ASSURANCE CLOSURE
+
+Somente quando:
+
+```text id="q62opd"
+localEngineeringClosure = PASS
+externalIntegrationClosure = PASS
+supervisedPilotClosure = PASS
+RPO/RTO = VALIDATED
+humanSignoff = VALIDATED
+rollback = PASS
+```
+
+e demais mandatory Production gates passarem.
+
+---
+
+# 273. FINAL CERTIFICATION ENUM
+
+Use:
+
+```text id="c8ah84"
+STATE_OF_ART_TRIPLE_AAA
+AAA_CANDIDATE
+AAA_CONTROLLED
+NO_GO
+```
+
+---
+
+# 274. FINAL DECISION ENUM
+
+Use:
+
+```text id="gqdxre"
+GO
+CONDITIONAL_GO
+NO_GO
+```
+
+---
+
+# 275. AAA_CONTROLLED
+
+Quando controlled evidence estiver forte, mas local/real closure ainda não atingir candidate.
+
+---
+
+# 276. AAA_CANDIDATE
+
+Use quando:
+
+```text id="t25xgj"
+localEngineeringClosure = PASS
+criticalInvariants = PASS
+evidence = PASS
+certification = fresh
+```
+
+e apenas gates externos apropriados permanecerem.
+
+---
+
+# 277. STATE_OF_ART_TRIPLE_AAA
+
+Somente quando:
+
+```text id="57m71z"
+requestedProfile = PRODUCTION
+
+all mandatory Production gates PASS
+
+P0 = 0
+P1 = 0
+criticalP2 = 0
+
+localEngineeringClosure PASS
+externalIntegrationClosure PASS
+supervisedPilotClosure PASS
+productionAssuranceClosure PASS
+
+RPO/RTO VALIDATED
+humanSignoff VALIDATED
+
+independent critic no blocking finding
+```
+
+---
+
+# 278. SCORES
+
+Calcule depois dos gates.
+
+---
+
+# 279. SCORE TARGETS
+
+Meta:
+
+```text id="5sf9a7"
+Architecture              >= 97
+Engineering               >= 97
+Testing                   >= 97
+Security                  >= 97
+Reliability               >= 97
+Agent Engineering         >= 97
+Orchestrator Engineering  >= 97
+Governance                >= 97
+Observability             >= 97
+Auditability              >= 97
+Data Governance           >= 95
+DevEx                     >= 95
+Production Readiness      >= 95
+```
+
+---
+
+# 280. SCORE DOES NOT OVERRIDE GATE
+
+Obrigatório.
+
+---
+
+# 281. PRODUCTION READINESS SCORE
+
+Não dê >=95 sem production-grade evidence suficiente.
+
+---
+
+# 282. NO SCORE INFLATION
+
+Obrigatório.
+
+---
+
+# 283. INDEPENDENT CRITIC
+
+Depois de gerar a candidate certification:
+
+faça auditoria fresh-context.
+
+---
+
+# 284. CRITIC STARTING POINT
+
+```text id="mdu8h5"
+repository
+requirements
+machine evidence
+```
+
+Não builder summary.
+
+---
+
+# 285. CRITIC MUST TRY TO BREAK
+
+```text id="n3c43x"
+tenant isolation
+governance
+approval
+fencing
+effect safety
+budget
+loop detection
+goal completion
+certification
+```
+
+---
+
+# 286. CRITIC MUST INSPECT CURRENT POINTER
+
+Obrigatório.
+
+---
+
+# 287. CRITIC MUST INSPECT PHASE 10/11 SEPARATION
+
+Obrigatório.
+
+---
+
+# 288. CRITIC MUST INSPECT EXTERNAL CLAIMS
+
+Obrigatório.
+
+---
+
+# 289. CRITIC REPORT
+
+Gere:
+
+```text id="lzw7vs"
+docs/phase11/PHASE11_INDEPENDENT_CRITIC.md
+```
+
+ou caminho equivalente.
+
+---
+
+# 290. CRITIC CAN DOWNGRADE
+
+Se achar blocker:
+
+atualize findings/certification.
+
+---
+
+# 291. FIX-RECERTIFY LOOP
+
+Quando critic encontrar problema local corrigível:
+
+```text id="rhfc6j"
+fix
+↓
+test
+↓
+regenerate affected evidence
+↓
+recertify
+↓
+critic
+```
+
+---
+
+# 292. BOUNDED CLOSURE
+
+Não faça polishing infinito.
+
+Pare quando mandatory work estiver fechado.
+
+---
+
+# 293. FINDINGS
+
+Gere Phase 11 findings current.
+
+---
+
+# 294. FINDING FIELDS
+
+```text id="1k1vt8"
+id
+severity
+description
+status
+rootCause
+fix
+testRefs
+evidenceRefs
+blockingProfiles
+residualRisk
+```
+
+---
+
+# 295. CLOSE AUD-11-01
+
+Exige current canonical Phase 11 certification.
+
+---
+
+# 296. CLOSE AUD-11-02
+
+Exige candidate binding inequívoco.
+
+---
+
+# 297. CLOSE AUD-11-03
+
+Exige replan proof.
+
+---
+
+# 298. CLOSE AUD-11-04
+
+Exige loop/budget/restart proof.
+
+---
+
+# 299. CLOSE AUD-11-05
+
+Exige stale-worker/fencing proof.
+
+---
+
+# 300. CLOSE AUD-11-06
+
+Exige crash-after-effect proof.
+
+---
+
+# 301. CLOSE AUD-11-07
+
+Exige trace/lineage proof.
+
+---
+
+# 302. AUD-11-08
+
+Somente fechar pelos respectivos external artifacts.
+
+---
+
+# 303. NEW FINDINGS
+
+Inclua.
+
+Não esconda.
+
+---
+
+# 304. FINAL P0/P1
+
+Local closure exige:
+
+```text id="lqkjp3"
+P0 = 0
+P1 = 0
+```
+
+---
+
+# 305. CRITICAL P2
+
+Local closure ou Production conforme classificação não pode ignorá-lo.
+
+---
+
+# 306. DOCUMENTATION
+
+Atualize/consolide:
+
+```text id="j6m4ce"
+Phase 11 architecture
+formal closure
+orchestrator
+security
+adversarial proof
+recovery
+integration
+certification
+```
+
+---
+
+# 307. NO DOCUMENTATION THEATER
+
+Markdown não substitui evidence.
+
+---
+
+# 308. README
+
+Status deve ser derivado da current certification.
+
+---
+
+# 309. NO PERMANENT "TRIPLE AAA" CLAIM
+
+Sempre vincule ao candidate/profile quando aplicável.
+
+---
+
+# 310. FINAL MACHINE SUCCESS STATE
+
+`phase11-result.json` deve conter:
+
+```json id="l12nce"
+{
+  "successState": {
+    "phase11FormalClosure": false,
+    "localEngineeringClosure": false,
+    "adversarialProofComplete": false,
+    "criticalInvariantsSatisfied": false,
+    "evidenceComplete": false,
+    "externalIntegrationClosure": false,
+    "supervisedPilotClosure": false,
+    "productionAssuranceClosure": false,
+    "eligibleForRequestedProfile": false
+  }
+}
+```
+
+Valores derivados.
+
+---
+
+# 311. PHASE11 FORMAL CLOSURE
+
+True somente quando AUD-11-01..07 e mandatory local gates estiverem fechados conforme regras.
+
+---
+
+# 312. ADVERSARIAL PROOF COMPLETE
+
+True somente quando red-team + negative certification validation estiverem completos.
+
+---
+
+# 313. CRITICAL INVARIANTS SATISFIED
+
+True somente quando todos os critical invariants passarem.
+
+---
+
+# 314. EVIDENCE COMPLETE
+
+True somente com evidence graph/hash/freshness válidos.
+
+---
+
+# 315. EXTERNAL INTEGRATION CLOSURE
+
+True somente com real required integrations.
+
+---
+
+# 316. PRODUCTION ASSURANCE CLOSURE
+
+Não pode ser true se qualquer upstream estiver false.
+
+---
+
+# 317. FALSE SUCCESS STATE TESTS
+
+Teste essas dependências.
+
+---
+
+# 318. FINAL CLEAN RUN
+
+Antes do resultado final:
+
+rode toda a suite local aplicável.
+
+---
+
+# 319. RECORD COMMANDS
+
+Registre exatamente o que foi executado.
+
+---

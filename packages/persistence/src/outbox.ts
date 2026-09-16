@@ -100,6 +100,15 @@ export type OutboxEffect = (
   event: OutboxEventRecord
 ) => unknown | Promise<unknown>
 
+/**
+ * Revalidates a claimed event immediately before a local effect is invoked.
+ * Requeues and lease recovery must pass through this seam again; a claim is
+ * not authority to bypass current policy, approval, tenant or state checks.
+ */
+export type OutboxDispatchRevalidation = (
+  event: OutboxEventRecord
+) => void | Promise<void>
+
 export type OutboxTakeoverCheck = boolean | (() => boolean | Promise<boolean>)
 
 export interface OutboxAckInput {
@@ -109,6 +118,8 @@ export interface OutboxAckInput {
   /** Claim-level fencing token returned by claimNext. */
   leaseToken?: string | undefined
   effect?: OutboxEffect
+  /** Rechecked after claim/takeover and immediately before the effect. */
+  revalidate?: OutboxDispatchRevalidation
   /** Used only when the injected effect intentionally returns no value. */
   result?: unknown
   /** Rechecked by the adapter inside the ack boundary before any effect. */
@@ -460,9 +471,25 @@ export class OutboxRepository implements DurableOutboxAdapter {
           error: OUTBOX_TAKEOVER_SUPPRESSED_ERROR
         })
       }
-      const effectResult = input.effect
-        ? input.effect(cloneEvent(current))
-        : input.result
+      const execute = (): unknown | Promise<unknown> =>
+        input.effect ? input.effect(cloneEvent(current)) : input.result
+      const revalidation = input.revalidate?.(cloneEvent(current))
+      if (isPromiseLike(revalidation)) {
+        return Promise.resolve(revalidation)
+          .then(execute)
+          .then((value) =>
+            this.commitAck(
+              current,
+              workerId,
+              input.leaseToken,
+              value === undefined && input.result !== undefined
+                ? cloneValue(input.result)
+                : cloneValue(value),
+              this.currentTime()
+            )
+          )
+      }
+      const effectResult = execute()
       if (isPromiseLike(effectResult)) {
         return Promise.resolve(effectResult).then((value) =>
           this.commitAck(

@@ -1,0 +1,1244 @@
+# ENCERRAMENTO DEFINITIVO — EXECUTION, EVIDENCE & FINAL VERDICT
+
+## ITEMS 319–END
+
+---
+
+# 319. RECORD COMMANDS
+
+Registre exatamente os comandos executados.
+
+Não escreva apenas:
+
+```text
+tests passed
+```
+
+Registre:
+
+```text
+command
+exitCode
+duration
+result
+artifact
+```
+
+---
+
+# 320. RECORD FAILURES
+
+Falhas também fazem parte da evidence.
+
+---
+
+# 321. RECORD SKIPS
+
+Todo skip deve possuir reason.
+
+---
+
+# 322. CRITICAL LOCAL SKIP
+
+Se um teste local obrigatório puder ser executado, mas foi skipped:
+
+```text
+localEngineeringClosure = FAIL
+```
+
+---
+
+# 323. EXTERNAL SKIP
+
+Se depender genuinamente de:
+
+```text
+credential
+external infrastructure
+human authorization
+real provider
+```
+
+registre:
+
+```text
+EXTERNAL_BLOCKED
+```
+
+---
+
+# 324. FINAL TEST INVENTORY
+
+Produza:
+
+```text
+unit
+contract
+architecture
+PostgreSQL
+E2E
+agent eval
+orchestrator eval
+adversarial
+chaos
+load
+restore
+certification mutation
+real integration
+pilot
+```
+
+---
+
+# 325. FINAL TEST COUNTS
+
+Para cada suite:
+
+```text
+passed
+failed
+skipped
+```
+
+---
+
+# 326. NO TEST-COUNT THEATER
+
+Quantidade não substitui qualidade.
+
+---
+
+# 327. CRITICAL PATH MAP
+
+Relacione testes aos invariants:
+
+```text
+tenant
+governance
+approval
+replan
+loop
+budget
+fencing
+effect safety
+recovery
+certification
+```
+
+---
+
+# 328. COVERAGE
+
+Registre coverage global e dos módulos críticos.
+
+---
+
+# 329. CRITICAL MODULES
+
+No mínimo:
+
+```text
+orchestrator
+policy
+risk
+approval
+tenant
+identity
+outbox/effect journal
+worker kernel
+certification engine
+```
+
+---
+
+# 330. CRITICAL BRANCH TARGET
+
+Meta desejada:
+
+```text
+>= 90%
+```
+
+quando razoável.
+
+---
+
+# 331. COVERAGE EXCEPTION
+
+Exige:
+
+```text
+module
+reason
+risk
+alternative evidence
+```
+
+---
+
+# 332. FINAL CHAOS MATRIX
+
+Produza:
+
+```text
+Scenario
+Failure Injection
+Expected Invariant
+Observed Result
+Evidence
+```
+
+---
+
+# 333. REQUIRED CHAOS SCENARIOS
+
+No mínimo:
+
+```text
+worker crash before effect
+worker crash after effect
+worker crash before ack
+lease expiration
+stale worker
+DB disconnect
+duplicate webhook
+out-of-order webhook
+approval expiration
+human takeover race
+loop amplification
+```
+
+---
+
+# 334. FINAL CHAOS CRITICAL RESULT
+
+Para critical scenarios:
+
+```text
+lostCommittedMessages = 0
+duplicateCriticalEffects = 0
+crossTenantEffects = 0
+unauthorizedCriticalEffects = 0
+```
+
+---
+
+# 335. FINAL LOAD
+
+Execute perfil reproduzível.
+
+---
+
+# 336. BASE LOAD
+
+Mantenha:
+
+```text
+10,000 events
+```
+
+ou perfil atual equivalente.
+
+---
+
+# 337. ORCHESTRATOR LOAD
+
+Inclua:
+
+```text
+Goals
+Plans
+Steps
+Observations
+Evaluations
+Replans
+```
+
+---
+
+# 338. MULTI-WORKER
+
+Quando suportado pelo ambiente.
+
+---
+
+# 339. MULTI-TENANT
+
+Obrigatório em load controlado quando possível.
+
+---
+
+# 340. LOAD INVARIANTS
+
+```text
+event loss = 0
+duplicate critical effects = 0
+cross-tenant effects = 0
+```
+
+---
+
+# 341. LOAD LIMITATIONS
+
+Documente.
+
+Não transforme benchmark local em SLA.
+
+---
+
+# 342. FINAL RECOVERY
+
+Execute backup/restore/resume conforme requisitos anteriores.
+
+---
+
+# 343. RESTORE STATE
+
+Inclua pelo menos:
+
+```text
+active Goal
+completed Goal
+replanned Goal
+partially consumed budget
+waiting approval
+outbox
+effect journal
+observations
+evaluations
+audit
+```
+
+---
+
+# 344. RESTORE RESULT
+
+Prove integridade.
+
+---
+
+# 345. RESUME RESULT
+
+Goal ativo retomável.
+
+---
+
+# 346. NO DUPLICATE AFTER RESTORE
+
+Obrigatório.
+
+---
+
+# 347. FINAL SUPPLY CHAIN
+
+Execute ferramentas existentes para:
+
+```text
+dependency audit
+secret scan
+SAST
+license check
+SBOM
+```
+
+---
+
+# 348. SUPPLY CHAIN ARTIFACT
+
+Candidate-bound.
+
+---
+
+# 349. ACTION PINNING
+
+Audite novamente GitHub Actions.
+
+---
+
+# 350. CI PERMISSIONS
+
+Least privilege.
+
+---
+
+# 351. LOCKFILE
+
+Consistente.
+
+---
+
+# 352. `npm ci`
+
+Use para fresh certification quando possível.
+
+---
+
+# 353. FRESH ENVIRONMENT
+
+Idealmente execute final verification em checkout limpo.
+
+---
+
+# 354. CLEAN CLONE PROOF
+
+Quando viável:
+
+```text
+clone
+checkout candidate
+npm ci
+verification
+```
+
+---
+
+# 355. NO MACHINE-SPECIFIC DEPENDENCY
+
+Audite paths absolutos como:
+
+```text
+/home/ricardo/...
+```
+
+em runtime/certification.
+
+---
+
+# 356. GAUNTLET PATHS
+
+Operational bookkeeping pode registrar workspace, mas isso não pode ser requisito para reproduzir certification.
+
+---
+
+# 357. ARTIFACT PORTABILITY
+
+Evidence deve usar paths relativos quando apropriado.
+
+---
+
+# 358. FINAL MANIFEST
+
+Gere:
+
+```text
+certification/phase11/manifest.json
+```
+
+---
+
+# 359. MANIFEST ENTRY
+
+Cada artifact:
+
+```text
+path
+sha256
+size
+producer
+candidate
+createdAt
+```
+
+---
+
+# 360. SELF-REFERENCE
+
+Evite hash circular do próprio manifest/result.
+
+---
+
+# 361. RELEASE MANIFEST
+
+Gere:
+
+```text
+certification/phase11/release-manifest.json
+```
+
+---
+
+# 362. RELEASE MANIFEST CONTENT
+
+Quando disponível:
+
+```text
+candidateCommit
+treeHash
+behaviorHash
+buildId
+containerDigest
+SBOMDigest
+migrationDigest
+agentVersion
+policyVersion
+toolVersions
+promptVersions
+integrationEvidence
+certificationId
+```
+
+---
+
+# 363. NO INVENTED VALUE
+
+Use `null`/explicit status quando indisponível.
+
+---
+
+# 364. CURRENT POINTER
+
+Gere/atualize:
+
+```text
+certification/current.json
+```
+
+por script.
+
+---
+
+# 365. NO MANUAL CURRENT POINTER
+
+Obrigatório.
+
+---
+
+# 366. CURRENT POINTER CONSISTENCY
+
+Deve apontar para:
+
+```text
+existing
+schema-valid
+fresh
+current Phase 11 result
+```
+
+---
+
+# 367. EVIDENCE GRAPH
+
+Finalize.
+
+---
+
+# 368. GATE MATRIX
+
+Finalize.
+
+---
+
+# 369. INVARIANTS
+
+Finalize.
+
+---
+
+# 370. FINDINGS
+
+Finalize.
+
+---
+
+# 371. PHASE11 RESULT
+
+Finalize.
+
+---
+
+# 372. ARTIFACT CONSISTENCY TEST
+
+Compare:
+
+```text
+current
+result
+gates
+invariants
+evidence graph
+manifest
+release manifest
+findings
+```
+
+---
+
+# 373. CANDIDATE CONSISTENCY
+
+Todos devem concordar.
+
+---
+
+# 374. PROFILE CONSISTENCY
+
+Todos devem concordar.
+
+---
+
+# 375. FINDING CONSISTENCY
+
+P0/P1 não podem desaparecer do result.
+
+---
+
+# 376. GATE CONSISTENCY
+
+Gate FAIL não pode virar success state true.
+
+---
+
+# 377. EXTERNAL CONSISTENCY
+
+Integration artifacts devem concordar com final result.
+
+---
+
+# 378. SUCCESS STATE CONSISTENCY
+
+Obrigatório.
+
+---
+
+# 379. CERTIFICATION VERIFY
+
+Execute.
+
+---
+
+# 380. EVIDENCE VERIFY
+
+Execute.
+
+---
+
+# 381. PROMOTION CHECK
+
+Execute.
+
+---
+
+# 382. NEGATIVE CERTIFICATION
+
+Execute.
+
+---
+
+# 383. MUTATION CLEANUP
+
+Todas as mutations adversariais devem ser revertidas antes do candidate final.
+
+---
+
+# 384. MUTATION RESIDUE TEST
+
+Verifique working tree/diff.
+
+---
+
+# 385. FINAL WORKING TREE
+
+Para final candidate:
+
+```text
+CLEAN
+```
+
+quando certification model exigir.
+
+---
+
+# 386. FINAL CANDIDATE IDENTITY
+
+Capture:
+
+```text
+commit
+tree
+behavior hash
+```
+
+quando aplicável.
+
+---
+
+# 387. EVIDENCE REFRESH
+
+Regere somente evidence afetada.
+
+---
+
+# 388. NO BLIND GLOBAL REUSE
+
+Mudança de runtime pode invalidar várias suites.
+
+---
+
+# 389. DEPENDENCY-AWARE INVALIDATION
+
+Use evidence graph.
+
+---
+
+# 390. INDEPENDENT CRITIC STARTS NOW
+
+Somente depois da candidate certification.
+
+---
+
+# 391. CRITIC MUST USE FRESH CONTEXT
+
+Não reutilize conclusões do builder como premissas.
+
+---
+
+# 392. CRITIC CHECK — ARCHITECTURE
+
+Pergunte:
+
+```text
+Does any production effect bypass Governance?
+```
+
+---
+
+# 393. CRITIC CHECK — ORCHESTRATOR
+
+```text
+Can Goal falsely complete?
+Can Replanner escalate?
+Can loop escape bounds?
+```
+
+---
+
+# 394. CRITIC CHECK — DISTRIBUTED SAFETY
+
+```text
+Can stale worker commit?
+Can effect duplicate?
+Can budget reset?
+```
+
+---
+
+# 395. CRITIC CHECK — TENANT
+
+```text
+Can any new Orchestrator relation cross tenant?
+```
+
+---
+
+# 396. CRITIC CHECK — APPROVAL
+
+```text
+Can approval be mutated, replayed or raced?
+```
+
+---
+
+# 397. CRITIC CHECK — CERTIFICATION
+
+```text
+Can stale/dirty/controlled evidence produce false GO?
+```
+
+---
+
+# 398. CRITIC CHECK — EXTERNAL CLAIMS
+
+```text
+Does any artifact claim real validation without real execution?
+```
+
+---
+
+# 399. CRITIC FINDINGS
+
+Classifique:
+
+```text
+P0
+P1
+P2
+P3
+P4
+```
+
+---
+
+# 400. CRITIC P0/P1
+
+Bloqueia local closure até correção.
+
+---
+
+# 401. CRITIC CRITICAL P2
+
+Bloqueia profile correspondente.
+
+---
+
+# 402. CRITIC REPORT
+
+Gere:
+
+```text
+docs/phase11/PHASE11_INDEPENDENT_CRITIC.md
+```
+
+---
+
+# 403. CRITIC EVIDENCE
+
+Relacione findings a arquivos/testes.
+
+---
+
+# 404. IF CRITIC FINDS LOCAL BLOCKER
+
+Corrija.
+
+---
+
+# 405. THEN RECERTIFY
+
+Obrigatório.
+
+---
+
+# 406. THEN CRITIC AGAIN
+
+Ao menos para área afetada.
+
+---
+
+# 407. CLOSURE LOOP ENDS
+
+Quando não houver blocking local finding.
+
+---
+
+# 408. FINAL SCORING
+
+Agora calcule scores.
+
+---
+
+# 409. SCORE DOMAINS
+
+```text
+Architecture
+Engineering
+Testing
+Security
+Reliability
+Agent Engineering
+Orchestrator Engineering
+Governance
+Observability
+Auditability
+Data Governance
+DevEx
+Production Readiness
+```
+
+---
+
+# 410. SCORES REQUIRE RATIONALE
+
+Obrigatório.
+
+---
+
+# 411. SCORES REQUIRE EVIDENCE
+
+Obrigatório.
+
+---
+
+# 412. PRODUCTION READINESS
+
+Deve refletir external proof.
+
+---
+
+# 413. EXAMPLE
+
+É válido:
+
+```text
+Architecture = 98
+Engineering = 98
+Production Readiness = 89
+Certification = AAA_CANDIDATE
+```
+
+---
+
+# 414. DO NOT FORCE ALL SCORES >=97
+
+Targets não são resultado obrigatório.
+
+---
+
+# 415. FINAL FINDING RECONCILIATION
+
+Atualize AUD-11-01..08.
+
+---
+
+# 416. EXPECTED LOCAL TARGET
+
+Objetivo:
+
+```text
+AUD-11-01 CLOSED
+AUD-11-02 CLOSED
+AUD-11-03 CLOSED
+AUD-11-04 CLOSED
+AUD-11-05 CLOSED
+AUD-11-06 CLOSED
+AUD-11-07 CLOSED
+```
+
+---
+
+# 417. AUD-11-08
+
+Pode permanecer:
+
+```text
+PARTIAL / EXTERNAL_BLOCKED
+```
+
+até real validation.
+
+---
+
+# 418. LOCAL P0 TARGET
+
+```text
+0
+```
+
+---
+
+# 419. LOCAL P1 TARGET
+
+```text
+0
+```
+
+---
+
+# 420. CRITICAL LOCAL P2 TARGET
+
+```text
+0
+```
+
+---
+
+# 421. LOCAL ENGINEERING CLOSURE
+
+Se 416–420 + mandatory gates passarem:
+
+```text
+PASS
+```
+
+---
+
+# 422. ADVERSARIAL PROOF
+
+Se governance + tenant + distributed + certification red-team passarem:
+
+```text
+PASS
+```
+
+---
+
+# 423. PHASE 11 FORMAL CERTIFICATION
+
+Se canonical evidence/current result passarem:
+
+```text
+PASS
+```
+
+---
+
+# 424. EXTERNAL STACK
+
+Calcule separadamente.
+
+---
+
+# 425. AAA_CANDIDATE TARGET
+
+Se:
+
+```text
+Local Engineering Closure = PASS
+Adversarial Proof = PASS
+Phase 11 Formal Certification = PASS
+External Production Gates remain
+```
+
+resultado esperado:
+
+```text
+AAA_CANDIDATE
+```
+
+se calculus confirmar.
+
+---
+
+# 426. TRIPLE AAA TARGET
+
+Somente com real closure.
+
+---
+
+# 427. FINAL RESPONSE FORMAT
+
+A resposta final do Codex deve começar:
+
+```text
+Decision:
+Certification:
+Eligible Profile:
+Candidate Commit:
+Candidate Tree:
+```
+
+---
+
+# 428. SECTION — EXECUTIVE RESULT
+
+Explique em poucas linhas.
+
+---
+
+# 429. SECTION — FINDINGS CLOSURE
+
+Tabela:
+
+```text
+AUD-11-01 ... AUD-11-08
+```
+
+---
+
+# 430. SECTION — IMPLEMENTATION
+
+Somente mudanças reais.
+
+---
+
+# 431. SECTION — TESTS
+
+Resultados observados.
+
+---
+
+# 432. SECTION — ADVERSARIAL PROOF
+
+Mostre ataques e resultados.
+
+---
+
+# 433. SECTION — DISTRIBUTED SAFETY
+
+Mostre:
+
+```text
+fencing
+crash-after-effect
+recovery
+budget restart
+```
+
+---
+
+# 434. SECTION — CERTIFICATION
+
+Mostre artifacts e negative validation.
+
+---
+
+# 435. SECTION — REAL STACK
+
+Mostre status real.
+
+---
+
+# 436. SECTION — INDEPENDENT CRITIC
+
+Resumo dos findings.
+
+---
+
+# 437. SECTION — SCORES
+
+Tabela.
+
+---
+
+# 438. SECTION — REMAINING BLOCKERS
+
+Somente reais.
+
+---
+
+# 439. SECTION — FINAL SUCCESS STATE
+
+Use bloco abaixo.
+
+---
+
+# 440. FINAL SUCCESS STATE
+
+```text
+============================================================
+CVG-AGENT-SECRETARY-V2
+PHASE 11 — FINAL CLOSURE
+============================================================
+
+Candidate Commit:
+<sha>
+
+Candidate Tree:
+<hash>
+
+Behavior Hash:
+<hash | N/A>
+
+Working Tree:
+<CLEAN | DIRTY>
+
+Current Certification:
+<PHASE11 | OTHER>
+
+Certification Fresh:
+<PASS | FAIL>
+
+
+FINDINGS
+------------------------------------------------------------
+AUD-11-01 Certification Canonicalization:
+<CLOSED | OPEN>
+
+AUD-11-02 Candidate Binding:
+<CLOSED | OPEN>
+
+AUD-11-03 Replan Proof:
+<CLOSED | OPEN>
+
+AUD-11-04 Loop/Budget Proof:
+<CLOSED | OPEN>
+
+AUD-11-05 Fencing/Stale Worker:
+<CLOSED | OPEN>
+
+AUD-11-06 Crash-After-Effect:
+<CLOSED | OPEN>
+
+AUD-11-07 Trace/Lineage:
+<CLOSED | OPEN>
+
+AUD-11-08 Real Stack:
+<CLOSED | PARTIAL | OPEN>
+
+
+CRITICAL INVARIANTS
+------------------------------------------------------------
+Model Cannot Grant Authority:
+<PASS | FAIL>
+
+Orchestrator Cannot Bypass Governance:
+<PASS | FAIL>
+
+Planner Cannot Grant Capability:
+<PASS | FAIL>
+
+Replanner Cannot Escalate:
+<PASS | FAIL>
+
+Risk Cannot Be Downgraded:
+<PASS | FAIL>
+
+Approval Payload Binding:
+<PASS | FAIL>
+
+Approval Single Use:
+<PASS | FAIL>
+
+Execution Chain Tenant Bound:
+<PASS | FAIL>
+
+Critical Effect Idempotency/Reconciliation:
+<PASS | FAIL>
+
+Stale Worker Cannot Commit:
+<PASS | FAIL>
+
+Budget Survives Restart:
+<PASS | FAIL>
+
+Loop Is Bounded:
+<PASS | FAIL>
+
+Goal Completion Requires Evidence:
+<PASS | FAIL>
+
+Human Takeover Suppresses Automation:
+<PASS | FAIL>
+
+Certification Candidate Bound:
+<PASS | FAIL>
+
+Production Claims Require Real Proof:
+<PASS | FAIL>
+
+
+DISTRIBUTED SAFETY
+------------------------------------------------------------
+Replan v1→v2:
+<PASS | FAIL>
+
+Plan Lineage:
+<PASS | FAIL>
+
+Loop Detection:
+<PASS | FAIL>
+
+Budget Exhaustion:
+<PASS | FAIL>
+
+Budget Restart Persistence:
+<PASS | FAIL>
+
+Lease Safety:
+<PASS | FAIL>
+
+Fencing:
+<PASS | FAIL>
+
+Crash Before Effect:
+<PASS | FAIL>
+
+Crash After Effect:
+<PASS | FAIL>
+
+Unknown Effect Reconciliation:
+<PASS | FAIL>
+
+Duplicate Critical Effects:
+<ZERO | NONZERO>
+
+Lost Committed Messages:
+```

@@ -65,6 +65,7 @@ import {
   RoleSchema
 } from '@cvg/shared'
 import type { ControlledWorkerHandlers } from './controlled-worker.ts'
+import { createControlledOutboxRevalidator } from './outbox-revalidation.ts'
 
 export const WORKER_RUNTIME_ENV = 'CVG_WORKER_RUNTIME'
 export const DURABLE_KERNEL_ORCHESTRATOR_ENV = 'CVG_DURABLE_KERNEL_ORCHESTRATOR'
@@ -1397,6 +1398,10 @@ export function createPostgresKernelHandlers(
   }
 
   return {
+    revalidateOutbox: createControlledOutboxRevalidator(
+      runtime.conversations,
+      runtime.tenantId
+    ),
     inboundProcess: async (event) => {
       if (!event.conversationId || !event.inboundMessageId) {
         throw new Error('Inbound outbox event is missing runtime identifiers')

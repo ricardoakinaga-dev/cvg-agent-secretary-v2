@@ -48,6 +48,7 @@ import {
   type PostgresKernelRuntime
 } from './kernel-composition.ts'
 import type { WorkerTelemetry } from './worker-observability.ts'
+import { createControlledOutboxRevalidator } from './outbox-revalidation.ts'
 
 export const POSTGRES_CONTROLLED_QUEUE_ADAPTER = 'postgres-controlled' as const
 
@@ -372,8 +373,17 @@ export function createPostgresControlledHandlers(
   }
 
   const configuredAgentId = resolveWorkerAgentId(env)
+  const configuredTenantId = TenantIdSchema.safeParse(env.CVG_WORKER_TENANT_ID)
 
   return {
+    ...(configuredTenantId.success
+      ? {
+          revalidateOutbox: createControlledOutboxRevalidator(
+            conversations,
+            configuredTenantId.data
+          )
+        }
+      : {}),
     inboundProcess: async (event) => {
       if (!event.conversationId || !event.inboundMessageId) {
         throw new Error('Inbound outbox event is missing runtime identifiers')

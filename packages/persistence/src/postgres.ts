@@ -126,7 +126,8 @@ const defaultPostgresMigrations = [
   '0018_outbox_lease_fencing',
   '0019_orchestrator_state',
   '0020_orchestrator_lineage_hardening',
-  '0021_orchestrator_iteration_budget'
+  '0021_orchestrator_iteration_budget',
+  '0022_orchestrator_evaluation_lineage'
 ]
 
 export interface PostgresQueryable {
@@ -1379,6 +1380,12 @@ export class PostgresRuntimeRepository {
 
     let result = prepared.journalResult
     if (!prepared.hasJournal) {
+      if (rawInput.revalidate) {
+        // Requeued and recovered events re-enter the same governance seam
+        // immediately before the local effect. Claim ownership alone is not
+        // permission to bypass current tenant, approval or state checks.
+        await rawInput.revalidate(mapDurableOutboxRow(prepared.event))
+      }
       if (rawInput.effect) {
         // The handler receives only the durable event envelope. It runs after
         // the validation transaction has committed, so it may use the same

@@ -6,6 +6,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   DEPLOYMENT_PROFILES,
+  PHASE11_2_REQUIRED_GATES,
   Phase11CurrentResultSchema,
   computePromotionDecision
 } from './lib/phase11-rules.mjs'
@@ -40,7 +41,11 @@ try {
 const invalidProfile = !DEPLOYMENT_PROFILES.includes(requestedProfile)
 const promotion =
   result && !invalidProfile
-    ? computePromotionDecision({ result, requestedProfile })
+    ? computePromotionDecision({
+        result,
+        requestedProfile,
+        requiredGates: PHASE11_2_REQUIRED_GATES
+      })
     : {
         eligible: false,
         currentProfile: result?.deploymentProfile ?? 'UNKNOWN',

@@ -176,5 +176,7 @@ export interface GovernedAgentRuntimeOptions {
   effectScopes?: Partial<Record<Capability, EffectScope>>
   realEffectAuthorizations?: readonly string[]
   effectJournal?: EffectJournalPort
+  /** Durable compositions require journal protection for every non-read capability. */
+  requireDurable?: boolean
   reservationTtlMs?: number
 }

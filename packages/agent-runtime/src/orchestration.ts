@@ -10,6 +10,7 @@ import {
 import {
   CapabilitySchema,
   ToolRiskLevelSchema,
+  capabilityRisk,
   type Capability,
   type ToolRiskLevel
 } from '@cvg/policy-engine'
@@ -288,6 +289,8 @@ export interface Plan {
   version: number
   parentPlanId: string | null
   reason: string
+  /** Evaluation record that caused this plan, when it is a replan. */
+  triggeringEvaluationId: string | null
   status: PlanStatus
   createdAt: Date
   updatedAt: Date
@@ -410,6 +413,7 @@ export interface GoalEvaluation {
   reason: string
   evidence: OperationalEvidence[]
   fingerprint?: string
+  id?: string
 }
 
 export interface ObservationRecord {
@@ -477,6 +481,7 @@ export interface ActivatePlanInput {
   steps: PlanStepDraft[]
   consumeReplan: boolean
   fingerprint: string
+  triggeringEvaluationId?: string | null
 }
 
 export interface ActivatePlanResult {
@@ -924,6 +929,21 @@ function safeHash(value: unknown): string {
   }
 }
 
+const PLAN_RISK_RANK: Readonly<Record<ToolRiskLevel, number>> = Object.freeze({
+  READ_ONLY: 0,
+  LOW_RISK_WRITE: 1,
+  MEDIUM_RISK_WRITE: 2,
+  HIGH_RISK_WRITE: 3,
+  ADMIN: 4
+})
+
+function riskCoversCapability(
+  declared: ToolRiskLevel,
+  capability: Capability
+): boolean {
+  return PLAN_RISK_RANK[declared] >= PLAN_RISK_RANK[capabilityRisk(capability)]
+}
+
 /** Validates all graph invariants before a plan can become ACTIVE. */
 export function validatePlanGraph(
   plan: Pick<Plan, 'id' | 'goalId' | 'tenantId' | 'version'>,
@@ -999,6 +1019,28 @@ export function validatePlanGraph(
     ToolRiskLevelSchema.parse(step.riskLevel)
     ApprovalRequirementSchema.parse(step.approvalRequirement)
     DataClassificationSchema.parse(step.intent.dataClassification)
+    const intentCapability = CapabilitySchema.parse(step.intent.capability)
+    if (!step.requiredCapabilities.includes(intentCapability)) {
+      throw new OrchestrationError(
+        'invalid_plan',
+        `Plan step ${id} intent capability ${intentCapability} is not declared in requiredCapabilities`
+      )
+    }
+    if (!riskCoversCapability(step.riskLevel, intentCapability)) {
+      throw new OrchestrationError(
+        'invalid_plan',
+        `Plan step ${id} risk ${step.riskLevel} cannot cover capability ${intentCapability}`
+      )
+    }
+    if (
+      step.intent.resource.tenantId !== undefined &&
+      step.intent.resource.tenantId !== plan.tenantId
+    ) {
+      throw new OrchestrationError(
+        'invalid_plan',
+        `Plan step ${id} resource tenant does not match the plan tenant`
+      )
+    }
   }
 
   const normalizedDependencies = new Map<string, string[]>()
@@ -1036,33 +1078,40 @@ export function validatePlanGraph(
   }
   for (const id of [...ids].sort()) visit(id)
 
-  const fingerprint = hashCanonical(
-    [...drafts]
-      .map((step, index) => ({
-        id: draftStepId(step, index),
-        type: step.type,
-        description: step.description,
-        dependencies: [...(step.dependencies ?? [])].sort(),
-        requiredCapabilities: [...step.requiredCapabilities].sort(),
-        riskLevel: step.riskLevel,
-        approvalRequirement: step.approvalRequirement,
-        inputHash: safeHash(step.input ?? null),
-        expectedOutcome: step.expectedOutcome ?? null,
-        timeoutMs: step.timeoutMs ?? 30_000,
-        toolId: step.toolId ?? null,
-        toolVersion: step.toolVersion ?? null,
-        intent: {
-          capability: step.intent.capability,
-          action: step.intent.action,
-          resource: step.intent.resource,
-          dataClassification: step.intent.dataClassification,
-          idempotencyKey: step.intent.idempotencyKey,
-          modelMessages: step.intent.modelMessages,
-          structuredOutput: step.intent.structuredOutput
-        }
-      }))
-      .sort((left, right) => left.id.localeCompare(right.id))
+  // The fingerprint is a semantic graph identity. Generated step IDs and
+  // dependency labels are deliberately replaced with their stable positions
+  // in the planner-provided draft, so a replan cannot evade LOOP_DETECTED by
+  // minting a new identifier for the same behavior.
+  const indexById = new Map(
+    drafts.map((step, index) => [draftStepId(step, index), index])
   )
+  const fingerprint = hashCanonical({
+    schemaVersion: 'semantic-plan-v2',
+    steps: [...drafts].map((step) => ({
+      type: step.type,
+      description: step.description,
+      dependencies: [...(step.dependencies ?? [])]
+        .map((dependency) => indexById.get(dependency))
+        .sort((left, right) => (left ?? -1) - (right ?? -1)),
+      requiredCapabilities: [...step.requiredCapabilities].sort(),
+      riskLevel: step.riskLevel,
+      approvalRequirement: step.approvalRequirement,
+      inputHash: safeHash(step.input ?? null),
+      expectedOutcome: step.expectedOutcome ?? null,
+      timeoutMs: step.timeoutMs ?? 30_000,
+      toolId: step.toolId ?? null,
+      toolVersion: step.toolVersion ?? null,
+      intent: {
+        capability: step.intent.capability,
+        action: step.intent.action,
+        resource: step.intent.resource,
+        dataClassification: step.intent.dataClassification,
+        idempotencyKey: step.intent.idempotencyKey,
+        modelMessages: step.intent.modelMessages,
+        structuredOutput: step.intent.structuredOutput
+      }
+    }))
+  })
   return { topologicalOrder: order, fingerprint }
 }
 
@@ -1473,6 +1522,7 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
       version: input.planVersion,
       parentPlanId: input.parentPlanId,
       reason: input.reason,
+      triggeringEvaluationId: input.triggeringEvaluationId ?? null,
       status: 'ACTIVE',
       createdAt: new Date(createdAt),
       updatedAt: new Date(createdAt),
@@ -2948,7 +2998,7 @@ export class GoalPlanOrchestrator {
         'Goal cannot be completed without verified operational evidence'
       )
     }
-    await this.options.store.recordEvaluation({
+    const evaluationRecord = await this.options.store.recordEvaluation({
       tenantId,
       goalId: goal.id,
       planId: plan.id,
@@ -2959,7 +3009,11 @@ export class GoalPlanOrchestrator {
       result: evaluation.result,
       reason: evaluation.reason
     })
-    return { goal, evaluation, result: evaluation.result }
+    return {
+      goal,
+      evaluation: { ...evaluation, id: evaluationRecord.id },
+      result: evaluation.result
+    }
   }
 
   private async replan(
@@ -3018,7 +3072,8 @@ export class GoalPlanOrchestrator {
       reason: draft.reason,
       steps: draft.steps,
       consumeReplan: true,
-      fingerprint: graph.fingerprint
+      fingerprint: graph.fingerprint,
+      triggeringEvaluationId: evaluation.id ?? null
     })
     const planned = await this.transition(
       activated.goal,

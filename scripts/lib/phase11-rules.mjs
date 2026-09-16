@@ -5,6 +5,7 @@ import { z } from 'zod'
 import {
   buildCandidateRecord,
   collectCandidateFiles,
+  computeCandidateTreeHash,
   diffCandidateFiles,
   isCandidateExcluded,
   sha256Bytes
@@ -33,6 +34,63 @@ export const PHASE11_REQUIRED_GATES = [
   'evidence_graph',
   'candidate_clean',
   'node_target'
+]
+
+/**
+ * Phase 11.1 remains replayable as a historical contract. Phase 11.2 adds
+ * explicit closure, red-team, trace, preflight and clean-clone gates without
+ * changing the meaning of the older result files.
+ */
+export const PHASE11_2_REQUIRED_GATES = [
+  ...PHASE11_REQUIRED_GATES,
+  'verify',
+  'production_preflight',
+  'evidence_reports',
+  'independent_critic',
+  'trace_lineage',
+  'governance_redteam',
+  'tenant_redteam',
+  'certification_redteam',
+  'adversarial_proof',
+  'outbox_replay',
+  'clone_verify',
+  'PHASE11_FORMAL_CLOSURE'
+]
+
+export const PHASE11_REQUIRED_INVARIANTS = [
+  'INV-001',
+  'INV-002',
+  'INV-003',
+  'INV-004',
+  'INV-005',
+  'INV-006',
+  'INV-007',
+  'INV-008',
+  'INV-009',
+  'INV-010',
+  'INV-011',
+  'INV-012',
+  'INV-013',
+  'INV-014',
+  'INV-015',
+  'INV-016'
+]
+
+export const PHASE11_EVIDENCE_STAGES = [
+  'inbound',
+  'observation',
+  'understand',
+  'goal',
+  'plan',
+  'govern',
+  'step',
+  'attempt',
+  'outbox',
+  'effect',
+  'observed_result',
+  'evaluation',
+  'replan',
+  'response'
 ]
 
 export const PHASE11_GATE_STATUSES = [
@@ -108,6 +166,22 @@ export const PHASE11_FORMAL_PROMPT_SHA256 = {
     '356292e25d203724367feeb25f8b39cc0e3aec46c7196ddc1ef95edd443b010b'
 }
 
+/** Exact six-source intake archived for the Phase 11.2 Triple AAA task. */
+export const PHASE11_2_PROMPT_SHA256 = {
+  'pasted-text-1.txt':
+    'ba522e3f9daf37af0a4c754f85eaeb2b78e8376d3bfca6405ac7e414d00f7a70',
+  'pasted-text-2.txt':
+    '98e1a22274dee5d206797917b3d8c6b25a7beed6e1651d96e9a54fa3fe1a5371',
+  'pasted-text-3.txt':
+    'af86835e3773c21268d397be55df1abbab0d8b02b660a2fb546f896ae649a3db',
+  'pasted-text-4.txt':
+    'd15c7ad503e8faacf793298867d450672c5aae23b2e194923aeaec7bec8cda0e',
+  'pasted-text-5.txt':
+    '47ad18efd05aa5802d0cda4a4160bded5db02c8860e07a2bdfaca394f98e95c9',
+  'pasted-text-6.txt':
+    'e12e76dcb447278d3a03fde39df877722265a39f0a2c82fa9b1928f023571cc9'
+}
+
 const phase11Commit = z.string().regex(/^[0-9a-f]{7,64}$/)
 const digest = z.string().regex(/^[0-9a-f]{64}$/)
 const treeDigest = z.string().regex(/^[0-9a-f]{40,64}$/)
@@ -138,7 +212,11 @@ export const Phase11ArtifactSchema = z.object({
 export const Phase11InvariantSchema = z.object({
   id: z.string().min(1),
   title: z.string().min(1),
+  description: z.string().min(1).optional(),
   severity: z.enum(['critical', 'high', 'medium', 'low']),
+  implementationRefs: z.array(z.string().min(1)).optional(),
+  testRefs: z.array(z.string().min(1)).optional(),
+  evidenceRefs: z.array(z.string().min(1)).optional(),
   status: z.enum(['PASS', 'FAIL', 'BLOCKED', 'NOT_RUN', 'INVALID']),
   evidence: z.array(z.string().min(1)),
   rationale: z.string().min(1)
@@ -147,9 +225,15 @@ export const Phase11InvariantSchema = z.object({
 export const Phase11FindingSchema = z.object({
   id: z.string().min(1),
   title: z.string().min(1),
+  description: z.string().min(1).optional(),
   status: z.enum(['CLOSED', 'PARTIAL', 'OPEN', 'BLOCKED']),
   severity: z.enum(['P0', 'P1', 'P2', 'EXTERNAL']),
   blocking: z.boolean(),
+  rootCause: z.string().min(1).optional(),
+  fix: z.string().min(1).optional(),
+  testRefs: z.array(z.string().min(1)).optional(),
+  evidenceRefs: z.array(z.string().min(1)).optional(),
+  blockingProfiles: z.array(z.enum(DEPLOYMENT_PROFILES)).optional(),
   evidence: z.array(z.string().min(1)),
   remainingRisk: z.string().min(1)
 })
@@ -158,6 +242,7 @@ export const Phase11CandidateSchema = z.object({
   candidateId: digest,
   commit: phase11Commit,
   treeHash: treeDigest,
+  gitTreeHash: treeDigest.optional(),
   branch: z.string().min(1),
   dirty: z.boolean(),
   untrackedFiles: z.array(z.string()),
@@ -192,6 +277,8 @@ const successStateShape = z.object({
   externalValidationComplete: z.boolean(),
   pilotComplete: z.boolean(),
   productionProofComplete: z.boolean(),
+  adversarialProofComplete: z.boolean(),
+  phase11FormalClosure: z.boolean(),
   eligibleForRequestedProfile: z.boolean()
 })
 
@@ -284,7 +371,8 @@ export function buildPhase11Candidate(root, now = new Date()) {
     schemaVersion: 'phase11-candidate-v2',
     candidateId: base.candidateId,
     commit: base.git.head,
-    treeHash: gitOutput(root, ['rev-parse', 'HEAD^{tree}']),
+    treeHash: computeCandidateTreeHash(base.files),
+    gitTreeHash: gitOutput(root, ['rev-parse', 'HEAD^{tree}']),
     branch: base.git.branch,
     dirty: base.git.dirty,
     untrackedFiles: listUntrackedFiles(root),
@@ -299,12 +387,16 @@ export function verifyPromptIntegrity(root, sourceSet = 'formal') {
   const expected =
     sourceSet === 'historical'
       ? PHASE11_PROMPT_SHA256
-      : PHASE11_FORMAL_PROMPT_SHA256
+      : sourceSet === 'phase11_2'
+        ? PHASE11_2_PROMPT_SHA256
+        : PHASE11_FORMAL_PROMPT_SHA256
   const sourceRoot = path.join(
     root,
     sourceSet === 'historical'
       ? 'docs/11_phase11/prompt-master/source'
-      : 'docs/11_phase11/prompt-master/20260915-formal-closure/source'
+      : sourceSet === 'phase11_2'
+        ? 'docs/11_phase11/prompt-master/20260916-triple-aaa/source'
+        : 'docs/11_phase11/prompt-master/20260915-formal-closure/source'
   )
   const files = Object.entries(expected).map(([file, expectedSha256]) => {
     const relativePath = path
@@ -412,31 +504,70 @@ export function buildEvidenceGraph(
     const requirementNode = `requirement:${requirement.id}`
     add(requirementNode, 'requirement', { status: requirement.status })
     link(candidateNode, requirementNode, 'evaluates')
+    const implementationNodes = []
+    const testNodes = []
+    const executionNodes = []
+    const artifactNodes = []
+    const gateNodes = []
     for (const item of requirement.implementation ?? []) {
       const node = `implementation:${item}`
       add(node, 'implementation')
       link(requirementNode, node, 'implemented_by')
+      implementationNodes.push(node)
     }
     for (const item of requirement.tests ?? []) {
       const node = `test:${item}`
       add(node, 'test')
       link(requirementNode, node, 'verified_by')
+      testNodes.push(node)
+      const executionNode = `execution:${item}`
+      add(executionNode, 'execution')
+      link(node, executionNode, 'executed_as')
+      executionNodes.push(executionNode)
     }
     for (const item of requirement.evidence ?? []) {
       const node = `evidence:${item}`
       add(node, 'evidence')
       link(requirementNode, node, 'evidenced_by')
+      const artifactNode = `artifact:${item}`
+      add(artifactNode, 'artifact')
+      link(node, artifactNode, 'materialized_as')
+      artifactNodes.push(artifactNode)
     }
     for (const item of requirement.gates ?? []) {
       const node = `gate:${item}`
       add(node, 'gate')
       link(requirementNode, node, 'gated_by')
+      gateNodes.push(node)
+    }
+    for (const implementationNode of implementationNodes) {
+      for (const testNode of testNodes) {
+        link(implementationNode, testNode, 'verified_by')
+      }
+    }
+    for (const executionNode of executionNodes) {
+      for (const artifactNode of artifactNodes) {
+        link(executionNode, artifactNode, 'produced')
+      }
+    }
+    for (const artifactNode of artifactNodes) {
+      for (const gateNode of gateNodes) {
+        link(artifactNode, gateNode, 'evaluated_by')
+      }
     }
   }
   for (const gate of gates) {
     const gateNode = `gate:${gate.id}`
     add(gateNode, 'gate', { status: gate.status })
     link(gateNode, candidateNode, 'binds_to')
+  }
+  for (const [index, stage] of PHASE11_EVIDENCE_STAGES.entries()) {
+    const stageNode = `stage:${stage}`
+    add(stageNode, 'runtime_stage', { order: index + 1 })
+    link(candidateNode, stageNode, 'observes')
+    if (index > 0) {
+      link(`stage:${PHASE11_EVIDENCE_STAGES[index - 1]}`, stageNode, 'follows')
+    }
   }
   for (const invariant of options.invariants ?? []) {
     const invariantNode = `invariant:${invariant.id}`
@@ -453,7 +584,18 @@ export function buildEvidenceGraph(
   for (const gate of gates) {
     link(`gate:${gate.id}`, 'decision:phase11', 'contributes_to')
   }
-  return { schemaVersion: 1, nodes, edges }
+  for (const invariant of options.invariants ?? []) {
+    const invariantNode = `invariant:${invariant.id}`
+    for (const gate of gates) {
+      link(`gate:${gate.id}`, invariantNode, 'proves')
+    }
+  }
+  return {
+    schemaVersion: 1,
+    evidenceChain: requirements.length > 0,
+    nodes,
+    edges
+  }
 }
 
 export function verifyEvidenceGraph(graph) {
@@ -483,6 +625,50 @@ export function verifyEvidenceGraph(graph) {
   }
   if (!ids.has('decision:phase11')) {
     errors.push('required_node_missing:decision:phase11')
+  }
+  for (const stage of PHASE11_EVIDENCE_STAGES) {
+    if (!ids.has(`stage:${stage}`)) {
+      errors.push(`required_node_missing:stage:${stage}`)
+    }
+  }
+  for (let index = 1; index < PHASE11_EVIDENCE_STAGES.length; index += 1) {
+    const from = `stage:${PHASE11_EVIDENCE_STAGES[index - 1]}`
+    const to = `stage:${PHASE11_EVIDENCE_STAGES[index]}`
+    if (
+      !graph.edges.some(
+        (edge) =>
+          edge.from === from && edge.to === to && edge.relation === 'follows'
+      )
+    ) {
+      errors.push(`required_stage_edge_missing:${from}:${to}`)
+    }
+  }
+  if (graph.evidenceChain === true) {
+    for (const kind of [
+      'implementation',
+      'test',
+      'execution',
+      'artifact',
+      'gate',
+      'invariant'
+    ]) {
+      if (!graph.nodes.some((node) => node.kind === kind)) {
+        errors.push(`required_node_kind_missing:${kind}`)
+      }
+    }
+    const requiredRelations = [
+      'implemented_by',
+      'verified_by',
+      'executed_as',
+      'produced',
+      'evaluated_by',
+      'proves'
+    ]
+    for (const relation of requiredRelations) {
+      if (!graph.edges.some((edge) => edge.relation === relation)) {
+        errors.push(`required_relation_missing:${relation}`)
+      }
+    }
   }
   return { valid: errors.length === 0, errors }
 }
@@ -603,10 +789,11 @@ export function deriveSuccessState({
   humanSignoff = {},
   requestedProfile = 'STAGING',
   evidenceComplete = false,
-  implementationComplete = true
+  implementationComplete = true,
+  requiredGates = PHASE11_REQUIRED_GATES
 }) {
   const normalizedCandidate = normalizeCandidate(candidate)
-  const localVerificationComplete = PHASE11_REQUIRED_GATES.every(
+  const localVerificationComplete = requiredGates.every(
     (id) => requiredGateStatus(gates, id) === 'PASS'
   )
   const candidateClean =
@@ -637,6 +824,12 @@ export function deriveSuccessState({
     pilotComplete &&
     normalizedExternal.rollback === REQUIRED_EXTERNAL_STATUS.rollback &&
     normalizedExternal.humanSignoff === REQUIRED_EXTERNAL_STATUS.humanSignoff
+  const adversarialProofComplete =
+    requiredGateStatus(gates, 'certification_redteam') === 'PASS' &&
+    requiredGateStatus(gates, 'governance_redteam') === 'PASS' &&
+    requiredGateStatus(gates, 'tenant_redteam') === 'PASS'
+  const phase11FormalClosure =
+    requiredGateStatus(gates, 'PHASE11_FORMAL_CLOSURE') === 'PASS'
   const localEngineeringClosure =
     implementationComplete &&
     localVerificationComplete &&
@@ -669,6 +862,8 @@ export function deriveSuccessState({
     externalValidationComplete,
     pilotComplete,
     productionProofComplete,
+    adversarialProofComplete,
+    phase11FormalClosure,
     eligibleForRequestedProfile
   }
 }
@@ -686,11 +881,12 @@ export function computeCertificationDecision({
   deploymentProfile = 'CONTROLLED_LOCAL',
   requestedProfile = 'STAGING',
   evidenceComplete = false,
-  implementationComplete = true
+  implementationComplete = true,
+  requiredGates = PHASE11_REQUIRED_GATES
 }) {
   const normalizedCandidate = normalizeCandidate(candidate)
   const blockers = []
-  for (const id of PHASE11_REQUIRED_GATES) {
+  for (const id of requiredGates) {
     const status = requiredGateStatus(gates, id)
     if (status !== 'PASS') {
       blockers.push(`required_gate_not_pass:${id}:${status}`)
@@ -724,7 +920,8 @@ export function computeCertificationDecision({
     humanSignoff,
     requestedProfile,
     evidenceComplete,
-    implementationComplete
+    implementationComplete,
+    requiredGates
   })
   const localHardFailure =
     blockers.length > 0 || !successState.localEngineeringClosure
@@ -807,12 +1004,6 @@ export function computeScores({
   findings = {},
   successState
 }) {
-  const gatePass = gates.filter((gate) => gate.status === 'PASS').length
-  const gateTotal = Math.max(gates.length, 1)
-  const invariantPass = invariants.filter(
-    (item) => item.status === 'PASS'
-  ).length
-  const invariantTotal = Math.max(invariants.length, 1)
   const normalized = normalizeFindings(findings)
   const blocking = [
     ...normalized.P0,
@@ -821,59 +1012,154 @@ export function computeScores({
   ].filter((item) => item.blocking !== false && item.status !== 'CLOSED').length
   const boundedScore = (passed, total) =>
     Math.min(99, Math.round((passed / total) * 100))
-  const localScore = boundedScore(
-    gatePass + invariantPass,
-    gateTotal + invariantTotal
+  const gateMap = new Map(gates.map((gate) => [gate.id, gate]))
+  const invariantMap = new Map(
+    invariants.map((invariant) => [invariant.id, invariant])
   )
-  const securityScore = boundedScore(
-    gates.filter(
-      (gate) =>
-        ['security', 'bypass_audit', 'certification_self_test'].includes(
-          gate.id
-        ) && gate.status === 'PASS'
-    ).length,
-    3
-  )
+  const blendedScore = (gateIds, invariantIds = []) => {
+    const total = gateIds.length + invariantIds.length
+    const passed =
+      gateIds.filter((id) => gateMap.get(id)?.status === 'PASS').length +
+      invariantIds.filter((id) => invariantMap.get(id)?.status === 'PASS')
+        .length
+    return boundedScore(passed, Math.max(total, 1))
+  }
+  const domain = (value, rationale, evidence) => ({
+    value,
+    rationale,
+    evidence
+  })
   return {
-    localEngineering: {
-      value: localScore,
-      rationale: `${gatePass}/${gateTotal} mandatory gates and ${invariantPass}/${invariantTotal} invariants passed; score capped below automatic 100.`,
-      evidence: [
-        'certification/phase11/gates.json',
-        'certification/phase11/invariants.json'
-      ]
-    },
-    auditability: {
-      value: successState?.evidenceComplete ? 99 : Math.max(0, localScore - 20),
-      rationale: successState?.evidenceComplete
-        ? 'All declared evidence artifacts are hash-bound.'
-        : 'Required evidence is incomplete or not yet sealed.',
-      evidence: [
-        'certification/phase11/manifest.json',
+    Architecture: domain(
+      blendedScore(
+        ['build', 'worker_startup', 'evidence_graph'],
+        ['INV-002', 'INV-008']
+      ),
+      'Durable kernel, worker composition and candidate-bound evidence are scored from executable gates and critical invariants.',
+      [
+        'apps/worker/src/kernel-composition.ts',
         'certification/phase11/evidence-graph.json'
       ]
-    },
-    securityGovernance: {
-      value: Math.max(0, securityScore - blocking * 10),
-      rationale: `${blocking} blocking local finding(s) remain; security score is derived from security, bypass and negative-validation gates.`,
-      evidence: ['certification/phase11/negative-validation.json']
-    },
-    productionReadiness: {
-      value: successState?.productionProofComplete ? 99 : 0,
-      rationale: successState?.productionProofComplete
-        ? 'All real-stack production proofs are current.'
-        : 'Real provider, channel, identity, RPO/RTO, pilot and human proof are not complete.',
-      evidence: [
+    ),
+    Engineering: domain(
+      blendedScore(['format', 'typecheck', 'lint', 'build', 'verify']),
+      'Formatting, type safety, lint, build and the repository verification aggregate are independently represented.',
+      [
+        'certification/phase11/logs/format.log',
+        'certification/phase11/logs/verify.log'
+      ]
+    ),
+    Testing: domain(
+      blendedScore(['unit', 'coverage', 'e2e', 'evals', 'chaos']),
+      'Unit, coverage, browser, evaluation and chaos lanes are required evidence rather than score declarations.',
+      [
+        'certification/phase11/logs/unit.log',
+        'certification/phase11/logs/e2e.log'
+      ]
+    ),
+    Security: domain(
+      blendedScore(
+        ['security', 'bypass_audit', 'governance_redteam', 'tenant_redteam'],
+        ['INV-001', 'INV-005', 'INV-008']
+      ),
+      'Security and red-team gates are reduced by any unresolved blocking finding.',
+      [
+        'certification/phase11/logs/security.log',
+        'certification/phase11/negative-validation.json'
+      ]
+    ),
+    Reliability: domain(
+      blendedScore(
+        ['postgres', 'recovery', 'outbox_replay', 'load'],
+        ['INV-009', 'INV-010', 'INV-011', 'INV-012']
+      ),
+      'Durability, recovery, outbox replay, load and restart invariants cover failure behavior.',
+      [
+        'certification/phase11/postgres-report.json',
+        'certification/phase11/recovery-report.json'
+      ]
+    ),
+    'Agent Engineering': domain(
+      blendedScore(
+        ['unit', 'evals', 'recovery'],
+        ['INV-003', 'INV-004', 'INV-013']
+      ),
+      'Planner/replanner behavior and evidence-based completion are tied to runtime tests.',
+      [
+        'packages/agent-runtime/src/orchestration.ts',
+        'certification/phase11/eval-report.json'
+      ]
+    ),
+    'Orchestrator Engineering': domain(
+      blendedScore(
+        ['unit', 'recovery', 'trace_lineage'],
+        ['INV-002', 'INV-004', 'INV-012']
+      ),
+      'Goal/plan/step lineage, bounded execution and recovery are independently scored.',
+      [
+        'packages/agent-runtime/src/orchestration.ts',
+        'certification/phase11/evidence-graph.json'
+      ]
+    ),
+    Governance: domain(
+      blendedScore(
+        ['governance_redteam', 'certification_redteam'],
+        ['INV-001', 'INV-002', 'INV-005', 'INV-006', 'INV-007', 'INV-014']
+      ),
+      'Authority, approval, risk, takeover and certification attacks must all fail closed.',
+      [
+        'certification/phase11/negative-validation.json',
+        'certification/phase11/logs/governance_redteam.log'
+      ]
+    ),
+    Observability: domain(
+      blendedScore(['trace_lineage', 'evidence_graph'], ['INV-008']),
+      'The complete runtime stage chain and bounded redacted attributes are required.',
+      [
+        'certification/phase11/evidence-graph.json',
+        'certification/phase11/logs/trace_lineage.log'
+      ]
+    ),
+    Auditability: domain(
+      successState?.evidenceComplete ? 99 : 0,
+      successState?.evidenceComplete
+        ? 'All declared evidence artifacts are hash-bound and pointer-addressable.'
+        : 'The canonical evidence package is incomplete or not sealed.',
+      ['certification/phase11/manifest.json', 'certification/current.json']
+    ),
+    'Data Governance': domain(
+      blendedScore(
+        ['postgres', 'tenant_redteam', 'security'],
+        ['INV-006', 'INV-008', 'INV-009']
+      ),
+      'Tenant context, RLS, payload binding and effect lineage are evaluated against durable storage evidence.',
+      [
+        'certification/phase11/postgres-report.json',
+        'certification/phase11/logs/tenant_redteam.log'
+      ]
+    ),
+    DevEx: domain(
+      blendedScore(['verify', 'supply_chain', 'clone_verify']),
+      'The default verification contract, supply-chain checks and clean-clone portability are explicit gates.',
+      ['package.json', 'certification/phase11/logs/clone_verify.log']
+    ),
+    'Production Readiness': domain(
+      successState?.productionProofComplete ? 99 : 0,
+      successState?.productionProofComplete
+        ? 'External integrations, measured RPO/RTO, pilot, rollback and human signoff are current.'
+        : `Production readiness is zero while external proof is incomplete (${blocking} local blockers also considered).`,
+      [
         'certification/phase11/integration-report.json',
         'certification/phase11/recovery-report.json'
       ]
-    }
+    )
   }
 }
 
 export function computePromotionDecision({
   result,
-  requestedProfile = 'PRODUCTION'
+  requestedProfile = 'PRODUCTION',
+  requiredGates = PHASE11_REQUIRED_GATES
 }) {
   const normalizedExternal = normalizeExternalGates(result.externalGates, {
     integrations: result.integrations,
@@ -888,10 +1174,7 @@ export function computePromotionDecision({
         `external_gate_pending:${key}:expected_${required}:actual_${normalizedExternal[key]}`
     )
   const blockingGates = result.gates
-    .filter(
-      (gate) =>
-        PHASE11_REQUIRED_GATES.includes(gate.id) && gate.status !== 'PASS'
-    )
+    .filter((gate) => requiredGates.includes(gate.id) && gate.status !== 'PASS')
     .map((gate) => `${gate.id}:${gate.status}`)
   const blockingFindings = localFindingBlockers(result.findings)
   const criticalInvariants = criticalInvariantBlockers(result.invariants)

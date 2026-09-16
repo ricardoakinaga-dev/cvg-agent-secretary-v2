@@ -58,6 +58,7 @@ interface HarnessOptions {
   effectScopes?: Partial<Record<Capability, EffectScope>>
   clock?: () => Date
   journal?: EffectJournalPort
+  requireDurable?: boolean
   reservationTtlMs?: number
   toolExecutor?: (invocation: ToolInvocation) => Promise<{ result: unknown }>
   outbox?: (event: OutboxEnqueueInput) => Promise<{ eventId: string }>
@@ -149,6 +150,9 @@ function buildHarness(options: HarnessOptions = {}) {
       : {}),
     ...(options.journal !== undefined
       ? { effectJournal: options.journal }
+      : {}),
+    ...(options.requireDurable !== undefined
+      ? { requireDurable: options.requireDurable }
       : {}),
     ...(options.reservationTtlMs !== undefined
       ? { reservationTtlMs: options.reservationTtlMs }
@@ -315,6 +319,36 @@ describe('AAA-10 fail-closed durability (F03 / artifact 3)', () => {
     expect(result.replayed).toBeUndefined()
     expect(result.resultDigest).toBeUndefined()
     expect(harness.toolExecutor).toHaveBeenCalledTimes(1)
+  })
+
+  it('requires the effect journal for every non-read capability in durable composition', async () => {
+    const deniedHarness = buildHarness({
+      effectScopes: { 'appointment.create': 'controlled_fake' },
+      requireDurable: true
+    })
+    const denied = await deniedHarness.runtime.runTurn(
+      turnInput({
+        capability: 'appointment.create',
+        action: 'appointment.create'
+      })
+    )
+    expect(denied.reason).toBe('durability_required')
+    expect(deniedHarness.toolExecutor).not.toHaveBeenCalled()
+
+    const journalHarness = buildHarness({
+      effectScopes: { 'appointment.create': 'controlled_fake' },
+      requireDurable: true,
+      journal: new InMemoryEffectJournal({ clock: () => NOW })
+    })
+    const executed = await journalHarness.runtime.runTurn(
+      turnInput({
+        capability: 'appointment.create',
+        action: 'appointment.create'
+      })
+    )
+    expect(executed.outcome).toBe('executed')
+    expect(executed.effectConfirmed).toBe(true)
+    expect(executed.resultDigest).toMatch(/^[0-9a-f]{64}$/)
   })
 
   it('fails closed with journal_sweep_failed when the start-of-turn sweep throws', async () => {

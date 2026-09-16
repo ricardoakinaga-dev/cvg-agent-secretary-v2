@@ -38,6 +38,7 @@
     "certification:verify:phase11": "node scripts/phase11-verify.mjs",
     "evidence:verify:phase11": "node scripts/phase11-verify.mjs --evidence-only",
     "promotion:check": "node scripts/promotion-check.mjs --requested PRODUCTION",
+    "production:preflight": "node scripts/production-preflight.mjs",
     "certification:verify:historical": "node scripts/phase10-verify.mjs --historical --base certification/logs/historical/2026-09-11-phase10",
     "certification:self-test": "node scripts/phase10-verify.mjs --self-test && npx prettier --write certification/negative-validation.json"
   },
