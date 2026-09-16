@@ -81,6 +81,7 @@ const RuntimeTraceIdSchema = z.string().regex(/^[0-9a-f]{32}$/)
 
 export type KernelRuntimeConfigurationErrorCode =
   | 'kernel_runtime_prerequisites_missing'
+  | 'production_durable_kernel_required'
   | 'unknown_worker_runtime'
 
 export class KernelRuntimeConfigurationError extends Error {
@@ -93,6 +94,18 @@ export class KernelRuntimeConfigurationError extends Error {
   }
 }
 
+const DURABLE_KERNEL_REQUIRED_TABLES = [
+  'effect_journal',
+  'runtime_approvals',
+  'runtime_audit_events',
+  'orchestrator_goals',
+  'orchestrator_plans',
+  'orchestrator_steps',
+  'orchestrator_attempts',
+  'orchestrator_observations',
+  'orchestrator_evaluations'
+] as const
+
 /**
  * Worker runtime selection. The governed kernel is the default; the published
  * agent is an explicitly quarantined legacy path and unknown values fail closed
@@ -102,8 +115,14 @@ export function resolveWorkerRuntimeKind(
   env: NodeJS.ProcessEnv
 ): 'kernel' | 'published-agent' {
   const configured = env[WORKER_RUNTIME_ENV]?.trim()
-  if (!configured || configured === KERNEL_WORKER_RUNTIME) return 'kernel'
-  if (configured === PUBLISHED_AGENT_WORKER_RUNTIME) return 'published-agent'
+  if (!configured || configured === KERNEL_WORKER_RUNTIME) {
+    assertProductionDurableKernel(env)
+    return 'kernel'
+  }
+  if (configured === PUBLISHED_AGENT_WORKER_RUNTIME) {
+    assertProductionDurableKernel(env)
+    return 'published-agent'
+  }
   throw new KernelRuntimeConfigurationError(
     'unknown_worker_runtime',
     `Unknown ${WORKER_RUNTIME_ENV} value: ${configured}`
@@ -355,9 +374,9 @@ function createControlledModelGateway(): ModelGateway {
 }
 
 /**
- * Durable prerequisites probe: the tenant-scoped `effect_journal` (0013),
- * `runtime_approvals` (0015) and `runtime_audit_events` (0017) tables must
- * exist and be reachable. Missing migrations fail closed before any turn runs.
+ * Durable prerequisites probe: the tenant-scoped effect journal, approval and
+ * audit tables plus every durable Goal/Plan/Step ledger table must exist and be
+ * reachable. Missing migrations fail closed before any turn runs.
  */
 export async function assertPostgresKernelPrerequisites(
   pool: PostgresPoolLike,
@@ -365,28 +384,18 @@ export async function assertPostgresKernelPrerequisites(
 ): Promise<void> {
   try {
     await withTenantContext(pool, tenantId, async (client) => {
-      await client.query(
-        'SELECT 1 FROM effect_journal WHERE tenant_id = $1 LIMIT 0',
-        [tenantId]
-      )
-      await client.query(
-        'SELECT 1 FROM runtime_approvals WHERE tenant_id = $1 LIMIT 0',
-        [tenantId]
-      )
-      await client.query(
-        'SELECT 1 FROM runtime_audit_events WHERE tenant_id = $1 LIMIT 0',
-        [tenantId]
-      )
-      await client.query(
-        'SELECT 1 FROM orchestrator_goals WHERE tenant_id = $1 LIMIT 0',
-        [tenantId]
-      )
+      for (const table of DURABLE_KERNEL_REQUIRED_TABLES) {
+        await client.query(
+          `SELECT 1 FROM ${table} WHERE tenant_id = $1 LIMIT 0`,
+          [tenantId]
+        )
+      }
     })
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     throw new KernelRuntimeConfigurationError(
       'kernel_runtime_prerequisites_missing',
-      `Durable kernel runtime prerequisites are missing (effect_journal/runtime_approvals/runtime_audit_events): ${message}`
+      `Durable kernel runtime prerequisites are missing (${DURABLE_KERNEL_REQUIRED_TABLES.join('/')}): ${message}`
     )
   }
 }
@@ -402,6 +411,7 @@ export function createPostgresKernelRuntime(
   input: CreatePostgresKernelRuntimeInput
 ): PostgresKernelRuntime {
   const { pool, tenantId, env, agentId } = input
+  assertProductionDurableKernel(env)
   if (
     pool === undefined ||
     pool === null ||
@@ -1286,6 +1296,30 @@ function durableOrchestratorEnabled(env: NodeJS.ProcessEnv): boolean {
   return env[DURABLE_KERNEL_ORCHESTRATOR_ENV]?.trim().toLowerCase() === 'true'
 }
 
+function assertProductionDurableKernel(env: NodeJS.ProcessEnv): void {
+  if (env.NODE_ENV !== 'production') return
+
+  const configured = env[WORKER_RUNTIME_ENV]?.trim()
+  if (configured === PUBLISHED_AGENT_WORKER_RUNTIME) {
+    throw new KernelRuntimeConfigurationError(
+      'production_durable_kernel_required',
+      'Production requires the governed durable kernel; published-agent runtime is forbidden'
+    )
+  }
+  if (configured && configured !== KERNEL_WORKER_RUNTIME) {
+    throw new KernelRuntimeConfigurationError(
+      'unknown_worker_runtime',
+      `Unknown ${WORKER_RUNTIME_ENV} value: ${configured}`
+    )
+  }
+  if (!durableOrchestratorEnabled(env)) {
+    throw new KernelRuntimeConfigurationError(
+      'production_durable_kernel_required',
+      `Production requires ${DURABLE_KERNEL_ORCHESTRATOR_ENV}=true; inline kernel execution is forbidden`
+    )
+  }
+}
+
 function durableGoalOutcome(
   result: OrchestrationRunResult,
   traceId: string,
@@ -1350,6 +1384,7 @@ export function createPostgresKernelHandlers(
   env: NodeJS.ProcessEnv,
   runtime: PostgresKernelRuntime
 ): ControlledWorkerHandlers {
+  assertProductionDurableKernel(env)
   const configuredAgentId = resolveKernelAgentId(env)
   if (
     configuredAgentId !== undefined &&

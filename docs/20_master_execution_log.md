@@ -5608,3 +5608,12 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
   hash e `git status --short` retornou vazio após o push.
 - next_action: retomar os gates pendentes de AAA-21 em ambiente controlado;
   candidato permanece `REVIEW`, produção `NO_GO`.
+
+# PHASE11.1-FORMAL-CLOSURE-20260915 — SPEC e intake registrados — 2026-09-15T23:04:28-03:00
+
+- pipeline: `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`; task `PHASE11.1-FORMAL-CLOSURE-20260915`.
+- ação: preservados os cinco prompts recebidos com SHA-256; criada SPEC de fechamento, delta audit e quality bar v1 antes de tocar no código.
+- baseline: HEAD/tree `2625606ad4e743bf5609434be868c92ca82ab95f` / `6010d5f8cd1405b4d6c2c7587e59a6f8f960f7c1`; Node processo `24.20.0`, Node22.23.2 disponível; Postgres URL ausente; pacote corrente ainda é raiz Phase11 legado.
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD` autoriza somente BUILD local sintético; nenhum gate externo, humano ou de produção foi concedido.
+- next_action: materializar baseline/evidence digest e executar descoberta independente read-only de certificação, orquestração e console.
+- evidências: `docs/phase11/PHASE11_DELTA_AUDIT.md`; `docs/02_spec/phase11_1_formal_closure_contract_20260915.md`; `docs/04_audit/evidence/AAA/AAA-21/quality-bar-phase11-1-v1.json`.

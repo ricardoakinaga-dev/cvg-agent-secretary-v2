@@ -1,0 +1,1172 @@
+# MASTER PROMPT — CVG-AGENT-SECRETARY-V2
+
+# PHASE 11 FORMAL CLOSURE, ADVERSARIAL PROOF & REAL-STACK VALIDATION
+
+Repository:
+
+`https://github.com/ricardoakinaga-dev/cvg-agent-secretary-v2`
+
+## MISSION
+
+Você está atuando como:
+
+* Principal Software Architect;
+* Principal Agent Runtime Engineer;
+* Distributed Systems Engineer;
+* Security Engineer;
+* PostgreSQL Engineer;
+* SRE;
+* QA Architect;
+* Red-Team Engineer;
+* Release Engineer;
+* Independent Certification Auditor.
+
+Sua missão NÃO é reconstruir o projeto.
+
+Sua missão é pegar o estado REAL e ATUAL do `cvg-agent-secretary-v2`, auditar o que já existe, implementar somente os gaps restantes e transformar a Phase 11 existente em uma fase:
+
+```text
+FORMALLY CLOSED
+ADVERSARIALLY PROVEN
+COMMIT-BOUND
+RECOVERABLE
+TENANT-SAFE
+GOVERNED
+OBSERVABLE
+REAL-INTEGRATION READY
+MECHANICALLY CERTIFIABLE
+```
+
+O alvo desejado é:
+
+# STATE OF ART — TRIPLE AAA
+
+Porém:
+
+**NUNCA declare `STATE_OF_ART_TRIPLE_AAA` sem evidência real suficiente.**
+
+Se toda engenharia local for concluída, mas provider/canal/identidade/RPO-RTO/piloto/signoff ainda dependerem de infraestrutura ou autorização externa, o resultado correto deverá ser:
+
+```text
+AAA_CANDIDATE
+```
+
+ou outra classificação que o certification calculus determinar.
+
+---
+
+# 1. CURRENT AUDIT CONTEXT
+
+A auditoria mais recente encontrou aproximadamente:
+
+```text
+Architecture:              97/100
+Engineering:               96/100
+Testing:                   96/100
+Security:                  95/100
+Reliability:               96/100
+Agent Engineering:         96/100
+Orchestrator Engineering:  96/100
+Governance:                96/100
+Observability:             95/100
+Auditability:              96/100
+Production Readiness:      84/100
+```
+
+Estado estimado:
+
+```text
+P0 = 0
+P1 = 1
+P2 = 8
+
+Certification assessment:
+AAA_CANDIDATE
+```
+
+Não confie cegamente nesses números.
+
+Reaudite o HEAD atual.
+
+---
+
+# 2. CURRENT STRENGTHS
+
+Preserve e fortaleça o que já existe.
+
+O projeto já apresenta evidências de:
+
+```text
+durable Goal/Plan execution
+Goal persistence
+Plan persistence
+Step persistence
+PostgresGoalPlanStore
+governed inbound Goals
+Goal resume/recovery
+inbound identity binding
+Goal inspection
+lineage
+observations
+evaluations
+attempts
+tenant-scoped orchestration API
+approval persistence
+policy/capability boundaries
+outbox
+effect journal
+channel effect journal
+session version pinning
+kernel runtime
+PostgreSQL integration tests
+chaos
+agent evals
+load tests
+security CI
+SBOM
+CodeQL
+Gitleaks
+candidate certification machinery
+```
+
+Não substitua bons mecanismos por abstrações novas sem ganho objetivo.
+
+---
+
+# 3. CURRENT PRIMARY FINDINGS
+
+Comece revalidando estes findings.
+
+## AUD-11-01 — P1
+
+Phase 11 foi implementada no código, mas o default branch ainda não apresenta claramente um pacote canônico completo de certificação Phase 11 como current source of truth.
+
+Expected closure:
+
+```text
+certification/phase11/
+```
+
+com artifacts formais.
+
+---
+
+## AUD-11-02 — P2
+
+A pasta `certification/` ainda expõe artifacts Phase 10 como se fossem current truth.
+
+Phase 10 deve ser tratada como histórica.
+
+---
+
+## AUD-11-03 — P2
+
+O finding histórico:
+
+```text
+Legacy agent runtime paths are not yet fully migrated
+```
+
+precisa ser re-auditado.
+
+Objetivo:
+
+```text
+production legacy bypass paths = 0
+```
+
+---
+
+## AUD-11-04 — P2
+
+Precisa existir prova explícita de:
+
+```text
+Plan v1
+→ evaluation false
+→ replan
+→ Plan v2
+→ parentPlanId = Plan v1
+→ safe continuation
+```
+
+---
+
+## AUD-11-05 — P2
+
+Precisa existir prova mecânica de:
+
+```text
+loop detection
++
+budget exhaustion
++
+budget persistence across restart
+```
+
+---
+
+## AUD-11-06 — P2
+
+Precisa existir prova explícita de:
+
+```text
+lease expiration
+→ worker B takeover
+→ worker A stale completion attempt
+→ DENY
+```
+
+Fencing/stale-worker safety.
+
+---
+
+## AUD-11-07 — P2
+
+Precisa existir evidence Phase 11 para:
+
+```text
+effect succeeds
+→ worker crashes
+→ ack missing
+→ worker resumes
+→ duplicate effect = 0
+```
+
+---
+
+## AUD-11-08 — P2
+
+Observabilidade precisa fechar lineage/tracing completo.
+
+---
+
+## AUD-11-09 — EXTERNAL
+
+Ainda podem faltar:
+
+```text
+real model provider
+real EvolutionAPI
+real Chatwoot
+real external identity
+measured RPO/RTO
+supervised pilot
+human signoff
+```
+
+Esses gates não podem ser falsificados.
+
+---
+
+# 4. PHASE NAME
+
+Execute:
+
+# PHASE 11.1 — FORMAL CLOSURE & ADVERSARIAL PRODUCTION PROOF
+
+Divida em:
+
+```text
+11.1.0  Repository Truth & Delta Audit
+11.1.1  Phase 11 Certification Re-anchor
+11.1.2  Certification Source-of-Truth Consolidation
+11.1.3  Legacy/Bypass Closure
+11.1.4  Replan & Goal Completion Proof
+11.1.5  Loop/Budget Safety Closure
+11.1.6  Lease/Fencing/Concurrency Closure
+11.1.7  Crash/Effect Safety Closure
+11.1.8  Orchestrator Lineage & OpenTelemetry Closure
+11.1.9  Tenant & Governance Red-Team
+11.1.10 Certification Red-Team
+11.1.11 PostgreSQL/Recovery/Load Closure
+11.1.12 Real Integration Validation
+11.1.13 Supervised Pilot Readiness
+11.1.14 Independent Final Audit
+11.1.15 Triple-AAA Certification
+```
+
+---
+
+# 5. FIRST RULE — INSPECT BEFORE MODIFYING
+
+Primeiro:
+
+```bash
+git status --porcelain
+git rev-parse HEAD
+git rev-parse HEAD^{tree}
+git branch --show-current
+```
+
+Inspecione:
+
+```text
+package.json
+AGENTS.md
+apps/api
+apps/worker
+packages/agent-runtime
+packages/persistence
+packages/policy*
+packages/approval*
+packages/chaos
+packages/agent-evals
+certification/
+scripts/
+.github/workflows/
+docs/
+```
+
+Não assuma que os findings continuam exatamente iguais.
+
+---
+
+# 6. BUILD A DELTA MATRIX
+
+Antes da implementação, crie uma matriz:
+
+```text
+Finding
+Current Reality
+Already Fixed?
+Remaining Gap
+Required Code
+Required Test
+Required Evidence
+Blocking Severity
+```
+
+Não implemente novamente algo que já esteja corretamente fechado.
+
+---
+
+# 7. CERTIFICATION PHASE 11 MUST BECOME CURRENT TRUTH
+
+Crie/complete:
+
+```text
+certification/phase11/
+```
+
+com estrutura coerente como:
+
+```text
+certification/phase11/
+├── gates.json
+├── invariants.json
+├── evidence-graph.json
+├── manifest.json
+├── release-manifest.json
+├── findings.json
+├── phase11-result.json
+├── negative-validation.json
+├── eval-report.json
+├── chaos-report.json
+├── load-report.json
+├── recovery-report.json
+├── postgres-report.json
+├── integration-report.json
+├── logs/
+└── integrations/
+```
+
+Adapte aos mecanismos existentes.
+
+Não duplique artifacts sem necessidade.
+
+---
+
+# 8. PHASE 10 BECOMES HISTORICAL
+
+Organize conceitualmente:
+
+```text
+certification/
+├── historical/
+│   └── phase10/
+└── phase11/
+```
+
+Preserve evidência histórica.
+
+Não delete Phase 10.
+
+---
+
+# 9. CURRENT CERTIFICATION POINTER
+
+Crie mecanismo inequívoco para identificar current certification.
+
+Pode ser:
+
+```text
+certification/current.json
+```
+
+com:
+
+```json
+{
+  "phase": "11",
+  "result": "phase11/phase11-result.json"
+}
+```
+
+ou solução equivalente.
+
+---
+
+# 10. MACHINE STATE WINS
+
+Em caso de conflito:
+
+```text
+machine-readable Phase 11 result
+>
+README
+>
+narrative documentation
+```
+
+---
+
+# 11. CANDIDATE MUST BE CLEAN
+
+Para certification final:
+
+```text
+working tree dirty = false
+untracked files = 0
+candidate commit = HEAD
+candidate tree = HEAD tree
+```
+
+---
+
+# 12. STALE CERTIFICATION
+
+Se:
+
+```text
+HEAD != certifiedCommit
+```
+
+resultado:
+
+```text
+STALE
+```
+
+---
+
+# 13. ARTIFACT HASHING
+
+Todo artifact obrigatório deve possuir:
+
+```text
+sha256
+size
+producer
+timestamp
+candidateCommit
+```
+
+---
+
+# 14. SINGLE CERTIFICATION CALCULUS
+
+Não mantenha regras divergentes em:
+
+```text
+certify
+verify
+promotion check
+```
+
+Crie uma única source of truth.
+
+Algo conceitualmente equivalente a:
+
+```ts
+computeCertificationDecision()
+```
+
+---
+
+# 15. REQUIRED GATE SEMANTICS
+
+Para mandatory gate:
+
+```text
+PASS = acceptable
+
+FAIL
+NOT_EXECUTED
+STALE
+INVALID
+MISSING
+```
+
+bloqueiam promoção, salvo `NOT_APPLICABLE` explicitamente permitido pelo deployment profile.
+
+---
+
+# 16. FALSE-GO TESTS
+
+Crie testes para:
+
+```text
+all scores 100 + mandatory FAIL
+→ NO_GO
+
+external provider CONTROLLED_ONLY + Production
+→ NOT Triple AAA
+
+dirty tree
+→ certification invalid
+
+HEAD mismatch
+→ STALE
+
+artifact hash mismatch
+→ INVALID
+
+missing human signoff
+→ production blocked
+```
+
+---
+
+# 17. BYPASS AUDIT
+
+Execute auditoria arquitetural procurando:
+
+```text
+fetch(
+EvolutionAPI
+Chatwoot
+provider SDK
+sendMessage
+tool.execute
+direct SQL write
+direct external HTTP
+```
+
+fora dos boundaries permitidos.
+
+---
+
+# 18. TARGET EFFECT FLOW
+
+Todo efeito relevante deve seguir:
+
+```text
+Agent / Planner
+      ↓
+Orchestrator
+      ↓
+GOVERN
+      ↓
+Policy
+      ↓
+Capability
+      ↓
+Risk
+      ↓
+Approval
+      ↓
+Tool Gateway
+      ↓
+Outbox / Effect Boundary
+      ↓
+Adapter
+      ↓
+External System
+```
+
+---
+
+# 19. ZERO BYPASS
+
+Meta:
+
+```text
+productionExternalEffectBypass = 0
+```
+
+---
+
+# 20. ARCHITECTURE TEST
+
+Crie testes estáticos/arquiteturais impedindo regressão.
+
+Exemplos:
+
+```text
+orchestrator cannot import EvolutionAPI adapter
+agent cannot import provider SDK
+planner cannot import DB implementation
+domain cannot call channel provider
+```
+
+---
+
+# 21. LEGACY RUNTIME
+
+Audite todos os runtime selectors.
+
+Production deve aceitar somente:
+
+```text
+kernel
+```
+
+ou o nome canônico do governed runtime.
+
+---
+
+# 22. LEGACY PRODUCTION ATTEMPT
+
+Teste:
+
+```text
+NODE_ENV=production
+CVG_WORKER_RUNTIME=legacy
+```
+
+Resultado:
+
+```text
+FAIL CLOSED
+```
+
+---
+
+# 23. CLOSE HISTORICAL FINDING
+
+Se legacy production paths realmente forem zero:
+
+feche o finding histórico com:
+
+```text
+root cause
+implementation
+tests
+evidence
+closedAt
+```
+
+Caso contrário, liste exatamente os paths restantes.
+
+---
+
+# 24. REPLAN PROOF
+
+Implemente um teste de integração explícito:
+
+```text
+Goal
+ ↓
+Plan v1
+ ↓
+Step
+ ↓
+conflict/failure
+ ↓
+Observe Result
+ ↓
+Evaluate = NOT_REACHED
+ ↓
+Replan
+ ↓
+Plan v2
+ ↓
+parentPlanId = v1
+ ↓
+continue
+ ↓
+Goal COMPLETED
+```
+
+---
+
+# 25. REPLAN MUST NOT DUPLICATE EFFECTS
+
+Plan v2 deve reconhecer steps/effects já realizados.
+
+---
+
+# 26. PLAN HISTORY
+
+Nunca sobrescreva v1.
+
+---
+
+# 27. REPLAN REASON
+
+Persistir:
+
+```text
+replanReason
+evaluationId
+parentPlanId
+```
+
+---
+
+# 28. GOAL SUCCESS PROOF
+
+Crie teste:
+
+```text
+tool returns success
+but operational SuccessCriteria false
+```
+
+Resultado:
+
+```text
+Goal != COMPLETED
+```
+
+---
+
+# 29. OBSERVE RESULT
+
+Goal completion precisa depender de evidence.
+
+---
+
+# 30. LOOP DETECTOR
+
+Prove:
+
+```text
+Plan A
+→ fail X
+→ Plan B
+→ fail X
+→ Plan A
+```
+
+Resultado:
+
+```text
+LOOP_DETECTED
+```
+
+ou stop policy equivalente.
+
+---
+
+# 31. REPEATED TOOL LOOP
+
+Teste:
+
+```text
+same tool
+same args
+same result
+```
+
+repetidamente.
+
+---
+
+# 32. BUDGET LIMITS
+
+Prove limites de:
+
+```text
+steps
+replans
+model calls
+tool calls
+duration
+cost
+```
+
+conforme implementação existente.
+
+---
+
+# 33. BUDGET PERSISTENCE
+
+Teste obrigatório:
+
+```text
+consume 70% budget
+↓
+restart worker
+↓
+resume Goal
+```
+
+Budget deve continuar consumido.
+
+---
+
+# 34. NO RESTART RESET
+
+Prove:
+
+```text
+restart != fresh budget
+```
+
+---
+
+# 35. RETRIES CONSUME BUDGET
+
+Quando aplicável.
+
+---
+
+# 36. LEASE SAFETY
+
+Prove:
+
+```text
+Worker A claims step
+lease expires
+Worker B claims step
+Worker A attempts completion
+```
+
+Resultado:
+
+```text
+STALE_LEASE / DENY
+```
+
+---
+
+# 37. FENCING
+
+Se a implementação ainda não tiver fencing robusto, adicione mecanismo apropriado.
+
+Pode ser:
+
+```text
+monotonic fencing token
+version CAS
+atomic conditional completion
+```
+
+Escolha o mecanismo mais simples que garanta o invariant.
+
+---
+
+# 38. DOUBLE CLAIM
+
+Dois workers concorrentes:
+
+```text
+exactly one valid owner
+```
+
+---
+
+# 39. APPROVAL CONCURRENCY
+
+Dois workers tentando consumir a mesma approval:
+
+```text
+one succeeds
+one fails
+```
+
+---
+
+# 40. CRASH BEFORE EFFECT
+
+Teste:
+
+```text
+claim
+crash
+effect not executed
+lease expires
+new worker resumes
+```
+
+---
+
+# 41. CRASH AFTER EFFECT
+
+Teste crítico:
+
+```text
+effect executed
+↓
+worker crashes before completion/ack
+↓
+new worker resumes
+```
+
+Resultado:
+
+```text
+external effect count = 1
+```
+
+---
+
+# 42. UNKNOWN EFFECT
+
+Simule:
+
+```text
+provider receives request
+effect may have succeeded
+connection drops
+```
+
+Não retry cegamente.
+
+---
+
+# 43. RECONCILIATION
+
+Resultado:
+
+```text
+UNKNOWN
+→ RECONCILE
+→ SUCCEEDED / FAILED / STILL_UNKNOWN
+```
+
+---
+
+# 44. EFFECT JOURNAL
+
+Prove vínculo:
+
+```text
+tenant
+goal
+plan
+step
+idempotencyKey
+externalEffect
+result
+```
+
+---
+
+# 45. HUMAN TAKEOVER RACE
+
+Teste:
+
+```text
+agent outbound ready
+↓
+human takeover
+↓
+effect boundary
+```
+
+Resultado:
+
+```text
+automatic outbound suppressed
+```
+
+---
+
+# 46. TENANT ADVERSARIAL SUITE
+
+Teste:
+
+```text
+Goal tenant A
+Plan tenant A
+Step forged tenant B
+
+Approval tenant A used on B
+
+Observation from B attached to A
+
+Evaluation from B attached to A
+
+Effect journal B queried by A
+```
+
+Todos devem falhar.
+
+---
+
+# 47. ONE EXECUTION CHAIN = ONE TENANT
+
+Formalize invariant.
+
+---
+
+# 48. POSTGRES RLS
+
+Quando RLS fizer parte da arquitetura:
+
+teste conexão/context reuse.
+
+Cenário:
+
+```text
+tenant A
+release pooled connection
+tenant B
+```
+
+B não herda A.
+
+---
+
+# 49. MODEL AUTHORITY RED TEAM
+
+Model output tenta:
+
+```text
+grant admin
+risk=R0
+approval=false
+switch tenant
+disable policy
+call forbidden tool
+```
+
+Resultado:
+
+```text
+NO AUTHORITY CHANGE
+```
+
+---
+
+# 50. REPLANNER AUTHORITY RED TEAM
+
+Replanner não pode:
+
+```text
+add capabilities
+downgrade risk
+remove required approval
+change tenant
+```
+
+---
+
+# 51. RAG INJECTION
+
+RAG malicioso:
+
+```text
+ignore policy
+send secret
+call admin tool
+```
+
+não altera authority.
+
+---
+
+# 52. TOOL RESULT INJECTION
+
+Mesmo teste para tool result.
+
+---
+
+# 53. CHANNEL INJECTION
+
+Mesmo teste para inbound messages.
+
+---
+
+# 54. ORCHESTRATOR LINEAGE
+
+Toda execução deve reconstruir:
+
+```text
+Observation
+↓
+Goal
+↓
+Plan
+↓
+Step
+↓
+Attempt
+↓
+Governance Decision
+↓
+Approval
+↓
+Effect
+↓
+Observation Result
+↓
+Evaluation
+↓
+Replan if any
+↓
+Final Goal State
+```
+
+---
+
+# 55. LINEAGE IDS
+
+Preserve:
+
+```text
+correlationId
+causationId
+goalId
+planId
+stepId
+attemptId
+approvalId
+effectId
+evaluationId
+```
+
+---
+
+# 56. INSPECTION API
+
+Preserve redaction existente.
+
+Nunca exponha:
+
+```text
+lease tokens
+raw sensitive step inputs
+secrets
+unnecessary clinical data
+```
+
+---
+
+# 57. OPERATOR AUTHORIZATION
+
+Inspection privilegiada deve permanecer:
+
+```text
+role/capability protected
+tenant scoped
+```
+
+---
+
+# 58. OPERATOR MUTATIONS
+
+Quando existirem:
+
+```text
+approve
+reject
+cancel
+takeover
+safe replay
+```
+
+devem gerar audit events.

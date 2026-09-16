@@ -19,6 +19,7 @@ import {
   type AttemptRecord,
   type ClaimStepInput,
   type ClaimedStep,
+  type ConsumeIterationInput,
   type CreateGoalInput,
   type EvaluationRecord,
   type ExecutionBudget,
@@ -175,6 +176,7 @@ function budgetLimits(budget: ExecutionBudget): Record<string, number> {
   return {
     maxSteps: budget.maxSteps,
     maxReplans: budget.maxReplans,
+    maxIterations: budget.maxIterations,
     maxModelCalls: budget.maxModelCalls,
     maxToolCalls: budget.maxToolCalls,
     maxDurationMs: budget.maxDurationMs,
@@ -183,8 +185,28 @@ function budgetLimits(budget: ExecutionBudget): Record<string, number> {
 }
 
 function toGoal(row: GoalRow): Goal {
-  const budget = jsonValue<Omit<ExecutionBudget, 'usage'>>(row.budget)
-  const usage = jsonValue<ExecutionBudget['usage']>(row.budget_usage)
+  const rawBudget = jsonValue<Record<string, unknown>>(row.budget)
+  const rawUsage = jsonValue<Record<string, unknown>>(row.budget_usage)
+  // Rows created before the persisted iteration guard are upgraded at the
+  // read boundary. New writes always include the complete shape.
+  const defaults = createExecutionBudget()
+  const budget: Omit<ExecutionBudget, 'usage'> = {
+    maxSteps: Number(rawBudget.maxSteps ?? defaults.maxSteps),
+    maxReplans: Number(rawBudget.maxReplans ?? defaults.maxReplans),
+    maxIterations: Number(rawBudget.maxIterations ?? defaults.maxIterations),
+    maxModelCalls: Number(rawBudget.maxModelCalls ?? defaults.maxModelCalls),
+    maxToolCalls: Number(rawBudget.maxToolCalls ?? defaults.maxToolCalls),
+    maxDurationMs: Number(rawBudget.maxDurationMs ?? defaults.maxDurationMs),
+    maxCostUsd: Number(rawBudget.maxCostUsd ?? defaults.maxCostUsd)
+  }
+  const usage: ExecutionBudget['usage'] = {
+    iterations: Number(rawUsage.iterations ?? 0),
+    steps: Number(rawUsage.steps ?? 0),
+    replans: Number(rawUsage.replans ?? 0),
+    modelCalls: Number(rawUsage.modelCalls ?? 0),
+    toolCalls: Number(rawUsage.toolCalls ?? 0),
+    costUsd: Number(rawUsage.costUsd ?? 0)
+  }
   return {
     id: row.id,
     tenantId: tenantId(row.tenant_id),
@@ -578,6 +600,59 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
           input.reason,
           input.lastError === undefined ? current.lastError : input.lastError,
           this.clock(),
+          input.expectedVersion
+        ]
+      )
+      return toGoal(row)
+    })
+  }
+
+  async consumeIteration(input: ConsumeIterationInput): Promise<Goal> {
+    const scope = tenantId(input.tenantId)
+    return withTenantTransaction(this.pool, scope, async (client) => {
+      const current = toGoal(
+        await one<GoalRow>(
+          client,
+          'SELECT * FROM orchestrator_goals WHERE tenant_id = $1 AND id = $2 FOR UPDATE',
+          [scope, input.goalId]
+        )
+      )
+      if (current.version !== input.expectedVersion) {
+        throw new OrchestrationError(
+          'conflict',
+          `Goal version conflict for ${input.goalId}`
+        )
+      }
+      const exhausted =
+        current.budget.usage.iterations >= current.budget.maxIterations
+      if (exhausted) assertGoalTransition(current.status, 'LOOP_DETECTED')
+      const usage = {
+        ...current.budget.usage,
+        iterations: current.budget.usage.iterations + (exhausted ? 0 : 1)
+      }
+      const row = await one<GoalRow>(
+        client,
+        `UPDATE orchestrator_goals
+            SET status = $3,
+                budget_usage = $4::jsonb,
+                last_reason = $5,
+                last_error = $6,
+                version = version + 1,
+                updated_at = $7
+          WHERE tenant_id = $1 AND id = $2 AND version = $8
+          RETURNING *`,
+        [
+          scope,
+          input.goalId,
+          exhausted ? 'LOOP_DETECTED' : current.status,
+          JSON.stringify(usage),
+          exhausted
+            ? 'max_iterations_exhausted'
+            : `iteration_consumed:${usage.iterations}`,
+          exhausted
+            ? 'Persisted orchestration iteration budget exhausted'
+            : current.lastError,
+          input.now,
           input.expectedVersion
         ]
       )
@@ -1006,8 +1081,10 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
       )
         return null
       if (current.leaseUntil && current.leaseUntil > input.now) return null
-      if (!['PENDING', 'READY', 'EXECUTING'].includes(current.status))
-        return null
+      // Expired EXECUTING rows must be reconciled before another worker can
+      // claim them. This keeps the recovery decision ahead of any duplicate
+      // effect attempt.
+      if (!['PENDING', 'READY'].includes(current.status)) return null
       if (goal.budget.usage.steps >= goal.budget.maxSteps)
         throw new OrchestrationError(
           'budget_exhausted',
@@ -1117,6 +1194,13 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
   }): Promise<StepLease | null> {
     const scope = tenantId(input.lease.tenantId)
     return withTenantTransaction(this.pool, scope, async (client) => {
+      const goal = toGoal(
+        await one<GoalRow>(
+          client,
+          'SELECT * FROM orchestrator_goals WHERE tenant_id = $1 AND id = $2 FOR UPDATE',
+          [scope, input.lease.goalId]
+        )
+      )
       const current = toStep(
         await one<StepRow>(
           client,
@@ -1125,11 +1209,15 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
         )
       )
       if (
+        current.goalId !== input.lease.goalId ||
+        current.planId !== input.lease.planId ||
         current.leaseOwner !== input.lease.workerId ||
         current.leaseToken !== input.lease.leaseToken ||
         current.status !== 'EXECUTING' ||
         !current.leaseUntil ||
-        current.leaseUntil <= input.now
+        current.leaseUntil <= input.now ||
+        goal.version !== input.lease.goalVersion ||
+        current.version !== input.lease.stepVersion
       )
         return null
       const leaseUntil = new Date(input.now.getTime() + input.leaseMs)
@@ -1139,8 +1227,20 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
           `UPDATE orchestrator_steps
           SET lease_until = $3, version = version + 1, updated_at = $4
         WHERE tenant_id = $1 AND id = $2 AND version = $5
+          AND goal_id = $6 AND plan_id = $7
+          AND lease_owner = $8 AND lease_token = $9
         RETURNING *`,
-          [scope, current.id, leaseUntil, input.now, current.version]
+          [
+            scope,
+            current.id,
+            leaseUntil,
+            input.now,
+            input.lease.stepVersion,
+            input.lease.goalId,
+            input.lease.planId,
+            input.lease.workerId,
+            input.lease.leaseToken
+          ]
         )
       )
       return { ...input.lease, leaseUntil, stepVersion: updated.version }
@@ -1201,6 +1301,11 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
         throw new OrchestrationError(
           'conflict',
           'Goal changed while step was executing'
+        )
+      if (current.version !== input.lease.stepVersion)
+        throw new OrchestrationError(
+          'lease_lost',
+          `Step version is stale for ${current.id}`
         )
       assertPlanStepTransition(current.status, executionStatus(input.outcome))
       const target = executionStatus(input.outcome)
@@ -1273,6 +1378,25 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
           input.lease.leaseToken
         ]
       )
+      if (input.observation) {
+        await client.query(
+          `INSERT INTO orchestrator_observations
+            (tenant_id, id, goal_id, plan_id, step_id, kind, result_digest,
+             evidence, created_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9)`,
+          [
+            scope,
+            createDomainId('observation'),
+            goal.id,
+            current.planId,
+            current.id,
+            input.observation.kind,
+            input.observation.resultDigest,
+            JSON.stringify(input.observation.evidence),
+            input.now
+          ]
+        )
+      }
       return { goal: updatedGoal, step: updatedStep }
     })
   }

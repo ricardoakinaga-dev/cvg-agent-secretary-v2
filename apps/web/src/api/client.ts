@@ -378,6 +378,7 @@ export interface OrchestrationGoalView {
   budget: {
     maxSteps: number
     maxReplans: number
+    maxIterations: number
     maxModelCalls: number
     maxToolCalls: number
     maxDurationMs: number
@@ -385,6 +386,7 @@ export interface OrchestrationGoalView {
     usage: {
       steps: number
       replans: number
+      iterations: number
       modelCalls: number
       toolCalls: number
       costUsd: number
@@ -402,6 +404,28 @@ export interface OrchestrationGoalDetailView extends OrchestrationGoalView {
     toolVersions: Record<string, string>
   }
   replanCount: number
+  operatorState: {
+    state: OrchestrationGoalStatus
+    reason: string | null
+    error: string | null
+    deadline: string | null
+    deadlineExpired: boolean
+    activePlanVersion: number | null
+    currentStepId: string | null
+    currentStepStatus: string | null
+    leaseOwner: string | null
+    leaseUntil: string | null
+    approvalId: string | null
+    handoffRequired: boolean
+    evidenceCount: number
+    verifiedEvidenceCount: number
+    lastObservationAt: string | null
+    lastEvaluation: {
+      result: string
+      reason: string | null
+      createdAt: string
+    } | null
+  }
   plans: Array<{
     id: string
     goalId: string

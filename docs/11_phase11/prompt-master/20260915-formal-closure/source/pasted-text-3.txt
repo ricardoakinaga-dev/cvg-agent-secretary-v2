@@ -1,0 +1,984 @@
+# CONTINUAÇÃO FINAL — PRODUCTION ASSURANCE & EXECUTION CONTRACT
+
+## ITEMS 252–END
+
+---
+
+# 252. PILOT CLOSURE
+
+Somente com piloto real:
+
+```text
+SUPERVISED_PILOT_CLOSURE = PASS
+```
+
+Exige:
+
+```text
+approved scope
+real operator
+real identity
+real channel
+restricted capabilities
+kill switch
+human takeover
+measured pilot metrics
+incident review
+human signoff
+```
+
+---
+
+# 253. PRODUCTION ASSURANCE CLOSURE
+
+Somente quando:
+
+```text
+LOCAL_ENGINEERING_CLOSURE = PASS
+
+EXTERNAL_INTEGRATION_CLOSURE = PASS
+
+SUPERVISED_PILOT_CLOSURE = PASS
+
+RPO_RTO_VALIDATION = PASS
+
+HUMAN_SIGNOFF = VALIDATED
+```
+
+e todos os mandatory Production gates estiverem `PASS`.
+
+---
+
+# 254. TRIPLE AAA CLOSURE
+
+Somente então:
+
+```text
+PRODUCTION_ASSURANCE_CLOSURE = PASS
+
+Certification =
+STATE_OF_ART_TRIPLE_AAA
+```
+
+---
+
+# 255. THESE MARKERS ARE CALCULATED
+
+Não edite manualmente.
+
+---
+
+# 256. SUCCESS STATE
+
+`phase11-result.json` deve conter:
+
+```json
+{
+  "successState": {
+    "localEngineeringClosure": false,
+    "externalIntegrationClosure": false,
+    "supervisedPilotClosure": false,
+    "productionAssuranceClosure": false,
+
+    "implementationComplete": false,
+    "localVerificationComplete": false,
+    "evidenceComplete": false,
+    "criticalInvariantsSatisfied": false,
+    "externalValidationComplete": false,
+    "pilotComplete": false,
+    "productionProofComplete": false,
+    "eligibleForRequestedProfile": false
+  }
+}
+```
+
+Todos os valores devem ser derivados.
+
+---
+
+# 257. FALSE SUCCESS PROHIBITED
+
+Não permita:
+
+```text
+productionAssuranceClosure = true
+```
+
+se qualquer dependency estiver false.
+
+---
+
+# 258. AAA_CANDIDATE SUCCESS STATE
+
+Um resultado correto pode ser:
+
+```text
+localEngineeringClosure = true
+externalIntegrationClosure = false
+supervisedPilotClosure = false
+productionAssuranceClosure = false
+
+Certification = AAA_CANDIDATE
+```
+
+Isso é resultado aceitável.
+
+---
+
+# 259. FINAL FINDINGS CLOSURE
+
+Reavalie todos os findings da auditoria inicial.
+
+Produza tabela:
+
+```text
+Finding
+Original Severity
+Current Status
+Closure Evidence
+Remaining Risk
+```
+
+---
+
+# 260. AUD-11-01 ACCEPTANCE
+
+Fechado somente quando:
+
+```text
+canonical Phase 11 certification exists
+current pointer points to Phase 11
+Phase 11 verification passes
+```
+
+---
+
+# 261. AUD-11-02 ACCEPTANCE
+
+Fechado quando Phase 10 estiver claramente historical e não for current source of truth.
+
+---
+
+# 262. AUD-11-03 ACCEPTANCE
+
+Fechado quando:
+
+```text
+production legacy effect bypass paths = 0
+```
+
+e architecture tests impedirem regressão.
+
+---
+
+# 263. AUD-11-04 ACCEPTANCE
+
+Fechado com replan lineage test PASS.
+
+---
+
+# 264. AUD-11-05 ACCEPTANCE
+
+Fechado com:
+
+```text
+loop detection PASS
+budget exhaustion PASS
+budget restart persistence PASS
+```
+
+---
+
+# 265. AUD-11-06 ACCEPTANCE
+
+Fechado com stale-worker/fencing test PASS.
+
+---
+
+# 266. AUD-11-07 ACCEPTANCE
+
+Fechado com crash-after-effect test:
+
+```text
+effect count = 1
+```
+
+---
+
+# 267. AUD-11-08 ACCEPTANCE
+
+Fechado quando trace/lineage atravessar o ciclo crítico e houver redaction.
+
+---
+
+# 268. AUD-11-09 ACCEPTANCE
+
+É conjunto de gates externos.
+
+Feche somente com real evidence.
+
+---
+
+# 269. NEW FINDINGS
+
+Se descobrir problemas novos:
+
+não os esconda para fechar a Phase.
+
+---
+
+# 270. P0/P1 NEW FINDING
+
+Corrija antes de local closure sempre que tecnicamente possível.
+
+---
+
+# 271. P2
+
+Determine se é critical/blocking.
+
+---
+
+# 272. P3/P4
+
+Podem permanecer conforme risk assessment.
+
+---
+
+# 273. INDEPENDENT CRITIC
+
+Depois do builder concluir:
+
+execute critic fresh-context.
+
+---
+
+# 274. CRITIC MUST NOT TRUST BUILDER SUMMARY
+
+Comece de:
+
+```text
+repository
+requirements
+machine evidence
+```
+
+---
+
+# 275. CRITIC MUST INSPECT CERTIFICATION ENGINE
+
+Obrigatório.
+
+---
+
+# 276. CRITIC MUST INSPECT ORCHESTRATOR
+
+Obrigatório.
+
+---
+
+# 277. CRITIC MUST INSPECT EFFECT SAFETY
+
+Obrigatório.
+
+---
+
+# 278. CRITIC MUST INSPECT TENANT BOUNDARY
+
+Obrigatório.
+
+---
+
+# 279. CRITIC MUST INSPECT EXTERNAL CLAIMS
+
+Obrigatório.
+
+---
+
+# 280. CRITIC OUTPUT
+
+Gere:
+
+```text
+docs/phase11/PHASE11_INDEPENDENT_CRITIC.md
+```
+
+quando o processo permitir.
+
+---
+
+# 281. CRITIC BLOCKING FINDING
+
+Bloqueia promotion correspondente.
+
+---
+
+# 282. FINAL EVIDENCE MANIFEST
+
+Inclua todos os artifacts relevantes.
+
+---
+
+# 283. FINAL CERTIFICATION MUST BE REPRODUCIBLE
+
+Deve ser possível, quando ambiente permitir:
+
+```text
+checkout candidate
+npm ci
+verify evidence
+```
+
+---
+
+# 284. CLEAN CLONE TEST
+
+Execute quando viável.
+
+---
+
+# 285. NO LOCAL UNTRACKED DEPENDENCY
+
+Obrigatório.
+
+---
+
+# 286. NODE VERSION
+
+Respeite:
+
+```text
+>=22 <23
+```
+
+ou versão corrente declarada no projeto.
+
+Não mude sem necessidade.
+
+---
+
+# 287. PACKAGE LOCK
+
+Use `npm ci`.
+
+---
+
+# 288. FINAL SUPPLY CHAIN
+
+Execute:
+
+```text
+npm audit
+CodeQL/SAST where CI supports
+Gitleaks
+license check
+SBOM
+```
+
+---
+
+# 289. SUPPLY-CHAIN EVIDENCE
+
+Associe ao candidate.
+
+---
+
+# 290. CRITICAL VULNERABILITY
+
+Vulnerabilidade crítica relevante:
+
+```text
+NO_GO
+```
+
+---
+
+# 291. SECRET LEAK
+
+Segredo real no repo:
+
+```text
+NO_GO
+```
+
+até tratamento apropriado.
+
+---
+
+# 292. FINAL RELEASE ARTIFACT
+
+Quando container build fizer parte do target:
+
+registre image digest.
+
+---
+
+# 293. DO NOT CERTIFY DIFFERENT ARTIFACT
+
+Artifact promovido deve corresponder ao artifact certificado.
+
+---
+
+# 294. FINAL PRODUCTION PREFLIGHT
+
+Crie/complete:
+
+```bash
+npm run production:preflight
+```
+
+ou equivalente.
+
+---
+
+# 295. PREFLIGHT MUST CHECK
+
+```text
+production environment
+PostgreSQL
+RLS where required
+durable inbound
+kernel runtime
+identity
+policy
+approval persistence
+outbox
+orchestrator persistence
+required integrations
+migration state
+```
+
+---
+
+# 296. PREFLIGHT FAIL CLOSED
+
+Configuração crítica ausente:
+
+startup/deployment readiness deve falhar.
+
+---
+
+# 297. HEALTH
+
+Preserve:
+
+```text
+/live
+/ready
+```
+
+---
+
+# 298. READY
+
+Deve refletir dependencies essenciais do profile.
+
+---
+
+# 299. DO NOT CALL EXPENSIVE PROVIDER EVERY PROBE
+
+Use health state/circuit state apropriado.
+
+---
+
+# 300. GRACEFUL SHUTDOWN
+
+Teste Orchestrator/worker.
+
+---
+
+# 301. SHUTDOWN FLOW
+
+```text
+stop claiming
+finish bounded work
+preserve uncertain effects
+release/expire leases safely
+flush telemetry
+close DB
+```
+
+---
+
+# 302. STARTUP RECOVERY
+
+Antes de novo trabalho:
+
+reconcilie/resuma work pendente conforme design.
+
+---
+
+# 303. PRODUCTION TOPOLOGY
+
+Documente topologia certificada.
+
+Exemplo:
+
+```text
+API replicas
+worker replicas
+PostgreSQL
+EvolutionAPI
+Chatwoot
+model provider
+```
+
+---
+
+# 304. DO NOT CLAIM MULTI-NODE SAFETY FROM SINGLE-NODE ONLY
+
+Obrigatório.
+
+---
+
+# 305. MULTI-WORKER
+
+Se produção terá múltiplos workers:
+
+stale lease/fencing tests precisam refletir isso.
+
+---
+
+# 306. OPERATOR CONSOLE
+
+Preserve/complete visibilidade de:
+
+```text
+active Goals
+Plan version
+current Step
+budget
+replans
+risk
+approval
+failures
+human ownership
+dead letters
+```
+
+---
+
+# 307. DO NOT EXPOSE RAW INTERNALS
+
+Preserve redaction.
+
+---
+
+# 308. CANCEL GOAL
+
+Se suportado:
+
+```text
+cancel future execution
+prevent new effects
+preserve already committed effects
+audit
+```
+
+---
+
+# 309. CANCEL != ROLLBACK
+
+Obrigatório.
+
+---
+
+# 310. HUMAN HANDOFF
+
+Contexto deve incluir:
+
+```text
+goal
+current state
+what failed
+why escalation occurred
+safe relevant evidence
+```
+
+---
+
+# 311. NO CHAIN-OF-THOUGHT STORAGE REQUIREMENT
+
+Não armazene raciocínio privado do modelo.
+
+---
+
+# 312. AUDIT STRUCTURED DECISIONS
+
+Armazene razões operacionais apropriadas.
+
+Exemplo:
+
+```text
+approval required because R3
+replan because slot conflict
+stop because budget exhausted
+```
+
+---
+
+# 313. FINAL DOCUMENT CONSISTENCY
+
+README/docs não podem contradizer `phase11-result.json`.
+
+---
+
+# 314. DOC CONSISTENCY CHECK
+
+Adicione automation/test se razoável.
+
+---
+
+# 315. FINAL SUCCESS BLOCK
+
+Ao terminar, produza:
+
+```text
+============================================================
+PHASE 11 — FORMAL CLOSURE RESULT
+============================================================
+
+Repository:
+cvg-agent-secretary-v2
+
+Candidate Commit:
+<sha>
+
+Candidate Tree:
+<hash>
+
+Working Tree:
+<CLEAN | DIRTY>
+
+Certification Fresh:
+<PASS | FAIL>
+
+Deployment Profile Evaluated:
+<CONTROLLED_LOCAL | STAGING | SUPERVISED_PILOT | PRODUCTION>
+
+
+AUDIT FINDINGS
+------------------------------------------------------------
+AUD-11-01: <CLOSED | OPEN>
+AUD-11-02: <CLOSED | OPEN>
+AUD-11-03: <CLOSED | OPEN>
+AUD-11-04: <CLOSED | OPEN>
+AUD-11-05: <CLOSED | OPEN>
+AUD-11-06: <CLOSED | OPEN>
+AUD-11-07: <CLOSED | OPEN>
+AUD-11-08: <CLOSED | OPEN>
+AUD-11-09: <CLOSED | PARTIAL | OPEN>
+
+
+ORCHESTRATOR
+------------------------------------------------------------
+Durable Goals:                     PASS | FAIL
+Durable Plans:                     PASS | FAIL
+Durable Steps:                     PASS | FAIL
+Goal Resume:                       PASS | FAIL
+Replan v1→v2:                      PASS | FAIL
+Plan Lineage:                      PASS | FAIL
+Observe Result:                    PASS | FAIL
+Evidence-based Goal Completion:    PASS | FAIL
+Loop Detection:                    PASS | FAIL
+Budget Enforcement:                PASS | FAIL
+Budget Restart Persistence:        PASS | FAIL
+
+
+GOVERNANCE
+------------------------------------------------------------
+Model Cannot Grant Authority:      PASS | FAIL
+Orchestrator Cannot Bypass:        PASS | FAIL
+Replanner Cannot Escalate:         PASS | FAIL
+Risk Cannot Be Downgraded:         PASS | FAIL
+Approval Payload Binding:          PASS | FAIL
+Approval Single Use:               PASS | FAIL
+Approval Race Safety:              PASS | FAIL
+Human Takeover Race Safety:        PASS | FAIL
+
+
+DISTRIBUTED SAFETY
+------------------------------------------------------------
+Tenant Isolation:                  PASS | FAIL
+Lease Safety:                      PASS | FAIL
+Fencing/Stale Worker:              PASS | FAIL
+Crash Before Effect:               PASS | FAIL
+Crash After Effect:                PASS | FAIL
+Duplicate Critical Effects:        ZERO | NONZERO
+Lost Committed Messages:           ZERO | NONZERO
+Unknown Effect Reconciliation:     PASS | FAIL
+
+
+ENGINEERING
+------------------------------------------------------------
+Format:                            PASS | FAIL
+Typecheck:                         PASS | FAIL
+Lint:                              PASS | FAIL
+Build:                             PASS | FAIL
+Unit:                              PASS | FAIL
+Coverage:                          PASS | FAIL
+Architecture Tests:                PASS | FAIL
+PostgreSQL:                        PASS | FAIL | NOT_EXECUTED
+E2E:                               PASS | FAIL
+Agent Evals:                       PASS | FAIL
+Orchestrator Evals:                PASS | FAIL
+Adversarial Evals:                 PASS | FAIL
+Chaos:                             PASS | FAIL
+Load:                              PASS | FAIL
+Recovery:                          PASS | FAIL
+Supply Chain:                      PASS | FAIL
+
+
+OBSERVABILITY
+------------------------------------------------------------
+Correlation:                       PASS | FAIL
+Execution Lineage:                 PASS | FAIL
+Structured Logs:                   PASS | FAIL
+Redaction:                         PASS | FAIL
+Distributed Trace:                 PASS | FAIL
+Metrics:                           PASS | FAIL
+Audit:                             PASS | FAIL
+
+
+CERTIFICATION
+------------------------------------------------------------
+Phase 11 Current Source of Truth:   PASS | FAIL
+Candidate Bound:                    PASS | FAIL
+Evidence Graph:                     PASS | FAIL
+Artifact Hashes:                    PASS | FAIL
+Stale Detection:                    PASS | FAIL
+False-GO Mutations:                 PASS | FAIL
+Historical Phase 10 Separation:     PASS | FAIL
+
+
+REAL STACK
+------------------------------------------------------------
+Model Provider:
+<VALIDATED_REAL | VALIDATED_STAGING | CONTROLLED_ONLY | NOT_CONFIGURED | FAILED | STALE>
+
+EvolutionAPI:
+<VALIDATED_REAL | VALIDATED_STAGING | CONTROLLED_ONLY | NOT_CONFIGURED | FAILED | STALE>
+
+Chatwoot:
+<VALIDATED_REAL | VALIDATED_STAGING | CONTROLLED_ONLY | NOT_CONFIGURED | FAILED | STALE>
+
+External Identity:
+<VALIDATED_REAL | VALIDATED_STAGING | CONTROLLED_ONLY | NOT_CONFIGURED | FAILED | STALE>
+
+RPO:
+<value | NOT_VALIDATED>
+
+RTO:
+<value | NOT_VALIDATED>
+
+Shadow Mode:
+<PASS | FAIL | NOT_EXECUTED>
+
+Supervised Pilot:
+<PASS | FAIL | NOT_EXECUTED>
+
+Rollback:
+<PASS | FAIL | NOT_EXECUTED>
+
+Human Signoff:
+<VALIDATED | PENDING | NOT_EXECUTED>
+
+
+FINDINGS
+------------------------------------------------------------
+P0: <count>
+P1: <count>
+P2: <count>
+P3: <count>
+P4: <count>
+
+Critical P2:
+<count>
+
+
+SCORES
+------------------------------------------------------------
+Architecture:                      <0-100>
+Engineering:                       <0-100>
+Testing:                           <0-100>
+Security:                          <0-100>
+Reliability:                       <0-100>
+Agent Engineering:                 <0-100>
+Orchestrator Engineering:          <0-100>
+Governance:                        <0-100>
+Observability:                     <0-100>
+Auditability:                      <0-100>
+Data Governance:                   <0-100>
+DevEx:                             <0-100>
+Production Readiness:              <0-100>
+
+
+CLOSURE
+------------------------------------------------------------
+Local Engineering Closure:
+<PASS | FAIL>
+
+External Integration Closure:
+<PASS | FAIL>
+
+Supervised Pilot Closure:
+<PASS | FAIL>
+
+Production Assurance Closure:
+<PASS | FAIL>
+
+
+FINAL DECISION
+------------------------------------------------------------
+Decision:
+<GO | CONDITIONAL_GO | NO_GO>
+
+Certification:
+<STATE_OF_ART_TRIPLE_AAA |
+ AAA_CANDIDATE |
+ AAA_CONTROLLED |
+ NO_GO>
+
+Eligible Profile:
+<CONTROLLED_LOCAL |
+ STAGING |
+ SUPERVISED_PILOT |
+ PRODUCTION>
+
+
+REMAINING BLOCKERS
+------------------------------------------------------------
+1. <blocker | NONE>
+2. <blocker | NONE>
+3. <blocker | NONE>
+
+
+MACHINE EVIDENCE
+------------------------------------------------------------
+Current:
+certification/current.json
+
+Result:
+certification/phase11/phase11-result.json
+
+Gates:
+certification/phase11/gates.json
+
+Invariants:
+certification/phase11/invariants.json
+
+Evidence Graph:
+certification/phase11/evidence-graph.json
+
+Manifest:
+certification/phase11/manifest.json
+
+Release Manifest:
+certification/phase11/release-manifest.json
+
+============================================================
+END PHASE 11 FORMAL CLOSURE RESULT
+============================================================
+```
+
+---
+
+# 316. SUCCESS BLOCK MUST BE GENERATED FROM MACHINE STATE
+
+Não preencha independentemente.
+
+---
+
+# 317. MACHINE RESULT WINS
+
+Se relatório humano e machine result divergirem:
+
+machine result é autoritativo.
+
+---
+
+# 318. FINAL STOP CONDITION A — LOCAL CLOSURE
+
+Você pode encerrar com `AAA_CANDIDATE` quando:
+
+```text
+all locally implementable findings closed
+all local mandatory gates PASS
+all critical invariants PASS
+Phase 11 certification complete
+evidence graph valid
+remaining blockers genuinely external
+```
+
+---
+
+# 319. FINAL STOP CONDITION B — FULL PRODUCTION CLOSURE
+
+Você pode encerrar com:
+
+```text
+STATE_OF_ART_TRIPLE_AAA
+```
+
+somente quando todos os Production gates reais também estiverem satisfeitos.
+
+---
+
+# 320. INVALID STOP CONDITION
+
+Não encerre porque:
+
+```text
+"restante é future work"
+"testes demorariam"
+"já parece bom"
+"Orchestrator está implementado"
+```
+
+se ainda existir trabalho local obrigatório executável.
+
+---
+
+# 321. DO NOT RETURN ANOTHER PLAN
+
+Execute.
+
+---
+
+# 322. DO NOT STOP AFTER CODING
+
+Teste.
+
+---
+
+# 323. DO NOT STOP AFTER TESTING
+
+Ataque.
+
+---
+
+# 324. DO NOT STOP AFTER RED TEAM
+
+Recupere/teste falhas.
+
+---
+
+# 325. DO NOT STOP AFTER GREEN SUITE
+
+Certifique.
+
+---
+
+# 326. DO NOT STOP AFTER CERTIFICATION
+
+Faça auditoria independente final.
+
+---
+
+# 327. THEN REPORT
+
+Somente então entregue o resultado.
+
+---
+
+# 328. FINAL EXEC

@@ -1,0 +1,1160 @@
+# CONTINUAÇÃO FINAL — CERTIFICATION & DELIVERY CONTRACT
+
+## ITEMS 161+
+
+---
+
+# 161. TARGET SCORES
+
+Objetivo desejado:
+
+```text id="98bypk"
+Architecture              >= 97
+Engineering               >= 97
+Testing                   >= 97
+Security                  >= 97
+Reliability               >= 97
+Agent Engineering         >= 97
+Orchestrator Engineering  >= 97
+Governance                >= 97
+Observability             >= 97
+Auditability              >= 97
+Data Governance           >= 95
+DevEx                     >= 95
+Production Readiness      >= 95
+```
+
+Esses valores são targets.
+
+Não manipule scores para alcançá-los.
+
+---
+
+# 162. SCORES DO NOT OVERRIDE GATES
+
+Exemplo:
+
+```text id="os3yb1"
+Architecture = 100
+Security = 100
+Production Readiness = 100
+
+Human Signoff = PENDING
+```
+
+Ainda assim:
+
+```text id="h2qb3m"
+Production Triple AAA = BLOCKED
+```
+
+---
+
+# 163. SCORE EVIDENCE
+
+Cada score deve possuir rationale baseado em:
+
+```text id="ofzhx9"
+implementation
+tests
+evidence
+residual risk
+```
+
+---
+
+# 164. NO AUTOMATIC 100
+
+`100` deve ser excepcional.
+
+---
+
+# 165. PRODUCTION READINESS
+
+Não atribua >=95 sem provas operacionais reais suficientes.
+
+---
+
+# 166. PHASE 11 RESULT
+
+Gere:
+
+```text id="7vst9h"
+certification/phase11/phase11-result.json
+```
+
+---
+
+# 167. REQUIRED RESULT STRUCTURE
+
+Inclua pelo menos:
+
+```text id="28jjb2"
+schemaVersion
+phase
+certificationId
+
+candidate
+deploymentProfile
+
+scores
+
+findings
+gates
+invariants
+
+evals
+chaos
+load
+recovery
+postgres
+
+integrations
+rpoRto
+pilot
+humanSignoff
+
+successState
+
+decision
+certification
+eligibleProfile
+remainingBlockers
+```
+
+---
+
+# 168. CANDIDATE STRUCTURE
+
+Inclua:
+
+```text id="l4ek10"
+commit
+treeHash
+branch
+dirty
+untrackedFiles
+createdAt
+```
+
+---
+
+# 169. FINAL CLEAN CANDIDATE
+
+Para Production certification:
+
+```text id="hdfy1q"
+dirty = false
+untrackedFiles = []
+```
+
+---
+
+# 170. SUCCESS STATE
+
+Inclua:
+
+```json id="7vlmge"
+{
+  "implementationComplete": false,
+  "localVerificationComplete": false,
+  "evidenceComplete": false,
+  "criticalInvariantsSatisfied": false,
+  "externalValidationComplete": false,
+  "pilotComplete": false,
+  "productionProofComplete": false,
+  "eligibleForRequestedProfile": false
+}
+```
+
+Valores calculados.
+
+---
+
+# 171. IMPLEMENTATION COMPLETE
+
+Somente quando todo trabalho mandatory local estiver implementado e verificado.
+
+---
+
+# 172. LOCAL VERIFICATION COMPLETE
+
+Todos os mandatory local gates:
+
+```text id="n6ilxt"
+PASS
+```
+
+---
+
+# 173. EVIDENCE COMPLETE
+
+Exige:
+
+```text id="ucay7s"
+all required evidence exists
+all hashes valid
+all candidate bindings valid
+no mandatory stale artifact
+```
+
+---
+
+# 174. CRITICAL INVARIANTS SATISFIED
+
+Todos os critical invariants:
+
+```text id="ekb0aa"
+PASS
+```
+
+---
+
+# 175. EXTERNAL VALIDATION COMPLETE
+
+Todos os providers obrigatórios ao deployment profile no nível requerido.
+
+---
+
+# 176. PILOT COMPLETE
+
+Para Production:
+
+```text id="oqgwz5"
+pilot = PASS
+```
+
+---
+
+# 177. PRODUCTION PROOF COMPLETE
+
+Exige:
+
+```text id="dnnk7f"
+real integrations
+Postgres production-representative validation
+RPO/RTO
+pilot
+human signoff
+production mandatory gates
+```
+
+---
+
+# 178. DEPLOYMENT PROFILES
+
+Use:
+
+```text id="b2p4xm"
+CONTROLLED_LOCAL
+STAGING
+SUPERVISED_PILOT
+PRODUCTION
+```
+
+---
+
+# 179. CONTROLLED_LOCAL
+
+Pode usar:
+
+```text id="a2yqq9"
+controlled model
+controlled channel
+synthetic identity
+synthetic data
+```
+
+Máxima classificação coerente:
+
+```text id="ljc1hr"
+AAA_CONTROLLED
+```
+
+---
+
+# 180. STAGING
+
+Exige:
+
+```text id="kgd7nf"
+real PostgreSQL
+durable runtime
+migrations
+restore
+chaos
+representative deployment
+staging integrations
+```
+
+conforme profile.
+
+---
+
+# 181. SUPERVISED_PILOT
+
+Exige:
+
+```text id="r1k55q"
+real channel
+real operator identity
+restricted capabilities
+kill switch
+human supervisor
+rollback
+shadow validation
+```
+
+---
+
+# 182. PRODUCTION
+
+Exige todos os mandatory production gates.
+
+---
+
+# 183. FINAL DECISION ENUM
+
+Use:
+
+```text id="4cg6ps"
+GO
+CONDITIONAL_GO
+NO_GO
+```
+
+---
+
+# 184. CERTIFICATION ENUM
+
+Use:
+
+```text id="sf4qf0"
+STATE_OF_ART_TRIPLE_AAA
+AAA_CANDIDATE
+AAA_CONTROLLED
+NO_GO
+```
+
+---
+
+# 185. AAA_CONTROLLED
+
+Use quando:
+
+```text id="64we0z"
+local controlled engineering validated
+```
+
+mas o nível de evidência ainda é controlado.
+
+---
+
+# 186. AAA_CANDIDATE
+
+Use quando:
+
+```text id="4n4a07"
+local engineering closure complete
+critical invariants PASS
+local mandatory gates PASS
+Phase 11 evidence complete
+```
+
+mas algum gate externo necessário à Production ainda estiver pendente.
+
+---
+
+# 187. STATE_OF_ART_TRIPLE_AAA
+
+Somente quando:
+
+```text id="am3ye9"
+deploymentProfile = PRODUCTION
+
+candidate clean
+certification fresh
+
+all mandatory gates = PASS
+
+P0 = 0
+P1 = 0
+critical P2 = 0
+
+all critical invariants = PASS
+
+PostgreSQL = VALIDATED
+
+required real model provider = VALIDATED_REAL
+required channel integrations = VALIDATED_REAL
+external identity = VALIDATED_REAL
+
+RPO/RTO = VALIDATED
+
+supervised pilot = PASS
+human signoff = VALIDATED
+
+rollback = PASS
+
+independent audit = no blocking finding
+```
+
+---
+
+# 188. NO_GO
+
+Use quando existir:
+
+```text id="v7jnfg"
+P0
+P1 technical blocker
+critical invariant failure
+mandatory local gate failure
+certification integrity failure
+```
+
+para o profile avaliado.
+
+---
+
+# 189. CONDITIONAL_GO
+
+Use para promoção ao próximo profile quando apropriado.
+
+Exemplo:
+
+```text id="a9uyqf"
+AAA_CANDIDATE
++
+CONDITIONAL_GO for SUPERVISED_PILOT
+```
+
+Não significa Production GO.
+
+---
+
+# 190. PROMOTION CALCULUS
+
+Implemente:
+
+```text id="h7bt23"
+promotion:check
+```
+
+ou equivalente.
+
+Input:
+
+```text id="9ow9rj"
+current profile
+requested profile
+candidate
+```
+
+Output:
+
+```text id="nqak1i"
+eligible
+blocking gates
+blocking findings
+external blockers
+```
+
+---
+
+# 191. FALSE PROMOTION TEST
+
+Controlled evidence tentando promover diretamente para Production:
+
+```text id="dknkz9"
+DENY
+```
+
+---
+
+# 192. EVIDENCE STRENGTH RULE
+
+Formalize:
+
+```text id="h21c1q"
+required evidence strength
+>=
+deployment risk
+```
+
+---
+
+# 193. RELEASE MANIFEST
+
+Gere:
+
+```text id="hgh73c"
+certification/phase11/release-manifest.json
+```
+
+---
+
+# 194. RELEASE MANIFEST
+
+Inclua quando disponíveis:
+
+```text id="db0k47"
+candidateCommit
+treeHash
+buildId
+containerDigest
+SBOMDigest
+migrationDigest
+agentVersion
+policyVersion
+promptVersions
+toolVersions
+integrationEvidence
+certificationId
+```
+
+---
+
+# 195. DO NOT INVENT DIGESTS
+
+Valor indisponível:
+
+```text id="5upcnr"
+null
+```
+
+ou estado explícito definido pelo schema.
+
+---
+
+# 196. MANIFEST
+
+Gere:
+
+```text id="2nnhzf"
+certification/phase11/manifest.json
+```
+
+com artifacts e hashes.
+
+---
+
+# 197. CURRENT POINTER
+
+Atualize `certification/current.json` somente através do mecanismo de certificação.
+
+Não manualmente.
+
+---
+
+# 198. PHASE 10 HISTORY
+
+Mantenha verification histórica funcional.
+
+---
+
+# 199. PHASE 11 IS CURRENT
+
+Após closure válida, tooling e docs devem tratar Phase 11 como current certification.
+
+---
+
+# 200. README STATUS
+
+Atualize status sem exagero.
+
+Exemplo, se for o resultado real:
+
+```text id="pwyjjr"
+Current certification:
+AAA_CANDIDATE — Phase 11
+
+Production validation:
+Pending external gates.
+```
+
+---
+
+# 201. README MUST NOT CLAIM TRIPLE AAA PREMATURELY
+
+Obrigatório.
+
+---
+
+# 202. DOCUMENTATION
+
+Produza/atualize:
+
+```text id="5hmm6m"
+docs/phase11/PHASE11_CLOSURE_PLAN.md
+docs/phase11/PHASE11_ARCHITECTURE.md
+docs/phase11/PHASE11_ORCHESTRATOR.md
+docs/phase11/PHASE11_SECURITY_REVIEW.md
+docs/phase11/PHASE11_ADVERSARIAL_REPORT.md
+docs/phase11/PHASE11_CHAOS_REPORT.md
+docs/phase11/PHASE11_LOAD_REPORT.md
+docs/phase11/PHASE11_RECOVERY_REPORT.md
+docs/phase11/PHASE11_INTEGRATION_REPORT.md
+docs/phase11/PHASE11_FINAL_AUDIT.md
+```
+
+Adapte aos paths existentes.
+
+---
+
+# 203. DO NOT CREATE DUPLICATE DOCS
+
+Se equivalente já existir:
+
+atualize/consolide.
+
+---
+
+# 204. ADRs
+
+Crie/atualize apenas quando decisão arquitetural relevante ainda não estiver registrada.
+
+---
+
+# 205. FINAL AUDIT MUST BE ADVERSARIAL
+
+Não escreva relatório promocional.
+
+Tente reprovar o candidato.
+
+---
+
+# 206. FINAL AUDIT QUESTIONS
+
+Responda com evidence:
+
+```text id="rxihja"
+Can model output gain authority?
+
+Can Orchestrator call an external effect without Governance?
+
+Can Planner/Replanner escalate capability?
+
+Can model-proposed risk classification downgrade an action?
+
+Can approval payload be mutated?
+
+Can approval be reused?
+
+Can stale worker commit?
+
+Can worker crash duplicate an effect?
+
+Can restart reset budget?
+
+Can a Goal falsely complete?
+
+Can loop/replan run indefinitely?
+
+Can tenant A influence tenant B?
+
+Can human takeover race with bot outbound?
+
+Can controlled integration evidence masquerade as real?
+
+Can stale certification masquerade as fresh?
+
+Can a dirty candidate be certified?
+```
+
+---
+
+# 207. EACH ANSWER REQUIRES REFERENCES
+
+Relacione:
+
+```text id="ecqysc"
+implementation
+test
+evidence
+gate
+```
+
+---
+
+# 208. MUTATION TESTING
+
+Execute mutations controladas para provar gates críticos.
+
+---
+
+# 209. CERTIFICATION MUTATION EXAMPLES
+
+```text id="ctz6m8"
+change artifact hash
+→ verifier FAIL
+
+change candidate SHA
+→ STALE
+
+mandatory gate NOT_EXECUTED
+→ promotion blocked
+
+controlled provider marked real
+→ schema/calculus rejects
+
+dirty candidate
+→ final certification rejected
+```
+
+---
+
+# 210. GOVERNANCE MUTATIONS
+
+```text id="5qztd2"
+disable approval binding
+→ test FAIL
+
+allow risk downgrade
+→ test FAIL
+
+allow tenant mismatch
+→ test FAIL
+```
+
+Reverta mutations.
+
+---
+
+# 211. RELIABILITY MUTATIONS
+
+```text id="8y9z2a"
+disable stale lease check
+→ concurrency test FAIL
+
+disable effect journal
+→ crash-after-effect test FAIL
+```
+
+---
+
+# 212. LOOP MUTATION
+
+Disable loop detector:
+
+adversarial test deve falhar.
+
+---
+
+# 213. GATE THAT CANNOT FAIL IS NOT A GATE
+
+Obrigatório.
+
+---
+
+# 214. TEST INVENTORY
+
+Produza inventário final:
+
+```text id="ipapnr"
+unit
+contract
+architecture
+integration
+PostgreSQL
+E2E
+eval
+adversarial
+chaos
+load
+restore
+real integration
+pilot
+certification mutation
+```
+
+---
+
+# 215. TEST SKIPS
+
+Liste todos.
+
+---
+
+# 216. CRITICAL SKIP
+
+Critical local test skipped sem blocker externo legítimo:
+
+```text id="tugj12"
+NO_GO
+```
+
+para closure local.
+
+---
+
+# 217. COVERAGE
+
+Não persiga número global cegamente.
+
+---
+
+# 218. CRITICAL COVERAGE
+
+Priorize branch coverage dos módulos:
+
+```text id="z72hhc"
+orchestrator
+goal/plan
+policy
+risk
+approval
+identity
+tenant
+outbox/effect journal
+worker kernel
+certification engine
+```
+
+---
+
+# 219. TARGET CRITICAL BRANCH COVERAGE
+
+Objetivo:
+
+```text id="q7efmg"
+>= 90%
+```
+
+quando razoável.
+
+---
+
+# 220. COVERAGE EXCEPTION
+
+Exige rationale e alternative evidence.
+
+---
+
+# 221. CODE QUALITY
+
+Faça auditoria final por:
+
+```text id="mm14kt"
+TODO
+FIXME
+unsafe any
+unsafe casts
+dead code
+duplicate certification logic
+duplicate runtime paths
+debug logging
+temporary flags
+```
+
+---
+
+# 222. NO GOD ORCHESTRATOR
+
+Não permita Orchestrator virar classe monolítica gigantesca.
+
+---
+
+# 223. COMPOSITION
+
+Mantenha componentes testáveis:
+
+```text id="03bsse"
+State Machine
+Goal Store
+Planner
+Plan Validator
+Governance
+Executor
+Observer
+Evaluator
+Replanner
+Budget
+Loop Detector
+Recovery
+Telemetry
+```
+
+---
+
+# 224. NO ARCHITECTURE ASTRONAUTICS
+
+Também não quebre cada função em um serviço desnecessário.
+
+---
+
+# 225. MODULAR MONOLITH
+
+Preserve enquanto adequado.
+
+---
+
+# 226. POSTGRES FIRST
+
+Não introduza Kafka/Redis/Kubernetes apenas para atingir aparência "enterprise".
+
+---
+
+# 227. REDIS/VALKEY
+
+Somente se uma garantia concreta não puder ser satisfeita adequadamente pelo PostgreSQL atual.
+
+---
+
+# 228. PERFORMANCE
+
+Meça antes de otimizar.
+
+---
+
+# 229. DATABASE INDEX REVIEW
+
+Revise queries de:
+
+```text id="xbppn2"
+runnable Goals
+pending Steps
+leases
+approvals
+outbox
+effect journal
+```
+
+---
+
+# 230. INDEXES
+
+Adicione somente quando evidência justificar.
+
+---
+
+# 231. FINAL BUSINESS GOLDEN PATH
+
+Crie/valide E2E sintético:
+
+```text id="4bndmc"
+Tutor:
+"Quero marcar dermatologista para o Bob amanhã à tarde."
+
+↓ Observe
+↓ Understand
+↓ Goal
+↓ Plan
+↓ Search availability
+↓ Ask/select slot
+↓ Govern
+↓ Create appointment
+↓ Observe actual state
+↓ Evaluate SuccessCriteria
+↓ Respond
+↓ Stop
+```
+
+---
+
+# 232. REPLAN GOLDEN PATH
+
+Slot deixa de existir antes do write:
+
+```text id="un5d4i"
+conflict
+↓
+observe
+↓
+evaluate false
+↓
+Plan v2
+↓
+alternative
+```
+
+---
+
+# 233. FALSE COMPLETION GOLDEN TEST
+
+Appointment creation returns success but state verification fails.
+
+Não confirmar ao tutor.
+
+---
+
+# 234. HUMAN TAKEOVER GOLDEN TEST
+
+Supervisor assume durante fluxo.
+
+Bot para outbound.
+
+---
+
+# 235. CLINICAL BOUNDARY GOLDEN TEST
+
+Tutor pede prescrição.
+
+Secretária não prescreve.
+
+---
+
+# 236. TENANT GOLDEN ATTACK
+
+Tente usar patient/resource de outro tenant.
+
+Fail closed.
+
+---
+
+# 237. FINAL COMMANDS
+
+Garanta comandos equivalentes e existentes:
+
+```text id="etumv6"
+npm run verify
+npm run test:postgres
+npm run test:e2e
+npm run test:evals
+npm run test:chaos
+
+npm run certify:phase11
+npm run certification:verify:phase11
+npm run evidence:verify:phase11
+npm run promotion:check
+```
+
+---
+
+# 238. FRESH FINAL RUN
+
+Antes de certification final local:
+
+execute de estado limpo sempre que possível.
+
+---
+
+# 239. NO CHERRY-PICKING
+
+Reporte falhas e skips.
+
+---
+
+# 240. FINAL EVIDENCE GRAPH VERIFY
+
+Obrigatório.
+
+---
+
+# 241. FINAL CERTIFICATION VERIFY
+
+Obrigatório.
+
+---
+
+# 242. FINAL PROMOTION CHECK
+
+Execute para o máximo profile realmente suportado pela evidência.
+
+---
+
+# 243. DO NOT RUN PRODUCTION ACTIONS
+
+Sem autorização explícita:
+
+não:
+
+```text id="v4jv1v"
+deploy production
+send real customer messages
+modify real patient data
+rotate production secrets
+change DNS
+```
+
+---
+
+# 244. REAL VALIDATION BOUNDARY
+
+Se credenciais de staging estiverem disponíveis e ambiente autorizar testes:
+
+execute.
+
+Caso contrário:
+
+registre blocker.
+
+---
+
+# 245. DO NOT STOP BECAUSE OF EXTERNAL BLOCKER
+
+Complete primeiro todo trabalho local independente.
+
+---
+
+# 246. BLOCKER MODEL
+
+Use machine-readable blockers.
+
+Tipos:
+
+```text id="cy20a1"
+CODE
+TEST
+SECURITY
+INFRASTRUCTURE
+CREDENTIAL
+INTEGRATION
+HUMAN
+BUSINESS
+```
+
+---
+
+# 247. LOCAL BLOCKERS
+
+Resolva antes de encerrar sempre que tecnicamente possível.
+
+---
+
+# 248. EXTERNAL BLOCKERS
+
+Podem permanecer.
+
+---
+
+# 249. FINAL LOCAL CLOSURE CONDITION
+
+Todo trabalho local implementável:
+
+```text id="q72r6b"
+IMPLEMENTED
++
+VERIFIED
++
+EVIDENCE-BOUND
+```
+
+---
+
+# 250. LOCAL CLOSURE MARKER
+
+Somente então:
+
+```text id="11svkw"
+LOCAL_ENGINEERING_CLOSURE = PASS
+```
+
+---
+
+# 251. EXTERNAL CLOSURE
+
+Somente com real validation:
+
+```text id="kdn0g2"
+EXTERNAL_INTEGRATION_CLOSURE = PASS
+```
+
+---
+
+# 252. PILOT CLOSURE
+
+Somente com piloto real:
+
+```text id="
+```

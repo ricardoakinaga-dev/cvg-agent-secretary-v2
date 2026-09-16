@@ -67,6 +67,12 @@ describe('postgres migration smoke', () => {
     expect(orchestrator).toContain('budget_usage')
     expect(orchestrator).toContain('inbound_message_id')
     expect(orchestrator).toContain('uq_orchestrator_goals_inbound_message')
+
+    const iterationBudget = await readPostgresMigrationSql(
+      '0021_orchestrator_iteration_budget'
+    )
+    expect(iterationBudget).toContain("budget ? 'maxIterations'")
+    expect(iterationBudget).toContain("budget_usage ? 'iterations'")
   })
 
   it('ships an additive release-candidate validator integrity migration', async () => {

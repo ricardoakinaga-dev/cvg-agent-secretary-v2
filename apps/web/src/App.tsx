@@ -103,6 +103,9 @@ export function App({
   >(loading([]))
   const [orchestrationDetail, setOrchestrationDetail] =
     useState<OrchestrationGoalDetailView | null>(null)
+  const [orchestrationDetailError, setOrchestrationDetailError] = useState<
+    string | null
+  >(null)
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null)
   const [orchestrationDetailLoading, setOrchestrationDetailLoading] =
     useState(false)
@@ -146,11 +149,7 @@ export function App({
     useState<PanelNotice | null>(null)
   const [sessionClosed, setSessionClosed] = useState(false)
   const [reloadNonce, setReloadNonce] = useState(0)
-  const [identityDetailsOpen, setIdentityDetailsOpen] = useState(() =>
-    typeof window === 'undefined' || typeof window.matchMedia !== 'function'
-      ? true
-      : window.matchMedia('(min-width: 761px)').matches
-  )
+  const [identityDetailsOpen, setIdentityDetailsOpen] = useState(true)
 
   const sourceIdentityKey = JSON.stringify([
     sessionIdentity?.operatorId ?? null,
@@ -219,6 +218,7 @@ export function App({
       setDeadLetters(loaded([]))
       setOrchestrationGoals(loaded([]))
       setOrchestrationDetail(null)
+      setOrchestrationDetailError(null)
       setSelectedGoalId(null)
       setOrchestrationDetailLoading(false)
       setAuditEvents(loaded([]))
@@ -248,6 +248,7 @@ export function App({
     setDeadLetters(loading([]))
     setOrchestrationGoals(loading([]))
     setOrchestrationDetail(null)
+    setOrchestrationDetailError(null)
     setSelectedGoalId(null)
     setOrchestrationDetailLoading(false)
     setAuditEvents(loading([]))
@@ -355,19 +356,27 @@ export function App({
       !selectedGoalId
     ) {
       setOrchestrationDetail(null)
+      setOrchestrationDetailError(null)
       setOrchestrationDetailLoading(false)
       return
     }
     let active = true
     const scope = identityKey
     setOrchestrationDetailLoading(true)
+    setOrchestrationDetailError(null)
     apiClient
       .getOrchestrationGoal(identity, selectedGoalId)
       .then((detail) => {
-        if (active && isCurrentIdentity(scope)) setOrchestrationDetail(detail)
+        if (!active || !isCurrentIdentity(scope)) return
+        setOrchestrationDetail(detail)
+        setOrchestrationDetailError(null)
       })
       .catch(() => {
-        if (active && isCurrentIdentity(scope)) setOrchestrationDetail(null)
+        if (!active || !isCurrentIdentity(scope)) return
+        setOrchestrationDetail(null)
+        setOrchestrationDetailError(
+          'Não foi possível carregar o detalhe deste Goal. O estado exibido permanece somente leitura.'
+        )
       })
       .finally(() => {
         if (active && isCurrentIdentity(scope))
@@ -547,6 +556,12 @@ export function App({
     setAuditEvidenceExportMessage(null)
     setAuditEvidenceCheckpoint(loaded(null))
     setAuditEvidenceCheckpointMessage(null)
+  }
+
+  const selectOrchestrationGoal = (goalId: string) => {
+    setSelectedGoalId(goalId)
+    setOrchestrationDetail(null)
+    setOrchestrationDetailError(null)
   }
 
   const refreshApprovals = async (scope = viewScopeToken) => {
@@ -993,111 +1008,122 @@ export function App({
         ) : null}
       </nav>
       <section
-        className="grid"
+        className="consoleOperational"
         id="console-operacional"
         aria-label="Console operacional"
         tabIndex={-1}
       >
-        <ConversationsPanel
-          conversations={conversations.data}
-          selectedConversationId={selectedConversationId}
-          messages={messages.data}
-          error={conversations.error ?? messages.error}
-          isLoading={conversations.isLoading}
-          isTimelineLoading={!conversations.isLoading && messages.isLoading}
+        <OrchestrationPanel
+          identity={currentOperatorIdentity()}
+          goals={orchestrationGoals.data}
+          detail={orchestrationDetail}
+          selectedGoalId={selectedGoalId}
+          error={orchestrationGoals.error}
+          detailError={orchestrationDetailError}
+          isLoading={orchestrationGoals.isLoading}
+          isDetailLoading={orchestrationDetailLoading}
+          deadLetterCount={
+            canReviewDeadLetterQueue
+              ? deadLetters.isLoading
+                ? null
+                : deadLetters.data.length
+              : undefined
+          }
           onRetry={() => setReloadNonce((current) => current + 1)}
-          onSelectConversation={selectConversation}
+          onRetryDetail={() => setReloadNonce((current) => current + 1)}
+          onSelectGoal={selectOrchestrationGoal}
         />
-        <ApprovalsPanel
-          message={approvalMessage?.text ?? null}
-          messageTone={approvalMessage?.tone ?? 'info'}
-          approvals={approvals.data}
-          actionId={approvalActionId}
-          error={approvals.error}
-          isLoading={approvals.isLoading}
-          canApproveReject={canDecideApproval}
-          canAssumeHandoff={canAssumeHandoff}
-          onRetry={() => setReloadNonce((current) => current + 1)}
-          onApprove={(approvalId) =>
-            void decideApproval(
-              approvalId,
-              'approved',
-              'controlled_console_action'
-            )
-          }
-          onReject={(approvalId) =>
-            void decideApproval(
-              approvalId,
-              'rejected',
-              'controlled_console_action'
-            )
-          }
-          onAssumeHandoff={(approvalId) =>
-            void decideApproval(
-              approvalId,
-              'assumed',
-              'controlled_handoff_only'
-            )
-          }
-        />
-        <TasksPanel
-          tasks={tasks.data}
-          message={taskMessage?.text ?? null}
-          messageTone={taskMessage?.tone ?? 'info'}
-          actionId={taskActionId}
-          error={tasks.error}
-          isLoading={tasks.isLoading}
-          canUpdateTasks={canUpdateTasks}
-          onRetry={() => setReloadNonce((current) => current + 1)}
-          onStart={(taskId) => void updateTaskStatus(taskId, 'in_progress')}
-          onComplete={(taskId) => void updateTaskStatus(taskId, 'done')}
-          onCancel={(taskId) => void updateTaskStatus(taskId, 'canceled')}
-        />
-        <AuditPanel
-          events={auditEvents.data}
-          error={auditEvents.error}
-          isLoading={auditEvents.isLoading}
-          evidence={auditEvidence.data}
-          evidenceError={auditEvidence.error}
-          evidenceIsLoading={auditEvidence.isLoading}
-          canReviewEvidence={canReviewEvidence}
-          evidenceExportMessage={auditEvidenceExportMessage}
-          isRequestingEvidenceExport={isRequestingAuditEvidenceExport}
-          checkpoint={auditEvidenceCheckpoint.data}
-          canManageEvidenceCheckpoint={
-            canReviewEvidence &&
-            !auditEvidenceCheckpoint.isLoading &&
-            !auditEvidenceCheckpoint.error
-          }
-          checkpointMessage={auditEvidenceCheckpointMessage}
-          isManagingEvidenceCheckpoint={isManagingAuditEvidenceCheckpoint}
-          onRetry={() => setReloadNonce((current) => current + 1)}
-          onSealEvidenceCheckpoint={() => void sealAuditEvidenceCheckpoint()}
-          onArchiveEvidenceCheckpoint={() =>
-            void archiveAuditEvidenceCheckpoint()
-          }
-          onNextEvidencePage={goToNextAuditEvidencePage}
-          onPreviousEvidencePage={goToPreviousAuditEvidencePage}
-          onRequestEvidenceExport={() =>
-            void requestAuditEvidenceExportApproval()
-          }
-        />
+        <div
+          className="grid"
+          aria-label="Conversas, aprovações, tarefas e auditoria"
+          role="region"
+        >
+          <ConversationsPanel
+            conversations={conversations.data}
+            selectedConversationId={selectedConversationId}
+            messages={messages.data}
+            error={conversations.error ?? messages.error}
+            isLoading={conversations.isLoading}
+            isTimelineLoading={!conversations.isLoading && messages.isLoading}
+            onRetry={() => setReloadNonce((current) => current + 1)}
+            onSelectConversation={selectConversation}
+          />
+          <ApprovalsPanel
+            message={approvalMessage?.text ?? null}
+            messageTone={approvalMessage?.tone ?? 'info'}
+            approvals={approvals.data}
+            actionId={approvalActionId}
+            error={approvals.error}
+            isLoading={approvals.isLoading}
+            canApproveReject={canDecideApproval}
+            canAssumeHandoff={canAssumeHandoff}
+            onRetry={() => setReloadNonce((current) => current + 1)}
+            onApprove={(approvalId) =>
+              void decideApproval(
+                approvalId,
+                'approved',
+                'controlled_console_action'
+              )
+            }
+            onReject={(approvalId) =>
+              void decideApproval(
+                approvalId,
+                'rejected',
+                'controlled_console_action'
+              )
+            }
+            onAssumeHandoff={(approvalId) =>
+              void decideApproval(
+                approvalId,
+                'assumed',
+                'controlled_handoff_only'
+              )
+            }
+          />
+          <TasksPanel
+            tasks={tasks.data}
+            message={taskMessage?.text ?? null}
+            messageTone={taskMessage?.tone ?? 'info'}
+            actionId={taskActionId}
+            error={tasks.error}
+            isLoading={tasks.isLoading}
+            canUpdateTasks={canUpdateTasks}
+            onRetry={() => setReloadNonce((current) => current + 1)}
+            onStart={(taskId) => void updateTaskStatus(taskId, 'in_progress')}
+            onComplete={(taskId) => void updateTaskStatus(taskId, 'done')}
+            onCancel={(taskId) => void updateTaskStatus(taskId, 'canceled')}
+          />
+          <AuditPanel
+            events={auditEvents.data}
+            error={auditEvents.error}
+            isLoading={auditEvents.isLoading}
+            evidence={auditEvidence.data}
+            evidenceError={auditEvidence.error}
+            evidenceIsLoading={auditEvidence.isLoading}
+            canReviewEvidence={canReviewEvidence}
+            evidenceExportMessage={auditEvidenceExportMessage}
+            isRequestingEvidenceExport={isRequestingAuditEvidenceExport}
+            checkpoint={auditEvidenceCheckpoint.data}
+            canManageEvidenceCheckpoint={
+              canReviewEvidence &&
+              !auditEvidenceCheckpoint.isLoading &&
+              !auditEvidenceCheckpoint.error
+            }
+            checkpointMessage={auditEvidenceCheckpointMessage}
+            isManagingEvidenceCheckpoint={isManagingAuditEvidenceCheckpoint}
+            onRetry={() => setReloadNonce((current) => current + 1)}
+            onSealEvidenceCheckpoint={() => void sealAuditEvidenceCheckpoint()}
+            onArchiveEvidenceCheckpoint={() =>
+              void archiveAuditEvidenceCheckpoint()
+            }
+            onNextEvidencePage={goToNextAuditEvidencePage}
+            onPreviousEvidencePage={goToPreviousAuditEvidencePage}
+            onRequestEvidenceExport={() =>
+              void requestAuditEvidenceExportApproval()
+            }
+          />
+        </div>
       </section>
-      <OrchestrationPanel
-        identity={currentOperatorIdentity()}
-        goals={orchestrationGoals.data}
-        detail={orchestrationDetail}
-        selectedGoalId={selectedGoalId}
-        error={orchestrationGoals.error}
-        isLoading={orchestrationGoals.isLoading}
-        isDetailLoading={orchestrationDetailLoading}
-        onRetry={() => setReloadNonce((current) => current + 1)}
-        onSelectGoal={setSelectedGoalId}
-      />
-      <JourneysPanel
-        identity={currentOperatorIdentity()}
-        selectedSessionId={selectedSessionId}
-      />
       {canReviewDeadLetterQueue ? (
         <DeadLettersPanel
           deadLetters={deadLetters.data}
@@ -1111,6 +1137,10 @@ export function App({
           onRequeue={(eventId) => void requeueDeadLetter(eventId)}
         />
       ) : null}
+      <JourneysPanel
+        identity={currentOperatorIdentity()}
+        selectedSessionId={selectedSessionId}
+      />
       {operatorIdentity?.role === 'Admin' &&
       /^tenant_[0-9a-f-]{36}$/.test(normalizedTenantId) ? (
         <PlatformPanel

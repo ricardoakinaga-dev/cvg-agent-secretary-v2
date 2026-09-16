@@ -1,0 +1,1185 @@
+# ENCERRAMENTO — EXECUTION DIRECTIVE
+
+## ITEMS 328–END
+
+---
+
+# 328. FINAL EXECUTION ORDER
+
+Execute nesta ordem:
+
+```text
+1. INSPECT
+2. BASELINE
+3. DELTA AUDIT
+4. FIX CERTIFICATION INTEGRITY
+5. CONSOLIDATE PHASE 11 SOURCE OF TRUTH
+6. AUDIT LEGACY/BYPASS PATHS
+7. CLOSE REPLAN/GOAL SUCCESS PROOF
+8. CLOSE LOOP/BUDGET SAFETY
+9. CLOSE LEASE/FENCING SAFETY
+10. CLOSE CRASH/EFFECT SAFETY
+11. CLOSE TENANT/GOVERNANCE RED TEAM
+12. CLOSE LINEAGE/OBSERVABILITY
+13. RUN POSTGRES/RECOVERY
+14. RUN EVALS/ADVERSARIAL
+15. RUN CHAOS
+16. RUN LOAD
+17. ATTACK CERTIFICATION ENGINE
+18. GENERATE PHASE 11 EVIDENCE
+19. VERIFY PHASE 11
+20. VALIDATE REAL STACK WHEN AUTHORIZED
+21. RUN INDEPENDENT CRITIC
+22. CALCULATE PROMOTION
+23. GENERATE FINAL SUCCESS STATE
+```
+
+---
+
+# 329. BASELINE BEFORE CHANGES
+
+Registre:
+
+```text
+HEAD
+tree hash
+branch
+working tree
+Node version
+npm version
+current test state
+current certification state
+```
+
+---
+
+# 330. BASELINE ARTIFACT
+
+Crie ou atualize:
+
+```text
+certification/phase11/baseline.json
+```
+
+---
+
+# 331. BASELINE DOES NOT NEED TO BE GREEN
+
+Registre a verdade.
+
+---
+
+# 332. DELTA AUDIT ARTIFACT
+
+Produza:
+
+```text
+docs/phase11/PHASE11_DELTA_AUDIT.md
+```
+
+ou equivalente existente.
+
+---
+
+# 333. DELTA AUDIT MUST BE SPECIFIC
+
+Não escrever:
+
+```text
+"Improve reliability."
+```
+
+Escrever:
+
+```text
+"Stale worker completion currently lacks CAS/fencing evidence in X path; add conditional version/lease completion and concurrent regression test."
+```
+
+---
+
+# 334. IMPLEMENT IN COHERENT SLICES
+
+Não faça um commit para cada checklist item.
+
+---
+
+# 335. RECOMMENDED SLICES
+
+Quando mudanças forem necessárias:
+
+```text
+Slice A — certification integrity
+Slice B — orchestrator/replan
+Slice C — distributed safety
+Slice D — observability
+Slice E — adversarial proof
+Slice F — certification closure
+```
+
+---
+
+# 336. TARGETED TESTS FIRST
+
+Durante implementação, rode suites relevantes.
+
+---
+
+# 337. FULL VERIFY AT CHECKPOINTS
+
+Não rode tudo após cada alteração trivial.
+
+---
+
+# 338. COMMITS
+
+Se autorizado pelo ambiente:
+
+faça commits semanticamente claros.
+
+---
+
+# 339. EXAMPLE COMMITS
+
+```text
+fix(certification): make phase11 current commit-bound truth
+
+test(certification): reject stale and false-go candidates
+
+fix(runtime): eliminate legacy production bypasses
+
+test(orchestrator): prove evidence-based replan completion
+
+fix(orchestrator): persist execution budgets across recovery
+
+fix(runtime): fence stale worker completion
+
+test(runtime): prove crash-after-effect idempotency
+
+feat(observability): trace durable goal lineage
+
+test(security): adversarially prove governance boundaries
+
+chore(certification): close phase11 controlled evidence
+```
+
+---
+
+# 340. NO CERTIFICATION OF DIRTY WORKTREE
+
+Se commits não forem permitidos:
+
+gere somente controlled development evidence e registre blocker de clean candidate certification.
+
+Não falsifique.
+
+---
+
+# 341. COMMIT AFTER TEST
+
+Quando possível, não registre candidate commit quebrado como final.
+
+---
+
+# 342. FINAL CANDIDATE MUST BE IMMUTABLE BY SHA
+
+Obrigatório.
+
+---
+
+# 343. DOC-ONLY REANCHOR
+
+Se certification gerar artifacts que exigem commit posterior:
+
+use mecanismo formal de reanchor somente se já implementado/provado.
+
+---
+
+# 344. DO NOT CREATE INFINITE CERTIFICATION COMMIT LOOP
+
+Resolva corretamente a relação:
+
+```text
+candidate
+evidence
+certification artifact
+```
+
+por design.
+
+---
+
+# 345. RECOMMENDED CERTIFICATION MODEL
+
+Preferir modelo em que:
+
+```text
+behavior candidate SHA
++
+evidence generated against candidate
++
+certification record references candidate
+```
+
+sem exigir que o próprio artifact modifique o behavior identity.
+
+---
+
+# 346. BEHAVIOR HASH
+
+Se o projeto já usa behavior hash:
+
+preserve e valide.
+
+---
+
+# 347. DOCUMENT-ONLY COMMITS
+
+Podem ser reanchored somente com proof de behavior equivalence.
+
+---
+
+# 348. REANCHOR MUTATION TEST
+
+Mude arquivo comportamental.
+
+Reanchor deve falhar.
+
+---
+
+# 349. REANCHOR DOC TEST
+
+Mudança estritamente documental permitida somente conforme policy formal.
+
+---
+
+# 350. CERTIFICATION ENGINE IS PART OF TCB
+
+Trate certification engine como parte da Trusted Computing Base do processo.
+
+---
+
+# 351. TCB REVIEW
+
+Inclua pelo menos:
+
+```text
+identity
+tenant enforcement
+policy
+risk
+approval
+orchestrator governance boundary
+outbox/effect journal
+certification calculus
+```
+
+---
+
+# 352. TCB CHANGES REQUIRE STRONGER RECERTIFICATION
+
+Documente dependency.
+
+---
+
+# 353. ARCHITECTURE DEPENDENCY TEST
+
+Evite import cycles indevidos.
+
+---
+
+# 354. ORCHESTRATOR SHOULD DEPEND ON PORTS
+
+Não implementations externas.
+
+---
+
+# 355. PERSISTENCE PORT
+
+`GoalPlanStore` ou equivalente permanece abstraction boundary.
+
+---
+
+# 356. PRODUCTION STORE
+
+PostgreSQL.
+
+---
+
+# 357. IN-MEMORY STORE
+
+Somente:
+
+```text
+development
+unit tests
+controlled fixtures
+```
+
+quando produção exigir durabilidade.
+
+---
+
+# 358. PRODUCTION MEMORY STORE
+
+Startup:
+
+```text
+FAIL CLOSED
+```
+
+---
+
+# 359. ORCHESTRATOR STARTUP CHECK
+
+Production deve verificar durable Goal store.
+
+---
+
+# 360. APPROVAL STARTUP CHECK
+
+Production deve verificar durable approval store.
+
+---
+
+# 361. EFFECT STARTUP CHECK
+
+Production deve verificar durable effect/outbox boundary.
+
+---
+
+# 362. IDENTITY STARTUP CHECK
+
+Production deve verificar identity resolver real/configurado.
+
+---
+
+# 363. POLICY STARTUP CHECK
+
+Policy engine/configuration inválida:
+
+```text
+FAIL CLOSED
+```
+
+---
+
+# 364. RISK STARTUP CHECK
+
+Risk configuration obrigatória inválida:
+
+fail closed.
+
+---
+
+# 365. MODEL PROVIDER STARTUP
+
+Pode ser `DEGRADED` se business flow suportar human fallback e profile permitir.
+
+Não comprometa security boundary.
+
+---
+
+# 366. CHANNEL STARTUP
+
+Mesmo princípio conforme deployment.
+
+---
+
+# 367. CRITICAL DEPENDENCY FAILURE
+
+Identity/Governance/Persistence crítica:
+
+```text
+NOT_READY
+```
+
+---
+
+# 368. READY SEMANTICS
+
+Documente claramente.
+
+---
+
+# 369. OPERATOR INSPECTION API
+
+Faça abuse review.
+
+---
+
+# 370. PAGINATION
+
+Não permita query ilimitada.
+
+---
+
+# 371. FILTER VALIDATION
+
+Preserve strict schemas.
+
+---
+
+# 372. TENANT ENUMERATION
+
+Outro tenant deve preferencialmente não revelar existência do Goal.
+
+Comportamento atual `404` é apropriado.
+
+---
+
+# 373. ERROR REDACTION
+
+Preserve.
+
+---
+
+# 374. LINEAGE PAYLOAD
+
+Não exponha raw step input apenas por conveniência operacional.
+
+---
+
+# 375. AUDIT OPERATOR ACCESS
+
+Avalie se consultas sensíveis do console precisam audit event.
+
+Documente decisão.
+
+---
+
+# 376. DATA RETENTION
+
+Defina lifecycle de Goals finalizados.
+
+---
+
+# 377. COMPLETED GOALS
+
+Não manter indefinidamente sem retention policy.
+
+---
+
+# 378. AUDIT RETENTION
+
+Pode ter política diferente.
+
+---
+
+# 379. ATTEMPT RETENTION
+
+Mesmo princípio.
+
+---
+
+# 380. TRACE RETENTION
+
+Mesmo princípio.
+
+---
+
+# 381. DATA GOVERNANCE
+
+Não permita que nova camada Orchestrator contorne políticas existentes.
+
+---
+
+# 382. GOAL OBJECTIVE
+
+Pode conter dados pessoais.
+
+Trate classificação apropriadamente.
+
+---
+
+# 383. STEP DESCRIPTION
+
+Mesmo princípio.
+
+---
+
+# 384. OBSERVATION EVIDENCE
+
+Evite copiar payload completo desnecessariamente.
+
+---
+
+# 385. DIGEST OVER DUPLICATION
+
+Quando possível:
+
+```text
+reference + digest
+```
+
+em vez de duplicar conteúdo sensível.
+
+---
+
+# 386. SUCCESS CRITERIA
+
+Podem conter expected values sensíveis.
+
+Inspection API deve redigir/omitir adequadamente.
+
+---
+
+# 387. EXECUTION SNAPSHOT
+
+Não armazenar secrets.
+
+---
+
+# 388. MODEL REQUEST
+
+Não incluir mais contexto que necessário.
+
+---
+
+# 389. DATA MINIMIZATION
+
+Obrigatório.
+
+---
+
+# 390. REAL STACK — STAGING FIRST
+
+Quando chegar às integrações reais:
+
+não comece por produção.
+
+---
+
+# 391. STAGING PROFILE
+
+Monte:
+
+```text
+PostgreSQL representative
+EvolutionAPI staging/test
+Chatwoot staging/test
+model endpoint
+operator identity
+synthetic contacts
+synthetic patients
+```
+
+---
+
+# 392. TEST ALLOWLIST
+
+Outbound real em homologação somente para destinos autorizados.
+
+---
+
+# 393. NO BROADCAST
+
+Obrigatório.
+
+---
+
+# 394. NO REAL PATIENT DATA FOR AUTOMATED CERTIFICATION
+
+Use sintético.
+
+---
+
+# 395. MODEL PROVIDER DATA
+
+Use sintético para eval.
+
+---
+
+# 396. REAL STACK E2E
+
+Quando disponível:
+
+```text
+synthetic WhatsApp inbound
+↓
+EvolutionAPI
+↓
+Channel Gateway
+↓
+Orchestrator
+↓
+Govern
+↓
+controlled CVG fixture action
+↓
+outbound
+↓
+Chatwoot visibility
+```
+
+---
+
+# 397. HUMAN TAKEOVER REAL E2E
+
+Teste em staging.
+
+---
+
+# 398. REAL CHANNEL DUPLICATION
+
+Teste duplicate webhook.
+
+---
+
+# 399. REAL CHANNEL OUTAGE
+
+Teste interrupção controlada quando possível.
+
+---
+
+# 400. REAL MODEL OUTAGE
+
+Teste timeout/unavailability.
+
+---
+
+# 401. REAL IDENTITY REVOCATION
+
+Teste sessão revogada.
+
+---
+
+# 402. REAL STACK EVIDENCE
+
+Todos artifacts:
+
+```text
+candidate-bound
+environment-described
+secret-free
+timestamped
+```
+
+---
+
+# 403. STAGING VALIDATION DOES NOT EQUAL PRODUCTION VALIDATION
+
+Use status correto.
+
+---
+
+# 404. PRODUCTION PROFILE
+
+Não exige testes destrutivos em produção.
+
+Use staging/representative evidence + production-safe smoke + human operational validation conforme policy.
+
+---
+
+# 405. PRODUCTION SAFE SMOKE
+
+Se autorizado, somente operações não destrutivas ou allowlisted.
+
+---
+
+# 406. RPO/RTO ENVIRONMENT
+
+Deve ser representativo.
+
+---
+
+# 407. PILOT
+
+Escopo mínimo.
+
+---
+
+# 408. RECOMMENDED INITIAL PILOT
+
+```text
+informational scheduling
+appointment confirmation
+simple scheduling
+```
+
+---
+
+# 409. PILOT DENY
+
+Mantenha:
+
+```text
+clinical write
+prescription
+exam release
+finance write
+admin
+```
+
+---
+
+# 410. PILOT RISK CEILING
+
+Configure explicitamente.
+
+---
+
+# 411. PILOT KILL SWITCH
+
+Obrigatório.
+
+---
+
+# 412. PILOT OBSERVABILITY
+
+Obrigatório.
+
+---
+
+# 413. PILOT SUPERVISOR
+
+Obrigatório.
+
+---
+
+# 414. PILOT METRICS
+
+Meça:
+
+```text
+task success
+safe escalation
+human takeover
+corrections
+policy violations
+duplicate effects
+message loss
+latency
+```
+
+---
+
+# 415. PILOT ZERO-TOLERANCE
+
+```text
+cross tenant leak = 0
+unauthorized critical effect = 0
+duplicate critical effect = 0
+clinical autonomy violation = 0
+```
+
+---
+
+# 416. PILOT INCIDENT
+
+P0/P1:
+
+pause promotion.
+
+---
+
+# 417. HUMAN SIGNOFF ARTIFACT
+
+Deve registrar:
+
+```text
+candidate
+scope
+period
+metrics
+incidents
+limitations
+approver
+timestamp
+decision
+```
+
+---
+
+# 418. SIGNOFF MUST BE AUTHENTIC
+
+Não aceite fixture em Production calculus.
+
+---
+
+# 419. FINAL PRODUCTION PROMOTION
+
+Somente certification engine decide elegibilidade.
+
+---
+
+# 420. DEPLOYMENT IS SEPARATE
+
+Não faça deploy automaticamente.
+
+---
+
+# 421. FINAL FULL RUN
+
+Quando todo trabalho local estiver completo:
+
+execute full suite.
+
+---
+
+# 422. RECORD EXACT COMMANDS
+
+No final, reporte os comandos realmente executados.
+
+---
+
+# 423. RECORD EXACT RESULTS
+
+Não arredonde falhas para sucesso.
+
+---
+
+# 424. TEST COUNTS
+
+Reporte:
+
+```text
+passed
+failed
+skipped
+```
+
+---
+
+# 425. POSTGRES RESULT
+
+Separado.
+
+---
+
+# 426. E2E RESULT
+
+Separado.
+
+---
+
+# 427. EVAL RESULT
+
+Separado.
+
+---
+
+# 428. CHAOS RESULT
+
+Separado.
+
+---
+
+# 429. LOAD RESULT
+
+Separado.
+
+---
+
+# 430. RECOVERY RESULT
+
+Separado.
+
+---
+
+# 431. CERTIFICATION MUTATION RESULT
+
+Separado.
+
+---
+
+# 432. FINAL CLEAN CHECK
+
+Execute novamente antes da candidate certification final.
+
+---
+
+# 433. FINAL HEAD
+
+Registre SHA.
+
+---
+
+# 434. FINAL TREE
+
+Registre hash.
+
+---
+
+# 435. FINAL EVIDENCE VERIFY
+
+PASS obrigatório para local closure.
+
+---
+
+# 436. FINAL PHASE 11 VERIFY
+
+PASS obrigatório.
+
+---
+
+# 437. FINAL PROMOTION CHECK
+
+Execute para:
+
+```text
+highest evidence-supported profile
+```
+
+---
+
+# 438. DO NOT ASK CALCULUS TO RETURN DESIRED RESULT
+
+Obrigatório.
+
+---
+
+# 439. FINAL INDEPENDENT AUDIT AFTER CERTIFICATION
+
+A ordem importa.
+
+---
+
+# 440. AUDIT MAY DOWNGRADE RESULT
+
+Se encontrar blocker:
+
+atualize findings/certification.
+
+---
+
+# 441. DO NOT IGNORE POST-CERTIFICATION FINDING
+
+Obrigatório.
+
+---
+
+# 442. RE-CERTIFY IF FIXED
+
+Novo código → nova evidence quando necessário.
+
+---
+
+# 443. CLOSURE LOOP
+
+Pode haver:
+
+```text
+certify
+↓
+critic finds issue
+↓
+fix
+↓
+test
+↓
+recertify
+```
+
+até closure.
+
+---
+
+# 444. BOUNDED CLOSURE
+
+Não entre em endless polishing.
+
+Pare quando mandatory requirements estiverem satisfeitos e residual non-blocking findings estiverem registrados.
+
+---
+
+# 445. STATE OF ART DOES NOT MEAN ZERO TODO
+
+Significa que blockers críticos foram fechados e qualidade/evidence atingem a barra.
+
+---
+
+# 446. FINAL CODEX RESPONSE
+
+Comece com:
+
+```text
+Decision:
+Certification:
+Eligible Profile:
+Candidate:
+```
+
+---
+
+# 447. THEN IMPLEMENTATION SUMMARY
+
+Explique o delta realmente implementado.
+
+---
+
+# 448. THEN AUDIT FINDINGS
+
+Mostre cada AUD-11-*.
+
+---
+
+# 449. THEN TEST EVIDENCE
+
+Resultados reais.
+
+---
+
+# 450. THEN REAL STACK
+
+Diga exatamente o nível:
+
+```text
+NOT_CONFIGURED
+CONTROLLED_ONLY
+VALIDATED_STAGING
+VALIDATED_REAL
+```
+
+---
+
+# 451. THEN SCORES
+
+Sem inflação.
+
+---
+
+# 452. THEN BLOCKERS
+
+Somente reais.
+
+---
+
+# 453. THEN FINAL SUCCESS BLOCK
+
+Use o formato definido anteriormente.
+
+---
+
+# 454. FINAL RESPONSE MUST NOT SAY "ALL DONE" IF EXTERNAL BLOCKERS REMAIN
+
+Diga:
+
+```text
+Local Phase 11 closure complete.
+External production proof remains pending.
+```
+
+se for verdade.
+
+---
+
+# 455. IF LOCAL BLOCKER REMAINS
+
+Não diga local closure complete.
+
+---
+
+# 456. FINAL ARTIFACT PATHS
+
+Liste:
+
+```text
+certification/current.json
+certification/phase11/phase11-result.json
+certification/phase11/gates.json
+certification/phase11/invariants.json
+certification/phase11/evidence-graph.json
+certification/phase11/manifest.json
+certification/phase11/release-manifest.json
+```
+
+---
+
+# 457. FINAL MASTER INVARIANTS
+
+O sistema final precisa provar:
+
+```text
+Model proposes; never authorizes.
+
+Orchestrator coordinates; never self-authorizes.
+
+Governance authorizes.
+
+Tools execute only governed actions.
+
+Outbox/effect journal protects side effects.
+
+Operational state lives in authoritative stores.
+
+Goal completion requires evidence.
+
+Replanning is bounded.
+
+Budgets survive restart.
+
+Stale workers cannot commit.
+
+Tenants cannot cross.
+
+Human takeover stops automation.
+
+Certification cannot lie about the candidate.
+
+Real production claims require real production-grade evidence.
+```
+
+---
+
+# 458. FINAL QUALITY PRINCIPLE
+
+Não maximize autonomia.
+
+Maximize:
+
+```text
+correctness
+safety
+recoverability
+operability
+auditability
+```
+
+---
+
+# 459. FINAL ORCHESTRATOR PRINCIPLE
+
+O Orchestrator deve saber:
+
+```text
+when to act
+when to ask
+when to wait
+when to replan
+when to escalate
+when to stop
+```
+
+---
+
+# 460. FINAL EFFECT PRINCIPLE
+
+Quando autoridade for incerta:
+
+```text
+FAIL CLOSED
+```
+
+Quando resultado do efeito for incerto:
+
+```text
+RECONCILE BEFORE RETRY
+```
+
+---
+
+# 461. FINAL CERTIFICATION PRINCIPLE
+
+```text
+Evidence before confidence.
+Production proof before production claims.
+```
+
+---
+
+# 462. ACCEPTABLE TERMINAL RESULT A
+
+Se toda engenharia local fechar e fatores externos permanecerem:
+
+```
+```

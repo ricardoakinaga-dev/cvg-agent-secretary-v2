@@ -1,12 +1,12 @@
-import { createHash } from 'node:crypto'
+import { spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import { z } from 'zod'
 import {
   buildCandidateRecord,
   collectCandidateFiles,
-  computeCandidateId,
   diffCandidateFiles,
+  isCandidateExcluded,
   sha256Bytes
 } from './certification-rules.mjs'
 
@@ -19,15 +19,32 @@ export const PHASE11_REQUIRED_GATES = [
   'unit',
   'coverage',
   'security',
+  'supply_chain',
   'worker_startup',
   'postgres',
   'e2e',
-  'phase10_current_verification',
+  'evals',
+  'chaos',
+  'load',
+  'recovery',
+  'bypass_audit',
+  'certification_self_test',
+  'phase10_historical_verification',
+  'evidence_graph',
   'candidate_clean',
   'node_target'
 ]
 
-export const PHASE11_GATE_STATUSES = ['PASS', 'FAIL', 'NOT_EXECUTED', 'BLOCKED']
+export const PHASE11_GATE_STATUSES = [
+  'PASS',
+  'FAIL',
+  'NOT_EXECUTED',
+  'BLOCKED',
+  'STALE',
+  'INVALID',
+  'MISSING',
+  'NOT_APPLICABLE'
+]
 
 export const PHASE11_VERDICTS = [
   'NO_GO',
@@ -36,6 +53,16 @@ export const PHASE11_VERDICTS = [
   'STATE_OF_ART_TRIPLE_AAA'
 ]
 
+export const DEPLOYMENT_PROFILES = [
+  'CONTROLLED_LOCAL',
+  'STAGING',
+  'SUPERVISED_PILOT',
+  'PRODUCTION'
+]
+
+export const PHASE11_DECISIONS = ['GO', 'CONDITIONAL_GO', 'NO_GO']
+
+/** Historical prompt set retained for compatibility and audit replays. */
 export const PHASE11_PROMPT_SHA256 = {
   'pasted-text-1.txt':
     'a3993d1794b04ad53bb6c3388ff5bb0d8a8595b31ad8ec2989f8551424ad4ac0',
@@ -67,6 +94,24 @@ export const PHASE11_PROMPT_SHA256 = {
     'c8ffad766acfc83efabb391bd044e7cc146f8adfe792cf49f62263024703d91b'
 }
 
+/** The exact five-source intake for the current formal-closure task. */
+export const PHASE11_FORMAL_PROMPT_SHA256 = {
+  'pasted-text-1.txt':
+    '04219513b71ea777af52f79a3e11769fc6cd26c0fb02d43c9f3c306075bf9585',
+  'pasted-text-2.txt':
+    'e6009539380088f7782e7fa16e13721a7d3731e19da304a9358d8e6d55f0c31e',
+  'pasted-text-3.txt':
+    '65dd4f692affc18f2c7ba74b728da844ba87aa9b49c4a94f12a860f52bf3cee9',
+  'pasted-text-4.txt':
+    'af7d9b981a5c10f9e04a851996bda4d10369d40edf25d8f9001d9ee1255697dd',
+  'pasted-text-5.txt':
+    '356292e25d203724367feeb25f8b39cc0e3aec46c7196ddc1ef95edd443b010b'
+}
+
+const phase11Commit = z.string().regex(/^[0-9a-f]{7,64}$/)
+const digest = z.string().regex(/^[0-9a-f]{64}$/)
+const treeDigest = z.string().regex(/^[0-9a-f]{40,64}$/)
+
 export const Phase11GateSchema = z.object({
   id: z.string().min(1),
   command: z.string().min(1),
@@ -74,124 +119,218 @@ export const Phase11GateSchema = z.object({
   exitCode: z.number().int(),
   durationMs: z.number().int().nonnegative(),
   log: z.string().optional(),
-  logSha256: z
-    .string()
-    .regex(/^[0-9a-f]{64}$/)
-    .optional(),
+  logSha256: digest.optional(),
   metrics: z.record(z.string(), z.unknown()).optional(),
-  blocker: z.string().min(1).optional()
+  blocker: z.string().min(1).optional(),
+  evidence: z.array(z.string().min(1)).optional()
 })
 
-export const Phase11RequirementSchema = z.object({
+export const Phase11ArtifactSchema = z.object({
+  path: z.string().min(1),
+  sha256: digest,
+  size: z.number().int().nonnegative(),
+  producer: z.string().min(1),
+  timestamp: z.string().datetime(),
+  candidateCommit: phase11Commit,
+  gateId: z.string().min(1).optional()
+})
+
+export const Phase11InvariantSchema = z.object({
   id: z.string().min(1),
   title: z.string().min(1),
-  promptItems: z.string().min(1),
-  implementation: z.array(z.string()),
-  tests: z.array(z.string()),
-  evidence: z.array(z.string()),
-  gates: z.array(z.string()),
-  status: z.enum(['IMPLEMENTED', 'PARTIAL', 'BLOCKED', 'MISSING']),
-  blocking: z.boolean()
+  severity: z.enum(['critical', 'high', 'medium', 'low']),
+  status: z.enum(['PASS', 'FAIL', 'BLOCKED', 'NOT_RUN', 'INVALID']),
+  evidence: z.array(z.string().min(1)),
+  rationale: z.string().min(1)
 })
 
-export const Phase11ResultSchema = z.object({
-  schemaVersion: z.literal(1),
+export const Phase11FindingSchema = z.object({
+  id: z.string().min(1),
+  title: z.string().min(1),
+  status: z.enum(['CLOSED', 'PARTIAL', 'OPEN', 'BLOCKED']),
+  severity: z.enum(['P0', 'P1', 'P2', 'EXTERNAL']),
+  blocking: z.boolean(),
+  evidence: z.array(z.string().min(1)),
+  remainingRisk: z.string().min(1)
+})
+
+export const Phase11CandidateSchema = z.object({
+  candidateId: digest,
+  commit: phase11Commit,
+  treeHash: treeDigest,
+  branch: z.string().min(1),
+  dirty: z.boolean(),
+  untrackedFiles: z.array(z.string()),
+  createdAt: z.string().datetime(),
+  fileCount: z.number().int().nonnegative(),
+  files: z.array(
+    z.object({
+      path: z.string().min(1),
+      sha256: digest,
+      size: z.number().int().nonnegative(),
+      tracked: z.boolean()
+    })
+  )
+})
+
+const findingsShape = z.object({
+  P0: z.array(Phase11FindingSchema),
+  P1: z.array(Phase11FindingSchema),
+  P2: z.array(Phase11FindingSchema),
+  external: z.array(Phase11FindingSchema)
+})
+
+const successStateShape = z.object({
+  localEngineeringClosure: z.boolean(),
+  externalIntegrationClosure: z.boolean(),
+  supervisedPilotClosure: z.boolean(),
+  productionAssuranceClosure: z.boolean(),
+  implementationComplete: z.boolean(),
+  localVerificationComplete: z.boolean(),
+  evidenceComplete: z.boolean(),
+  criticalInvariantsSatisfied: z.boolean(),
+  externalValidationComplete: z.boolean(),
+  pilotComplete: z.boolean(),
+  productionProofComplete: z.boolean(),
+  eligibleForRequestedProfile: z.boolean()
+})
+
+export const Phase11CurrentResultSchema = z.object({
+  schemaVersion: z.literal(2),
   phase: z.literal('11'),
   kind: z.literal('phase11-result'),
-  commit: z.string().min(7),
-  runId: z.string().min(1),
+  certificationId: z.string().min(1),
+  commit: phase11Commit,
   timestamp: z.string().datetime(),
-  candidate: z.object({
-    candidateId: z.string().regex(/^[0-9a-f]{64}$/),
-    dirty: z.boolean(),
-    head: z.string().min(7),
-    fileCount: z.number().int().positive()
-  }),
-  promptIntegrity: z.object({
-    expectedCount: z.literal(14),
-    observedCount: z.number().int().nonnegative(),
-    files: z.array(
-      z.object({
-        path: z.string(),
-        sha256: z.string().regex(/^[0-9a-f]{64}$/),
-        expectedSha256: z.string().regex(/^[0-9a-f]{64}$/),
-        status: z.enum(['PASS', 'FAIL'])
-      })
-    ),
-    status: z.enum(['PASS', 'FAIL'])
-  }),
-  requirements: z.array(Phase11RequirementSchema),
+  candidate: Phase11CandidateSchema,
+  deploymentProfile: z.enum(DEPLOYMENT_PROFILES),
+  requestedProfile: z.enum(DEPLOYMENT_PROFILES),
+  scores: z.record(z.string(), z.unknown()),
+  findings: findingsShape,
   gates: z.array(Phase11GateSchema),
-  externalGates: z
-    .object({
-      modelProvider: z.string(),
-      channel: z.string(),
-      externalIdentity: z.string(),
-      humanSignoff: z.string(),
-      notes: z.array(z.string()).optional()
-    })
-    .passthrough(),
-  engine: z.object({
-    actualNode: z.string(),
-    targetNode: z.string(),
-    status: z.enum(['PASS', 'FAIL'])
-  }),
-  evidenceGraph: z.object({
-    nodes: z.array(z.object({ id: z.string(), kind: z.string() })),
-    edges: z.array(
-      z.object({ from: z.string(), to: z.string(), relation: z.string() })
-    )
-  }),
-  decision: z.enum(['GO', 'CONDITIONAL_GO', 'NO_GO']),
+  invariants: z.array(Phase11InvariantSchema),
+  externalGates: z.record(z.string(), z.unknown()),
+  evals: z.record(z.string(), z.unknown()),
+  chaos: z.record(z.string(), z.unknown()),
+  load: z.record(z.string(), z.unknown()),
+  recovery: z.record(z.string(), z.unknown()),
+  postgres: z.record(z.string(), z.unknown()),
+  integrations: z.record(z.string(), z.unknown()),
+  rpoRto: z.record(z.string(), z.unknown()),
+  pilot: z.record(z.string(), z.unknown()),
+  humanSignoff: z.record(z.string(), z.unknown()),
+  successState: successStateShape,
+  decision: z.enum(PHASE11_DECISIONS),
   certification: z.enum(PHASE11_VERDICTS),
-  blockers: z.array(z.string())
+  eligibleProfile: z.enum(DEPLOYMENT_PROFILES),
+  remainingBlockers: z.array(z.string())
 })
 
-export const Phase11ManifestSchema = z.object({
+/** Compatibility schema for the previous root Phase 11 manifest shape. */
+const LegacyPhase11ManifestSchema = z.object({
   schemaVersion: z.literal(1),
   phase: z.literal('11'),
   kind: z.literal('phase11-manifest'),
   commit: z.string().min(7),
-  candidateId: z.string().regex(/^[0-9a-f]{64}$/),
+  candidateId: digest,
   result: z.object({
     path: z.string(),
-    sha256: z.string().regex(/^[0-9a-f]{64}$/),
-    size: z.number().int().nonnegative()
+    sha256: digest,
+    size: z.number().int()
   }),
   artifacts: z.array(
-    z.object({
-      path: z.string(),
-      sha256: z.string().regex(/^[0-9a-f]{64}$/),
-      size: z.number().int().nonnegative()
-    })
+    z.object({ path: z.string(), sha256: digest, size: z.number().int() })
   )
 })
 
-export function verifyPromptIntegrity(root) {
-  const sourceRoot = path.join(root, 'docs/11_phase11/prompt-master/source')
-  const files = Object.entries(PHASE11_PROMPT_SHA256).map(
-    ([file, expectedSha256]) => {
-      const target = path.join(sourceRoot, file)
-      if (!fs.existsSync(target)) {
-        return {
-          path: `docs/11_phase11/prompt-master/source/${file}`,
-          sha256: '0'.repeat(64),
-          expectedSha256,
-          status: 'FAIL'
-        }
-      }
-      const content = fs.readFileSync(target)
-      const sha256 = sha256Bytes(content)
+export const Phase11ManifestSchema = z.union([
+  LegacyPhase11ManifestSchema,
+  z.object({
+    schemaVersion: z.literal(2),
+    phase: z.literal('11'),
+    kind: z.literal('phase11-manifest'),
+    certificationId: z.string().min(1),
+    candidateCommit: phase11Commit,
+    candidateId: digest,
+    treeHash: treeDigest,
+    timestamp: z.string().datetime(),
+    result: Phase11ArtifactSchema,
+    artifacts: z.array(Phase11ArtifactSchema).min(1),
+    evidenceGraph: z.string().min(1),
+    releaseManifest: z.string().min(1)
+  })
+])
+
+export function gitOutput(root, args) {
+  const result = spawnSync('git', args, { cwd: root, encoding: 'utf8' })
+  return (result.stdout ?? '').trim()
+}
+
+export function listUntrackedFiles(root) {
+  return gitOutput(root, ['ls-files', '--others', '--exclude-standard', '-z'])
+    .split('\0')
+    .filter(Boolean)
+    .filter((file) => !isCandidateExcluded(file))
+    .sort()
+}
+
+export function buildPhase11Candidate(root, now = new Date()) {
+  const base = buildCandidateRecord({
+    root,
+    files: collectCandidateFiles(root),
+    now
+  })
+  return {
+    schemaVersion: 'phase11-candidate-v2',
+    candidateId: base.candidateId,
+    commit: base.git.head,
+    treeHash: gitOutput(root, ['rev-parse', 'HEAD^{tree}']),
+    branch: base.git.branch,
+    dirty: base.git.dirty,
+    untrackedFiles: listUntrackedFiles(root),
+    createdAt: now.toISOString(),
+    fileCount: base.files.length,
+    files: base.files,
+    scope: base.scope
+  }
+}
+
+export function verifyPromptIntegrity(root, sourceSet = 'formal') {
+  const expected =
+    sourceSet === 'historical'
+      ? PHASE11_PROMPT_SHA256
+      : PHASE11_FORMAL_PROMPT_SHA256
+  const sourceRoot = path.join(
+    root,
+    sourceSet === 'historical'
+      ? 'docs/11_phase11/prompt-master/source'
+      : 'docs/11_phase11/prompt-master/20260915-formal-closure/source'
+  )
+  const files = Object.entries(expected).map(([file, expectedSha256]) => {
+    const relativePath = path
+      .relative(root, path.join(sourceRoot, file))
+      .split(path.sep)
+      .join('/')
+    const target = path.join(sourceRoot, file)
+    if (!fs.existsSync(target)) {
       return {
-        path: `docs/11_phase11/prompt-master/source/${file}`,
-        sha256,
+        path: relativePath,
+        sha256: '0'.repeat(64),
         expectedSha256,
-        status: sha256 === expectedSha256 ? 'PASS' : 'FAIL'
+        status: 'FAIL'
       }
     }
-  )
+    const sha256 = sha256Bytes(fs.readFileSync(target))
+    return {
+      path: relativePath,
+      sha256,
+      expectedSha256,
+      status: sha256 === expectedSha256 ? 'PASS' : 'FAIL'
+    }
+  })
   return {
-    expectedCount: 14,
+    sourceSet,
+    expectedCount: files.length,
     observedCount: files.filter((file) => file.sha256 !== '0'.repeat(64))
       .length,
     files,
@@ -210,137 +349,585 @@ export function readNodeTarget(root) {
   return { actualNode: actual, targetNode: target, status }
 }
 
-export function buildEvidenceGraph(requirements, gates, promptIntegrity) {
+export function artifactRecord(root, relativePath, options = {}) {
+  const content = fs.readFileSync(path.join(root, relativePath))
+  return {
+    path: relativePath.split(path.sep).join('/'),
+    sha256: sha256Bytes(content),
+    size: content.byteLength,
+    producer: options.producer ?? 'scripts/phase11-certify.mjs',
+    timestamp: options.timestamp ?? new Date().toISOString(),
+    candidateCommit:
+      options.candidateCommit ?? gitOutput(root, ['rev-parse', 'HEAD']),
+    ...(options.gateId ? { gateId: options.gateId } : {})
+  }
+}
+
+export function requiredGateStatus(gates, id) {
+  return gates.find((gate) => gate.id === id)?.status ?? 'MISSING'
+}
+
+export function gateSetIntegrity(gates = []) {
+  const errors = []
+  const seen = new Set()
+  for (const gate of gates) {
+    if (seen.has(gate.id)) errors.push(`duplicate_gate:${gate.id}`)
+    seen.add(gate.id)
+    if (gate.status === 'PASS' && gate.exitCode !== 0) {
+      errors.push(`pass_gate_nonzero_exit:${gate.id}:${gate.exitCode}`)
+    }
+    if (gate.status === 'FAIL' && gate.exitCode === 0) {
+      errors.push(`fail_gate_zero_exit:${gate.id}`)
+    }
+  }
+  return { valid: errors.length === 0, errors }
+}
+
+export function buildEvidenceGraph(
+  requirements = [],
+  gates = [],
+  promptIntegrity = { files: [] },
+  options = {}
+) {
   const nodes = []
   const edges = []
-  const add = (id, kind) => {
-    if (!nodes.some((node) => node.id === id)) nodes.push({ id, kind })
+  const add = (id, kind, attributes = {}) => {
+    if (!nodes.some((node) => node.id === id)) {
+      nodes.push({ id, kind, ...attributes })
+    }
   }
-  for (const file of promptIntegrity.files) {
-    add(`source:${file.path}`, 'prompt')
+  const link = (from, to, relation) => {
+    add(from, 'unknown')
+    add(to, 'unknown')
+    edges.push({ from, to, relation })
+  }
+  const candidateNode = `candidate:${options.candidateId ?? 'current'}`
+  add(candidateNode, 'candidate')
+  for (const file of promptIntegrity.files ?? []) {
+    const id = `source:${file.path}`
+    add(id, 'prompt', { status: file.status })
+    link(id, candidateNode, 'scope_for')
   }
   for (const requirement of requirements) {
     const requirementNode = `requirement:${requirement.id}`
-    add(requirementNode, 'requirement')
-    for (const source of promptIntegrity.files) {
-      edges.push({
-        from: `source:${source.path}`,
-        to: requirementNode,
-        relation: 'defines_scope_for'
-      })
-    }
-    for (const item of requirement.implementation) {
+    add(requirementNode, 'requirement', { status: requirement.status })
+    link(candidateNode, requirementNode, 'evaluates')
+    for (const item of requirement.implementation ?? []) {
       const node = `implementation:${item}`
       add(node, 'implementation')
-      edges.push({
-        from: requirementNode,
-        to: node,
-        relation: 'implemented_by'
-      })
+      link(requirementNode, node, 'implemented_by')
     }
-    for (const item of requirement.tests) {
+    for (const item of requirement.tests ?? []) {
       const node = `test:${item}`
       add(node, 'test')
-      edges.push({ from: requirementNode, to: node, relation: 'verified_by' })
+      link(requirementNode, node, 'verified_by')
     }
-    for (const item of requirement.evidence) {
+    for (const item of requirement.evidence ?? []) {
       const node = `evidence:${item}`
       add(node, 'evidence')
-      edges.push({ from: requirementNode, to: node, relation: 'evidenced_by' })
+      link(requirementNode, node, 'evidenced_by')
     }
-    for (const item of requirement.gates) {
+    for (const item of requirement.gates ?? []) {
       const node = `gate:${item}`
       add(node, 'gate')
-      edges.push({ from: requirementNode, to: node, relation: 'gated_by' })
+      link(requirementNode, node, 'gated_by')
     }
   }
-  for (const gate of gates) add(`gate:${gate.id}`, 'gate')
-  return { nodes, edges }
+  for (const gate of gates) {
+    const gateNode = `gate:${gate.id}`
+    add(gateNode, 'gate', { status: gate.status })
+    link(gateNode, candidateNode, 'binds_to')
+  }
+  for (const invariant of options.invariants ?? []) {
+    const invariantNode = `invariant:${invariant.id}`
+    add(invariantNode, 'invariant', { status: invariant.status })
+    link(candidateNode, invariantNode, 'proves')
+    for (const evidence of invariant.evidence ?? []) {
+      link(`evidence:${evidence}`, invariantNode, 'supports')
+    }
+  }
+  add('decision:phase11', 'decision')
+  for (const invariant of options.invariants ?? []) {
+    link(`invariant:${invariant.id}`, 'decision:phase11', 'contributes_to')
+  }
+  for (const gate of gates) {
+    link(`gate:${gate.id}`, 'decision:phase11', 'contributes_to')
+  }
+  return { schemaVersion: 1, nodes, edges }
 }
 
-export function evaluatePhase11({
-  candidate,
-  gates,
-  promptIntegrity,
-  engine,
-  externalGates,
-  requirements
-}) {
-  const blockers = []
-  if (promptIntegrity.status !== 'PASS')
-    blockers.push('prompt_integrity_failed')
-  for (const id of PHASE11_REQUIRED_GATES) {
-    const gate = gates.find((entry) => entry.id === id)
-    if (!gate) {
-      blockers.push(`missing_required_gate:${id}`)
-    } else if (gate.status !== 'PASS') {
-      blockers.push(`required_gate_not_pass:${id}:${gate.status}`)
+export function verifyEvidenceGraph(graph) {
+  const errors = []
+  if (!graph || !Array.isArray(graph.nodes) || !Array.isArray(graph.edges)) {
+    return { valid: false, errors: ['graph_shape_invalid'] }
+  }
+  const ids = new Set()
+  for (const node of graph.nodes) {
+    if (!node || typeof node.id !== 'string' || !node.id) {
+      errors.push('node_id_invalid')
+    } else if (ids.has(node.id)) {
+      errors.push(`duplicate_node:${node.id}`)
+    } else {
+      ids.add(node.id)
     }
   }
-  if (candidate.git.dirty) blockers.push('candidate_worktree_dirty')
-  if (engine.status !== 'PASS') blockers.push('node_target_mismatch')
-  const externalPending = Object.entries(externalGates).filter(
-    ([name, value]) => name !== 'notes' && value !== 'VALIDATED'
-  )
-  for (const [name] of externalPending)
-    blockers.push(`external_gate_pending:${name}`)
-  const incomplete = requirements.filter(
-    (item) => item.status !== 'IMPLEMENTED'
-  )
-  for (const requirement of incomplete) {
-    blockers.push(
-      `requirement_not_implemented:${requirement.id}:${requirement.status}`
-    )
+  for (const edge of graph.edges) {
+    if (!ids.has(edge.from)) errors.push(`missing_edge_source:${edge.from}`)
+    if (!ids.has(edge.to)) errors.push(`missing_edge_target:${edge.to}`)
+    if (typeof edge.relation !== 'string' || !edge.relation) {
+      errors.push('edge_relation_invalid')
+    }
   }
-  const hardLocalFailure = blockers.some(
-    (blocker) =>
-      blocker.startsWith('prompt_integrity') ||
-      blocker.startsWith('missing_required_gate') ||
-      blocker.startsWith('required_gate_not_pass') ||
-      blocker === 'candidate_worktree_dirty' ||
-      blocker === 'node_target_mismatch'
+  if (![...ids].some((id) => id.startsWith('candidate:'))) {
+    errors.push('required_node_missing:candidate')
+  }
+  if (!ids.has('decision:phase11')) {
+    errors.push('required_node_missing:decision:phase11')
+  }
+  return { valid: errors.length === 0, errors }
+}
+
+function statusValue(value, fallback = 'NOT_VALIDATED') {
+  if (typeof value === 'string') return value
+  if (value && typeof value === 'object') {
+    if (typeof value.status === 'string') return value.status
+    if (typeof value.verdict === 'string') return value.verdict
+    if (typeof value.value === 'string') return value.value
+  }
+  return fallback
+}
+
+export const REQUIRED_EXTERNAL_STATUS = Object.freeze({
+  modelProvider: 'VALIDATED_REAL',
+  channel: 'VALIDATED_REAL',
+  externalIdentity: 'VALIDATED_REAL',
+  institutionalRag: 'VALIDATED_APPROVED',
+  rpoRto: 'VALIDATED',
+  pilot: 'PASS',
+  rollback: 'PASS',
+  humanSignoff: 'VALIDATED'
+})
+
+export function normalizeExternalGates(input = {}, sections = {}) {
+  const source = input && typeof input === 'object' ? input : {}
+  const integrations = sections.integrations ?? {}
+  const normalized = {
+    modelProvider: statusValue(source.modelProvider),
+    channel: statusValue(source.channel),
+    externalIdentity: statusValue(source.externalIdentity),
+    institutionalRag: statusValue(source.institutionalRag ?? source.rag),
+    rpoRto: statusValue(sections.rpoRto ?? source.rpoRto),
+    pilot: statusValue(sections.pilot ?? source.pilot),
+    rollback: statusValue(sections.rollback ?? source.rollback),
+    humanSignoff: statusValue(sections.humanSignoff ?? source.humanSignoff),
+    notes: Array.isArray(source.notes) ? source.notes : []
+  }
+  for (const key of [
+    'modelProvider',
+    'channel',
+    'externalIdentity',
+    'institutionalRag'
+  ]) {
+    if (normalized[key] === 'VALIDATED') normalized[key] = 'VALIDATED_REAL'
+    if (integrations[key] !== undefined) {
+      normalized[key] = statusValue(integrations[key], normalized[key])
+    }
+  }
+  return normalized
+}
+
+function externalBlockers(externalGates, sections = {}) {
+  const normalized = normalizeExternalGates(externalGates, sections)
+  return Object.entries(REQUIRED_EXTERNAL_STATUS)
+    .filter(([key, required]) => normalized[key] !== required)
+    .map(
+      ([key, required]) =>
+        `external_gate_pending:${key}:expected_${required}:actual_${normalized[key]}`
+    )
+}
+
+function normalizeCandidate(candidate) {
+  const commit = candidate.commit ?? candidate.git?.head ?? ''
+  const dirty = candidate.dirty ?? candidate.git?.dirty ?? false
+  return {
+    ...candidate,
+    commit,
+    dirty,
+    untrackedFiles: candidate.untrackedFiles ?? [],
+    treeHash: candidate.treeHash ?? '0'.repeat(64)
+  }
+}
+
+function normalizeFindings(findings = {}) {
+  if (Array.isArray(findings)) {
+    return { P0: [], P1: [], P2: findings, external: [] }
+  }
+  return {
+    P0: Array.isArray(findings.P0) ? findings.P0 : [],
+    P1: Array.isArray(findings.P1) ? findings.P1 : [],
+    P2: Array.isArray(findings.P2) ? findings.P2 : [],
+    external: Array.isArray(findings.external) ? findings.external : []
+  }
+}
+
+function localFindingBlockers(findings) {
+  const normalized = normalizeFindings(findings)
+  return [...normalized.P0, ...normalized.P1, ...normalized.P2]
+    .filter(
+      (finding) => finding.blocking !== false && finding.status !== 'CLOSED'
+    )
+    .map((finding) => `finding_blocking:${finding.id}:${finding.status}`)
+}
+
+function criticalInvariantBlockers(invariants = []) {
+  return invariants
+    .filter(
+      (invariant) =>
+        invariant.severity === 'critical' && invariant.status !== 'PASS'
+    )
+    .map(
+      (invariant) =>
+        `critical_invariant_not_pass:${invariant.id}:${invariant.status}`
+    )
+}
+
+export function deriveSuccessState({
+  candidate,
+  gates = [],
+  invariants = [],
+  findings = {},
+  externalGates = {},
+  integrations = {},
+  rpoRto = {},
+  pilot = {},
+  humanSignoff = {},
+  requestedProfile = 'STAGING',
+  evidenceComplete = false,
+  implementationComplete = true
+}) {
+  const normalizedCandidate = normalizeCandidate(candidate)
+  const localVerificationComplete = PHASE11_REQUIRED_GATES.every(
+    (id) => requiredGateStatus(gates, id) === 'PASS'
   )
-  if (hardLocalFailure) {
+  const candidateClean =
+    !normalizedCandidate.dirty &&
+    normalizedCandidate.untrackedFiles.length === 0
+  const criticalInvariantsSatisfied =
+    criticalInvariantBlockers(invariants).length === 0
+  const localFindingsClear = localFindingBlockers(findings).length === 0
+  const normalizedExternal = normalizeExternalGates(externalGates, {
+    integrations,
+    rpoRto,
+    pilot,
+    humanSignoff
+  })
+  const externalValidationComplete =
+    normalizedExternal.modelProvider ===
+      REQUIRED_EXTERNAL_STATUS.modelProvider &&
+    normalizedExternal.channel === REQUIRED_EXTERNAL_STATUS.channel &&
+    normalizedExternal.externalIdentity ===
+      REQUIRED_EXTERNAL_STATUS.externalIdentity &&
+    normalizedExternal.institutionalRag ===
+      REQUIRED_EXTERNAL_STATUS.institutionalRag
+  const pilotComplete =
+    normalizedExternal.pilot === REQUIRED_EXTERNAL_STATUS.pilot
+  const productionProofComplete =
+    externalValidationComplete &&
+    normalizedExternal.rpoRto === REQUIRED_EXTERNAL_STATUS.rpoRto &&
+    pilotComplete &&
+    normalizedExternal.rollback === REQUIRED_EXTERNAL_STATUS.rollback &&
+    normalizedExternal.humanSignoff === REQUIRED_EXTERNAL_STATUS.humanSignoff
+  const localEngineeringClosure =
+    implementationComplete &&
+    localVerificationComplete &&
+    candidateClean &&
+    evidenceComplete &&
+    criticalInvariantsSatisfied &&
+    localFindingsClear
+  const externalIntegrationClosure = externalValidationComplete
+  const supervisedPilotClosure =
+    externalIntegrationClosure &&
+    pilotComplete &&
+    normalizedExternal.humanSignoff === REQUIRED_EXTERNAL_STATUS.humanSignoff
+  const productionAssuranceClosure =
+    localEngineeringClosure && productionProofComplete
+  const eligibleForRequestedProfile =
+    requestedProfile === 'PRODUCTION'
+      ? productionAssuranceClosure
+      : requestedProfile === 'SUPERVISED_PILOT'
+        ? localEngineeringClosure && externalIntegrationClosure
+        : localEngineeringClosure
+  return {
+    localEngineeringClosure,
+    externalIntegrationClosure,
+    supervisedPilotClosure,
+    productionAssuranceClosure,
+    implementationComplete,
+    localVerificationComplete,
+    evidenceComplete,
+    criticalInvariantsSatisfied,
+    externalValidationComplete,
+    pilotComplete,
+    productionProofComplete,
+    eligibleForRequestedProfile
+  }
+}
+
+export function computeCertificationDecision({
+  candidate,
+  gates = [],
+  invariants = [],
+  findings = {},
+  externalGates = {},
+  integrations = {},
+  rpoRto = {},
+  pilot = {},
+  humanSignoff = {},
+  deploymentProfile = 'CONTROLLED_LOCAL',
+  requestedProfile = 'STAGING',
+  evidenceComplete = false,
+  implementationComplete = true
+}) {
+  const normalizedCandidate = normalizeCandidate(candidate)
+  const blockers = []
+  for (const id of PHASE11_REQUIRED_GATES) {
+    const status = requiredGateStatus(gates, id)
+    if (status !== 'PASS') {
+      blockers.push(`required_gate_not_pass:${id}:${status}`)
+    }
+  }
+  blockers.push(...gateSetIntegrity(gates).errors)
+  if (
+    normalizedCandidate.dirty ||
+    normalizedCandidate.untrackedFiles.length > 0
+  ) {
+    blockers.push('candidate_worktree_dirty')
+  }
+  blockers.push(...criticalInvariantBlockers(invariants))
+  blockers.push(...localFindingBlockers(findings))
+  if (!implementationComplete) blockers.push('implementation_incomplete')
+  const externalPending = externalBlockers(externalGates, {
+    integrations,
+    rpoRto,
+    pilot,
+    humanSignoff
+  })
+  const successState = deriveSuccessState({
+    candidate: normalizedCandidate,
+    gates,
+    invariants,
+    findings,
+    externalGates,
+    integrations,
+    rpoRto,
+    pilot,
+    humanSignoff,
+    requestedProfile,
+    evidenceComplete,
+    implementationComplete
+  })
+  const localHardFailure =
+    blockers.length > 0 || !successState.localEngineeringClosure
+  if (localHardFailure) {
     return {
       decision: 'NO_GO',
       certification: 'NO_GO',
-      blockers
+      eligibleProfile: 'CONTROLLED_LOCAL',
+      blockers: [...new Set(blockers)],
+      successState,
+      externalBlockers: externalPending
     }
   }
-  if (externalPending.length > 0 || incomplete.length > 0) {
+  if (deploymentProfile === 'PRODUCTION' || requestedProfile === 'PRODUCTION') {
+    if (!successState.productionAssuranceClosure) {
+      return {
+        decision: 'NO_GO',
+        certification: 'NO_GO',
+        eligibleProfile: 'STAGING',
+        blockers: [...new Set(externalPending)],
+        successState,
+        externalBlockers: externalPending
+      }
+    }
     return {
-      decision: 'CONDITIONAL_GO',
-      certification: 'AAA_CONTROLLED',
-      blockers
+      decision: 'GO',
+      certification: 'STATE_OF_ART_TRIPLE_AAA',
+      eligibleProfile: 'PRODUCTION',
+      blockers: [],
+      successState,
+      externalBlockers: []
     }
   }
   return {
-    decision: 'GO',
+    decision: externalPending.length === 0 ? 'GO' : 'CONDITIONAL_GO',
     certification: 'AAA_CANDIDATE',
-    blockers
+    eligibleProfile: successState.externalIntegrationClosure
+      ? 'SUPERVISED_PILOT'
+      : 'STAGING',
+    blockers: externalPending,
+    successState,
+    externalBlockers: externalPending
   }
 }
 
-export function buildPhase11Candidate(root) {
-  const candidate = buildCandidateRecord({
-    root,
-    files: collectCandidateFiles(root)
+/** Backwards-compatible adapter used by the previous Phase 11 unit tests. */
+export function evaluatePhase11(input) {
+  const promptIntegrity = input.promptIntegrity ?? { status: 'FAIL' }
+  const gates = [...(input.gates ?? [])]
+  if (
+    promptIntegrity.status !== 'PASS' &&
+    !gates.some((gate) => gate.id === 'prompt_integrity')
+  ) {
+    gates.push({
+      id: 'prompt_integrity',
+      status: promptIntegrity.status,
+      command: 'legacy',
+      exitCode: 1,
+      durationMs: 0
+    })
+  }
+  return computeCertificationDecision({
+    candidate: input.candidate,
+    gates,
+    invariants: [],
+    findings: {},
+    externalGates: input.externalGates,
+    deploymentProfile: 'CONTROLLED_LOCAL',
+    requestedProfile: 'STAGING',
+    evidenceComplete: true,
+    implementationComplete: (input.requirements ?? []).every(
+      (item) => item.status === 'IMPLEMENTED'
+    )
   })
+}
+
+export function computeScores({
+  gates = [],
+  invariants = [],
+  findings = {},
+  successState
+}) {
+  const gatePass = gates.filter((gate) => gate.status === 'PASS').length
+  const gateTotal = Math.max(gates.length, 1)
+  const invariantPass = invariants.filter(
+    (item) => item.status === 'PASS'
+  ).length
+  const invariantTotal = Math.max(invariants.length, 1)
+  const normalized = normalizeFindings(findings)
+  const blocking = [
+    ...normalized.P0,
+    ...normalized.P1,
+    ...normalized.P2
+  ].filter((item) => item.blocking !== false && item.status !== 'CLOSED').length
+  const boundedScore = (passed, total) =>
+    Math.min(99, Math.round((passed / total) * 100))
+  const localScore = boundedScore(
+    gatePass + invariantPass,
+    gateTotal + invariantTotal
+  )
+  const securityScore = boundedScore(
+    gates.filter(
+      (gate) =>
+        ['security', 'bypass_audit', 'certification_self_test'].includes(
+          gate.id
+        ) && gate.status === 'PASS'
+    ).length,
+    3
+  )
   return {
-    ...candidate,
-    candidateId: computeCandidateId(candidate.files)
+    localEngineering: {
+      value: localScore,
+      rationale: `${gatePass}/${gateTotal} mandatory gates and ${invariantPass}/${invariantTotal} invariants passed; score capped below automatic 100.`,
+      evidence: [
+        'certification/phase11/gates.json',
+        'certification/phase11/invariants.json'
+      ]
+    },
+    auditability: {
+      value: successState?.evidenceComplete ? 99 : Math.max(0, localScore - 20),
+      rationale: successState?.evidenceComplete
+        ? 'All declared evidence artifacts are hash-bound.'
+        : 'Required evidence is incomplete or not yet sealed.',
+      evidence: [
+        'certification/phase11/manifest.json',
+        'certification/phase11/evidence-graph.json'
+      ]
+    },
+    securityGovernance: {
+      value: Math.max(0, securityScore - blocking * 10),
+      rationale: `${blocking} blocking local finding(s) remain; security score is derived from security, bypass and negative-validation gates.`,
+      evidence: ['certification/phase11/negative-validation.json']
+    },
+    productionReadiness: {
+      value: successState?.productionProofComplete ? 99 : 0,
+      rationale: successState?.productionProofComplete
+        ? 'All real-stack production proofs are current.'
+        : 'Real provider, channel, identity, RPO/RTO, pilot and human proof are not complete.',
+      evidence: [
+        'certification/phase11/integration-report.json',
+        'certification/phase11/recovery-report.json'
+      ]
+    }
+  }
+}
+
+export function computePromotionDecision({
+  result,
+  requestedProfile = 'PRODUCTION'
+}) {
+  const normalizedExternal = normalizeExternalGates(result.externalGates, {
+    integrations: result.integrations,
+    rpoRto: result.rpoRto,
+    pilot: result.pilot,
+    humanSignoff: result.humanSignoff
+  })
+  const externalBlockers = Object.entries(REQUIRED_EXTERNAL_STATUS)
+    .filter(([key, required]) => normalizedExternal[key] !== required)
+    .map(
+      ([key, required]) =>
+        `external_gate_pending:${key}:expected_${required}:actual_${normalizedExternal[key]}`
+    )
+  const blockingGates = result.gates
+    .filter(
+      (gate) =>
+        PHASE11_REQUIRED_GATES.includes(gate.id) && gate.status !== 'PASS'
+    )
+    .map((gate) => `${gate.id}:${gate.status}`)
+  const blockingFindings = localFindingBlockers(result.findings)
+  const criticalInvariants = criticalInvariantBlockers(result.invariants)
+  const candidateBlockers =
+    result.candidate.dirty || result.candidate.untrackedFiles.length > 0
+      ? ['candidate_not_clean']
+      : []
+  const blocking = [
+    ...blockingGates,
+    ...blockingFindings,
+    ...criticalInvariants,
+    ...candidateBlockers
+  ]
+  const production = requestedProfile === 'PRODUCTION'
+  const eligible =
+    blocking.length === 0 &&
+    (production
+      ? result.successState.productionAssuranceClosure &&
+        result.certification === 'STATE_OF_ART_TRIPLE_AAA'
+      : result.successState.localEngineeringClosure)
+  return {
+    eligible,
+    currentProfile: result.deploymentProfile,
+    requestedProfile,
+    blockingGates,
+    blockingFindings,
+    blockingInvariants: criticalInvariants,
+    externalBlockers: production ? externalBlockers : [],
+    reason: eligible
+      ? 'promotion_eligible'
+      : production
+        ? 'production_assurance_incomplete'
+        : 'local_engineering_closure_incomplete'
   }
 }
 
 export function candidateDrift(root, candidate) {
   return diffCandidateFiles(candidate.files, collectCandidateFiles(root))
-}
-
-export function artifactRecord(root, relativePath) {
-  const content = fs.readFileSync(path.join(root, relativePath))
-  return {
-    path: relativePath,
-    sha256: createHash('sha256').update(content).digest('hex'),
-    size: content.byteLength
-  }
 }

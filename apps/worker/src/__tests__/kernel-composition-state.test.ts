@@ -3,7 +3,11 @@ import type { GovernedTurnResult } from '@cvg/agent-runtime'
 import { TenantIdSchema } from '@cvg/platform'
 import {
   createPostgresKernelHandlers,
-  DURABLE_KERNEL_ORCHESTRATOR_ENV
+  DURABLE_KERNEL_ORCHESTRATOR_ENV,
+  KERNEL_WORKER_RUNTIME,
+  PUBLISHED_AGENT_WORKER_RUNTIME,
+  assertPostgresKernelPrerequisites,
+  resolveWorkerRuntimeKind
 } from '../kernel-composition.ts'
 
 const tenantId = TenantIdSchema.parse(
@@ -128,6 +132,83 @@ function runtimeFor(
 }
 
 describe('governed kernel durable continuation state', () => {
+  it('fails closed for legacy or inline production kernel reachability', () => {
+    expect(() =>
+      resolveWorkerRuntimeKind({
+        NODE_ENV: 'production',
+        CVG_WORKER_RUNTIME: PUBLISHED_AGENT_WORKER_RUNTIME,
+        CVG_DURABLE_KERNEL_ORCHESTRATOR: 'true'
+      })
+    ).toThrow(/published-agent runtime is forbidden/)
+    expect(() =>
+      resolveWorkerRuntimeKind({
+        NODE_ENV: 'production',
+        CVG_WORKER_RUNTIME: KERNEL_WORKER_RUNTIME
+      })
+    ).toThrow(/CVG_DURABLE_KERNEL_ORCHESTRATOR=true/)
+    expect(() =>
+      resolveWorkerRuntimeKind({
+        NODE_ENV: 'production',
+        CVG_WORKER_RUNTIME: 'mystery',
+        CVG_DURABLE_KERNEL_ORCHESTRATOR: 'true'
+      })
+    ).toThrow(/Unknown CVG_WORKER_RUNTIME value: mystery/)
+    expect(
+      resolveWorkerRuntimeKind({
+        NODE_ENV: 'production',
+        CVG_WORKER_RUNTIME: KERNEL_WORKER_RUNTIME,
+        CVG_DURABLE_KERNEL_ORCHESTRATOR: 'true'
+      })
+    ).toBe(KERNEL_WORKER_RUNTIME)
+
+    const runtime = runtimeFor(
+      {
+        id: messageId,
+        body: turnEnvelope(),
+        runtimeStatus: 'pending'
+      },
+      vi.fn().mockResolvedValue(result('executed'))
+    )
+    expect(() =>
+      createPostgresKernelHandlers({ NODE_ENV: 'production' }, runtime as never)
+    ).toThrow(/inline kernel execution is forbidden/)
+  })
+
+  it('probes every durable ledger table before allowing a kernel turn', async () => {
+    const queriedTables: string[] = []
+    const searchPath = '"$user", public'
+    const client = {
+      query: vi.fn(async (text: string) => {
+        if (text === 'SHOW search_path') {
+          return { rows: [{ search_path: searchPath }] }
+        }
+        const match = /^SELECT 1 FROM ([a-z_]+) /.exec(text)
+        if (match?.[1]) queriedTables.push(match[1])
+        return { rows: [] }
+      }),
+      release: vi.fn()
+    }
+    const pool = {
+      connect: vi.fn(async () => client)
+    }
+
+    await expect(
+      assertPostgresKernelPrerequisites(pool as never, tenantId)
+    ).resolves.toBeUndefined()
+    expect(queriedTables).toEqual([
+      'effect_journal',
+      'runtime_approvals',
+      'runtime_audit_events',
+      'orchestrator_goals',
+      'orchestrator_plans',
+      'orchestrator_steps',
+      'orchestrator_attempts',
+      'orchestrator_observations',
+      'orchestrator_evaluations'
+    ])
+    expect(client.release).toHaveBeenCalledWith(undefined)
+  })
+
   it('keeps the inbound message non-terminal while approval is required', async () => {
     const runTurn = vi
       .fn()

@@ -105,6 +105,7 @@ export const DEFAULT_ORCHESTRATION_BUDGET: Readonly<ExecutionBudgetLimits> =
   Object.freeze({
     maxSteps: 12,
     maxReplans: 3,
+    maxIterations: 256,
     maxModelCalls: 8,
     maxToolCalls: 10,
     maxDurationMs: 120_000,
@@ -114,6 +115,8 @@ export const DEFAULT_ORCHESTRATION_BUDGET: Readonly<ExecutionBudgetLimits> =
 export interface ExecutionBudgetLimits {
   maxSteps: number
   maxReplans: number
+  /** Persisted loop guard; unlike a process-local iteration counter it survives restart. */
+  maxIterations: number
   maxModelCalls: number
   maxToolCalls: number
   maxDurationMs: number
@@ -123,6 +126,7 @@ export interface ExecutionBudgetLimits {
 export interface ExecutionBudgetUsage {
   steps: number
   replans: number
+  iterations: number
   modelCalls: number
   toolCalls: number
   costUsd: number
@@ -136,6 +140,7 @@ export const ExecutionBudgetInputSchema = z
   .object({
     maxSteps: z.number().int().min(1).max(10_000).optional(),
     maxReplans: z.number().int().min(0).max(1_000).optional(),
+    maxIterations: z.number().int().min(1).max(100_000).optional(),
     maxModelCalls: z.number().int().min(0).max(10_000).optional(),
     maxToolCalls: z.number().int().min(0).max(10_000).optional(),
     maxDurationMs: z.number().int().min(100).max(86_400_000).optional(),
@@ -517,6 +522,19 @@ export interface SettleStepInput {
   modelCalls: number
   toolCalls: number
   costUsd: number
+  /** Persisted in the same transaction as the state transition. */
+  observation?: {
+    kind: ObservationRecord['kind']
+    resultDigest: string | null
+    evidence: OperationalEvidence[]
+  }
+}
+
+export interface ConsumeIterationInput {
+  tenantId: OrchestrationTenantId
+  goalId: string
+  expectedVersion: number
+  now: Date
 }
 
 export interface SettledStep {
@@ -562,6 +580,7 @@ export interface GoalPlanStore {
   ): Promise<Goal[]>
   listRunnableGoals(tenantId?: OrchestrationTenantId): Promise<Goal[]>
   transitionGoal(input: TransitionGoalInput): Promise<Goal>
+  consumeIteration(input: ConsumeIterationInput): Promise<Goal>
   activatePlan(input: ActivatePlanInput): Promise<ActivatePlanResult>
   getPlan(tenantId: OrchestrationTenantId, planId: string): Promise<Plan | null>
   transitionPlan(input: {
@@ -704,24 +723,36 @@ const goalTransitions: Readonly<Record<GoalStatus, readonly GoalStatus[]>> = {
     'UNDERSTANDING',
     'PLANNING',
     'BUDGET_EXHAUSTED',
+    'LOOP_DETECTED',
     'WAITING_EXTERNAL',
     'HUMAN_HANDOFF',
     'CANCELLED'
   ],
   UNDERSTANDING: [
     'PLANNING',
+    'BUDGET_EXHAUSTED',
+    'LOOP_DETECTED',
     'BLOCKED',
     'WAITING_EXTERNAL',
     'HUMAN_HANDOFF',
     'CANCELLED'
   ],
-  PLANNING: ['GOVERNING', 'REPLANNING', 'BLOCKED', 'CANCELLED'],
+  PLANNING: [
+    'GOVERNING',
+    'REPLANNING',
+    'BLOCKED',
+    'BUDGET_EXHAUSTED',
+    'LOOP_DETECTED',
+    'CANCELLED'
+  ],
   GOVERNING: [
     'WAITING_APPROVAL',
     'EXECUTING',
     'WAITING_EXTERNAL',
     'HUMAN_HANDOFF',
     'FAILED',
+    'BUDGET_EXHAUSTED',
+    'LOOP_DETECTED',
     'CANCELLED'
   ],
   WAITING_APPROVAL: [
@@ -741,6 +772,7 @@ const goalTransitions: Readonly<Record<GoalStatus, readonly GoalStatus[]>> = {
     'FAILED',
     'BLOCKED',
     'BUDGET_EXHAUSTED',
+    'LOOP_DETECTED',
     'CANCELLED'
   ],
   OBSERVING_RESULT: [
@@ -748,7 +780,9 @@ const goalTransitions: Readonly<Record<GoalStatus, readonly GoalStatus[]>> = {
     'UNCERTAIN',
     'WAITING_EXTERNAL',
     'HUMAN_HANDOFF',
-    'FAILED'
+    'FAILED',
+    'LOOP_DETECTED',
+    'BUDGET_EXHAUSTED'
   ],
   EVALUATING: [
     'EXECUTING',
@@ -1039,6 +1073,8 @@ export function createExecutionBudget(
   return {
     maxSteps: parsed.maxSteps ?? DEFAULT_ORCHESTRATION_BUDGET.maxSteps,
     maxReplans: parsed.maxReplans ?? DEFAULT_ORCHESTRATION_BUDGET.maxReplans,
+    maxIterations:
+      parsed.maxIterations ?? DEFAULT_ORCHESTRATION_BUDGET.maxIterations,
     maxModelCalls:
       parsed.maxModelCalls ?? DEFAULT_ORCHESTRATION_BUDGET.maxModelCalls,
     maxToolCalls:
@@ -1049,6 +1085,7 @@ export function createExecutionBudget(
     usage: {
       steps: 0,
       replans: 0,
+      iterations: 0,
       modelCalls: 0,
       toolCalls: 0,
       costUsd: 0
@@ -1328,6 +1365,51 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
     return clone(updated)
   }
 
+  async consumeIteration(input: ConsumeIterationInput): Promise<Goal> {
+    const tenantId = validateTenant(input.tenantId)
+    const key = this.key(tenantId, input.goalId)
+    const current = this.goals.get(key)
+    if (!current)
+      throw new OrchestrationError(
+        'not_found',
+        `Goal not found: ${input.goalId}`
+      )
+    if (current.version !== input.expectedVersion) {
+      throw new OrchestrationError(
+        'conflict',
+        `Goal version conflict for ${input.goalId}`
+      )
+    }
+    if (current.budget.usage.iterations >= current.budget.maxIterations) {
+      assertGoalTransition(current.status, 'LOOP_DETECTED')
+      const stopped: Goal = {
+        ...clone(current),
+        status: 'LOOP_DETECTED',
+        version: current.version + 1,
+        updatedAt: new Date(input.now),
+        lastReason: 'max_iterations_exhausted',
+        lastError: 'Persisted orchestration iteration budget exhausted'
+      }
+      this.goals.set(key, clone(stopped))
+      return clone(stopped)
+    }
+    const updated: Goal = {
+      ...clone(current),
+      version: current.version + 1,
+      updatedAt: new Date(input.now),
+      lastReason: `iteration_consumed:${current.budget.usage.iterations + 1}`,
+      budget: {
+        ...clone(current.budget),
+        usage: {
+          ...clone(current.budget.usage),
+          iterations: current.budget.usage.iterations + 1
+        }
+      }
+    }
+    this.goals.set(key, clone(updated))
+    return clone(updated)
+  }
+
   async activatePlan(input: ActivatePlanInput): Promise<ActivatePlanResult> {
     const tenantId = validateTenant(input.tenantId)
     const goalKey = this.key(tenantId, input.goalId)
@@ -1600,7 +1682,10 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
       if (!dependencyStep || dependencyStep.status !== 'SUCCEEDED') return null
     }
     if (step.leaseUntil && step.leaseUntil > input.now) return null
-    if (!['PENDING', 'READY', 'EXECUTING'].includes(step.status)) return null
+    // An expired EXECUTING lease must first pass through explicit recovery.
+    // Re-claiming it directly would let worker B race worker A's uncertain
+    // effect and defeats the recovery decision boundary.
+    if (!['PENDING', 'READY'].includes(step.status)) return null
     if (goal.budget.usage.steps >= goal.budget.maxSteps) {
       throw new OrchestrationError(
         'budget_exhausted',
@@ -1678,10 +1763,18 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
     const step = this.steps.get(
       this.key(input.lease.tenantId, input.lease.stepId)
     )
+    const goal = this.goals.get(
+      this.key(input.lease.tenantId, input.lease.goalId)
+    )
     if (
       !step ||
+      !goal ||
+      step.goalId !== input.lease.goalId ||
+      step.planId !== input.lease.planId ||
       step.leaseOwner !== input.lease.workerId ||
-      step.leaseToken !== input.lease.leaseToken
+      step.leaseToken !== input.lease.leaseToken ||
+      goal.version !== input.lease.goalVersion ||
+      step.version !== input.lease.stepVersion
     )
       return null
     if (
@@ -1736,7 +1829,7 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
         'conflict',
         'Goal changed while step was executing'
       )
-    if (step.version < input.lease.stepVersion)
+    if (step.version !== input.lease.stepVersion)
       throw new OrchestrationError(
         'lease_lost',
         `Step version is stale for ${step.id}`
@@ -1777,6 +1870,19 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
           : goal.lastError,
       budget: { ...clone(goal.budget), usage }
     }
+    const observation = input.observation
+      ? {
+          tenantId,
+          goalId: goal.id,
+          planId: step.planId,
+          stepId: step.id,
+          kind: input.observation.kind,
+          resultDigest: input.observation.resultDigest,
+          evidence: clone(input.observation.evidence),
+          id: createDomainId('observation'),
+          createdAt: new Date(input.now)
+        }
+      : null
     const attempt = this.attempts.get(this.key(tenantId, input.lease.attemptId))
     if (attempt) {
       this.attempts.set(this.key(tenantId, attempt.id), {
@@ -1789,6 +1895,12 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
     }
     this.steps.set(this.key(tenantId, step.id), clone(updatedStep))
     this.goals.set(this.key(tenantId, goal.id), clone(updatedGoal))
+    if (observation) {
+      this.observations.set(
+        this.key(tenantId, observation.id),
+        clone(observation)
+      )
+    }
     return { goal: clone(updatedGoal), step: clone(updatedStep) }
   }
 
@@ -2230,9 +2342,19 @@ export class GoalPlanOrchestrator {
     const scope = validateTenant(tenantId)
     const executedStepIds: string[] = []
     await this.recoverExpiredLeases(scope)
+    const initialGoal = await this.options.store.getGoal(scope, goalId)
+    if (!initialGoal)
+      throw new OrchestrationError('not_found', `Goal not found: ${goalId}`)
+    // Keep a process-local circuit breaker, but never let it be lower than
+    // the persisted budget selected for this Goal. The durable counter below
+    // remains authoritative across restarts and competing workers.
+    const iterationLimit = Math.max(
+      this.maxIterations,
+      initialGoal.budget.maxIterations
+    )
     let lastReason = 'goal_not_started'
 
-    for (let iteration = 0; iteration < this.maxIterations; iteration += 1) {
+    for (let iteration = 0; iteration < iterationLimit; iteration += 1) {
       let goal = await this.options.store.getGoal(scope, goalId)
       if (!goal)
         throw new OrchestrationError('not_found', `Goal not found: ${goalId}`)
@@ -2290,6 +2412,25 @@ export class GoalPlanOrchestrator {
           await this.activePlan(scope, goal),
           await this.stepsForActivePlan(scope, goal),
           goal.status,
+          executedStepIds
+        )
+      }
+
+      // Count the orchestration turn in durable state before doing any
+      // planner/executor work. A new worker instance therefore cannot reset
+      // the loop guard by restarting the process.
+      goal = await this.options.store.consumeIteration({
+        tenantId: scope,
+        goalId: goal.id,
+        expectedVersion: goal.version,
+        now: this.clock()
+      })
+      if (isTerminalGoalStatus(goal.status)) {
+        return this.result(
+          goal,
+          await this.activePlan(scope, goal),
+          await this.stepsForActivePlan(scope, goal),
+          goal.lastReason ?? goal.status,
           executedStepIds
         )
       }
@@ -2485,6 +2626,37 @@ export class GoalPlanOrchestrator {
       })
       executedStepIds.push(next.id)
       const abortController = new AbortController()
+      let activeLease = claimed.lease
+      let leaseLost = false
+      let heartbeatInFlight: Promise<void> | null = null
+      const heartbeat = async (): Promise<void> => {
+        if (leaseLost) return
+        const renewed = await this.options.store.heartbeatStep({
+          lease: activeLease,
+          now: this.clock(),
+          leaseMs: this.leaseMs
+        })
+        if (!renewed) {
+          leaseLost = true
+          abortController.abort('lease_lost')
+          return
+        }
+        activeLease = renewed
+      }
+      const heartbeatTimer = setInterval(
+        () => {
+          if (heartbeatInFlight || leaseLost) return
+          heartbeatInFlight = heartbeat()
+            .catch(() => {
+              leaseLost = true
+              abortController.abort('lease_lost')
+            })
+            .finally(() => {
+              heartbeatInFlight = null
+            })
+        },
+        Math.max(50, Math.floor(this.leaseMs / 3))
+      )
       let execution: StepExecutionResult
       const stepTimeout = setTimeout(() => {
         abortController.abort('step_timeout')
@@ -2494,7 +2666,7 @@ export class GoalPlanOrchestrator {
           goal: claimed.goal,
           plan: claimed.plan,
           step: claimed.step,
-          lease: claimed.lease,
+          lease: activeLease,
           signal: abortController.signal
         })
       } catch (error) {
@@ -2505,6 +2677,25 @@ export class GoalPlanOrchestrator {
         }
       } finally {
         clearTimeout(stepTimeout)
+        clearInterval(heartbeatTimer)
+        if (heartbeatInFlight) await heartbeatInFlight
+      }
+      if (leaseLost) {
+        const current = await this.options.store.getGoal(scope, goalId)
+        if (!current)
+          throw new OrchestrationError('not_found', `Goal not found: ${goalId}`)
+        this.options.telemetry?.recordMetric(
+          'orchestrator_step_settle_total',
+          1,
+          { operation: 'step_settle', outcome: 'lease_lost' }
+        )
+        return this.result(
+          current,
+          await this.activePlan(scope, current),
+          await this.stepsForActivePlan(scope, current),
+          'step_lease_lost',
+          executedStepIds
+        )
       }
       if (abortController.signal.aborted) {
         execution = {
@@ -2513,31 +2704,50 @@ export class GoalPlanOrchestrator {
           reason: 'step_timeout'
         }
       }
-      const settled = await this.options.store.settleStep({
-        lease: claimed.lease,
-        outcome: execution.outcome,
-        resultDigest: execution.resultDigest ?? null,
-        reason: execution.reason,
-        approvalId: execution.approvalId ?? null,
-        now: this.clock(),
-        modelCalls: execution.modelCalls ?? 0,
-        toolCalls: execution.toolCalls ?? 0,
-        costUsd: execution.costUsd ?? 0
-      })
+      let settled: SettledStep
+      try {
+        settled = await this.options.store.settleStep({
+          lease: activeLease,
+          outcome: execution.outcome,
+          resultDigest: execution.resultDigest ?? null,
+          reason: execution.reason,
+          approvalId: execution.approvalId ?? null,
+          now: this.clock(),
+          modelCalls: execution.modelCalls ?? 0,
+          toolCalls: execution.toolCalls ?? 0,
+          costUsd: execution.costUsd ?? 0,
+          observation: {
+            kind: 'step_result',
+            resultDigest: execution.resultDigest ?? null,
+            evidence: execution.evidence ?? []
+          }
+        })
+      } catch (error) {
+        if (
+          error instanceof OrchestrationError &&
+          (error.code === 'lease_lost' || error.code === 'conflict')
+        ) {
+          const current = await this.options.store.getGoal(scope, goalId)
+          if (!current)
+            throw new OrchestrationError(
+              'not_found',
+              `Goal not found: ${goalId}`
+            )
+          return this.result(
+            current,
+            await this.activePlan(scope, current),
+            await this.stepsForActivePlan(scope, current),
+            'step_settle_fenced',
+            executedStepIds
+          )
+        }
+        throw error
+      }
       this.options.telemetry?.recordMetric(
         'orchestrator_step_settle_total',
         1,
         { operation: 'step_settle', outcome: execution.outcome }
       )
-      await this.options.store.recordObservation({
-        tenantId: scope,
-        goalId: settled.goal.id,
-        planId: plan.id,
-        stepId: settled.step.id,
-        kind: 'step_result',
-        resultDigest: execution.resultDigest ?? null,
-        evidence: execution.evidence ?? []
-      })
       const specialGoalStatus = goalReasonForStepStatus(settled.step.status)
       if (specialGoalStatus) {
         goal = await this.transition(

@@ -174,6 +174,7 @@ export const CANDIDATE_EXCLUDED_PREFIXES = [
   'apps/web/dist/',
   'certification/logs/',
   'certification/phase11-logs/',
+  'certification/phase11/',
   'certification/baseline-logs/',
   'certification/mutation-logs/',
   'certification/historical/'
@@ -194,7 +195,8 @@ export const CANDIDATE_EXCLUDED_FILES = [
   'certification/baseline.json',
   'certification/phase11-result.json',
   'certification/phase11-manifest.json',
-  'certification/phase11-candidate-manifest.json'
+  'certification/phase11-candidate-manifest.json',
+  'certification/current.json'
 ]
 
 export const CANDIDATE_SCOPE_NOTE =

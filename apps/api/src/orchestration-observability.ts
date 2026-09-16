@@ -41,6 +41,7 @@ export function toOrchestrationGoalView(goal: Goal) {
     budget: {
       maxSteps: goal.budget.maxSteps,
       maxReplans: goal.budget.maxReplans,
+      maxIterations: goal.budget.maxIterations,
       maxModelCalls: goal.budget.maxModelCalls,
       maxToolCalls: goal.budget.maxToolCalls,
       maxDurationMs: goal.budget.maxDurationMs,
@@ -84,6 +85,8 @@ function toStepView(step: PlanStep) {
     lastError: safeText(step.lastError),
     startedAt: iso(step.startedAt),
     completedAt: iso(step.completedAt),
+    leaseOwner: step.leaseOwner,
+    leaseUntil: iso(step.leaseUntil),
     version: step.version,
     createdAt: step.createdAt.toISOString(),
     updatedAt: step.updatedAt.toISOString()
@@ -152,6 +155,27 @@ export function toOrchestrationGoalDetailView(input: {
   evaluations: EvaluationRecord[]
   attemptsByStep: Map<string, AttemptRecord[]>
 }) {
+  const activePlan = input.plans.find(
+    (plan) => plan.id === input.goal.activePlanId
+  )
+  const activeSteps = activePlan
+    ? (input.stepsByPlan.get(activePlan.id) ?? [])
+    : []
+  const currentStep =
+    activeSteps.find((step) => step.status === 'EXECUTING') ??
+    activeSteps.find((step) =>
+      [
+        'WAITING_APPROVAL',
+        'WAITING_EXTERNAL',
+        'HUMAN_HANDOFF',
+        'UNCERTAIN'
+      ].includes(step.status)
+    ) ??
+    activeSteps.find((step) => ['READY', 'PENDING'].includes(step.status)) ??
+    null
+  const evidence = input.observations.flatMap(
+    (observation) => observation.evidence
+  )
   return {
     ...toOrchestrationGoalView(input.goal),
     successCriteria: input.goal.successCriteria.map((criterion) =>
@@ -174,6 +198,34 @@ export function toOrchestrationGoalDetailView(input: {
     ),
     executionSnapshot: input.goal.executionSnapshot,
     replanCount: input.goal.budget.usage.replans,
+    operatorState: {
+      state: input.goal.status,
+      reason: safeText(input.goal.lastReason),
+      error: safeText(input.goal.lastError),
+      deadline: iso(input.goal.deadline),
+      deadlineExpired:
+        input.goal.deadline !== null && input.goal.deadline <= new Date(),
+      activePlanVersion: activePlan?.version ?? null,
+      currentStepId: currentStep?.id ?? null,
+      currentStepStatus: currentStep?.status ?? null,
+      leaseOwner: currentStep?.leaseOwner ?? null,
+      leaseUntil: iso(currentStep?.leaseUntil),
+      approvalId: currentStep?.approvalId ?? null,
+      handoffRequired:
+        input.goal.status === 'HUMAN_HANDOFF' ||
+        currentStep?.status === 'HUMAN_HANDOFF',
+      evidenceCount: evidence.length,
+      verifiedEvidenceCount: evidence.filter((item) => item.verified).length,
+      lastObservationAt:
+        input.observations.at(-1)?.createdAt.toISOString() ?? null,
+      lastEvaluation: input.evaluations.at(-1)
+        ? {
+            result: input.evaluations.at(-1)!.result,
+            reason: safeText(input.evaluations.at(-1)!.reason),
+            createdAt: input.evaluations.at(-1)!.createdAt.toISOString()
+          }
+        : null
+    },
     plans: input.plans.map((plan) => ({
       ...toPlanView(plan),
       steps: (input.stepsByPlan.get(plan.id) ?? []).map((step) => ({

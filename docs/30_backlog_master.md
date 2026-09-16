@@ -1751,3 +1751,13 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
   hash e `git status --short` retornou vazio após o push.
 - next_action: retomar os gates pendentes de AAA-21 em ambiente controlado;
   candidato permanece `REVIEW`, produção `NO_GO`.
+
+# PHASE11.1-FORMAL-CLOSURE-20260915 — registro de task e gate — 2026-09-15
+
+- engine: `SPEC -> BUILD`; status: `IN_PROGRESS`; release `CONTROLLED_LOCAL / PRODUCTION_NO_GO`.
+- autorização: pedido explícito do usuário para implementar o prompt de fechamento formal; limitado a código, testes e evidências locais sintéticas.
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`, contrato em [`phase11_1_formal_closure_contract_20260915.md`](02_spec/phase11_1_formal_closure_contract_20260915.md); barra congelada em [`quality-bar-phase11-1-v1.json`](04_audit/evidence/AAA/AAA-21/quality-bar-phase11-1-v1.json).
+- scope: pacote canônico `certification/phase11/`, ponte corrente, calculus fail-closed, auditoria de bypass legado, regressões de replan/loop/budget/lease/effect/lineage/tenant, PostgreSQL controlado e console; sem provider/canal/IdP/RAG/piloto/produção.
+- prompt: intake exato de cinco fontes em [`prompt-master/20260915-formal-closure`](11_phase11/prompt-master/20260915-formal-closure/README.md), preservando o conjunto histórico de 14 fontes.
+- next_action: finalizar baseline candidate-bound e delta audit; executar scouts read-only; depois BUILD por fatias com teste focado, crítico fresco e evidência hashada.
+- blockers conhecidos: gates externos/humanos, durabilidade física/RPO-RTO e ambiente de piloto não disponíveis; Node24 é incompatível, Node22.23.2 está instalado e deve ser usado.

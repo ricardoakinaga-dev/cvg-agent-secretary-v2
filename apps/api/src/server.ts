@@ -4257,6 +4257,12 @@ const tenantIsolationTables = [
   'journey_appointment_drafts',
   'runtime_approvals',
   'runtime_audit_events',
+  'orchestrator_goals',
+  'orchestrator_plans',
+  'orchestrator_steps',
+  'orchestrator_attempts',
+  'orchestrator_observations',
+  'orchestrator_evaluations',
   'platform_agents',
   'platform_agent_versions',
   'platform_test_runs',
@@ -4285,7 +4291,13 @@ const tenantOnlyRlsTables = new Set([
   'journey_patient_drafts',
   'journey_appointment_drafts',
   'runtime_approvals',
-  'runtime_audit_events'
+  'runtime_audit_events',
+  'orchestrator_goals',
+  'orchestrator_plans',
+  'orchestrator_steps',
+  'orchestrator_attempts',
+  'orchestrator_observations',
+  'orchestrator_evaluations'
 ])
 
 const webhookReplayTables = ['webhook_replay_events'] as const
@@ -4316,7 +4328,10 @@ const tenantIsolationMigrationVersions = [
   '0015_runtime_approval_store',
   '0016_runtime_continuation_trace',
   '0017_runtime_audit_chain',
-  '0018_outbox_lease_fencing'
+  '0018_outbox_lease_fencing',
+  '0019_orchestrator_state',
+  '0020_orchestrator_lineage_hardening',
+  '0021_orchestrator_iteration_budget'
 ] as const
 
 const tenantIsolationRequiredConstraints = [
@@ -4401,7 +4416,43 @@ const tenantIsolationRequiredConstraints = [
   'journey_appointment_drafts_tenant_id_idempotency_key_key',
   'runtime_approvals_pkey',
   'runtime_audit_events_pkey',
-  'runtime_audit_events_tenant_id_sequence_key'
+  'runtime_audit_events_tenant_id_sequence_key',
+  'orchestrator_goals_pkey',
+  'orchestrator_plans_pkey',
+  'orchestrator_plans_tenant_id_goal_id_version_key',
+  'orchestrator_plans_tenant_id_goal_id_fkey',
+  'orchestrator_plans_tenant_id_parent_plan_id_fkey',
+  'orchestrator_steps_pkey',
+  'orchestrator_steps_tenant_id_goal_id_fkey',
+  'orchestrator_steps_tenant_id_plan_id_fkey',
+  'orchestrator_attempts_pkey',
+  'orchestrator_attempts_tenant_id_goal_id_fkey',
+  'orchestrator_attempts_tenant_id_plan_id_fkey',
+  'orchestrator_attempts_tenant_id_step_id_fkey',
+  'orchestrator_observations_pkey',
+  'orchestrator_observations_tenant_id_goal_id_fkey',
+  'orchestrator_observations_tenant_id_plan_id_fkey',
+  'orchestrator_observations_tenant_id_step_id_fkey',
+  'orchestrator_evaluations_pkey',
+  'orchestrator_evaluations_tenant_id_goal_id_fkey',
+  'orchestrator_evaluations_tenant_id_plan_id_fkey',
+  'orchestrator_evaluations_tenant_id_step_id_fkey',
+  'orchestrator_plans_tenant_id_id_goal_id_key',
+  'orchestrator_steps_tenant_id_id_goal_plan_key',
+  'orchestrator_steps_goal_plan_lineage_fk',
+  'orchestrator_observations_plan_goal_lineage_fk',
+  'orchestrator_observations_step_lineage_fk',
+  'orchestrator_evaluations_plan_goal_lineage_fk',
+  'orchestrator_evaluations_step_lineage_fk',
+  'orchestrator_attempts_tenant_id_id_lineage_key',
+  'orchestrator_attempts_plan_goal_lineage_fk',
+  'orchestrator_attempts_step_lineage_fk',
+  'effect_journal_orchestration_lineage_check',
+  'effect_journal_orchestration_step_lineage_fk',
+  'effect_journal_orchestration_attempt_lineage_fk',
+  'outbox_events_orchestration_lineage_check',
+  'outbox_events_orchestration_step_lineage_fk',
+  'outbox_events_orchestration_attempt_lineage_fk'
 ] as const
 
 const tenantIsolationRequiredIndexes = [
@@ -4460,7 +4511,28 @@ const tenantIsolationRequiredIndexes = [
   'uq_runtime_approvals_continuation_message',
   'runtime_audit_events_pkey',
   'runtime_audit_events_tenant_id_sequence_key',
-  'idx_runtime_audit_events_correlation'
+  'idx_runtime_audit_events_correlation',
+  'orchestrator_goals_pkey',
+  'idx_orchestrator_goals_runnable',
+  'idx_orchestrator_goals_correlation',
+  'uq_orchestrator_goals_inbound_message',
+  'orchestrator_plans_pkey',
+  'orchestrator_plans_tenant_id_goal_id_version_key',
+  'idx_orchestrator_plans_goal_version',
+  'orchestrator_steps_pkey',
+  'idx_orchestrator_steps_ready',
+  'idx_orchestrator_steps_expired_lease',
+  'orchestrator_attempts_pkey',
+  'idx_orchestrator_attempts_step',
+  'orchestrator_observations_pkey',
+  'idx_orchestrator_observations_goal',
+  'orchestrator_evaluations_pkey',
+  'idx_orchestrator_evaluations_goal',
+  'orchestrator_plans_tenant_id_id_goal_id_key',
+  'orchestrator_steps_tenant_id_id_goal_plan_key',
+  'orchestrator_attempts_tenant_id_id_lineage_key',
+  'idx_effect_journal_orchestration_lineage',
+  'idx_outbox_events_orchestration_lineage'
 ] as const
 
 export async function assertTenantIsolationMigrationState(
@@ -4609,7 +4681,11 @@ export async function assertTenantIsolationSchema(
         'agent_id',
         'agent_version_id',
         'payload_protection_version',
-        'result_protection_version'
+        'result_protection_version',
+        'orchestration_goal_id',
+        'orchestration_plan_id',
+        'orchestration_step_id',
+        'orchestration_attempt_id'
       ]
     ]
   )
@@ -4647,6 +4723,27 @@ export async function assertTenantIsolationSchema(
   ) {
     throw new Error(
       'PostgreSQL outbox payload protection columns are incomplete'
+    )
+  }
+  const requiredOrchestrationLineageColumns = [
+    'orchestration_goal_id',
+    'orchestration_plan_id',
+    'orchestration_step_id',
+    'orchestration_attempt_id'
+  ] as const
+  const orchestrationLineageTables = [
+    'effect_journal',
+    'outbox_events'
+  ] as const
+  const missingOrchestrationLineageColumns = orchestrationLineageTables.flatMap(
+    (table) =>
+      requiredOrchestrationLineageColumns
+        .filter((column) => !columnsByTable.get(table)?.has(column))
+        .map((column) => `${table}.${column}`)
+  )
+  if (missingOrchestrationLineageColumns.length > 0) {
+    throw new Error(
+      `PostgreSQL orchestration lineage columns are incomplete: ${missingOrchestrationLineageColumns.join(', ')}`
     )
   }
 

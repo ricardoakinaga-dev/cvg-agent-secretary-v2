@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-09-16T00:55:01-03:00",
+  "reviewer": "fresh-context-visual-critic",
+  "status": "PASS",
+  "verdict": "PASS",
+  "artifactPaths": [
+    "tests/e2e/visual-shell.spec.ts-snapshots/orchestration-state-matrix-chromium-linux.png",
+    "tests/e2e/visual-shell.spec.ts-snapshots/console-mobile-chromium-linux.png",
+    "tests/e2e/visual-shell.spec.ts-snapshots/console-tablet-chromium-linux.png",
+    "tests/e2e/visual-shell.spec.ts-snapshots/console-wide-tablet-chromium-linux.png",
+    "tests/e2e/visual-shell.spec.ts-snapshots/console-desktop-chromium-linux.png",
+    "tests/e2e/visual-shell.spec.ts-snapshots/dead-letter-panel-375-chromium-linux.png",
+    "tests/e2e/visual-shell.spec.ts-snapshots/dead-letter-panel-1024-chromium-linux.png",
+    "tests/e2e/visual-shell.spec.ts"
+  ],
+  "scenarios": [
+    {
+      "id": "active-state",
+      "status": "PASS",
+      "observation": "O estado ativo/executando tem prioridade clara no Goal selecionado, passo atual, plano ativo e marcador visual consistente; a linha selecionada é distinguível sem depender apenas de cor."
+    },
+    {
+      "id": "replanning-state",
+      "status": "PASS",
+      "observation": "Replanejando aparece como estado nomeado no resumo e na lista, com motivo operacional legível; a diferenciação cromática é discreta e acompanhada de texto."
+    },
+    {
+      "id": "approval-and-handoff-states",
+      "status": "PASS",
+      "observation": "Aguardando aprovação e Handoff humano são visíveis na matriz, com badges e motivo/responsabilidade explícitos; o step pendente também expõe a exigência de aprovação."
+    },
+    {
+      "id": "budget-state",
+      "status": "PASS",
+      "observation": "Orçamento esgotado é identificável na lista, e o detalhe mostra uso versus limite para passos, replans, iterações, modelo, ferramentas, duração e custo."
+    },
+    {
+      "id": "failure-state",
+      "status": "PASS",
+      "observation": "Falhou usa texto, badge e diagnóstico explícito; o alerta de falha/bloqueio e o erro sintético permanecem legíveis no recorte da matriz."
+    },
+    {
+      "id": "hierarchy-and-legibility",
+      "status": "PASS",
+      "observation": "A hierarquia cabeçalho → resumo → lista/detalhe → orçamento → evidências → planos é clara. Tipografia, contraste e espaçamento permanecem legíveis, embora a matriz desktop seja densa por natureza operacional."
+    },
+    {
+      "id": "responsive-shell",
+      "status": "PASS",
+      "observation": "Os snapshots nativos de 375, 768, 1024 e 1440 px preservam a prioridade do shell, refluem de duas/ três colunas para uma coluna e mantêm textos e controles dentro do viewport."
+    },
+    {
+      "id": "focus-and-semantics",
+      "status": "PASS",
+      "observation": "O teste cobre skip link, foco no console, foco visível do botão de sessão e controle mínimo; o componente observado usa section rotulada, list/listitem, botões com aria-pressed/controls/describedby, live region e alert/status."
+    },
+    {
+      "id": "readonly-synthetic-boundary",
+      "status": "PASS",
+      "observation": "A UI declara modo somente leitura e uso/limite sem ações de alteração; o teste injeta tenant/operator sintéticos e fixture deterministicamente sintética, sem evidência visual de provider, canal, RAG ou dado real."
+    },
+    {
+      "id": "overflow-and-long-content",
+      "status": "PASS",
+      "observation": "O shell não apresenta overflow horizontal nos snapshots responsivos; o snapshot de dead letters mostra erro de 1201 caracteres quebrado dentro do painel em 375 e 1024 px."
+    }
+  ],
+  "strengths": [
+    "Estados operacionais críticos são nomeados e diferenciados por texto, badge, borda e contexto.",
+    "A composição oferece comparação rápida entre lista de Goals e detalhe operacional sem esconder orçamento, evidência ou lineage.",
+    "A responsividade observada é deliberada e preserva legibilidade no mobile, tablet, wide-tablet e desktop.",
+    "A fronteira read-only/synthetic é visível no copy da interface e coerente com a fixture do teste.",
+    "A matriz visual e o teste cobrem empty shell, foco, overflow, dead letter e estados de orquestração relevantes."
+  ],
+  "risks": [
+    {
+      "severity": "LOW",
+      "id": "matrix-desktop-only",
+      "observation": "A captura detalhada da matriz de estados é 1440 px; os snapshots mobile/tablet existentes cobrem o shell vazio, não o mesmo volume de Goals/planos em estados densos.",
+      "impact": "A refluidez do detalhe completo em telas estreitas permanece parcialmente não observada.",
+      "blocking": false
+    },
+    {
+      "severity": "LOW",
+      "id": "orchestration-focus-dedicated-assertion",
+      "observation": "O teste prova foco do shell e do botão de sessão, e o componente/CSS fornecem tabIndex, semântica e foco do painel; não há uma asserção dedicada de foco visível no painel de orquestração dentro deste teste.",
+      "impact": "A acessibilidade observável do caminho específico de seleção de Goal merece uma regressão de teclado dedicada em rodada futura.",
+      "blocking": false
+    },
+    {
+      "severity": "LOW",
+      "id": "controlled-scope-only",
+      "observation": "A inspeção sustenta somente o console local controlado com dados sintéticos; não sustenta provider, canal, identidade externa, RAG institucional, piloto, produção ou efeitos reais.",
+      "impact": "Nenhum para a barra visual local; permanece bloqueador para qualquer alegação externa ou de produção.",
+      "blocking": false
+    }
+  ],
+  "decision": "PASS — screenshot, snapshots responsivos e teste atendem à barra visual local P11.1-CONSOLE no escopo controlled-local. A decisão não promove a Phase 11.1 para produção nem substitui gates externos/humanos.",
+  "evidence": {
+    "inspectionMode": "fresh read-only visual inspection with real PNG artifacts and source inspection; test was not rerun",
+    "observedDimensions": {
+      "console-mobile": "375x812",
+      "console-tablet": "768x900",
+      "console-wide-tablet": "1024x900",
+      "console-desktop": "1440x900",
+      "orchestration-state-matrix": "1340x1444",
+      "dead-letter-mobile": "351x858",
+      "dead-letter-wide": "954x456"
+    },
+    "testEvidence": [
+      "visual-shell.spec.ts declares Playwright checks for four viewports, horizontal scrollWidth, action minHeight, skip-link focus, visible focus styling and screenshot baselines",
+      "the orchestration fixture asserts visible current step, replanning, handoff, budget exhausted, failure and iterations",
+      "the dead-letter fixture asserts long-error wrapping and panel scrollWidth containment"
+    ],
+    "semanticEvidence": [
+      "orchestration panel is a labelled section with tabIndex=-1",
+      "Goal collection is role=list with role=listitem and selectable buttons using aria-pressed, aria-controls and aria-describedby",
+      "loading/error/empty states use status or alert semantics and detail uses aria-live=polite"
+    ],
+    "boundary": "Only synthetic fixtures and local rendered artifacts were inspected; no external proof, real data, provider, channel, RAG, deployment or sensitive action was used or claimed.",
+    "limitations": [
+      "No new browser run was executed in this read-only critique.",
+      "No mobile/tablet screenshot of the populated orchestration matrix was present among the reviewed artifacts."
+    ]
+  }
+}

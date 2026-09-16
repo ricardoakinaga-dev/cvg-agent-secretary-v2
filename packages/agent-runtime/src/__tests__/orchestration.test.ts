@@ -646,6 +646,111 @@ describe('durable Goal/Plan/Step orchestration', () => {
     expect(await store.listAttempts(TENANT, 'leased')).toHaveLength(2)
   })
 
+  it('renews leases with a version CAS and rejects the pre-heartbeat lease', async () => {
+    const store = new InMemoryGoalPlanStore({ clock: () => NOW })
+    const goal = await buildGoal(store)
+    const activated = await activateInitialPlan(store, goal, [
+      step('heartbeat')
+    ])
+    let executing = await store.transitionGoal({
+      tenantId: TENANT,
+      goalId: goal.id,
+      expectedVersion: activated.goal.version,
+      target: 'UNDERSTANDING',
+      reason: 'heartbeat setup'
+    })
+    executing = await store.transitionGoal({
+      tenantId: TENANT,
+      goalId: goal.id,
+      expectedVersion: executing.version,
+      target: 'PLANNING',
+      reason: 'heartbeat setup'
+    })
+    executing = await store.transitionGoal({
+      tenantId: TENANT,
+      goalId: goal.id,
+      expectedVersion: executing.version,
+      target: 'GOVERNING',
+      reason: 'heartbeat setup'
+    })
+    executing = await store.transitionGoal({
+      tenantId: TENANT,
+      goalId: goal.id,
+      expectedVersion: executing.version,
+      target: 'EXECUTING',
+      reason: 'heartbeat setup'
+    })
+    const claimed = await store.claimStep({
+      tenantId: TENANT,
+      goalId: goal.id,
+      planId: activated.plan.id,
+      stepId: 'heartbeat',
+      workerId: 'heartbeat-worker',
+      expectedGoalVersion: executing.version,
+      now: NOW,
+      leaseMs: 100
+    })
+    expect(claimed).not.toBeNull()
+    const renewed = await store.heartbeatStep({
+      lease: claimed!.lease,
+      now: new Date(NOW.getTime() + 50),
+      leaseMs: 100
+    })
+    expect(renewed?.stepVersion).toBe(claimed!.lease.stepVersion + 1)
+    await expect(
+      store.settleStep({
+        lease: claimed!.lease,
+        outcome: 'succeeded',
+        resultDigest: 'stale-after-heartbeat',
+        reason: 'stale lease',
+        approvalId: null,
+        now: new Date(NOW.getTime() + 50),
+        modelCalls: 0,
+        toolCalls: 1,
+        costUsd: 0
+      })
+    ).rejects.toMatchObject({ code: 'lease_lost' })
+    const settled = await store.settleStep({
+      lease: renewed!,
+      outcome: 'succeeded',
+      resultDigest: 'fresh-after-heartbeat',
+      reason: 'fresh lease',
+      approvalId: null,
+      now: new Date(NOW.getTime() + 50),
+      modelCalls: 0,
+      toolCalls: 1,
+      costUsd: 0,
+      observation: {
+        kind: 'step_result',
+        resultDigest: 'fresh-after-heartbeat',
+        evidence: verifiedEvidence('synthetic_step:heartbeat')
+      }
+    })
+    expect(settled.step.status).toBe('SUCCEEDED')
+    expect(await store.listObservations(TENANT, goal.id)).toHaveLength(1)
+  })
+
+  it('persists the iteration budget across orchestrator/store callers', async () => {
+    const store = new InMemoryGoalPlanStore({ clock: () => NOW })
+    const goal = await buildGoal(store, { maxIterations: 1 })
+    const first = await store.consumeIteration({
+      tenantId: TENANT,
+      goalId: goal.id,
+      expectedVersion: goal.version,
+      now: NOW
+    })
+    expect(first.budget.usage.iterations).toBe(1)
+    const restartedView = await store.getGoal(TENANT, goal.id)
+    const stopped = await store.consumeIteration({
+      tenantId: TENANT,
+      goalId: goal.id,
+      expectedVersion: restartedView!.version,
+      now: NOW
+    })
+    expect(stopped.status).toBe('LOOP_DETECTED')
+    expect(stopped.budget.usage.iterations).toBe(1)
+  })
+
   it('keeps tenant scope and budget across a new orchestrator instance', async () => {
     const store = new InMemoryGoalPlanStore({ clock: () => NOW })
     const goal = await buildGoal(store, {

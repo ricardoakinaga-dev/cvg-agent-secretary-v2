@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "id": "PHASE11.1-QUALITY-BAR-V1",
+  "phase": "11.1",
+  "frozenAt": "2026-09-15T23:04:28-03:00",
+  "scope": "controlled-local-formal-closure",
+  "authorization": "user-requested-local-build-only",
+  "constraints": [
+    "synthetic data only",
+    "controlled effect adapter only",
+    "no production deployment",
+    "no real provider/channel/identity/RAG/pilot",
+    "no clinical, financial, record or real appointment mutation"
+  ],
+  "criteria": [
+    {
+      "id": "P11.1-PROMPT",
+      "title": "Prompt provenance is exact and complete",
+      "priority": "P1",
+      "target": "The five received source files are byte-identical to the intake, hash-bound, and prior 14-source history remains intact.",
+      "required": true,
+      "evidence": "SHA-256 manifest plus source files under docs/11_phase11/prompt-master/20260915-formal-closure/source/",
+      "validity": "A changed or missing source invalidates the scope used to derive the certification contract."
+    },
+    {
+      "id": "P11.1-CERT-ANCHOR",
+      "title": "Phase 11 is the sole current certification",
+      "priority": "P0",
+      "target": "certification/current.json resolves to a valid certification/phase11 package with matching commit, treeHash, candidateId, manifest and result hashes; Phase 10 is historical only.",
+      "required": true,
+      "evidence": "current pointer verifier, phase11 manifest/result schemas, historical separation regression",
+      "validity": "Prevents a stale or weaker historical certificate from being interpreted as current release truth."
+    },
+    {
+      "id": "P11.1-CALCULUS",
+      "title": "Certification calculus is single and fail-closed",
+      "priority": "P0",
+      "target": "certify, verify and promotion check recompute one decision; false-GO, dirty, stale, hash mismatch and mandatory non-pass cases are rejected.",
+      "required": true,
+      "evidence": "deterministic rules tests, mutation sentinels, re-computation of raw gates",
+      "validity": "Rejects self-authenticating result fields and avoids score-based masking of hard failures."
+    },
+    {
+      "id": "P11.1-BYPASS",
+      "title": "Legacy production bypass is zero",
+      "priority": "P1",
+      "target": "All production-target entrypoints select the governed durable kernel or fail closed; legacy bypass call-sites are zero or explicitly test-only.",
+      "required": true,
+      "evidence": "call-site inventory, architecture test, fail-closed startup test, public-path test",
+      "validity": "Reachability at the production boundary matters more than the existence of a governed implementation elsewhere."
+    },
+    {
+      "id": "P11.1-REPLAN",
+      "title": "Replan preserves lineage and safe continuation",
+      "priority": "P1",
+      "target": "Plan v1 followed by a false evaluation produces Plan v2 with parentPlanId=v1, updated reason/evidence, bounded budget consumption and safe continuation.",
+      "required": true,
+      "evidence": "public orchestration fixture and persisted memory/PostgreSQL tests",
+      "validity": "Tests the actual replan boundary and prevents silent replacement or unsafe continuation."
+    },
+    {
+      "id": "P11.1-LOOP-BUDGET",
+      "title": "Loop and budget controls survive restart",
+      "priority": "P1",
+      "target": "Repeated fingerprints terminate deterministically; step/replan/time/cost budgets deny or hand off at exhaustion and persisted usage survives worker restart.",
+      "required": true,
+      "evidence": "loop detector, budget exhaustion, restart/recovery tests and raw metrics",
+      "validity": "Protects against autonomous infinite work and in-memory budget resets."
+    },
+    {
+      "id": "P11.1-FENCING",
+      "title": "Leases and claims are fenced",
+      "priority": "P0",
+      "target": "After lease expiry worker B takes over and worker A's stale heartbeat/ack/failure/effect settlement is denied; concurrent claims have one winner.",
+      "required": true,
+      "evidence": "PostgreSQL and controlled worker takeover race with leaseToken and version checks",
+      "validity": "A worker identity alone is insufficient protection after takeover."
+    },
+    {
+      "id": "P11.1-EFFECT",
+      "title": "Effect journal is idempotent and crash-aware",
+      "priority": "P0",
+      "target": "Crash after effect before acknowledgement yields duplicate effect count zero; confirmed/failed/unknown effects reconcile safely and ambiguous identity remains UNCERTAIN.",
+      "required": true,
+      "evidence": "effect journal crash matrix, idempotency key tests, reconciliation report",
+      "validity": "Protects irreversible side-effect boundaries even when process state is lost."
+    },
+    {
+      "id": "P11.1-LINEAGE",
+      "title": "Complete durable lineage and tracing",
+      "priority": "P1",
+      "target": "Goal/Plan/Step/Attempt/Observation/Evaluation/Outbox/Effect/Audit records preserve tenant, correlation and trace relationships end to end.",
+      "required": true,
+      "evidence": "lineage graph, schema constraints, public vertical trace and OTel/metrics evidence",
+      "validity": "Allows reconstruction, audit and incident recovery across async boundaries."
+    },
+    {
+      "id": "P11.1-TENANT-REDTEAM",
+      "title": "Tenant and governance boundaries resist adversarial input",
+      "priority": "P0",
+      "target": "Cross-tenant reads/writes, untrusted actor identity, prompt/tool/model/replanner/RAG/channel injection and approval races fail closed with no data or effect leakage.",
+      "required": true,
+      "evidence": "RLS/PostgreSQL isolation, API authorization, injection corpus, concurrency and red-team regressions",
+      "validity": "The dangerous failures occur at trust and tenant boundaries, not in a benign unit fixture."
+    },
+    {
+      "id": "P11.1-POSTGRES-RECOVERY",
+      "title": "Real disposable PostgreSQL path is current",
+      "priority": "P1",
+      "target": "Migrations, transactions, recovery and isolation pass against a disposable PostgreSQL instance; absent infrastructure remains NOT_RUN/BLOCKED.",
+      "required": true,
+      "evidence": "npm run test:postgres with recorded database identity and sanitized log",
+      "validity": "In-memory stores cannot prove SQL constraints, locking, RLS or restart semantics."
+    },
+    {
+      "id": "P11.1-CONSOLE",
+      "title": "Operator console is usable and safe",
+      "priority": "P1",
+      "target": "Active goals, plan/current step, budgets, replans, risk, approvals, failures, human ownership and dead letters are visible read-only with responsive, accessible states.",
+      "required": true,
+      "evidence": "Playwright screenshot/state matrix, keyboard/focus/semantics checks and fresh visual critic",
+      "validity": "A console can be logically correct yet unusable or unsafe at the operator boundary."
+    },
+    {
+      "id": "P11.1-SUPPLY",
+      "title": "Supply-chain and static security evidence is current",
+      "priority": "P1",
+      "target": "Security, dependency, license, SBOM, secret scanning and available CodeQL/static checks pass or are explicitly recorded unavailable.",
+      "required": true,
+      "evidence": "raw scanner logs and hash-bound reports",
+      "validity": "Certification must not omit repository-level integrity and secret leakage risks."
+    },
+    {
+      "id": "P11.1-EXTERNAL",
+      "title": "External qualification is real and separate",
+      "priority": "P0",
+      "target": "Triple AAA requires real provider, channel, external identity, institutional RAG approval, physical durability/RPO-RTO, supervised pilot, rollback and human signoff; absent proof is blocked.",
+      "required": true,
+      "evidence": "authorized environment records, provider/channel traces, RPO/RTO report, pilot report and human signoff",
+      "validity": "Local fakes cannot establish operational authority or real-world safety."
+    },
+    {
+      "id": "P11.1-NO-PRODUCTION-EFFECT",
+      "title": "Production remains protected",
+      "priority": "P0",
+      "target": "No production deploy, unrestricted release, real patient data or real appointment/clinical/financial/record mutation occurs in this round.",
+      "required": true,
+      "evidence": "execution log, environment boundary, controlled adapter inventory and negative external-action audit",
+      "validity": "The task is implementation and proof preparation, not authorization to act on real systems."
+    }
+  ]
+}

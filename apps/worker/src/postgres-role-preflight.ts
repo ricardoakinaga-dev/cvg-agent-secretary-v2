@@ -23,11 +23,18 @@ export const WORKER_CRITICAL_TABLES = [
   'outbox_effects',
   'effect_journal',
   'runtime_approvals',
-  'runtime_audit_events'
+  'runtime_audit_events',
+  'orchestrator_goals',
+  'orchestrator_plans',
+  'orchestrator_steps',
+  'orchestrator_attempts',
+  'orchestrator_observations',
+  'orchestrator_evaluations'
 ] as const
 
 export interface PostgresWorkerPreflightOptions {
   tenantId: TenantId
+  /** Additional tables may be checked; the critical baseline is always kept. */
   criticalTables?: readonly string[]
 }
 
@@ -59,7 +66,9 @@ export async function assertPostgresWorkerPreflight(
   options: PostgresWorkerPreflightOptions
 ): Promise<void> {
   const tenantId = TenantIdSchema.parse(options.tenantId)
-  const criticalTables = [...(options.criticalTables ?? WORKER_CRITICAL_TABLES)]
+  const criticalTables = Array.from(
+    new Set([...WORKER_CRITICAL_TABLES, ...(options.criticalTables ?? [])])
+  )
   const client = await pool.connect()
   let contextSet = false
   let failure: Error | undefined
@@ -173,7 +182,13 @@ export async function assertPostgresWorkerPreflight(
         'outbox_attempts',
         'effect_journal',
         'runtime_approvals',
-        'runtime_audit_events'
+        'runtime_audit_events',
+        'orchestrator_goals',
+        'orchestrator_plans',
+        'orchestrator_steps',
+        'orchestrator_attempts',
+        'orchestrator_observations',
+        'orchestrator_evaluations'
       ].includes(table)
         ? tenantExpression
         : `tenant_isolation_quarantined = false AND ${tenantExpression}`

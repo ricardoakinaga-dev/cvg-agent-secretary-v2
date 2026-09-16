@@ -2514,3 +2514,14 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
   hash e `git status --short` retornou vazio após o push.
 - next_action: retomar os gates pendentes de AAA-21 em ambiente controlado;
   candidato permanece `REVIEW`, produção `NO_GO`.
+
+# PHASE11.1-FORMAL-CLOSURE-20260915 — início controlado — 2026-09-15T23:04:28-03:00
+
+- current_engine: `SPEC -> BUILD`; task: `PHASE11.1-FORMAL-CLOSURE-20260915`; status: `IN_PROGRESS`; produção `NO-GO`.
+- active_action_id: `PHASE11.1-BASELINE-AND-SCOUTS`.
+- last_completed_action: prompt de cinco anexos preservado byte a byte em `docs/11_phase11/prompt-master/20260915-formal-closure/source/`, hashes conferidos; SPEC, delta audit e quality bar v1 registrados antes do BUILD.
+- candidate baseline: HEAD `2625606ad4e743bf5609434be868c92ca82ab95f`, tree `6010d5f8cd1405b4d6c2c7587e59a6f8f960f7c1`, branch `main`; Node observado `24.20.0`; Node qualificado disponível `22.23.2`; `TEST_DATABASE_URL` ausente.
+- scope: somente dados sintéticos, adapters controlados, banco descartável, sem provider/canal/IdP/RAG/piloto/deploy/produção/efeito real.
+- gate: `SPEC_APPROVED_CONTROLLED_BUILD`; evidência [`docs/phase11/PHASE11_DELTA_AUDIT.md`](phase11/PHASE11_DELTA_AUDIT.md) e quality bar [`docs/04_audit/evidence/AAA/AAA-21/quality-bar-phase11-1-v1.json`](04_audit/evidence/AAA/AAA-21/quality-bar-phase11-1-v1.json).
+- next_action: executar baseline bruto e três scouts read-only; não aceitar nenhum veredicto dos scouts como aprovação e não editar `.gauntlet/state.json` histórico.
+- blockers: AUD-11-01..08 são gaps locais a revalidar; AUD-11-09 e gates externos/humanos são bloqueadores legítimos de Triple AAA; produção permanece bloqueada.

@@ -15,6 +15,21 @@ const describeWithPostgres = testDatabaseUrl ? describe : describe.skip
 
 const tenant = 'tenant_00000000-0000-4000-8000-000000000821' as TenantId
 
+describe('worker PostgreSQL role preflight contract', () => {
+  it('includes every durable Goal/Plan/Step ledger table', () => {
+    expect(WORKER_CRITICAL_TABLES).toEqual(
+      expect.arrayContaining([
+        'orchestrator_goals',
+        'orchestrator_plans',
+        'orchestrator_steps',
+        'orchestrator_attempts',
+        'orchestrator_observations',
+        'orchestrator_evaluations'
+      ])
+    )
+  })
+})
+
 function roleUrl(username: string, password: string): string {
   const parsed = new URL(testDatabaseUrl as string)
   parsed.username = username
@@ -364,7 +379,13 @@ describeWithPostgres('worker PostgreSQL role preflight', () => {
                 'outbox_attempts',
                 'effect_journal',
                 'runtime_approvals',
-                'runtime_audit_events'
+                'runtime_audit_events',
+                'orchestrator_goals',
+                'orchestrator_plans',
+                'orchestrator_steps',
+                'orchestrator_attempts',
+                'orchestrator_observations',
+                'orchestrator_evaluations'
               ].includes(table)
                 ? tenantExpression
                 : `tenant_isolation_quarantined = false AND ${tenantExpression}`

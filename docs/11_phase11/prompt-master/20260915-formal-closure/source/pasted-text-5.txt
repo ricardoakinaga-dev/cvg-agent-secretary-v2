@@ -1,0 +1,963 @@
+# TERMINAL CONTRACT
+
+## ITEMS 462–END
+
+---
+
+# 462. ACCEPTABLE TERMINAL RESULT A — LOCAL CLOSURE
+
+Se toda engenharia local estiver fechada e somente fatores genuinamente externos permanecerem:
+
+```text id="vhmq4a"
+Local Engineering Closure = PASS
+Critical Invariants = PASS
+Phase 11 Evidence = PASS
+Phase 11 Certification = PASS
+
+External Integration Closure = INCOMPLETE
+Production Assurance Closure = INCOMPLETE
+```
+
+Resultado esperado, se o restante da evidência justificar:
+
+```text id="6x5g90"
+Decision:
+CONDITIONAL_GO
+
+Certification:
+AAA_CANDIDATE
+
+Eligible Profile:
+STAGING
+```
+
+ou `SUPERVISED_PILOT` caso os gates correspondentes já estejam satisfeitos.
+
+---
+
+# 463. THIS IS A SUCCESSFUL ENGINEERING RESULT
+
+Não considere `AAA_CANDIDATE` uma falha quando o único restante for:
+
+```text id="qgb1pe"
+real credentials
+real infrastructure
+real integration validation
+pilot
+RPO/RTO measurement
+human signoff
+```
+
+---
+
+# 464. ACCEPTABLE TERMINAL RESULT B — FULL CLOSURE
+
+Somente se todos os gates reais estiverem satisfeitos:
+
+```text id="joxkgn"
+Local Engineering Closure = PASS
+External Integration Closure = PASS
+Supervised Pilot Closure = PASS
+Production Assurance Closure = PASS
+```
+
+Resultado possível:
+
+```text id="imzckj"
+Decision:
+GO
+
+Certification:
+STATE_OF_ART_TRIPLE_AAA
+
+Eligible Profile:
+PRODUCTION
+```
+
+---
+
+# 465. ACCEPTABLE TERMINAL RESULT C — TECHNICAL BLOCKER
+
+Se algum critical local invariant falhar:
+
+```text id="6sxgof"
+Decision:
+NO_GO
+```
+
+Não maquie.
+
+---
+
+# 466. EXAMPLE CRITICAL BLOCKERS
+
+```text id="j0uz0k"
+governance bypass
+tenant leak
+approval bypass
+duplicate critical effect
+stale worker commit
+budget reset exploit
+unbounded loop
+false certification GO
+```
+
+---
+
+# 467. FIX BEFORE LOCAL CLOSURE
+
+Enquanto esses problemas forem localmente corrigíveis:
+
+continue trabalhando.
+
+---
+
+# 468. DO NOT STOP AT P1
+
+Se P1 for corrigível no repositório:
+
+corrija.
+
+---
+
+# 469. P0
+
+Mesmo princípio, com prioridade máxima.
+
+---
+
+# 470. CRITICAL P2
+
+Corrija antes de Production Triple AAA.
+
+---
+
+# 471. NON-CRITICAL P2
+
+Pode permanecer somente com:
+
+```text id="isj44d"
+owner
+risk assessment
+mitigation
+acceptance
+```
+
+e sem violar mandatory gate.
+
+---
+
+# 472. P3/P4
+
+Registre sem transformar automaticamente em blocker.
+
+---
+
+# 473. FINAL SUCCESS STATE MUST BE MACHINE-DERIVED
+
+Não escreva o resultado primeiro e depois ajuste JSON.
+
+A direção é:
+
+```text id="k7vpm7"
+tests
+↓
+evidence
+↓
+gates
+↓
+invariants
+↓
+findings
+↓
+certification calculus
+↓
+machine result
+↓
+human report
+```
+
+---
+
+# 474. NEVER REVERSE THIS FLOW
+
+Proibido:
+
+```text id="5oyd0m"
+desired Triple AAA
+↓
+edit scores
+↓
+edit gates
+↓
+edit evidence
+```
+
+---
+
+# 475. CERTIFICATION TAMPER RESISTANCE
+
+O verifier deve detectar alteração manual relevante dos artifacts.
+
+---
+
+# 476. ARTIFACT DEPENDENCY
+
+Quando artifact depender de outro, registre relação.
+
+---
+
+# 477. CERTIFICATION DAG
+
+Preferencialmente modele:
+
+```text id="13xyyf"
+candidate
+  ↓
+test executions
+  ↓
+evidence artifacts
+  ↓
+gates
+  ↓
+invariants/findings
+  ↓
+decision
+```
+
+---
+
+# 478. CIRCULAR CERTIFICATION
+
+Evite design em que:
+
+```text id="c17p9p"
+result hash
+depends on manifest
+depends on result hash
+```
+
+---
+
+# 479. MANIFEST DESIGN
+
+Exclua self-reference ou trate explicitamente.
+
+---
+
+# 480. DETERMINISTIC SERIALIZATION
+
+Quando hashes dependerem de JSON:
+
+use canonical/deterministic serialization.
+
+---
+
+# 481. TIMESTAMP FIELDS
+
+Não devem tornar reproduzibilidade impossível.
+
+Separe identity hash de metadata volátil quando apropriado.
+
+---
+
+# 482. BEHAVIOR IDENTITY
+
+Mantenha conceito de behavior identity se já existente.
+
+---
+
+# 483. CERTIFICATION IDENTITY
+
+Pode incluir:
+
+```text id="8fkkpo"
+candidate SHA
+behavior hash
+profile
+certification schema version
+```
+
+---
+
+# 484. SCHEMA VERSIONING
+
+Todos os artifacts machine-readable importantes devem possuir schema version.
+
+---
+
+# 485. MIGRATE OLD ARTIFACTS CAREFULLY
+
+Phase 10 histórica não precisa ser reescrita no schema novo se isso destruir provenance.
+
+---
+
+# 486. HISTORICAL VERIFIER
+
+Preserve:
+
+```text id="dml3by"
+certification:verify:historical
+```
+
+ou equivalente.
+
+---
+
+# 487. CURRENT VERIFIER
+
+Phase 11 deve ser default para current state.
+
+---
+
+# 488. DEFAULT `certify`
+
+Considere migrar:
+
+```text id="gzry4f"
+npm run certify
+```
+
+para Phase 11 após closure, preservando alias histórico explícito para Phase 10.
+
+---
+
+# 489. DEFAULT `certification:verify`
+
+Mesmo princípio.
+
+---
+
+# 490. DO NOT BREAK AUTOMATION SILENTLY
+
+Se alterar scripts default:
+
+atualize CI/docs/tests.
+
+---
+
+# 491. PACKAGE SCRIPT CONSISTENCY
+
+Evite situação:
+
+```text id="i3q8sw"
+certify → Phase10
+certify:phase11 → Phase11
+README → Phase11 current
+```
+
+após Phase 11 formal closure.
+
+Isso seria source-of-truth ambiguity.
+
+---
+
+# 492. EXPECTED END STATE
+
+Preferencialmente:
+
+```text id="59pm82"
+certify
+→ current Phase 11
+
+certification:verify
+→ current Phase 11
+
+certification:verify:historical
+→ Phase 10 historical
+```
+
+quando a migração estiver segura.
+
+---
+
+# 493. TEST SCRIPT MIGRATION
+
+Adicione regression test garantindo current/default selection.
+
+---
+
+# 494. CURRENT POINTER TEST
+
+`certification/current.json` deve apontar para artifact existente e válido.
+
+---
+
+# 495. STALE CURRENT POINTER
+
+Deve falhar.
+
+---
+
+# 496. HISTORICAL ARTIFACT CANNOT BECOME CURRENT ACCIDENTALLY
+
+Teste.
+
+---
+
+# 497. FINAL CI CURRENT SOURCE TEST
+
+CI deve detectar regressão para Phase 10 como current.
+
+---
+
+# 498. FINAL CERTIFICATION INTEGRITY SCORE
+
+Essa área deve ser explicitamente considerada na Auditability/Engineering score.
+
+---
+
+# 499. PHASE 11 CLOSURE IS NOT JUST MORE TESTS
+
+Ela precisa fechar:
+
+```text id="pljn86"
+implementation
+proof
+provenance
+promotion semantics
+```
+
+---
+
+# 500. FORMAL CLOSURE DEFINITION
+
+Phase 11 está **formalmente fechada** quando:
+
+```text id="t6opx9"
+current source of truth = Phase 11
+all locally mandatory Phase 11 gates = PASS
+all critical invariants = PASS
+all local P0/P1 = 0
+critical local P2 = 0
+evidence graph = valid
+candidate binding = valid
+freshness = valid
+negative validation = PASS
+independent critic = no local blocking finding
+```
+
+---
+
+# 501. ADVERSARIAL PROOF DEFINITION
+
+Phase 11 está **adversarialmente comprovada** quando foram executados testes tentando deliberadamente quebrar:
+
+```text id="oac5wr"
+authority boundary
+tenant boundary
+approval
+risk
+replanner
+leases
+idempotency
+recovery
+loop safety
+budget
+goal completion
+certification engine
+```
+
+e os critical invariants permaneceram válidos.
+
+---
+
+# 502. REAL STACK VALIDATION DEFINITION
+
+Está **validada na stack real** somente quando os componentes necessários ao deployment profile tiverem sido executados contra ambientes reais/staging representativos, conforme definido.
+
+---
+
+# 503. STATE OF ART DEFINITION
+
+State of Art aqui NÃO significa:
+
+```text id="9wgyhk"
+most code
+most agents
+most LLM calls
+most services
+```
+
+Significa:
+
+```text id="0znq4g"
+strong boundaries
+durable orchestration
+controlled authority
+safe side effects
+recovery
+observability
+adversarial evidence
+operational proof
+```
+
+---
+
+# 504. TRIPLE AAA — ARCHITECTURE
+
+A arquitetura deve provar:
+
+```text id="58opoh"
+clear composition
+no bypass
+durable state
+bounded orchestration
+recovery
+```
+
+---
+
+# 505. TRIPLE AAA — SECURITY
+
+Deve provar:
+
+```text id="zhc9fx"
+least privilege
+tenant isolation
+governance independence
+approval integrity
+model untrusted
+```
+
+---
+
+# 506. TRIPLE AAA — OPERATIONS
+
+Deve provar:
+
+```text id="smltzd"
+failure handling
+effect safety
+backup/restore
+RPO/RTO
+observability
+pilot
+rollback
+```
+
+---
+
+# 507. TRIPLE AAA — EVIDENCE
+
+Deve provar:
+
+```text id="72vyrc"
+commit-bound
+fresh
+machine-verifiable
+adversarially tested
+honest
+```
+
+---
+
+# 508. FINAL BUILDER MINDSET
+
+Não pergunte:
+
+> "Como faço esse sistema parecer State of Art?"
+
+Pergunte:
+
+> "Qual invariant ainda não consigo provar?"
+
+---
+
+# 509. FINAL AUDITOR MINDSET
+
+Não pergunte:
+
+> "Quantos testes passaram?"
+
+Pergunte:
+
+> "Que falha importante ainda poderia escapar desses testes?"
+
+---
+
+# 510. FINAL SRE MINDSET
+
+Não pergunte:
+
+> "O happy path funciona?"
+
+Pergunte:
+
+> "O que acontece quando ele cai exatamente entre duas operações?"
+
+---
+
+# 511. FINAL SECURITY MINDSET
+
+Não pergunte:
+
+> "O prompt proíbe isso?"
+
+Pergunte:
+
+> "A arquitetura impede isso mesmo se o prompt for ignorado?"
+
+---
+
+# 512. FINAL ORCHESTRATOR MINDSET
+
+Não pergunte:
+
+> "O modelo sabe planejar?"
+
+Pergunte:
+
+> "O sistema sabe verificar, replanejar, parar e recuperar?"
+
+---
+
+# 513. FINAL DATABASE MINDSET
+
+Não pergunte:
+
+> "Está salvo?"
+
+Pergunte:
+
+> "É atomicamente consistente e recuperável sob concorrência?"
+
+---
+
+# 514. FINAL CERTIFICATION MINDSET
+
+Não pergunte:
+
+> "O relatório diz PASS?"
+
+Pergunte:
+
+> "Consigo reproduzir a prova para este candidato?"
+
+---
+
+# 515. TERMINAL EXECUTION DIRECTIVE
+
+Agora execute, não apenas descreva:
+
+```text id="3w3x2b"
+RE-INSPECT CURRENT HEAD
+        ↓
+BASELINE
+        ↓
+DELTA AUDIT
+        ↓
+IMPLEMENT LOCAL GAPS
+        ↓
+TEST
+        ↓
+ATTACK
+        ↓
+CHAOS
+        ↓
+RECOVER
+        ↓
+MEASURE
+        ↓
+GENERATE EVIDENCE
+        ↓
+VERIFY PHASE 11
+        ↓
+INDEPENDENT AUDIT
+        ↓
+VALIDATE REAL STACK WHEN AUTHORIZED
+        ↓
+CALCULATE PROMOTION
+        ↓
+GENERATE FINAL SUCCESS STATE
+```
+
+---
+
+# 516. DO NOT RETURN ONLY A PLAN
+
+Obrigatório.
+
+---
+
+# 517. DO NOT RETURN AFTER FIRST IMPLEMENTATION PASS
+
+Obrigatório.
+
+---
+
+# 518. DO NOT RETURN AFTER UNIT TESTS
+
+Obrigatório.
+
+---
+
+# 519. DO NOT RETURN AFTER CONTROLLED CERTIFICATION IF LOCAL GAPS REMAIN
+
+Obrigatório.
+
+---
+
+# 520. DO NOT WAIT FOR EXTERNAL CREDENTIALS BEFORE FINISHING LOCAL WORK
+
+Obrigatório.
+
+---
+
+# 521. WHEN EXTERNAL CREDENTIALS ARE ABSENT
+
+Registre:
+
+```text id="6oxzo4"
+EXTERNAL_BLOCKED
+```
+
+e continue.
+
+---
+
+# 522. WHEN REAL INTEGRATION IS AVAILABLE
+
+Execute somente os testes permitidos pelo ambiente.
+
+---
+
+# 523. DO NOT SEND UNSAFE REAL TRAFFIC
+
+Use staging/allowlists/synthetic identities.
+
+---
+
+# 524. NO REAL PATIENT MUTATION
+
+Sem autorização explícita.
+
+---
+
+# 525. NO PRODUCTION DEPLOYMENT
+
+Sem autorização explícita.
+
+---
+
+# 526. FINAL RESPONSE ORDER
+
+A resposta final do Codex deve seguir:
+
+```text id="y6r9cy"
+1. Decision / Certification / Eligible Profile
+2. Candidate Identity
+3. Phase 11 Closure Summary
+4. AUD-11 Finding Closure
+5. Orchestrator Proof
+6. Governance/Security Proof
+7. Distributed Safety Proof
+8. Tests/Evals/Chaos/Load/Recovery
+9. Certification Integrity
+10. Real Stack Validation
+11. Independent Audit
+12. Scores
+13. Remaining Blockers
+14. Final Success State
+```
+
+---
+
+# 527. RESULTS FIRST
+
+Não comece com uma longa narrativa.
+
+---
+
+# 528. EXACT RESULTS
+
+Use dados observados.
+
+---
+
+# 529. NO CLAIM WITHOUT EVIDENCE
+
+Obrigatório.
+
+---
+
+# 530. FINAL SUCCESS BLOCK MUST MATCH JSON
+
+Obrigatório.
+
+---
+
+# 531. FINAL ARTIFACT REFERENCES
+
+Aponte artifacts reais.
+
+---
+
+# 532. IF RESULT IS AAA_CANDIDATE
+
+Declare claramente:
+
+```text id="xv3y71"
+Phase 11 local engineering closure is complete and adversarially proven.
+Production Triple-AAA remains blocked only by the external gates listed below.
+```
+
+somente se isso for verdade.
+
+---
+
+# 533. IF RESULT IS STATE_OF_ART_TRIPLE_AAA
+
+Declare quais real-stack proofs permitiram a promoção.
+
+---
+
+# 534. IF RESULT IS NO_GO
+
+Liste exatamente os blocking invariants/findings.
+
+---
+
+# 535. FINAL MASTER SUCCESS BLOCK
+
+Além do formato detalhado anterior, encerre com:
+
+```text id="k5v2t4"
+============================================================
+CVG AGENT SECRETARY V2 — PHASE 11 FINAL VERDICT
+============================================================
+
+Candidate:
+<sha>
+
+Local Engineering Closure:
+<PASS | FAIL>
+
+Adversarial Proof:
+<PASS | FAIL>
+
+Phase 11 Formal Certification:
+<PASS | FAIL>
+
+Real Stack Validation:
+<PASS | PARTIAL | FAIL | NOT_EXECUTED>
+
+Supervised Pilot:
+<PASS | FAIL | NOT_EXECUTED>
+
+Production Assurance:
+<PASS | FAIL>
+
+P0:
+<count>
+
+P1:
+<count>
+
+Critical P2:
+<count>
+
+Decision:
+<GO | CONDITIONAL_GO | NO_GO>
+
+Certification:
+<STATE_OF_ART_TRIPLE_AAA |
+ AAA_CANDIDATE |
+ AAA_CONTROLLED |
+ NO_GO>
+
+Eligible Profile:
+<CONTROLLED_LOCAL |
+ STAGING |
+ SUPERVISED_PILOT |
+ PRODUCTION>
+
+Blocking External Gates:
+<list | NONE>
+
+============================================================
+```
+
+---
+
+# 536. TERMINAL CONDITION
+
+O trabalho termina somente quando:
+
+### A — FULL PRODUCTION CLOSURE
+
+ou
+
+### B — ALL LOCAL WORK CLOSED AND ONLY GENUINELY EXTERNAL GATES REMAIN
+
+ou
+
+### C — A TECHNICAL BLOCKER CANNOT BE SAFELY RESOLVED AND IS EXPLICITLY REPORTED AS NO_GO
+
+---
+
+# 537. NO FOURTH TERMINAL CONDITION
+
+"Já está bom" não é condição de encerramento.
+
+---
+
+# 538. FINAL QUALITY BAR
+
+Entregue um sistema em que:
+
+```text id="2gyf2l"
+Model proposes.
+Orchestrator coordinates.
+Governance authorizes.
+Tools execute.
+Outbox protects effects.
+Observers verify reality.
+Evaluator determines progress.
+Replanner adapts.
+Budgets bound autonomy.
+Recovery survives failure.
+Humans retain control.
+Evidence proves the claims.
+Certification tells the truth.
+```
+
+---
+
+# 539. FINAL TARGET
+
+Transforme o excelente código existente em uma:
+
+# FORMALLY CLOSED, ADVERSARIALLY PROVEN, DURABLE AND GOVERNED AGENTIC OPERATIONS PLATFORM
+
+e leve-o ao máximo nível que a evidência real permitir:
+
+# STATE OF ART — TRIPLE AAA
+
+Nunca reduza a barra para alcançar o rótulo.
+
+---
+
+# 540. START NOW
+
+Comece pelo HEAD real atual do `cvg-agent-secretary-v2`.
+
+Reaudite.
+
+Implemente o delta.
+
+Feche os findings.
+
+Ataque os invariants.
+
+Prove recovery.
+
+Feche Phase 11.
+
+Valide a stack real quando autorizado.
+
+Execute o certification calculus.
+
+E deixe que **a evidência**, não a intenção, determine o resultado final.
+
+## END OF MASTER PROMPT

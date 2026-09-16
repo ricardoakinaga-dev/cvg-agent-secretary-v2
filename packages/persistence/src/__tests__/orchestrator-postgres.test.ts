@@ -242,10 +242,29 @@ describeWithPostgres('durable orchestrator PostgreSQL store', () => {
       leaseMs: 100
     })
     expect(first).not.toBeNull()
+    const renewed = await store.heartbeatStep({
+      lease: first!.lease,
+      now: new Date(now.getTime() + 50),
+      leaseMs: 100
+    })
+    expect(renewed?.stepVersion).toBe(first!.lease.stepVersion + 1)
+    await expect(
+      store.settleStep({
+        lease: first!.lease,
+        outcome: 'succeeded',
+        resultDigest: 'pre-heartbeat-stale',
+        reason: 'stale lease after heartbeat',
+        approvalId: null,
+        now: new Date(now.getTime() + 50),
+        modelCalls: 0,
+        toolCalls: 1,
+        costUsd: 0
+      })
+    ).rejects.toMatchObject({ code: 'lease_lost' })
     const recovered = await store.recoverExpiredLease({
       tenantId: TENANT,
       stepId: 'leased',
-      now: new Date(now.getTime() + 101),
+      now: new Date(now.getTime() + 151),
       decision: 'retry',
       reason: 'worker crashed before controlled effect'
     })
@@ -256,7 +275,7 @@ describeWithPostgres('durable orchestrator PostgreSQL store', () => {
       stepId: 'leased',
       workerId: 'reused-worker',
       expectedGoalVersion: recovered.goal.version,
-      now: new Date(now.getTime() + 101),
+      now: new Date(now.getTime() + 151),
       leaseMs: 100
     })
     expect(second?.lease.leaseToken).not.toBe(first?.lease.leaseToken)
@@ -267,7 +286,7 @@ describeWithPostgres('durable orchestrator PostgreSQL store', () => {
         resultDigest: 'stale',
         reason: 'stale worker',
         approvalId: null,
-        now: new Date(now.getTime() + 101),
+        now: new Date(now.getTime() + 151),
         modelCalls: 0,
         toolCalls: 1,
         costUsd: 0
@@ -279,14 +298,20 @@ describeWithPostgres('durable orchestrator PostgreSQL store', () => {
       resultDigest: 'fresh',
       reason: 'fresh worker',
       approvalId: null,
-      now: new Date(now.getTime() + 102),
+      now: new Date(now.getTime() + 152),
       modelCalls: 0,
       toolCalls: 1,
-      costUsd: 0.01
+      costUsd: 0.01,
+      observation: {
+        kind: 'step_result',
+        resultDigest: 'fresh',
+        evidence: []
+      }
     })
     expect(settled.goal.budget.usage.steps).toBe(2)
     expect(settled.goal.budget.usage.toolCalls).toBe(1)
     expect(await store.listAttempts(TENANT, 'leased')).toHaveLength(2)
+    expect(await store.listObservations(TENANT, goal.id)).toHaveLength(1)
 
     await expect(
       store.transitionGoal({
@@ -297,5 +322,28 @@ describeWithPostgres('durable orchestrator PostgreSQL store', () => {
         reason: 'stale CAS'
       })
     ).rejects.toMatchObject({ code: 'conflict' })
+  })
+
+  it('persists the iteration guard and observation in PostgreSQL', async () => {
+    const goal = await store.createGoal({
+      ...createGoalInput(),
+      budget: { maxIterations: 1 }
+    })
+    const first = await store.consumeIteration({
+      tenantId: TENANT,
+      goalId: goal.id,
+      expectedVersion: goal.version,
+      now: new Date('2026-09-15T12:05:00.000Z')
+    })
+    expect(first.budget.usage.iterations).toBe(1)
+    const restarted = await store.getGoal(TENANT, goal.id)
+    const stopped = await store.consumeIteration({
+      tenantId: TENANT,
+      goalId: goal.id,
+      expectedVersion: restarted!.version,
+      now: new Date('2026-09-15T12:05:01.000Z')
+    })
+    expect(stopped.status).toBe('LOOP_DETECTED')
+    expect(stopped.budget.usage.iterations).toBe(1)
   })
 })

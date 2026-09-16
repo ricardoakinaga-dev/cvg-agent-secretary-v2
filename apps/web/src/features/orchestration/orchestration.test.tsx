@@ -26,11 +26,19 @@ const goal = (
   budget: {
     maxSteps: 12,
     maxReplans: 3,
+    maxIterations: 16,
     maxModelCalls: 8,
     maxToolCalls: 10,
     maxDurationMs: 120000,
     maxCostUsd: 2,
-    usage: { steps: 1, replans: 0, modelCalls: 1, toolCalls: 0, costUsd: 0 }
+    usage: {
+      steps: 1,
+      replans: 0,
+      iterations: 1,
+      modelCalls: 1,
+      toolCalls: 0,
+      costUsd: 0
+    }
   },
   ...overrides
 })
@@ -46,6 +54,24 @@ const detail: OrchestrationGoalDetailView = {
     toolVersions: {}
   },
   replanCount: 0,
+  operatorState: {
+    state: 'COMPLETED',
+    reason: 'synthetic_plan',
+    error: null,
+    deadline: null,
+    deadlineExpired: false,
+    activePlanVersion: 1,
+    currentStepId: null,
+    currentStepStatus: null,
+    leaseOwner: null,
+    leaseUntil: null,
+    approvalId: 'approval_fixture_1',
+    handoffRequired: false,
+    evidenceCount: 0,
+    verifiedEvidenceCount: 0,
+    lastObservationAt: null,
+    lastEvaluation: null
+  },
   plans: [
     {
       id: 'plan_fixture_1',

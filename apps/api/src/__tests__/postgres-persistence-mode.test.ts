@@ -43,6 +43,14 @@ const testDatabaseUrl = process.env.TEST_DATABASE_URL
 const postgresTenantA = 'tenant_00000000-0000-4000-8000-000000000081'
 const postgresTenantB = 'tenant_00000000-0000-4000-8000-000000000082'
 const postgresInboundAgent = 'agent_00000000-0000-4000-8000-000000000081'
+const orchestratorTables = [
+  'orchestrator_goals',
+  'orchestrator_plans',
+  'orchestrator_steps',
+  'orchestrator_attempts',
+  'orchestrator_observations',
+  'orchestrator_evaluations'
+] as const
 
 const trustedProductionIdentity = () => ({
   operatorId: 'fixture.production',
@@ -218,7 +226,10 @@ describe('api PostgreSQL persistence mode', () => {
       '0015_runtime_approval_store',
       '0016_runtime_continuation_trace',
       '0017_runtime_audit_chain',
-      '0018_outbox_lease_fencing'
+      '0018_outbox_lease_fencing',
+      '0019_orchestrator_state',
+      '0020_orchestrator_lineage_hardening',
+      '0021_orchestrator_iteration_budget'
     ] as const
     const rows: Array<{
       version: string
@@ -240,9 +251,19 @@ describe('api PostgreSQL persistence mode', () => {
       })
     }
     const client: PostgresQueryable = {
-      async query<T extends QueryResultRow = QueryResultRow>(): Promise<
-        QueryResult<T>
-      > {
+      async query<T extends QueryResultRow = QueryResultRow>(
+        text: string,
+        values?: unknown[]
+      ): Promise<QueryResult<T>> {
+        if (text.includes('FROM schema_migrations')) {
+          expect(values?.[0]).toEqual(
+            expect.arrayContaining([
+              '0019_orchestrator_state',
+              '0020_orchestrator_lineage_hardening',
+              '0021_orchestrator_iteration_budget'
+            ])
+          )
+        }
         return queryResult(rows) as unknown as QueryResult<T>
       }
     }
@@ -606,6 +627,7 @@ describe('api PostgreSQL persistence mode', () => {
       ): Promise<QueryResult<T>> {
         const names = (values?.[0] as string[] | undefined) ?? []
         if (text.includes('FROM pg_class') && !text.includes('pg_attribute')) {
+          expect(names).toEqual(expect.arrayContaining([...orchestratorTables]))
           return queryResult(
             names.map((relname) => ({
               relname,
@@ -630,7 +652,13 @@ describe('api PostgreSQL persistence mode', () => {
               table_name === 'journey_patient_drafts' ||
               table_name === 'journey_appointment_drafts' ||
               table_name === 'runtime_approvals' ||
-              table_name === 'runtime_audit_events'
+              table_name === 'runtime_audit_events' ||
+              table_name === 'orchestrator_goals' ||
+              table_name === 'orchestrator_plans' ||
+              table_name === 'orchestrator_steps' ||
+              table_name === 'orchestrator_attempts' ||
+              table_name === 'orchestrator_observations' ||
+              table_name === 'orchestrator_evaluations'
                 ? []
                 : [
                     { table_name, column_name: 'tenant_isolation_quarantined' }
@@ -646,6 +674,15 @@ describe('api PostgreSQL persistence mode', () => {
                 : []),
               ...(table_name === 'outbox_effects'
                 ? [{ table_name, column_name: 'result_protection_version' }]
+                : []),
+              ...(table_name === 'effect_journal' ||
+              table_name === 'outbox_events'
+                ? [
+                    { table_name, column_name: 'orchestration_goal_id' },
+                    { table_name, column_name: 'orchestration_plan_id' },
+                    { table_name, column_name: 'orchestration_step_id' },
+                    { table_name, column_name: 'orchestration_attempt_id' }
+                  ]
                 : [])
             ])
           ) as unknown as QueryResult<T>
@@ -680,7 +717,13 @@ describe('api PostgreSQL persistence mode', () => {
               tablename === 'journey_patient_drafts' ||
               tablename === 'journey_appointment_drafts' ||
               tablename === 'runtime_approvals' ||
-              tablename === 'runtime_audit_events'
+              tablename === 'runtime_audit_events' ||
+              tablename === 'orchestrator_goals' ||
+              tablename === 'orchestrator_plans' ||
+              tablename === 'orchestrator_steps' ||
+              tablename === 'orchestrator_attempts' ||
+              tablename === 'orchestrator_observations' ||
+              tablename === 'orchestrator_evaluations'
                 ? "tenant_id = NULLIF(current_setting('cvg.tenant_id', true), '')"
                 : "tenant_isolation_quarantined = false AND tenant_id = NULLIF(current_setting('cvg.tenant_id', true), '')",
             with_check:
@@ -693,7 +736,13 @@ describe('api PostgreSQL persistence mode', () => {
               tablename === 'journey_patient_drafts' ||
               tablename === 'journey_appointment_drafts' ||
               tablename === 'runtime_approvals' ||
-              tablename === 'runtime_audit_events'
+              tablename === 'runtime_audit_events' ||
+              tablename === 'orchestrator_goals' ||
+              tablename === 'orchestrator_plans' ||
+              tablename === 'orchestrator_steps' ||
+              tablename === 'orchestrator_attempts' ||
+              tablename === 'orchestrator_observations' ||
+              tablename === 'orchestrator_evaluations'
                 ? "tenant_id = NULLIF(current_setting('cvg.tenant_id', true), '')"
                 : "tenant_isolation_quarantined = false AND tenant_id = NULLIF(current_setting('cvg.tenant_id', true), '')"
           }))
@@ -1269,6 +1318,12 @@ describe('api PostgreSQL persistence mode', () => {
         'journey_appointment_drafts',
         'runtime_approvals',
         'runtime_audit_events',
+        'orchestrator_goals',
+        'orchestrator_plans',
+        'orchestrator_steps',
+        'orchestrator_attempts',
+        'orchestrator_observations',
+        'orchestrator_evaluations',
         'platform_agents',
         'platform_agent_versions',
         'platform_test_runs',
