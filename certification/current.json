@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "kind": "current-certification-pointer",
+  "phase": "11",
+  "authority": "certification/phase11",
+  "certificationId": "phase11-97c31146053f9e5b-mu4pxe3r",
+  "candidateId": "97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+  "commit": "8c87e825316acf537fbc750a7b41c9e185bfae59",
+  "treeHash": "5bd92e8ac7132298708c51dfc9e6ec84c686be3b0c21d4932b183f1ebebaf85a",
+  "branch": "main",
+  "updatedAt": "2026-09-16T23:35:11.278Z",
+  "result": "certification/phase11/phase11-result.json",
+  "manifest": "certification/phase11/manifest.json",
+  "resultSha256": "97c1eba8c282cf199a3ff1d888290c339905d3583cd80b86f5b75e7322366ff3",
+  "manifestSha256": "038c54176a2aefa1285cec4008921aeafd6a4a8228c61bfd518cfe8078db4892",
+  "historicalPhase10": {
+    "package": "certification/logs/historical/2026-09-11-phase10",
+    "verifier": "npm run certification:verify:historical",
+    "doesNotQualifyCurrent": true
+  }
+}

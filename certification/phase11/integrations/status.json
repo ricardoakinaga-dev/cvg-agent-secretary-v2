@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "kind": "phase11-integration-report",
+  "certificationId": "phase11-97c31146053f9e5b-mu4pxe3r",
+  "candidateCommit": "8c87e825316acf537fbc750a7b41c9e185bfae59",
+  "generatedAt": "2026-09-16T23:35:11.074Z",
+  "mode": "CONTROLLED_LOCAL",
+  "realEffects": false,
+  "realData": false,
+  "statuses": {
+    "modelProvider": "NOT_VALIDATED",
+    "channel": "NOT_VALIDATED",
+    "externalIdentity": "NOT_VALIDATED",
+    "institutionalRag": "NOT_VALIDATED",
+    "rpoRto": "NOT_VALIDATED",
+    "pilot": "NOT_VALIDATED",
+    "rollback": "NOT_VALIDATED",
+    "humanSignoff": "PENDING",
+    "notes": [
+      "No real provider credentials, channels, IdP or human approval were available in this environment.",
+      "Recorded as NOT_VALIDATED/PENDING; the mechanical decision must remain CONDITIONAL_GO at best."
+    ]
+  },
+  "provider": {
+    "status": "NOT_VALIDATED",
+    "evidence": null
+  },
+  "channel": {
+    "status": "NOT_VALIDATED",
+    "evidence": null
+  },
+  "externalIdentity": {
+    "status": "NOT_VALIDATED",
+    "evidence": null
+  },
+  "institutionalRag": {
+    "status": "NOT_VALIDATED",
+    "evidence": null
+  },
+  "rpoRto": {
+    "status": "NOT_VALIDATED",
+    "evidence": null
+  },
+  "pilot": {
+    "status": "NOT_VALIDATED",
+    "evidence": null
+  },
+  "rollback": {
+    "status": "NOT_VALIDATED",
+    "evidence": null
+  },
+  "humanSignoff": {
+    "status": "PENDING",
+    "evidence": null
+  },
+  "staticUnavailable": {
+    "codeql": {
+      "status": "NOT_EXECUTED",
+      "reason": "CI-hosted check not run locally"
+    },
+    "gitleaks": {
+      "status": "NOT_EXECUTED",
+      "reason": "CI-hosted check not run locally"
+    }
+  },
+  "notes": [
+    "No real provider, channel, identity, RAG, pilot or production system was contacted.",
+    "External statuses are qualification inputs, not local proof of authority."
+  ]
+}

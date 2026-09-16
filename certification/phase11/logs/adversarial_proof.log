@@ -1,0 +1,82 @@
+$ node scripts/phase11-2-redteam.mjs --suite=all
+# certificationId=phase11-97c31146053f9e5b-mu4pxe3r
+# candidateId=97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf
+# commit=8c87e825316acf537fbc750a7b41c9e185bfae59
+# treeHash=5bd92e8ac7132298708c51dfc9e6ec84c686be3b0c21d4932b183f1ebebaf85a
+# gate=adversarial_proof
+# profile=CONTROLLED_LOCAL
+# databaseConfigured=false
+# realEffects=disabled
+# exitCode=0 durationMs=91
+
+{
+  "schemaVersion": 1,
+  "kind": "phase11-2-redteam",
+  "suite": "all",
+  "status": "PASS",
+  "syntheticOnly": true,
+  "checks": [
+    {
+      "id": "FALSE-GO-SCORES-100-MANDATORY-FAIL",
+      "status": "PASS"
+    },
+    {
+      "id": "NOT-EXECUTED-BLOCKS-GO",
+      "status": "PASS"
+    },
+    {
+      "id": "DIRTY-CANDIDATE-BLOCKS",
+      "status": "PASS"
+    },
+    {
+      "id": "PROFILE-ESCALATION-BLOCKS",
+      "status": "PASS"
+    },
+    {
+      "id": "NONZERO-PASS-BLOCKS",
+      "status": "PASS"
+    },
+    {
+      "id": "SIXTEEN-INVARIANTS-REQUIRED",
+      "status": "PASS"
+    },
+    {
+      "id": "TRACE-STAGES-COMPLETE",
+      "status": "PASS"
+    },
+    {
+      "id": "TRACE-ORDER-COMPLETE",
+      "status": "PASS"
+    },
+    {
+      "id": "MODEL-CANNOT-GRANT-AUTHORITY",
+      "status": "PASS"
+    },
+    {
+      "id": "CONTROLLED-KERNEL-HAS-NO-REAL-CAPABILITIES",
+      "status": "PASS"
+    },
+    {
+      "id": "TENANT-SCOPE-IS-EXPLICIT",
+      "status": "PASS"
+    },
+    {
+      "id": "OUTBOX-REPLAY-REVALIDATES",
+      "status": "PASS"
+    },
+    {
+      "id": "CANONICAL-PACKAGE-NOT-IGNORED",
+      "status": "PASS"
+    },
+    {
+      "id": "DEFAULT-COMMANDS-EXIST",
+      "status": "PASS"
+    },
+    {
+      "id": "PROMPT-SIX-SOURCE-INTEGRITY",
+      "status": "PASS"
+    }
+  ]
+}
+
+

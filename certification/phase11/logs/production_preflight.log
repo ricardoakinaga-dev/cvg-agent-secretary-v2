@@ -1,0 +1,228 @@
+$ node scripts/production-preflight.mjs --profile=PRODUCTION --expect=REJECT
+# certificationId=phase11-97c31146053f9e5b-mu4pxe3r
+# candidateId=97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf
+# commit=8c87e825316acf537fbc750a7b41c9e185bfae59
+# treeHash=5bd92e8ac7132298708c51dfc9e6ec84c686be3b0c21d4932b183f1ebebaf85a
+# gate=production_preflight
+# profile=CONTROLLED_LOCAL
+# databaseConfigured=false
+# realEffects=disabled
+# exitCode=0 durationMs=31
+
+{
+  "schemaVersion": 1,
+  "kind": "production-preflight",
+  "profile": "PRODUCTION",
+  "status": "PASS",
+  "actualStatus": "FAIL",
+  "expected": "REJECT",
+  "sideEffects": false,
+  "checks": [
+    {
+      "id": "profile.production",
+      "status": "PASS",
+      "detail": "profile=PRODUCTION; production preflight is only authoritative for PRODUCTION"
+    },
+    {
+      "id": "runtime.node_env",
+      "status": "FAIL",
+      "detail": "NODE_ENV must be production"
+    },
+    {
+      "id": "runtime.persistence",
+      "status": "FAIL",
+      "detail": "API_PERSISTENCE_MODE=postgres is required; memory persistence is forbidden"
+    },
+    {
+      "id": "runtime.database",
+      "status": "FAIL",
+      "detail": "DATABASE_URL must be a non-empty PostgreSQL URL"
+    },
+    {
+      "id": "runtime.migration_database",
+      "status": "FAIL",
+      "detail": "DATABASE_MIGRATION_URL must be a separate PostgreSQL migration URL"
+    },
+    {
+      "id": "runtime.rls",
+      "status": "FAIL",
+      "detail": "POSTGRES_RLS_ENFORCEMENT=true is required"
+    },
+    {
+      "id": "runtime.no_auto_migrate",
+      "status": "FAIL",
+      "detail": "production requires explicit migrations; POSTGRES_AUTO_MIGRATE=false"
+    },
+    {
+      "id": "runtime.worker_runtime",
+      "status": "FAIL",
+      "detail": "CVG_WORKER_RUNTIME=kernel is required; legacy published-agent is forbidden"
+    },
+    {
+      "id": "runtime.durable_kernel",
+      "status": "FAIL",
+      "detail": "CVG_DURABLE_KERNEL_ORCHESTRATOR=true is required"
+    },
+    {
+      "id": "runtime.durable_queue",
+      "status": "FAIL",
+      "detail": "a PostgreSQL worker queue adapter is required"
+    },
+    {
+      "id": "runtime.durable_inbound",
+      "status": "FAIL",
+      "detail": "OUTBOX_DURABLE_INBOUND=true is required"
+    },
+    {
+      "id": "identity.inbound_tenant",
+      "status": "FAIL",
+      "detail": "trusted INBOUND_TENANT_ID is required"
+    },
+    {
+      "id": "identity.inbound_agent",
+      "status": "FAIL",
+      "detail": "trusted INBOUND_AGENT_ID is required"
+    },
+    {
+      "id": "identity.worker_tenant",
+      "status": "FAIL",
+      "detail": "trusted CVG_WORKER_TENANT_ID is required"
+    },
+    {
+      "id": "identity.worker_agent",
+      "status": "FAIL",
+      "detail": "trusted CVG_WORKER_AGENT_ID is required"
+    },
+    {
+      "id": "security.webhook_secret",
+      "status": "FAIL",
+      "detail": "WEBHOOK_SIGNING_SECRET must be a non-placeholder secret of at least 32 characters"
+    },
+    {
+      "id": "security.provider_secret",
+      "status": "FAIL",
+      "detail": "provider secret must be explicitly configured and non-placeholder"
+    },
+    {
+      "id": "security.origins",
+      "status": "FAIL",
+      "detail": "API_ALLOWED_ORIGINS must contain an HTTPS origin allowlist"
+    },
+    {
+      "id": "security.https",
+      "status": "FAIL",
+      "detail": "API_REQUIRE_HTTPS=true is required"
+    },
+    {
+      "id": "governance.policy",
+      "status": "FAIL",
+      "detail": "CVG_POLICY_MODE=deny_by_default is required"
+    },
+    {
+      "id": "governance.risk",
+      "status": "FAIL",
+      "detail": "CVG_RISK_POLICY=required is required"
+    },
+    {
+      "id": "governance.approval_store",
+      "status": "FAIL",
+      "detail": "CVG_APPROVAL_STORE=postgres is required"
+    },
+    {
+      "id": "governance.effect_journal",
+      "status": "FAIL",
+      "detail": "CVG_EFFECT_JOURNAL=postgres is required"
+    },
+    {
+      "id": "governance.migrations",
+      "status": "FAIL",
+      "detail": "CVG_MIGRATIONS_APPLIED_AT_LEAST must be >= 22; database state is not inferred"
+    },
+    {
+      "id": "governance.no_unrestricted_effects",
+      "status": "PASS",
+      "detail": "unrestricted real effects are forbidden; use governed effect adapters"
+    },
+    {
+      "id": "external.provider",
+      "status": "FAIL",
+      "detail": "CVG_EXTERNAL_PROVIDER_APPROVED=true is required; a declaration is not evidence of validation"
+    },
+    {
+      "id": "external.channel",
+      "status": "FAIL",
+      "detail": "CVG_EXTERNAL_CHANNEL_APPROVED=true is required; a declaration is not evidence of validation"
+    },
+    {
+      "id": "external.identity",
+      "status": "FAIL",
+      "detail": "CVG_EXTERNAL_IDENTITY_APPROVED=true is required; a declaration is not evidence of validation"
+    },
+    {
+      "id": "external.rag",
+      "status": "FAIL",
+      "detail": "CVG_EXTERNAL_RAG_APPROVED=true is required; a declaration is not evidence of validation"
+    },
+    {
+      "id": "external.rpo_rto",
+      "status": "FAIL",
+      "detail": "CVG_RPO_RTO_MEASURED=true is required; a declaration is not evidence of validation"
+    },
+    {
+      "id": "external.pilot",
+      "status": "FAIL",
+      "detail": "CVG_SUPERVISED_PILOT_COMPLETE=true is required; a declaration is not evidence of validation"
+    },
+    {
+      "id": "external.rollback",
+      "status": "FAIL",
+      "detail": "CVG_ROLLBACK_VERIFIED=true is required; a declaration is not evidence of validation"
+    },
+    {
+      "id": "external.human_signoff",
+      "status": "FAIL",
+      "detail": "CVG_HUMAN_SIGNOFF=true is required; a declaration is not evidence of validation"
+    },
+    {
+      "id": "source.migrations_present",
+      "status": "PASS",
+      "detail": "required orchestrator migration sources must be present"
+    }
+  ],
+  "blocking": [
+    "runtime.node_env",
+    "runtime.persistence",
+    "runtime.database",
+    "runtime.migration_database",
+    "runtime.rls",
+    "runtime.no_auto_migrate",
+    "runtime.worker_runtime",
+    "runtime.durable_kernel",
+    "runtime.durable_queue",
+    "runtime.durable_inbound",
+    "identity.inbound_tenant",
+    "identity.inbound_agent",
+    "identity.worker_tenant",
+    "identity.worker_agent",
+    "security.webhook_secret",
+    "security.provider_secret",
+    "security.origins",
+    "security.https",
+    "governance.policy",
+    "governance.risk",
+    "governance.approval_store",
+    "governance.effect_journal",
+    "governance.migrations",
+    "external.provider",
+    "external.channel",
+    "external.identity",
+    "external.rag",
+    "external.rpo_rto",
+    "external.pilot",
+    "external.rollback",
+    "external.human_signoff"
+  ],
+  "note": "Negative-validation mode passes only when unsafe production configuration is rejected."
+}
+
+

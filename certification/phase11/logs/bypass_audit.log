@@ -1,0 +1,26 @@
+$ node scripts/phase11-bypass-audit.mjs
+# certificationId=phase11-97c31146053f9e5b-mu4pxe3r
+# candidateId=97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf
+# commit=8c87e825316acf537fbc750a7b41c9e185bfae59
+# treeHash=5bd92e8ac7132298708c51dfc9e6ec84c686be3b0c21d4932b183f1ebebaf85a
+# gate=bypass_audit
+# profile=CONTROLLED_LOCAL
+# databaseConfigured=false
+# realEffects=disabled
+# exitCode=0 durationMs=39
+
+{
+  "schemaVersion": 1,
+  "kind": "phase11-bypass-audit",
+  "status": "PASS",
+  "scannedFiles": 47,
+  "findings": [],
+  "allowedEffectBoundaries": [
+    "packages/channel-gateway/src/adapters/",
+    "packages/model-gateway/src/providers/",
+    "packages/adapters/src/fake/"
+  ],
+  "note": "Application and worker entrypoints must route through the governed kernel; adapter implementations are the only outbound boundary."
+}
+
+

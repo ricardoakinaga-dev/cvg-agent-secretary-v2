@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "phase": "11",
+  "kind": "phase11-release-manifest",
+  "certificationId": "phase11-97c31146053f9e5b-mu4pxe3r",
+  "candidate": {
+    "candidateId": "97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+    "commit": "8c87e825316acf537fbc750a7b41c9e185bfae59",
+    "treeHash": "5bd92e8ac7132298708c51dfc9e6ec84c686be3b0c21d4932b183f1ebebaf85a",
+    "branch": "main"
+  },
+  "buildId": null,
+  "containerDigest": null,
+  "sbomDigest": "79166cb9b741358921fe792de65e11aae876b8e35334b04e46115c85c47c5b11",
+  "migrationDigest": null,
+  "agentVersion": "1.0.0",
+  "policyVersion": null,
+  "promptVersions": {
+    "pasted-text-1.txt": "ba522e3f9daf37af0a4c754f85eaeb2b78e8376d3bfca6405ac7e414d00f7a70",
+    "pasted-text-2.txt": "98e1a22274dee5d206797917b3d8c6b25a7beed6e1651d96e9a54fa3fe1a5371",
+    "pasted-text-3.txt": "af86835e3773c21268d397be55df1abbab0d8b02b660a2fb546f896ae649a3db",
+    "pasted-text-4.txt": "d15c7ad503e8faacf793298867d450672c5aae23b2e194923aeaec7bec8cda0e",
+    "pasted-text-5.txt": "47ad18efd05aa5802d0cda4a4160bded5db02c8860e07a2bdfaca394f98e95c9",
+    "pasted-text-6.txt": "e12e76dcb447278d3a03fde39df877722265a39f0a2c82fa9b1928f023571cc9"
+  },
+  "toolVersions": {
+    "node": "22.23.2",
+    "npm": "10.9.8"
+  },
+  "integrationEvidence": {
+    "mode": "CONTROLLED_LOCAL",
+    "realEffects": false,
+    "report": "certification/phase11/integration-report.json",
+    "externalGates": {
+      "modelProvider": "NOT_VALIDATED",
+      "channel": "NOT_VALIDATED",
+      "externalIdentity": "NOT_VALIDATED",
+      "institutionalRag": "NOT_VALIDATED",
+      "rpoRto": "NOT_VALIDATED",
+      "pilot": "NOT_VALIDATED",
+      "rollback": "NOT_VALIDATED",
+      "humanSignoff": "PENDING",
+      "notes": [
+        "No real provider credentials, channels, IdP or human approval were available in this environment.",
+        "Recorded as NOT_VALIDATED/PENDING; the mechanical decision must remain CONDITIONAL_GO at best."
+      ]
+    }
+  },
+  "requestedProfile": "STAGING",
+  "deploymentProfile": "CONTROLLED_LOCAL",
+  "productionAuthority": "DENIED_UNLESS_EXTERNAL_PROOF_AND_SIGNOFF",
+  "noProductionDeployment": true
+}

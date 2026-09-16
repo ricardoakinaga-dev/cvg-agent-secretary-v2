@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "kind": "phase11-baseline",
+  "runId": "PHASE11.1-FORMAL-CLOSURE-20260915",
+  "capturedAt": "2026-09-16T02:10:20Z",
+  "candidate": {
+    "head": "2625606ad4e743bf5609434be868c92ca82ab95f",
+    "treeHash": "6010d5f8cd1405b4d6c2c7587e59a6f8f960f7c1",
+    "branch": "main",
+    "dirty": true,
+    "candidateId": "c0ec24335dbb0549c0ae8a868238ab9b443423d1a0894e7e9539dfc04923a3ff",
+    "fileCount": 952,
+    "untrackedScope": [
+      "docs/11_phase11/prompt-master/20260915-formal-closure/"
+    ]
+  },
+  "fingerprint": {
+    "algorithm": "sha256-v1",
+    "scope": "artifact",
+    "digest": "6a944df29f3aa45560f3feede49011d282be5399eebb1fe3c35de415c47d6da1",
+    "source": "gauntlet_state.py fingerprint --repo /home/ricardo/cvg-agent-secretary-v2"
+  },
+  "environment": {
+    "nodeObserved": "24.20.0",
+    "nodeQualifiedAvailable": "22.23.2",
+    "testDatabaseUrl": "UNSET",
+    "dockerBinary": "AVAILABLE",
+    "dockerDaemon": "NOT_RUN"
+  },
+  "currentCertificationBeforeBuild": {
+    "rootPhase11Result": true,
+    "rootPhase11Manifest": true,
+    "canonicalPhase11Directory": false,
+    "currentPointer": false,
+    "legacyPromptExpectedCount": 14,
+    "formalClosurePromptCount": 5
+  },
+  "checks": {
+    "node22Typecheck": "PASS",
+    "phase11CertificationUnit": "PASS",
+    "realPostgres": "NOT_RUN"
+  },
+  "limitations": [
+    "This is a pre-BUILD baseline; the dirty state is expected because the exact prompt intake and control documents were just registered.",
+    "No external provider, channel, identity, institutional RAG, pilot, production deployment or real data/effect was accessed."
+  ]
+}

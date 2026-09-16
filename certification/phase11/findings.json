@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "kind": "phase11-findings",
+  "certificationId": "phase11-97c31146053f9e5b-mu4pxe3r",
+  "candidateCommit": "8c87e825316acf537fbc750a7b41c9e185bfae59",
+  "generatedAt": "2026-09-16T23:35:11.191Z",
+  "findings": {
+    "P0": [],
+    "P1": [
+      {
+        "id": "AUD-11-01",
+        "title": "Canonical Phase 11 package and pointer",
+        "description": "The current certification source of truth must be visible and complete.",
+        "status": "CLOSED",
+        "severity": "P1",
+        "blocking": true,
+        "rootCause": "Canonical output was previously ignored and not bound to the default branch.",
+        "fix": "Track the namespaced package and seal the current pointer after evidence generation.",
+        "testRefs": [
+          "tests/phase11-2-certification.test.js"
+        ],
+        "evidenceRefs": [
+          "certification/phase11/manifest.json",
+          "certification/phase11/phase11-result.json"
+        ],
+        "blockingProfiles": [
+          "STAGING",
+          "SUPERVISED_PILOT",
+          "PRODUCTION"
+        ],
+        "evidence": [
+          "certification/phase11/manifest.json",
+          "certification/phase11/phase11-result.json"
+        ],
+        "remainingRisk": "No known residual risk in the controlled scope."
+      }
+    ],
+    "P2": [
+      {
+        "id": "AUD-11-02",
+        "title": "Candidate binding and descendant reanchor",
+        "description": "A package commit may follow the source anchor only when the behavior scope is unchanged.",
+        "status": "CLOSED",
+        "severity": "P2",
+        "blocking": true,
+        "rootCause": "Git tree identity and behavior candidate identity were conflated.",
+        "fix": "Bind the certificate to the source commit plus a stable behavior-scope hash and accept only descendants.",
+        "testRefs": [
+          "tests/phase11-2-certification.test.js"
+        ],
+        "evidenceRefs": [
+          "certification/current.json",
+          "certification/phase11/manifest.json",
+          "certification/phase11/evidence-graph.json"
+        ],
+        "blockingProfiles": [
+          "STAGING",
+          "SUPERVISED_PILOT",
+          "PRODUCTION"
+        ],
+        "evidence": [
+          "certification/current.json",
+          "certification/phase11/manifest.json",
+          "certification/phase11/evidence-graph.json"
+        ],
+        "remainingRisk": "No known residual risk in the controlled scope."
+      },
+      {
+        "id": "AUD-11-03",
+        "title": "Replan proof and parent lineage",
+        "description": "A failed or conflicting step must produce a new plan without overwriting prior evidence or replaying effects.",
+        "status": "CLOSED",
+        "severity": "P2",
+        "blocking": true,
+        "rootCause": "Replan safety depends on durable observation/evaluation and parent-plan links.",
+        "fix": "Persist the evaluation and replan lineage through the runtime and PostgreSQL stores.",
+        "testRefs": [
+          "packages/agent-runtime/src/__tests__/orchestration.test.ts"
+        ],
+        "evidenceRefs": [
+          "certification/phase11/recovery-report.json"
+        ],
+        "blockingProfiles": [
+          "STAGING",
+          "SUPERVISED_PILOT",
+          "PRODUCTION"
+        ],
+        "evidence": [
+          "certification/phase11/recovery-report.json"
+        ],
+        "remainingRisk": "No known residual risk in the controlled scope."
+      },
+      {
+        "id": "AUD-11-04",
+        "title": "Loop, budget and restart controls",
+        "description": "Semantic cycles and cumulative limits must stop safely and survive restart.",
+        "status": "CLOSED",
+        "severity": "P2",
+        "blocking": true,
+        "rootCause": "Autonomous iteration can be unsafe if usage is reset or only wall-clock bounded.",
+        "fix": "Persist iteration and usage counters and terminate with explicit safe states.",
+        "testRefs": [
+          "packages/agent-runtime/src/__tests__/runtime-limits.test.ts"
+        ],
+        "evidenceRefs": [
+          "certification/phase11/recovery-report.json",
+          "certification/phase11/eval-report.json"
+        ],
+        "blockingProfiles": [
+          "STAGING",
+          "SUPERVISED_PILOT",
+          "PRODUCTION"
+        ],
+        "evidence": [
+          "certification/phase11/recovery-report.json",
+          "certification/phase11/eval-report.json"
+        ],
+        "remainingRisk": "No known residual risk in the controlled scope."
+      },
+      {
+        "id": "AUD-11-05",
+        "title": "Stale worker and distributed fencing",
+        "description": "A worker that loses its lease must not settle current work.",
+        "status": "CLOSED",
+        "severity": "P2",
+        "blocking": true,
+        "rootCause": "Distributed claims require lease versions and compare-and-swap settlement.",
+        "fix": "Enforce current lease token/version on claim, heartbeat and settlement paths.",
+        "testRefs": [
+          "packages/persistence/src/__tests__/orchestrator-postgres.test.ts"
+        ],
+        "evidenceRefs": [
+          "certification/phase11/postgres-report.json",
+          "certification/phase11/recovery-report.json"
+        ],
+        "blockingProfiles": [
+          "STAGING",
+          "SUPERVISED_PILOT",
+          "PRODUCTION"
+        ],
+        "evidence": [
+          "certification/phase11/postgres-report.json",
+          "certification/phase11/recovery-report.json"
+        ],
+        "remainingRisk": "No known residual risk in the controlled scope."
+      },
+      {
+        "id": "AUD-11-06",
+        "title": "Crash-after-effect and unknown-effect reconciliation",
+        "description": "Ambiguous external effects must remain unresolved until reconciled and never blindly retry.",
+        "status": "CLOSED",
+        "severity": "P2",
+        "blocking": true,
+        "rootCause": "A process crash can occur after the provider effect and before acknowledgement.",
+        "fix": "Use the durable effect journal, idempotency scope and explicit reconciliation/handoff states.",
+        "testRefs": [
+          "packages/persistence/src/__tests__/effect-journal-postgres.test.ts"
+        ],
+        "evidenceRefs": [
+          "certification/phase11/postgres-report.json",
+          "certification/phase11/chaos-report.json"
+        ],
+        "blockingProfiles": [
+          "STAGING",
+          "SUPERVISED_PILOT",
+          "PRODUCTION"
+        ],
+        "evidence": [
+          "certification/phase11/postgres-report.json",
+          "certification/phase11/chaos-report.json"
+        ],
+        "remainingRisk": "No known residual risk in the controlled scope."
+      },
+      {
+        "id": "AUD-11-07",
+        "title": "End-to-end trace and evidence lineage",
+        "description": "Inbound through response must be reconstructable with redacted safe attributes.",
+        "status": "CLOSED",
+        "severity": "P2",
+        "blocking": true,
+        "rootCause": "Operator evidence needs an explicit stage graph in addition to source references.",
+        "fix": "Emit the required runtime stage chain and bind it to artifacts, gates and invariants.",
+        "testRefs": [
+          "apps/api/src/__tests__/orchestration-observability.test.ts"
+        ],
+        "evidenceRefs": [
+          "certification/phase11/evidence-graph.json",
+          "certification/phase11/trace-report.json"
+        ],
+        "blockingProfiles": [
+          "STAGING",
+          "SUPERVISED_PILOT",
+          "PRODUCTION"
+        ],
+        "evidence": [
+          "certification/phase11/evidence-graph.json",
+          "certification/phase11/trace-report.json"
+        ],
+        "remainingRisk": "No known residual risk in the controlled scope."
+      }
+    ],
+    "external": [
+      {
+        "id": "AUD-11-08",
+        "title": "External provider, channel, identity, RAG, pilot and release proof",
+        "description": "Production Triple AAA requires authorized real-stack evidence and human release authority.",
+        "status": "PARTIAL",
+        "severity": "EXTERNAL",
+        "blocking": true,
+        "rootCause": "The local task authorizes synthetic controlled verification only.",
+        "fix": "Run separately authorized provider/channel/identity/RAG, RPO/RTO, pilot, rollback and signoff gates.",
+        "testRefs": [],
+        "evidenceRefs": [
+          "certification/external-gates.json",
+          "certification/phase11/integration-report.json"
+        ],
+        "blockingProfiles": [
+          "SUPERVISED_PILOT",
+          "PRODUCTION"
+        ],
+        "evidence": [
+          "certification/external-gates.json",
+          "certification/phase11/integration-report.json"
+        ],
+        "remainingRisk": "Real provider, channel, identity, approved institutional RAG, RPO/RTO, pilot, rollback and human signoff are not proven in this controlled run."
+      }
+    ]
+  }
+}

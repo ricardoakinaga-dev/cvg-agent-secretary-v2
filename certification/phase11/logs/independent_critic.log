@@ -1,0 +1,48 @@
+$ node scripts/phase11-2-evidence-check.mjs --critic
+# certificationId=phase11-97c31146053f9e5b-mu4pxe3r
+# candidateId=97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf
+# commit=8c87e825316acf537fbc750a7b41c9e185bfae59
+# treeHash=5bd92e8ac7132298708c51dfc9e6ec84c686be3b0c21d4932b183f1ebebaf85a
+# gate=independent_critic
+# profile=CONTROLLED_LOCAL
+# databaseConfigured=false
+# realEffects=disabled
+# exitCode=0 durationMs=32
+
+{
+  "schemaVersion": 1,
+  "kind": "phase11-2-evidence-check",
+  "mode": "critic",
+  "status": "PASS",
+  "syntheticOnly": true,
+  "sideEffects": false,
+  "checks": [
+    {
+      "id": "CRITIC:present",
+      "status": "PASS",
+      "detail": "missing"
+    },
+    {
+      "id": "CRITIC:status_pass",
+      "status": "PASS"
+    },
+    {
+      "id": "CRITIC:fresh",
+      "status": "PASS"
+    },
+    {
+      "id": "CRITIC:mutation_sentinel",
+      "status": "PASS"
+    },
+    {
+      "id": "CRITIC:responsive_viewports",
+      "status": "PASS"
+    },
+    {
+      "id": "CRITIC:no_external_fabrication",
+      "status": "PASS"
+    }
+  ]
+}
+
+

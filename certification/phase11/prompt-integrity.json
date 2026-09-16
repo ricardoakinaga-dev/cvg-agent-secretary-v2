@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "kind": "phase11-prompt-integrity",
+  "certificationId": "phase11-97c31146053f9e5b-mu4pxe3r",
+  "candidateCommit": "8c87e825316acf537fbc750a7b41c9e185bfae59",
+  "sourceSet": "phase11_2",
+  "expectedCount": 6,
+  "observedCount": 6,
+  "files": [
+    {
+      "path": "docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-1.txt",
+      "sha256": "ba522e3f9daf37af0a4c754f85eaeb2b78e8376d3bfca6405ac7e414d00f7a70",
+      "expectedSha256": "ba522e3f9daf37af0a4c754f85eaeb2b78e8376d3bfca6405ac7e414d00f7a70",
+      "status": "PASS"
+    },
+    {
+      "path": "docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-2.txt",
+      "sha256": "98e1a22274dee5d206797917b3d8c6b25a7beed6e1651d96e9a54fa3fe1a5371",
+      "expectedSha256": "98e1a22274dee5d206797917b3d8c6b25a7beed6e1651d96e9a54fa3fe1a5371",
+      "status": "PASS"
+    },
+    {
+      "path": "docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-3.txt",
+      "sha256": "af86835e3773c21268d397be55df1abbab0d8b02b660a2fb546f896ae649a3db",
+      "expectedSha256": "af86835e3773c21268d397be55df1abbab0d8b02b660a2fb546f896ae649a3db",
+      "status": "PASS"
+    },
+    {
+      "path": "docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-4.txt",
+      "sha256": "d15c7ad503e8faacf793298867d450672c5aae23b2e194923aeaec7bec8cda0e",
+      "expectedSha256": "d15c7ad503e8faacf793298867d450672c5aae23b2e194923aeaec7bec8cda0e",
+      "status": "PASS"
+    },
+    {
+      "path": "docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-5.txt",
+      "sha256": "47ad18efd05aa5802d0cda4a4160bded5db02c8860e07a2bdfaca394f98e95c9",
+      "expectedSha256": "47ad18efd05aa5802d0cda4a4160bded5db02c8860e07a2bdfaca394f98e95c9",
+      "status": "PASS"
+    },
+    {
+      "path": "docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-6.txt",
+      "sha256": "e12e76dcb447278d3a03fde39df877722265a39f0a2c82fa9b1928f023571cc9",
+      "expectedSha256": "e12e76dcb447278d3a03fde39df877722265a39f0a2c82fa9b1928f023571cc9",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

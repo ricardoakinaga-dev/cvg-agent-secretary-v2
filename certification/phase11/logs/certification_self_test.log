@@ -1,0 +1,56 @@
+$ node scripts/phase11-self-test.mjs
+# certificationId=phase11-97c31146053f9e5b-mu4pxe3r
+# candidateId=97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf
+# commit=8c87e825316acf537fbc750a7b41c9e185bfae59
+# treeHash=5bd92e8ac7132298708c51dfc9e6ec84c686be3b0c21d4932b183f1ebebaf85a
+# gate=certification_self_test
+# profile=CONTROLLED_LOCAL
+# databaseConfigured=false
+# realEffects=disabled
+# exitCode=0 durationMs=88
+
+{
+  "schemaVersion": 1,
+  "kind": "phase11-negative-validation",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "FALSE-GO-SCORES-IRRELEVANT",
+      "status": "PASS"
+    },
+    {
+      "id": "FALSE-GO-PASS-NONZERO",
+      "status": "PASS"
+    },
+    {
+      "id": "FALSE-GO-DUPLICATE-GATE",
+      "status": "PASS"
+    },
+    {
+      "id": "FALSE-GO-DIRTY-CANDIDATE",
+      "status": "PASS"
+    },
+    {
+      "id": "FALSE-PROMOTION-CONTROLLED-TO-PRODUCTION",
+      "status": "PASS"
+    },
+    {
+      "id": "FALSE-PROMOTION-MISSING-SIGNOFF",
+      "status": "PASS"
+    },
+    {
+      "id": "GATE-INTEGRITY",
+      "status": "PASS"
+    },
+    {
+      "id": "PROFILE-ENUM",
+      "status": "PASS"
+    },
+    {
+      "id": "PROMOTION-CHECK-DENY",
+      "status": "PASS"
+    }
+  ]
+}
+
+

@@ -1,0 +1,14 @@
+$ npx tsx scripts/phase10-load.ts --events=10000
+# certificationId=phase11-97c31146053f9e5b-mu4pxe3r
+# candidateId=97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf
+# commit=8c87e825316acf537fbc750a7b41c9e185bfae59
+# treeHash=5bd92e8ac7132298708c51dfc9e6ec84c686be3b0c21d4932b183f1ebebaf85a
+# gate=load
+# profile=CONTROLLED_LOCAL
+# databaseConfigured=false
+# realEffects=disabled
+# exitCode=0 durationMs=16592
+
+{"schemaVersion":1,"kind":"phase10-load-report","generatedAt":"2026-09-16T23:34:54.277Z","scope":"in-memory outbox contract; synthetic payloads; not a production benchmark","events":10000,"workers":2,"enqueueMs":1556.58,"drainMs":14167.26,"totalMs":15725.95,"throughputPerSecond":635.89,"processed":10000,"loss":0,"duplicates":0,"latencyMs":{"p50":1.851,"p95":6.734,"p99":9.915,"max":42.004}}
+
+

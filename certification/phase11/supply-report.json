@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "phase11-supply_chain-report",
+  "certificationId": "phase11-97c31146053f9e5b-mu4pxe3r",
+  "candidateCommit": "8c87e825316acf537fbc750a7b41c9e185bfae59",
+  "generatedAt": "2026-09-16T23:35:11.074Z",
+  "gateId": "supply_chain",
+  "status": "PASS",
+  "command": "npm run sbom && npm run licenses:check",
+  "log": "certification/phase11/logs/supply_chain.log",
+  "source": "certification/license-report.json",
+  "syntheticOnly": true,
+  "raw": {
+    "schemaVersion": 2,
+    "generatedAt": "2026-09-12T20:58:07.616Z",
+    "total": 372,
+    "internalCount": 21,
+    "deniedCount": 0,
+    "unknownCount": 0,
+    "unclassifiedCount": 0,
+    "invalidExceptions": [],
+    "denied": [],
+    "unknown": [],
+    "unclassified": []
+  }
+}

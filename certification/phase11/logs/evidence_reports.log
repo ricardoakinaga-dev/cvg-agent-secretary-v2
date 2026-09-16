@@ -1,0 +1,73 @@
+$ node scripts/phase11-2-evidence-check.mjs --reports
+# certificationId=phase11-97c31146053f9e5b-mu4pxe3r
+# candidateId=97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf
+# commit=8c87e825316acf537fbc750a7b41c9e185bfae59
+# treeHash=5bd92e8ac7132298708c51dfc9e6ec84c686be3b0c21d4932b183f1ebebaf85a
+# gate=evidence_reports
+# profile=CONTROLLED_LOCAL
+# databaseConfigured=false
+# realEffects=disabled
+# exitCode=0 durationMs=31
+
+{
+  "schemaVersion": 1,
+  "kind": "phase11-2-evidence-check",
+  "mode": "reports",
+  "status": "PASS",
+  "syntheticOnly": true,
+  "sideEffects": false,
+  "checks": [
+    {
+      "id": "REPORT:docs/phase11/PHASE11_2_DELTA_AUDIT.md",
+      "status": "PASS",
+      "detail": "PARTIAL; synthetic scope declared"
+    },
+    {
+      "id": "REPORT:docs/phase11/PHASE11_FORMAL_CLOSURE.md",
+      "status": "PASS",
+      "detail": "PASS; synthetic scope declared"
+    },
+    {
+      "id": "REPORT:docs/phase11/PHASE11_ORCHESTRATOR_PROOF.md",
+      "status": "PASS",
+      "detail": "PASS; synthetic scope declared"
+    },
+    {
+      "id": "REPORT:docs/phase11/PHASE11_SECURITY_REVIEW.md",
+      "status": "PASS",
+      "detail": "PASS; synthetic scope declared"
+    },
+    {
+      "id": "REPORT:docs/phase11/PHASE11_ADVERSARIAL_REPORT.md",
+      "status": "PASS",
+      "detail": "PASS; synthetic scope declared"
+    },
+    {
+      "id": "REPORT:docs/phase11/PHASE11_RECOVERY_REPORT.md",
+      "status": "PASS",
+      "detail": "PASS; synthetic scope declared"
+    },
+    {
+      "id": "REPORT:docs/phase11/PHASE11_CHAOS_REPORT.md",
+      "status": "PASS",
+      "detail": "PASS; synthetic scope declared"
+    },
+    {
+      "id": "REPORT:docs/phase11/PHASE11_LOAD_REPORT.md",
+      "status": "PASS",
+      "detail": "PASS; synthetic scope declared"
+    },
+    {
+      "id": "REPORT:docs/phase11/PHASE11_INTEGRATION_REPORT.md",
+      "status": "PASS",
+      "detail": "BLOCKED_EXTERNAL; synthetic scope declared"
+    },
+    {
+      "id": "REPORT:docs/phase11/PHASE11_INDEPENDENT_CRITIC.md",
+      "status": "PASS",
+      "detail": "PASS; synthetic scope declared"
+    }
+  ]
+}
+
+

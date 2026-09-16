@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "kind": "phase11-certification_redteam-report",
+  "certificationId": "phase11-97c31146053f9e5b-mu4pxe3r",
+  "candidateCommit": "8c87e825316acf537fbc750a7b41c9e185bfae59",
+  "generatedAt": "2026-09-16T23:35:11.074Z",
+  "gateId": "certification_redteam",
+  "status": "PASS",
+  "command": "node scripts/phase11-2-redteam.mjs --suite=certification",
+  "log": "certification/phase11/logs/certification_redteam.log",
+  "source": null,
+  "syntheticOnly": true,
+  "raw": {
+    "schemaVersion": 1,
+    "kind": "phase11-2-redteam",
+    "suite": "certification",
+    "status": "PASS",
+    "syntheticOnly": true,
+    "checks": [
+      {
+        "id": "FALSE-GO-SCORES-100-MANDATORY-FAIL",
+        "status": "PASS"
+      },
+      {
+        "id": "NOT-EXECUTED-BLOCKS-GO",
+        "status": "PASS"
+      },
+      {
+        "id": "DIRTY-CANDIDATE-BLOCKS",
+        "status": "PASS"
+      },
+      {
+        "id": "PROFILE-ESCALATION-BLOCKS",
+        "status": "PASS"
+      },
+      {
+        "id": "NONZERO-PASS-BLOCKS",
+        "status": "PASS"
+      },
+      {
+        "id": "SIXTEEN-INVARIANTS-REQUIRED",
+        "status": "PASS"
+      }
+    ]
+  }
+}

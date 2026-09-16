@@ -1,0 +1,6247 @@
+{
+  "schemaVersion": 1,
+  "evidenceChain": true,
+  "nodes": [
+    {
+      "id": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "kind": "candidate"
+    },
+    {
+      "id": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-1.txt",
+      "kind": "prompt",
+      "status": "PASS"
+    },
+    {
+      "id": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-2.txt",
+      "kind": "prompt",
+      "status": "PASS"
+    },
+    {
+      "id": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-3.txt",
+      "kind": "prompt",
+      "status": "PASS"
+    },
+    {
+      "id": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-4.txt",
+      "kind": "prompt",
+      "status": "PASS"
+    },
+    {
+      "id": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-5.txt",
+      "kind": "prompt",
+      "status": "PASS"
+    },
+    {
+      "id": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-6.txt",
+      "kind": "prompt",
+      "status": "PASS"
+    },
+    {
+      "id": "requirement:P11.2-PROMPT",
+      "kind": "requirement",
+      "status": "PASS"
+    },
+    {
+      "id": "implementation:docs/11_phase11/prompt-master/20260916-triple-aaa/README.md",
+      "kind": "implementation"
+    },
+    {
+      "id": "test:scripts/phase11-2-redteam.mjs",
+      "kind": "test"
+    },
+    {
+      "id": "execution:scripts/phase11-2-redteam.mjs",
+      "kind": "execution"
+    },
+    {
+      "id": "evidence:prompt archive README and prompt-integrity artifact",
+      "kind": "evidence"
+    },
+    {
+      "id": "artifact:prompt archive README and prompt-integrity artifact",
+      "kind": "artifact"
+    },
+    {
+      "id": "gate:prompt_integrity",
+      "kind": "gate"
+    },
+    {
+      "id": "requirement:P11.2-CANONICAL",
+      "kind": "requirement",
+      "status": "PASS"
+    },
+    {
+      "id": "implementation:.gitignore",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:scripts/lib/certification-rules.mjs",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:scripts/lib/phase11-rules.mjs",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:scripts/phase11-certify.mjs",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:scripts/phase11-verify.mjs",
+      "kind": "implementation"
+    },
+    {
+      "id": "test:tests/phase11-certification.test.js",
+      "kind": "test"
+    },
+    {
+      "id": "execution:tests/phase11-certification.test.js",
+      "kind": "execution"
+    },
+    {
+      "id": "test:tests/phase11-formal-certification.test.js",
+      "kind": "test"
+    },
+    {
+      "id": "execution:tests/phase11-formal-certification.test.js",
+      "kind": "execution"
+    },
+    {
+      "id": "test:tests/phase11-2-certification.test.js",
+      "kind": "test"
+    },
+    {
+      "id": "execution:tests/phase11-2-certification.test.js",
+      "kind": "execution"
+    },
+    {
+      "id": "evidence:current/evidence verifier and package manifest",
+      "kind": "evidence"
+    },
+    {
+      "id": "artifact:current/evidence verifier and package manifest",
+      "kind": "artifact"
+    },
+    {
+      "id": "gate:certification_self_test",
+      "kind": "gate"
+    },
+    {
+      "id": "gate:evidence_graph",
+      "kind": "gate"
+    },
+    {
+      "id": "gate:clone_verify",
+      "kind": "gate"
+    },
+    {
+      "id": "requirement:P11.2-CALCULUS",
+      "kind": "requirement",
+      "status": "PASS"
+    },
+    {
+      "id": "implementation:scripts/phase11-2-redteam.mjs",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:scripts/phase11-2-evidence-check.mjs",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:scripts/phase11-self-test.mjs",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:scripts/promotion-check.mjs",
+      "kind": "implementation"
+    },
+    {
+      "id": "test:scripts/phase11-2-evidence-check.mjs",
+      "kind": "test"
+    },
+    {
+      "id": "execution:scripts/phase11-2-evidence-check.mjs",
+      "kind": "execution"
+    },
+    {
+      "id": "test:scripts/phase11-self-test.mjs",
+      "kind": "test"
+    },
+    {
+      "id": "execution:scripts/phase11-self-test.mjs",
+      "kind": "execution"
+    },
+    {
+      "id": "evidence:negative-validation.json and verifier",
+      "kind": "evidence"
+    },
+    {
+      "id": "artifact:negative-validation.json and verifier",
+      "kind": "artifact"
+    },
+    {
+      "id": "gate:certification_redteam",
+      "kind": "gate"
+    },
+    {
+      "id": "requirement:P11.2-ORCHESTRATION",
+      "kind": "requirement",
+      "status": "PASS"
+    },
+    {
+      "id": "implementation:packages/agent-runtime/src/orchestration.ts",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:packages/persistence/src/orchestrator-postgres.ts",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:packages/persistence/migrations/0021_orchestrator_iteration_budget.sql",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:packages/persistence/migrations/0022_orchestrator_evaluation_lineage.sql",
+      "kind": "implementation"
+    },
+    {
+      "id": "test:packages/agent-runtime/src/__tests__/orchestration.test.ts",
+      "kind": "test"
+    },
+    {
+      "id": "execution:packages/agent-runtime/src/__tests__/orchestration.test.ts",
+      "kind": "execution"
+    },
+    {
+      "id": "test:packages/agent-runtime/src/__tests__/runtime-limits.test.ts",
+      "kind": "test"
+    },
+    {
+      "id": "execution:packages/agent-runtime/src/__tests__/runtime-limits.test.ts",
+      "kind": "execution"
+    },
+    {
+      "id": "test:packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts",
+      "kind": "test"
+    },
+    {
+      "id": "execution:packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts",
+      "kind": "execution"
+    },
+    {
+      "id": "evidence:runtime and recovery tests",
+      "kind": "evidence"
+    },
+    {
+      "id": "artifact:runtime and recovery tests",
+      "kind": "artifact"
+    },
+    {
+      "id": "gate:unit",
+      "kind": "gate"
+    },
+    {
+      "id": "gate:recovery",
+      "kind": "gate"
+    },
+    {
+      "id": "gate:evals",
+      "kind": "gate"
+    },
+    {
+      "id": "gate:outbox_replay",
+      "kind": "gate"
+    },
+    {
+      "id": "requirement:P11.2-FENCING",
+      "kind": "requirement",
+      "status": "PASS"
+    },
+    {
+      "id": "implementation:packages/persistence/migrations/0018_outbox_lease_fencing.sql",
+      "kind": "implementation"
+    },
+    {
+      "id": "test:packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
+      "kind": "test"
+    },
+    {
+      "id": "execution:packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
+      "kind": "execution"
+    },
+    {
+      "id": "test:packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "kind": "test"
+    },
+    {
+      "id": "execution:packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "kind": "execution"
+    },
+    {
+      "id": "evidence:PostgreSQL and race tests",
+      "kind": "evidence"
+    },
+    {
+      "id": "artifact:PostgreSQL and race tests",
+      "kind": "artifact"
+    },
+    {
+      "id": "gate:postgres",
+      "kind": "gate"
+    },
+    {
+      "id": "gate:tenant_redteam",
+      "kind": "gate"
+    },
+    {
+      "id": "requirement:P11.2-EFFECT",
+      "kind": "requirement",
+      "status": "PASS"
+    },
+    {
+      "id": "implementation:packages/persistence/src/effect-journal-postgres.ts",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:packages/persistence/src/outbox.ts",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:apps/worker/src/outbox-revalidation.ts",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:apps/worker/src/jobs/process-outbox-event.ts",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:packages/persistence/migrations/0013_runtime_effect_journal.sql",
+      "kind": "implementation"
+    },
+    {
+      "id": "test:packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+      "kind": "test"
+    },
+    {
+      "id": "execution:packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+      "kind": "execution"
+    },
+    {
+      "id": "test:apps/worker/src/__tests__/outbox-recovery.test.ts",
+      "kind": "test"
+    },
+    {
+      "id": "execution:apps/worker/src/__tests__/outbox-recovery.test.ts",
+      "kind": "execution"
+    },
+    {
+      "id": "evidence:effect journal, outbox and chaos reports",
+      "kind": "evidence"
+    },
+    {
+      "id": "artifact:effect journal, outbox and chaos reports",
+      "kind": "artifact"
+    },
+    {
+      "id": "gate:chaos",
+      "kind": "gate"
+    },
+    {
+      "id": "requirement:P11.2-LINEAGE",
+      "kind": "requirement",
+      "status": "PASS"
+    },
+    {
+      "id": "implementation:packages/observability/src",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:apps/api/src/orchestration-observability.ts",
+      "kind": "implementation"
+    },
+    {
+      "id": "test:apps/api/src/__tests__/orchestration-observability.test.ts",
+      "kind": "test"
+    },
+    {
+      "id": "execution:apps/api/src/__tests__/orchestration-observability.test.ts",
+      "kind": "execution"
+    },
+    {
+      "id": "test:packages/observability/src/__tests__/observability.test.ts",
+      "kind": "test"
+    },
+    {
+      "id": "execution:packages/observability/src/__tests__/observability.test.ts",
+      "kind": "execution"
+    },
+    {
+      "id": "evidence:trace tests and evidence graph",
+      "kind": "evidence"
+    },
+    {
+      "id": "artifact:trace tests and evidence graph",
+      "kind": "artifact"
+    },
+    {
+      "id": "gate:trace_lineage",
+      "kind": "gate"
+    },
+    {
+      "id": "gate:e2e",
+      "kind": "gate"
+    },
+    {
+      "id": "requirement:P11.2-REDTEAM",
+      "kind": "requirement",
+      "status": "PASS"
+    },
+    {
+      "id": "implementation:packages/policy-engine/src",
+      "kind": "implementation"
+    },
+    {
+      "id": "test:apps/api/src/__tests__/tenant-inbound-isolation.test.ts",
+      "kind": "test"
+    },
+    {
+      "id": "execution:apps/api/src/__tests__/tenant-inbound-isolation.test.ts",
+      "kind": "execution"
+    },
+    {
+      "id": "test:packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts",
+      "kind": "test"
+    },
+    {
+      "id": "execution:packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts",
+      "kind": "execution"
+    },
+    {
+      "id": "evidence:security and negative tests",
+      "kind": "evidence"
+    },
+    {
+      "id": "artifact:security and negative tests",
+      "kind": "artifact"
+    },
+    {
+      "id": "gate:governance_redteam",
+      "kind": "gate"
+    },
+    {
+      "id": "requirement:P11.2-POSTGRES",
+      "kind": "requirement",
+      "status": "PASS"
+    },
+    {
+      "id": "implementation:packages/persistence/migrations/0019_orchestrator_state.sql",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:packages/persistence/migrations/0020_orchestrator_lineage_hardening.sql",
+      "kind": "implementation"
+    },
+    {
+      "id": "test:npm run test:postgres",
+      "kind": "test"
+    },
+    {
+      "id": "execution:npm run test:postgres",
+      "kind": "execution"
+    },
+    {
+      "id": "evidence:postgres/recovery raw reports",
+      "kind": "evidence"
+    },
+    {
+      "id": "artifact:postgres/recovery raw reports",
+      "kind": "artifact"
+    },
+    {
+      "id": "requirement:P11.2-CONSOLE",
+      "kind": "requirement",
+      "status": "PASS"
+    },
+    {
+      "id": "implementation:apps/web/src/features/orchestration/index.tsx",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:apps/web/src/styles.css",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:tests/e2e/visual-shell.spec.ts",
+      "kind": "implementation"
+    },
+    {
+      "id": "test:tests/e2e/visual-shell.spec.ts",
+      "kind": "test"
+    },
+    {
+      "id": "execution:tests/e2e/visual-shell.spec.ts",
+      "kind": "execution"
+    },
+    {
+      "id": "test:apps/web/src/features/orchestration/orchestration.test.tsx",
+      "kind": "test"
+    },
+    {
+      "id": "execution:apps/web/src/features/orchestration/orchestration.test.tsx",
+      "kind": "execution"
+    },
+    {
+      "id": "evidence:Playwright matrix, screenshots and independent critic",
+      "kind": "evidence"
+    },
+    {
+      "id": "artifact:Playwright matrix, screenshots and independent critic",
+      "kind": "artifact"
+    },
+    {
+      "id": "gate:independent_critic",
+      "kind": "gate"
+    },
+    {
+      "id": "requirement:P11.2-PREFLIGHT",
+      "kind": "requirement",
+      "status": "PASS"
+    },
+    {
+      "id": "implementation:scripts/production-preflight.mjs",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:tests/production-preflight.test.js",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:packages/shared/src/env.ts",
+      "kind": "implementation"
+    },
+    {
+      "id": "test:tests/production-preflight.test.js",
+      "kind": "test"
+    },
+    {
+      "id": "execution:tests/production-preflight.test.js",
+      "kind": "execution"
+    },
+    {
+      "id": "evidence:production:preflight output and tests",
+      "kind": "evidence"
+    },
+    {
+      "id": "artifact:production:preflight output and tests",
+      "kind": "artifact"
+    },
+    {
+      "id": "gate:production_preflight",
+      "kind": "gate"
+    },
+    {
+      "id": "requirement:P11.2-SUPPLY",
+      "kind": "requirement",
+      "status": "PASS"
+    },
+    {
+      "id": "implementation:scripts/generate-sbom.mjs",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:scripts/check-licenses.mjs",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:.github/workflows/verify.yml",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:.github/workflows/security.yml",
+      "kind": "implementation"
+    },
+    {
+      "id": "test:npm run audit:security",
+      "kind": "test"
+    },
+    {
+      "id": "execution:npm run audit:security",
+      "kind": "execution"
+    },
+    {
+      "id": "test:npm run licenses:check",
+      "kind": "test"
+    },
+    {
+      "id": "execution:npm run licenses:check",
+      "kind": "execution"
+    },
+    {
+      "id": "test:npm run sbom",
+      "kind": "test"
+    },
+    {
+      "id": "execution:npm run sbom",
+      "kind": "execution"
+    },
+    {
+      "id": "evidence:CI and supply reports",
+      "kind": "evidence"
+    },
+    {
+      "id": "artifact:CI and supply reports",
+      "kind": "artifact"
+    },
+    {
+      "id": "gate:security",
+      "kind": "gate"
+    },
+    {
+      "id": "gate:supply_chain",
+      "kind": "gate"
+    },
+    {
+      "id": "gate:phase10_historical_verification",
+      "kind": "gate"
+    },
+    {
+      "id": "requirement:P11.2-EXTERNAL",
+      "kind": "requirement",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "implementation:certification/external-gates.json",
+      "kind": "implementation"
+    },
+    {
+      "id": "evidence:external-gates.json and integration report",
+      "kind": "evidence"
+    },
+    {
+      "id": "artifact:external-gates.json and integration report",
+      "kind": "artifact"
+    },
+    {
+      "id": "requirement:P11.2-NO-PRODUCTION-EFFECT",
+      "kind": "requirement",
+      "status": "PASS"
+    },
+    {
+      "id": "implementation:scripts/phase11-bypass-audit.mjs",
+      "kind": "implementation"
+    },
+    {
+      "id": "test:scripts/phase11-bypass-audit.mjs",
+      "kind": "test"
+    },
+    {
+      "id": "execution:scripts/phase11-bypass-audit.mjs",
+      "kind": "execution"
+    },
+    {
+      "id": "evidence:preflight, bypass audit and execution log",
+      "kind": "evidence"
+    },
+    {
+      "id": "artifact:preflight, bypass audit and execution log",
+      "kind": "artifact"
+    },
+    {
+      "id": "gate:bypass_audit",
+      "kind": "gate"
+    },
+    {
+      "id": "gate:adversarial_proof",
+      "kind": "gate"
+    },
+    {
+      "id": "gate:verify",
+      "kind": "gate",
+      "status": "PASS"
+    },
+    {
+      "id": "gate:format",
+      "kind": "gate",
+      "status": "PASS"
+    },
+    {
+      "id": "gate:typecheck",
+      "kind": "gate",
+      "status": "PASS"
+    },
+    {
+      "id": "gate:lint",
+      "kind": "gate",
+      "status": "PASS"
+    },
+    {
+      "id": "gate:build",
+      "kind": "gate",
+      "status": "PASS"
+    },
+    {
+      "id": "gate:coverage",
+      "kind": "gate",
+      "status": "PASS"
+    },
+    {
+      "id": "gate:worker_startup",
+      "kind": "gate",
+      "status": "PASS"
+    },
+    {
+      "id": "gate:load",
+      "kind": "gate",
+      "status": "PASS"
+    },
+    {
+      "id": "gate:evidence_reports",
+      "kind": "gate",
+      "status": "PASS"
+    },
+    {
+      "id": "gate:candidate_clean",
+      "kind": "gate",
+      "status": "PASS"
+    },
+    {
+      "id": "gate:node_target",
+      "kind": "gate",
+      "status": "PASS"
+    },
+    {
+      "id": "gate:PHASE11_FORMAL_CLOSURE",
+      "kind": "gate",
+      "status": "PASS"
+    },
+    {
+      "id": "stage:inbound",
+      "kind": "runtime_stage",
+      "order": 1
+    },
+    {
+      "id": "stage:observation",
+      "kind": "runtime_stage",
+      "order": 2
+    },
+    {
+      "id": "stage:understand",
+      "kind": "runtime_stage",
+      "order": 3
+    },
+    {
+      "id": "stage:goal",
+      "kind": "runtime_stage",
+      "order": 4
+    },
+    {
+      "id": "stage:plan",
+      "kind": "runtime_stage",
+      "order": 5
+    },
+    {
+      "id": "stage:govern",
+      "kind": "runtime_stage",
+      "order": 6
+    },
+    {
+      "id": "stage:step",
+      "kind": "runtime_stage",
+      "order": 7
+    },
+    {
+      "id": "stage:attempt",
+      "kind": "runtime_stage",
+      "order": 8
+    },
+    {
+      "id": "stage:outbox",
+      "kind": "runtime_stage",
+      "order": 9
+    },
+    {
+      "id": "stage:effect",
+      "kind": "runtime_stage",
+      "order": 10
+    },
+    {
+      "id": "stage:observed_result",
+      "kind": "runtime_stage",
+      "order": 11
+    },
+    {
+      "id": "stage:evaluation",
+      "kind": "runtime_stage",
+      "order": 12
+    },
+    {
+      "id": "stage:replan",
+      "kind": "runtime_stage",
+      "order": 13
+    },
+    {
+      "id": "stage:response",
+      "kind": "runtime_stage",
+      "order": 14
+    },
+    {
+      "id": "invariant:INV-001",
+      "kind": "invariant",
+      "status": "PASS"
+    },
+    {
+      "id": "evidence:scripts/phase11-2-redteam.mjs",
+      "kind": "unknown"
+    },
+    {
+      "id": "invariant:INV-002",
+      "kind": "invariant",
+      "status": "PASS"
+    },
+    {
+      "id": "evidence:certification/phase11/logs/bypass_audit.log",
+      "kind": "unknown"
+    },
+    {
+      "id": "invariant:INV-003",
+      "kind": "invariant",
+      "status": "PASS"
+    },
+    {
+      "id": "evidence:packages/policy-engine/src",
+      "kind": "unknown"
+    },
+    {
+      "id": "invariant:INV-004",
+      "kind": "invariant",
+      "status": "PASS"
+    },
+    {
+      "id": "evidence:certification/phase11/recovery-report.json",
+      "kind": "unknown"
+    },
+    {
+      "id": "invariant:INV-005",
+      "kind": "invariant",
+      "status": "PASS"
+    },
+    {
+      "id": "invariant:INV-006",
+      "kind": "invariant",
+      "status": "PASS"
+    },
+    {
+      "id": "evidence:certification/phase11/logs/governance_redteam.log",
+      "kind": "unknown"
+    },
+    {
+      "id": "invariant:INV-007",
+      "kind": "invariant",
+      "status": "PASS"
+    },
+    {
+      "id": "evidence:certification/phase11/postgres-report.json",
+      "kind": "unknown"
+    },
+    {
+      "id": "invariant:INV-008",
+      "kind": "invariant",
+      "status": "PASS"
+    },
+    {
+      "id": "evidence:certification/phase11/evidence-graph.json",
+      "kind": "unknown"
+    },
+    {
+      "id": "invariant:INV-009",
+      "kind": "invariant",
+      "status": "PASS"
+    },
+    {
+      "id": "evidence:certification/phase11/chaos-report.json",
+      "kind": "unknown"
+    },
+    {
+      "id": "invariant:INV-010",
+      "kind": "invariant",
+      "status": "PASS"
+    },
+    {
+      "id": "invariant:INV-011",
+      "kind": "invariant",
+      "status": "PASS"
+    },
+    {
+      "id": "evidence:certification/phase11/eval-report.json",
+      "kind": "unknown"
+    },
+    {
+      "id": "invariant:INV-012",
+      "kind": "invariant",
+      "status": "PASS"
+    },
+    {
+      "id": "invariant:INV-013",
+      "kind": "invariant",
+      "status": "PASS"
+    },
+    {
+      "id": "invariant:INV-014",
+      "kind": "invariant",
+      "status": "PASS"
+    },
+    {
+      "id": "evidence:certification/phase11/logs/e2e.log",
+      "kind": "unknown"
+    },
+    {
+      "id": "invariant:INV-015",
+      "kind": "invariant",
+      "status": "PASS"
+    },
+    {
+      "id": "evidence:certification/phase11/manifest.json",
+      "kind": "unknown"
+    },
+    {
+      "id": "evidence:certification/current.json",
+      "kind": "unknown"
+    },
+    {
+      "id": "invariant:INV-016",
+      "kind": "invariant",
+      "status": "PASS"
+    },
+    {
+      "id": "evidence:certification/phase11/preflight-report.json",
+      "kind": "unknown"
+    },
+    {
+      "id": "evidence:certification/phase11/negative-validation.json",
+      "kind": "unknown"
+    },
+    {
+      "id": "decision:phase11",
+      "kind": "decision"
+    }
+  ],
+  "edges": [
+    {
+      "from": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-1.txt",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "scope_for"
+    },
+    {
+      "from": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-2.txt",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "scope_for"
+    },
+    {
+      "from": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-3.txt",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "scope_for"
+    },
+    {
+      "from": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-4.txt",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "scope_for"
+    },
+    {
+      "from": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-5.txt",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "scope_for"
+    },
+    {
+      "from": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-6.txt",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "scope_for"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "requirement:P11.2-PROMPT",
+      "relation": "evaluates"
+    },
+    {
+      "from": "requirement:P11.2-PROMPT",
+      "to": "implementation:docs/11_phase11/prompt-master/20260916-triple-aaa/README.md",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-PROMPT",
+      "to": "test:scripts/phase11-2-redteam.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:scripts/phase11-2-redteam.mjs",
+      "to": "execution:scripts/phase11-2-redteam.mjs",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-PROMPT",
+      "to": "evidence:prompt archive README and prompt-integrity artifact",
+      "relation": "evidenced_by"
+    },
+    {
+      "from": "evidence:prompt archive README and prompt-integrity artifact",
+      "to": "artifact:prompt archive README and prompt-integrity artifact",
+      "relation": "materialized_as"
+    },
+    {
+      "from": "requirement:P11.2-PROMPT",
+      "to": "gate:prompt_integrity",
+      "relation": "gated_by"
+    },
+    {
+      "from": "implementation:docs/11_phase11/prompt-master/20260916-triple-aaa/README.md",
+      "to": "test:scripts/phase11-2-redteam.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "execution:scripts/phase11-2-redteam.mjs",
+      "to": "artifact:prompt archive README and prompt-integrity artifact",
+      "relation": "produced"
+    },
+    {
+      "from": "artifact:prompt archive README and prompt-integrity artifact",
+      "to": "gate:prompt_integrity",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "requirement:P11.2-CANONICAL",
+      "relation": "evaluates"
+    },
+    {
+      "from": "requirement:P11.2-CANONICAL",
+      "to": "implementation:.gitignore",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-CANONICAL",
+      "to": "implementation:scripts/lib/certification-rules.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-CANONICAL",
+      "to": "implementation:scripts/lib/phase11-rules.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-CANONICAL",
+      "to": "implementation:scripts/phase11-certify.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-CANONICAL",
+      "to": "implementation:scripts/phase11-verify.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-CANONICAL",
+      "to": "test:tests/phase11-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:tests/phase11-certification.test.js",
+      "to": "execution:tests/phase11-certification.test.js",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-CANONICAL",
+      "to": "test:tests/phase11-formal-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:tests/phase11-formal-certification.test.js",
+      "to": "execution:tests/phase11-formal-certification.test.js",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-CANONICAL",
+      "to": "test:tests/phase11-2-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:tests/phase11-2-certification.test.js",
+      "to": "execution:tests/phase11-2-certification.test.js",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-CANONICAL",
+      "to": "evidence:current/evidence verifier and package manifest",
+      "relation": "evidenced_by"
+    },
+    {
+      "from": "evidence:current/evidence verifier and package manifest",
+      "to": "artifact:current/evidence verifier and package manifest",
+      "relation": "materialized_as"
+    },
+    {
+      "from": "requirement:P11.2-CANONICAL",
+      "to": "gate:certification_self_test",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-CANONICAL",
+      "to": "gate:evidence_graph",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-CANONICAL",
+      "to": "gate:clone_verify",
+      "relation": "gated_by"
+    },
+    {
+      "from": "implementation:.gitignore",
+      "to": "test:tests/phase11-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:.gitignore",
+      "to": "test:tests/phase11-formal-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:.gitignore",
+      "to": "test:tests/phase11-2-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/lib/certification-rules.mjs",
+      "to": "test:tests/phase11-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/lib/certification-rules.mjs",
+      "to": "test:tests/phase11-formal-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/lib/certification-rules.mjs",
+      "to": "test:tests/phase11-2-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/lib/phase11-rules.mjs",
+      "to": "test:tests/phase11-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/lib/phase11-rules.mjs",
+      "to": "test:tests/phase11-formal-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/lib/phase11-rules.mjs",
+      "to": "test:tests/phase11-2-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-certify.mjs",
+      "to": "test:tests/phase11-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-certify.mjs",
+      "to": "test:tests/phase11-formal-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-certify.mjs",
+      "to": "test:tests/phase11-2-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-verify.mjs",
+      "to": "test:tests/phase11-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-verify.mjs",
+      "to": "test:tests/phase11-formal-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-verify.mjs",
+      "to": "test:tests/phase11-2-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "execution:tests/phase11-certification.test.js",
+      "to": "artifact:current/evidence verifier and package manifest",
+      "relation": "produced"
+    },
+    {
+      "from": "execution:tests/phase11-formal-certification.test.js",
+      "to": "artifact:current/evidence verifier and package manifest",
+      "relation": "produced"
+    },
+    {
+      "from": "execution:tests/phase11-2-certification.test.js",
+      "to": "artifact:current/evidence verifier and package manifest",
+      "relation": "produced"
+    },
+    {
+      "from": "artifact:current/evidence verifier and package manifest",
+      "to": "gate:certification_self_test",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:current/evidence verifier and package manifest",
+      "to": "gate:evidence_graph",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:current/evidence verifier and package manifest",
+      "to": "gate:clone_verify",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "requirement:P11.2-CALCULUS",
+      "relation": "evaluates"
+    },
+    {
+      "from": "requirement:P11.2-CALCULUS",
+      "to": "implementation:scripts/lib/phase11-rules.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-CALCULUS",
+      "to": "implementation:scripts/phase11-2-redteam.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-CALCULUS",
+      "to": "implementation:scripts/phase11-2-evidence-check.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-CALCULUS",
+      "to": "implementation:scripts/phase11-self-test.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-CALCULUS",
+      "to": "implementation:scripts/promotion-check.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-CALCULUS",
+      "to": "test:scripts/phase11-2-redteam.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:scripts/phase11-2-redteam.mjs",
+      "to": "execution:scripts/phase11-2-redteam.mjs",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-CALCULUS",
+      "to": "test:scripts/phase11-2-evidence-check.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:scripts/phase11-2-evidence-check.mjs",
+      "to": "execution:scripts/phase11-2-evidence-check.mjs",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-CALCULUS",
+      "to": "test:scripts/phase11-self-test.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:scripts/phase11-self-test.mjs",
+      "to": "execution:scripts/phase11-self-test.mjs",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-CALCULUS",
+      "to": "evidence:negative-validation.json and verifier",
+      "relation": "evidenced_by"
+    },
+    {
+      "from": "evidence:negative-validation.json and verifier",
+      "to": "artifact:negative-validation.json and verifier",
+      "relation": "materialized_as"
+    },
+    {
+      "from": "requirement:P11.2-CALCULUS",
+      "to": "gate:certification_self_test",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-CALCULUS",
+      "to": "gate:certification_redteam",
+      "relation": "gated_by"
+    },
+    {
+      "from": "implementation:scripts/lib/phase11-rules.mjs",
+      "to": "test:scripts/phase11-2-redteam.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/lib/phase11-rules.mjs",
+      "to": "test:scripts/phase11-2-evidence-check.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/lib/phase11-rules.mjs",
+      "to": "test:scripts/phase11-self-test.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-2-redteam.mjs",
+      "to": "test:scripts/phase11-2-redteam.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-2-redteam.mjs",
+      "to": "test:scripts/phase11-2-evidence-check.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-2-redteam.mjs",
+      "to": "test:scripts/phase11-self-test.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-2-evidence-check.mjs",
+      "to": "test:scripts/phase11-2-redteam.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-2-evidence-check.mjs",
+      "to": "test:scripts/phase11-2-evidence-check.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-2-evidence-check.mjs",
+      "to": "test:scripts/phase11-self-test.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-self-test.mjs",
+      "to": "test:scripts/phase11-2-redteam.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-self-test.mjs",
+      "to": "test:scripts/phase11-2-evidence-check.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-self-test.mjs",
+      "to": "test:scripts/phase11-self-test.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/promotion-check.mjs",
+      "to": "test:scripts/phase11-2-redteam.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/promotion-check.mjs",
+      "to": "test:scripts/phase11-2-evidence-check.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/promotion-check.mjs",
+      "to": "test:scripts/phase11-self-test.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "execution:scripts/phase11-2-redteam.mjs",
+      "to": "artifact:negative-validation.json and verifier",
+      "relation": "produced"
+    },
+    {
+      "from": "execution:scripts/phase11-2-evidence-check.mjs",
+      "to": "artifact:negative-validation.json and verifier",
+      "relation": "produced"
+    },
+    {
+      "from": "execution:scripts/phase11-self-test.mjs",
+      "to": "artifact:negative-validation.json and verifier",
+      "relation": "produced"
+    },
+    {
+      "from": "artifact:negative-validation.json and verifier",
+      "to": "gate:certification_self_test",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:negative-validation.json and verifier",
+      "to": "gate:certification_redteam",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "requirement:P11.2-ORCHESTRATION",
+      "relation": "evaluates"
+    },
+    {
+      "from": "requirement:P11.2-ORCHESTRATION",
+      "to": "implementation:packages/agent-runtime/src/orchestration.ts",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-ORCHESTRATION",
+      "to": "implementation:packages/persistence/src/orchestrator-postgres.ts",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-ORCHESTRATION",
+      "to": "implementation:packages/persistence/migrations/0021_orchestrator_iteration_budget.sql",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-ORCHESTRATION",
+      "to": "implementation:packages/persistence/migrations/0022_orchestrator_evaluation_lineage.sql",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-ORCHESTRATION",
+      "to": "test:packages/agent-runtime/src/__tests__/orchestration.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:packages/agent-runtime/src/__tests__/orchestration.test.ts",
+      "to": "execution:packages/agent-runtime/src/__tests__/orchestration.test.ts",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-ORCHESTRATION",
+      "to": "test:packages/agent-runtime/src/__tests__/runtime-limits.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:packages/agent-runtime/src/__tests__/runtime-limits.test.ts",
+      "to": "execution:packages/agent-runtime/src/__tests__/runtime-limits.test.ts",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-ORCHESTRATION",
+      "to": "test:packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts",
+      "to": "execution:packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-ORCHESTRATION",
+      "to": "evidence:runtime and recovery tests",
+      "relation": "evidenced_by"
+    },
+    {
+      "from": "evidence:runtime and recovery tests",
+      "to": "artifact:runtime and recovery tests",
+      "relation": "materialized_as"
+    },
+    {
+      "from": "requirement:P11.2-ORCHESTRATION",
+      "to": "gate:unit",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-ORCHESTRATION",
+      "to": "gate:recovery",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-ORCHESTRATION",
+      "to": "gate:evals",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-ORCHESTRATION",
+      "to": "gate:outbox_replay",
+      "relation": "gated_by"
+    },
+    {
+      "from": "implementation:packages/agent-runtime/src/orchestration.ts",
+      "to": "test:packages/agent-runtime/src/__tests__/orchestration.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/agent-runtime/src/orchestration.ts",
+      "to": "test:packages/agent-runtime/src/__tests__/runtime-limits.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/agent-runtime/src/orchestration.ts",
+      "to": "test:packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/src/orchestrator-postgres.ts",
+      "to": "test:packages/agent-runtime/src/__tests__/orchestration.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/src/orchestrator-postgres.ts",
+      "to": "test:packages/agent-runtime/src/__tests__/runtime-limits.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/src/orchestrator-postgres.ts",
+      "to": "test:packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0021_orchestrator_iteration_budget.sql",
+      "to": "test:packages/agent-runtime/src/__tests__/orchestration.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0021_orchestrator_iteration_budget.sql",
+      "to": "test:packages/agent-runtime/src/__tests__/runtime-limits.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0021_orchestrator_iteration_budget.sql",
+      "to": "test:packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0022_orchestrator_evaluation_lineage.sql",
+      "to": "test:packages/agent-runtime/src/__tests__/orchestration.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0022_orchestrator_evaluation_lineage.sql",
+      "to": "test:packages/agent-runtime/src/__tests__/runtime-limits.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0022_orchestrator_evaluation_lineage.sql",
+      "to": "test:packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "execution:packages/agent-runtime/src/__tests__/orchestration.test.ts",
+      "to": "artifact:runtime and recovery tests",
+      "relation": "produced"
+    },
+    {
+      "from": "execution:packages/agent-runtime/src/__tests__/runtime-limits.test.ts",
+      "to": "artifact:runtime and recovery tests",
+      "relation": "produced"
+    },
+    {
+      "from": "execution:packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts",
+      "to": "artifact:runtime and recovery tests",
+      "relation": "produced"
+    },
+    {
+      "from": "artifact:runtime and recovery tests",
+      "to": "gate:unit",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:runtime and recovery tests",
+      "to": "gate:recovery",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:runtime and recovery tests",
+      "to": "gate:evals",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:runtime and recovery tests",
+      "to": "gate:outbox_replay",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "requirement:P11.2-FENCING",
+      "relation": "evaluates"
+    },
+    {
+      "from": "requirement:P11.2-FENCING",
+      "to": "implementation:packages/persistence/src/orchestrator-postgres.ts",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-FENCING",
+      "to": "implementation:packages/persistence/migrations/0018_outbox_lease_fencing.sql",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-FENCING",
+      "to": "test:packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
+      "to": "execution:packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-FENCING",
+      "to": "test:packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "to": "execution:packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-FENCING",
+      "to": "evidence:PostgreSQL and race tests",
+      "relation": "evidenced_by"
+    },
+    {
+      "from": "evidence:PostgreSQL and race tests",
+      "to": "artifact:PostgreSQL and race tests",
+      "relation": "materialized_as"
+    },
+    {
+      "from": "requirement:P11.2-FENCING",
+      "to": "gate:postgres",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-FENCING",
+      "to": "gate:recovery",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-FENCING",
+      "to": "gate:tenant_redteam",
+      "relation": "gated_by"
+    },
+    {
+      "from": "implementation:packages/persistence/src/orchestrator-postgres.ts",
+      "to": "test:packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/src/orchestrator-postgres.ts",
+      "to": "test:packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0018_outbox_lease_fencing.sql",
+      "to": "test:packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0018_outbox_lease_fencing.sql",
+      "to": "test:packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "execution:packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
+      "to": "artifact:PostgreSQL and race tests",
+      "relation": "produced"
+    },
+    {
+      "from": "execution:packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "to": "artifact:PostgreSQL and race tests",
+      "relation": "produced"
+    },
+    {
+      "from": "artifact:PostgreSQL and race tests",
+      "to": "gate:postgres",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:PostgreSQL and race tests",
+      "to": "gate:recovery",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:PostgreSQL and race tests",
+      "to": "gate:tenant_redteam",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "requirement:P11.2-EFFECT",
+      "relation": "evaluates"
+    },
+    {
+      "from": "requirement:P11.2-EFFECT",
+      "to": "implementation:packages/persistence/src/effect-journal-postgres.ts",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-EFFECT",
+      "to": "implementation:packages/persistence/src/outbox.ts",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-EFFECT",
+      "to": "implementation:apps/worker/src/outbox-revalidation.ts",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-EFFECT",
+      "to": "implementation:apps/worker/src/jobs/process-outbox-event.ts",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-EFFECT",
+      "to": "implementation:packages/persistence/migrations/0013_runtime_effect_journal.sql",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-EFFECT",
+      "to": "test:packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+      "to": "execution:packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-EFFECT",
+      "to": "test:apps/worker/src/__tests__/outbox-recovery.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:apps/worker/src/__tests__/outbox-recovery.test.ts",
+      "to": "execution:apps/worker/src/__tests__/outbox-recovery.test.ts",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-EFFECT",
+      "to": "test:packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "to": "execution:packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-EFFECT",
+      "to": "evidence:effect journal, outbox and chaos reports",
+      "relation": "evidenced_by"
+    },
+    {
+      "from": "evidence:effect journal, outbox and chaos reports",
+      "to": "artifact:effect journal, outbox and chaos reports",
+      "relation": "materialized_as"
+    },
+    {
+      "from": "requirement:P11.2-EFFECT",
+      "to": "gate:postgres",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-EFFECT",
+      "to": "gate:recovery",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-EFFECT",
+      "to": "gate:chaos",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-EFFECT",
+      "to": "gate:outbox_replay",
+      "relation": "gated_by"
+    },
+    {
+      "from": "implementation:packages/persistence/src/effect-journal-postgres.ts",
+      "to": "test:packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/src/effect-journal-postgres.ts",
+      "to": "test:apps/worker/src/__tests__/outbox-recovery.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/src/effect-journal-postgres.ts",
+      "to": "test:packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/src/outbox.ts",
+      "to": "test:packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/src/outbox.ts",
+      "to": "test:apps/worker/src/__tests__/outbox-recovery.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/src/outbox.ts",
+      "to": "test:packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:apps/worker/src/outbox-revalidation.ts",
+      "to": "test:packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:apps/worker/src/outbox-revalidation.ts",
+      "to": "test:apps/worker/src/__tests__/outbox-recovery.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:apps/worker/src/outbox-revalidation.ts",
+      "to": "test:packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:apps/worker/src/jobs/process-outbox-event.ts",
+      "to": "test:packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:apps/worker/src/jobs/process-outbox-event.ts",
+      "to": "test:apps/worker/src/__tests__/outbox-recovery.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:apps/worker/src/jobs/process-outbox-event.ts",
+      "to": "test:packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0013_runtime_effect_journal.sql",
+      "to": "test:packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0013_runtime_effect_journal.sql",
+      "to": "test:apps/worker/src/__tests__/outbox-recovery.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0013_runtime_effect_journal.sql",
+      "to": "test:packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "execution:packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+      "to": "artifact:effect journal, outbox and chaos reports",
+      "relation": "produced"
+    },
+    {
+      "from": "execution:apps/worker/src/__tests__/outbox-recovery.test.ts",
+      "to": "artifact:effect journal, outbox and chaos reports",
+      "relation": "produced"
+    },
+    {
+      "from": "execution:packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "to": "artifact:effect journal, outbox and chaos reports",
+      "relation": "produced"
+    },
+    {
+      "from": "artifact:effect journal, outbox and chaos reports",
+      "to": "gate:postgres",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:effect journal, outbox and chaos reports",
+      "to": "gate:recovery",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:effect journal, outbox and chaos reports",
+      "to": "gate:chaos",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:effect journal, outbox and chaos reports",
+      "to": "gate:outbox_replay",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "requirement:P11.2-LINEAGE",
+      "relation": "evaluates"
+    },
+    {
+      "from": "requirement:P11.2-LINEAGE",
+      "to": "implementation:packages/observability/src",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-LINEAGE",
+      "to": "implementation:packages/agent-runtime/src/orchestration.ts",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-LINEAGE",
+      "to": "implementation:apps/api/src/orchestration-observability.ts",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-LINEAGE",
+      "to": "implementation:scripts/lib/phase11-rules.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-LINEAGE",
+      "to": "test:apps/api/src/__tests__/orchestration-observability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:apps/api/src/__tests__/orchestration-observability.test.ts",
+      "to": "execution:apps/api/src/__tests__/orchestration-observability.test.ts",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-LINEAGE",
+      "to": "test:packages/observability/src/__tests__/observability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:packages/observability/src/__tests__/observability.test.ts",
+      "to": "execution:packages/observability/src/__tests__/observability.test.ts",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-LINEAGE",
+      "to": "evidence:trace tests and evidence graph",
+      "relation": "evidenced_by"
+    },
+    {
+      "from": "evidence:trace tests and evidence graph",
+      "to": "artifact:trace tests and evidence graph",
+      "relation": "materialized_as"
+    },
+    {
+      "from": "requirement:P11.2-LINEAGE",
+      "to": "gate:trace_lineage",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-LINEAGE",
+      "to": "gate:evidence_graph",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-LINEAGE",
+      "to": "gate:e2e",
+      "relation": "gated_by"
+    },
+    {
+      "from": "implementation:packages/observability/src",
+      "to": "test:apps/api/src/__tests__/orchestration-observability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/observability/src",
+      "to": "test:packages/observability/src/__tests__/observability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/agent-runtime/src/orchestration.ts",
+      "to": "test:apps/api/src/__tests__/orchestration-observability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/agent-runtime/src/orchestration.ts",
+      "to": "test:packages/observability/src/__tests__/observability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:apps/api/src/orchestration-observability.ts",
+      "to": "test:apps/api/src/__tests__/orchestration-observability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:apps/api/src/orchestration-observability.ts",
+      "to": "test:packages/observability/src/__tests__/observability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/lib/phase11-rules.mjs",
+      "to": "test:apps/api/src/__tests__/orchestration-observability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/lib/phase11-rules.mjs",
+      "to": "test:packages/observability/src/__tests__/observability.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "execution:apps/api/src/__tests__/orchestration-observability.test.ts",
+      "to": "artifact:trace tests and evidence graph",
+      "relation": "produced"
+    },
+    {
+      "from": "execution:packages/observability/src/__tests__/observability.test.ts",
+      "to": "artifact:trace tests and evidence graph",
+      "relation": "produced"
+    },
+    {
+      "from": "artifact:trace tests and evidence graph",
+      "to": "gate:trace_lineage",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:trace tests and evidence graph",
+      "to": "gate:evidence_graph",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:trace tests and evidence graph",
+      "to": "gate:e2e",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "requirement:P11.2-REDTEAM",
+      "relation": "evaluates"
+    },
+    {
+      "from": "requirement:P11.2-REDTEAM",
+      "to": "implementation:scripts/phase11-2-redteam.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-REDTEAM",
+      "to": "implementation:scripts/phase11-2-evidence-check.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-REDTEAM",
+      "to": "implementation:packages/policy-engine/src",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-REDTEAM",
+      "to": "implementation:apps/api/src/orchestration-observability.ts",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-REDTEAM",
+      "to": "test:scripts/phase11-2-redteam.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:scripts/phase11-2-redteam.mjs",
+      "to": "execution:scripts/phase11-2-redteam.mjs",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-REDTEAM",
+      "to": "test:apps/api/src/__tests__/tenant-inbound-isolation.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:apps/api/src/__tests__/tenant-inbound-isolation.test.ts",
+      "to": "execution:apps/api/src/__tests__/tenant-inbound-isolation.test.ts",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-REDTEAM",
+      "to": "test:packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts",
+      "to": "execution:packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-REDTEAM",
+      "to": "evidence:security and negative tests",
+      "relation": "evidenced_by"
+    },
+    {
+      "from": "evidence:security and negative tests",
+      "to": "artifact:security and negative tests",
+      "relation": "materialized_as"
+    },
+    {
+      "from": "requirement:P11.2-REDTEAM",
+      "to": "gate:governance_redteam",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-REDTEAM",
+      "to": "gate:tenant_redteam",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-REDTEAM",
+      "to": "gate:certification_redteam",
+      "relation": "gated_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-2-redteam.mjs",
+      "to": "test:scripts/phase11-2-redteam.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-2-redteam.mjs",
+      "to": "test:apps/api/src/__tests__/tenant-inbound-isolation.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-2-redteam.mjs",
+      "to": "test:packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-2-evidence-check.mjs",
+      "to": "test:scripts/phase11-2-redteam.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-2-evidence-check.mjs",
+      "to": "test:apps/api/src/__tests__/tenant-inbound-isolation.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-2-evidence-check.mjs",
+      "to": "test:packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/policy-engine/src",
+      "to": "test:scripts/phase11-2-redteam.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/policy-engine/src",
+      "to": "test:apps/api/src/__tests__/tenant-inbound-isolation.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/policy-engine/src",
+      "to": "test:packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:apps/api/src/orchestration-observability.ts",
+      "to": "test:scripts/phase11-2-redteam.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:apps/api/src/orchestration-observability.ts",
+      "to": "test:apps/api/src/__tests__/tenant-inbound-isolation.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:apps/api/src/orchestration-observability.ts",
+      "to": "test:packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "execution:scripts/phase11-2-redteam.mjs",
+      "to": "artifact:security and negative tests",
+      "relation": "produced"
+    },
+    {
+      "from": "execution:apps/api/src/__tests__/tenant-inbound-isolation.test.ts",
+      "to": "artifact:security and negative tests",
+      "relation": "produced"
+    },
+    {
+      "from": "execution:packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts",
+      "to": "artifact:security and negative tests",
+      "relation": "produced"
+    },
+    {
+      "from": "artifact:security and negative tests",
+      "to": "gate:governance_redteam",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:security and negative tests",
+      "to": "gate:tenant_redteam",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:security and negative tests",
+      "to": "gate:certification_redteam",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "requirement:P11.2-POSTGRES",
+      "relation": "evaluates"
+    },
+    {
+      "from": "requirement:P11.2-POSTGRES",
+      "to": "implementation:packages/persistence/migrations/0019_orchestrator_state.sql",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-POSTGRES",
+      "to": "implementation:packages/persistence/migrations/0020_orchestrator_lineage_hardening.sql",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-POSTGRES",
+      "to": "implementation:packages/persistence/migrations/0021_orchestrator_iteration_budget.sql",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-POSTGRES",
+      "to": "implementation:packages/persistence/migrations/0022_orchestrator_evaluation_lineage.sql",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-POSTGRES",
+      "to": "test:npm run test:postgres",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:npm run test:postgres",
+      "to": "execution:npm run test:postgres",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-POSTGRES",
+      "to": "evidence:postgres/recovery raw reports",
+      "relation": "evidenced_by"
+    },
+    {
+      "from": "evidence:postgres/recovery raw reports",
+      "to": "artifact:postgres/recovery raw reports",
+      "relation": "materialized_as"
+    },
+    {
+      "from": "requirement:P11.2-POSTGRES",
+      "to": "gate:postgres",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-POSTGRES",
+      "to": "gate:recovery",
+      "relation": "gated_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0019_orchestrator_state.sql",
+      "to": "test:npm run test:postgres",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0020_orchestrator_lineage_hardening.sql",
+      "to": "test:npm run test:postgres",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0021_orchestrator_iteration_budget.sql",
+      "to": "test:npm run test:postgres",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0022_orchestrator_evaluation_lineage.sql",
+      "to": "test:npm run test:postgres",
+      "relation": "verified_by"
+    },
+    {
+      "from": "execution:npm run test:postgres",
+      "to": "artifact:postgres/recovery raw reports",
+      "relation": "produced"
+    },
+    {
+      "from": "artifact:postgres/recovery raw reports",
+      "to": "gate:postgres",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:postgres/recovery raw reports",
+      "to": "gate:recovery",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "requirement:P11.2-CONSOLE",
+      "relation": "evaluates"
+    },
+    {
+      "from": "requirement:P11.2-CONSOLE",
+      "to": "implementation:apps/web/src/features/orchestration/index.tsx",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-CONSOLE",
+      "to": "implementation:apps/web/src/styles.css",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-CONSOLE",
+      "to": "implementation:tests/e2e/visual-shell.spec.ts",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-CONSOLE",
+      "to": "test:tests/e2e/visual-shell.spec.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:tests/e2e/visual-shell.spec.ts",
+      "to": "execution:tests/e2e/visual-shell.spec.ts",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-CONSOLE",
+      "to": "test:apps/web/src/features/orchestration/orchestration.test.tsx",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:apps/web/src/features/orchestration/orchestration.test.tsx",
+      "to": "execution:apps/web/src/features/orchestration/orchestration.test.tsx",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-CONSOLE",
+      "to": "evidence:Playwright matrix, screenshots and independent critic",
+      "relation": "evidenced_by"
+    },
+    {
+      "from": "evidence:Playwright matrix, screenshots and independent critic",
+      "to": "artifact:Playwright matrix, screenshots and independent critic",
+      "relation": "materialized_as"
+    },
+    {
+      "from": "requirement:P11.2-CONSOLE",
+      "to": "gate:unit",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-CONSOLE",
+      "to": "gate:e2e",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-CONSOLE",
+      "to": "gate:independent_critic",
+      "relation": "gated_by"
+    },
+    {
+      "from": "implementation:apps/web/src/features/orchestration/index.tsx",
+      "to": "test:tests/e2e/visual-shell.spec.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:apps/web/src/features/orchestration/index.tsx",
+      "to": "test:apps/web/src/features/orchestration/orchestration.test.tsx",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:apps/web/src/styles.css",
+      "to": "test:tests/e2e/visual-shell.spec.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:apps/web/src/styles.css",
+      "to": "test:apps/web/src/features/orchestration/orchestration.test.tsx",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:tests/e2e/visual-shell.spec.ts",
+      "to": "test:tests/e2e/visual-shell.spec.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:tests/e2e/visual-shell.spec.ts",
+      "to": "test:apps/web/src/features/orchestration/orchestration.test.tsx",
+      "relation": "verified_by"
+    },
+    {
+      "from": "execution:tests/e2e/visual-shell.spec.ts",
+      "to": "artifact:Playwright matrix, screenshots and independent critic",
+      "relation": "produced"
+    },
+    {
+      "from": "execution:apps/web/src/features/orchestration/orchestration.test.tsx",
+      "to": "artifact:Playwright matrix, screenshots and independent critic",
+      "relation": "produced"
+    },
+    {
+      "from": "artifact:Playwright matrix, screenshots and independent critic",
+      "to": "gate:unit",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:Playwright matrix, screenshots and independent critic",
+      "to": "gate:e2e",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:Playwright matrix, screenshots and independent critic",
+      "to": "gate:independent_critic",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "requirement:P11.2-PREFLIGHT",
+      "relation": "evaluates"
+    },
+    {
+      "from": "requirement:P11.2-PREFLIGHT",
+      "to": "implementation:scripts/production-preflight.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-PREFLIGHT",
+      "to": "implementation:tests/production-preflight.test.js",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-PREFLIGHT",
+      "to": "implementation:packages/shared/src/env.ts",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-PREFLIGHT",
+      "to": "test:tests/production-preflight.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:tests/production-preflight.test.js",
+      "to": "execution:tests/production-preflight.test.js",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-PREFLIGHT",
+      "to": "evidence:production:preflight output and tests",
+      "relation": "evidenced_by"
+    },
+    {
+      "from": "evidence:production:preflight output and tests",
+      "to": "artifact:production:preflight output and tests",
+      "relation": "materialized_as"
+    },
+    {
+      "from": "requirement:P11.2-PREFLIGHT",
+      "to": "gate:production_preflight",
+      "relation": "gated_by"
+    },
+    {
+      "from": "implementation:scripts/production-preflight.mjs",
+      "to": "test:tests/production-preflight.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:tests/production-preflight.test.js",
+      "to": "test:tests/production-preflight.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/shared/src/env.ts",
+      "to": "test:tests/production-preflight.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "execution:tests/production-preflight.test.js",
+      "to": "artifact:production:preflight output and tests",
+      "relation": "produced"
+    },
+    {
+      "from": "artifact:production:preflight output and tests",
+      "to": "gate:production_preflight",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "requirement:P11.2-SUPPLY",
+      "relation": "evaluates"
+    },
+    {
+      "from": "requirement:P11.2-SUPPLY",
+      "to": "implementation:scripts/generate-sbom.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-SUPPLY",
+      "to": "implementation:scripts/check-licenses.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-SUPPLY",
+      "to": "implementation:.github/workflows/verify.yml",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-SUPPLY",
+      "to": "implementation:.github/workflows/security.yml",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-SUPPLY",
+      "to": "test:npm run audit:security",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:npm run audit:security",
+      "to": "execution:npm run audit:security",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-SUPPLY",
+      "to": "test:npm run licenses:check",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:npm run licenses:check",
+      "to": "execution:npm run licenses:check",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-SUPPLY",
+      "to": "test:npm run sbom",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:npm run sbom",
+      "to": "execution:npm run sbom",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-SUPPLY",
+      "to": "evidence:CI and supply reports",
+      "relation": "evidenced_by"
+    },
+    {
+      "from": "evidence:CI and supply reports",
+      "to": "artifact:CI and supply reports",
+      "relation": "materialized_as"
+    },
+    {
+      "from": "requirement:P11.2-SUPPLY",
+      "to": "gate:security",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-SUPPLY",
+      "to": "gate:supply_chain",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-SUPPLY",
+      "to": "gate:phase10_historical_verification",
+      "relation": "gated_by"
+    },
+    {
+      "from": "implementation:scripts/generate-sbom.mjs",
+      "to": "test:npm run audit:security",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/generate-sbom.mjs",
+      "to": "test:npm run licenses:check",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/generate-sbom.mjs",
+      "to": "test:npm run sbom",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/check-licenses.mjs",
+      "to": "test:npm run audit:security",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/check-licenses.mjs",
+      "to": "test:npm run licenses:check",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/check-licenses.mjs",
+      "to": "test:npm run sbom",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:.github/workflows/verify.yml",
+      "to": "test:npm run audit:security",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:.github/workflows/verify.yml",
+      "to": "test:npm run licenses:check",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:.github/workflows/verify.yml",
+      "to": "test:npm run sbom",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:.github/workflows/security.yml",
+      "to": "test:npm run audit:security",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:.github/workflows/security.yml",
+      "to": "test:npm run licenses:check",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:.github/workflows/security.yml",
+      "to": "test:npm run sbom",
+      "relation": "verified_by"
+    },
+    {
+      "from": "execution:npm run audit:security",
+      "to": "artifact:CI and supply reports",
+      "relation": "produced"
+    },
+    {
+      "from": "execution:npm run licenses:check",
+      "to": "artifact:CI and supply reports",
+      "relation": "produced"
+    },
+    {
+      "from": "execution:npm run sbom",
+      "to": "artifact:CI and supply reports",
+      "relation": "produced"
+    },
+    {
+      "from": "artifact:CI and supply reports",
+      "to": "gate:security",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:CI and supply reports",
+      "to": "gate:supply_chain",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:CI and supply reports",
+      "to": "gate:phase10_historical_verification",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "requirement:P11.2-EXTERNAL",
+      "relation": "evaluates"
+    },
+    {
+      "from": "requirement:P11.2-EXTERNAL",
+      "to": "implementation:certification/external-gates.json",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-EXTERNAL",
+      "to": "evidence:external-gates.json and integration report",
+      "relation": "evidenced_by"
+    },
+    {
+      "from": "evidence:external-gates.json and integration report",
+      "to": "artifact:external-gates.json and integration report",
+      "relation": "materialized_as"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "requirement:P11.2-NO-PRODUCTION-EFFECT",
+      "relation": "evaluates"
+    },
+    {
+      "from": "requirement:P11.2-NO-PRODUCTION-EFFECT",
+      "to": "implementation:scripts/production-preflight.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-NO-PRODUCTION-EFFECT",
+      "to": "implementation:scripts/phase11-bypass-audit.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-NO-PRODUCTION-EFFECT",
+      "to": "implementation:certification/external-gates.json",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-NO-PRODUCTION-EFFECT",
+      "to": "test:scripts/phase11-2-redteam.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:scripts/phase11-2-redteam.mjs",
+      "to": "execution:scripts/phase11-2-redteam.mjs",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-NO-PRODUCTION-EFFECT",
+      "to": "test:scripts/phase11-bypass-audit.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:scripts/phase11-bypass-audit.mjs",
+      "to": "execution:scripts/phase11-bypass-audit.mjs",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-NO-PRODUCTION-EFFECT",
+      "to": "evidence:preflight, bypass audit and execution log",
+      "relation": "evidenced_by"
+    },
+    {
+      "from": "evidence:preflight, bypass audit and execution log",
+      "to": "artifact:preflight, bypass audit and execution log",
+      "relation": "materialized_as"
+    },
+    {
+      "from": "requirement:P11.2-NO-PRODUCTION-EFFECT",
+      "to": "gate:production_preflight",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-NO-PRODUCTION-EFFECT",
+      "to": "gate:bypass_audit",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-NO-PRODUCTION-EFFECT",
+      "to": "gate:adversarial_proof",
+      "relation": "gated_by"
+    },
+    {
+      "from": "implementation:scripts/production-preflight.mjs",
+      "to": "test:scripts/phase11-2-redteam.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/production-preflight.mjs",
+      "to": "test:scripts/phase11-bypass-audit.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-bypass-audit.mjs",
+      "to": "test:scripts/phase11-2-redteam.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-bypass-audit.mjs",
+      "to": "test:scripts/phase11-bypass-audit.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:certification/external-gates.json",
+      "to": "test:scripts/phase11-2-redteam.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:certification/external-gates.json",
+      "to": "test:scripts/phase11-bypass-audit.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "execution:scripts/phase11-2-redteam.mjs",
+      "to": "artifact:preflight, bypass audit and execution log",
+      "relation": "produced"
+    },
+    {
+      "from": "execution:scripts/phase11-bypass-audit.mjs",
+      "to": "artifact:preflight, bypass audit and execution log",
+      "relation": "produced"
+    },
+    {
+      "from": "artifact:preflight, bypass audit and execution log",
+      "to": "gate:production_preflight",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:preflight, bypass audit and execution log",
+      "to": "gate:bypass_audit",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:preflight, bypass audit and execution log",
+      "to": "gate:adversarial_proof",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "gate:prompt_integrity",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:verify",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:format",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:typecheck",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:lint",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:build",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:unit",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:coverage",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:security",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:supply_chain",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:worker_startup",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:postgres",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:e2e",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:evals",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:chaos",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:load",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:recovery",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:bypass_audit",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:certification_self_test",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:phase10_historical_verification",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:production_preflight",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:evidence_reports",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:independent_critic",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:trace_lineage",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:governance_redteam",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:tenant_redteam",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:certification_redteam",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:adversarial_proof",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:outbox_replay",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:clone_verify",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:candidate_clean",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:node_target",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:evidence_graph",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:PHASE11_FORMAL_CLOSURE",
+      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "relation": "binds_to"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "stage:inbound",
+      "relation": "observes"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "stage:observation",
+      "relation": "observes"
+    },
+    {
+      "from": "stage:inbound",
+      "to": "stage:observation",
+      "relation": "follows"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "stage:understand",
+      "relation": "observes"
+    },
+    {
+      "from": "stage:observation",
+      "to": "stage:understand",
+      "relation": "follows"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "stage:goal",
+      "relation": "observes"
+    },
+    {
+      "from": "stage:understand",
+      "to": "stage:goal",
+      "relation": "follows"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "stage:plan",
+      "relation": "observes"
+    },
+    {
+      "from": "stage:goal",
+      "to": "stage:plan",
+      "relation": "follows"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "stage:govern",
+      "relation": "observes"
+    },
+    {
+      "from": "stage:plan",
+      "to": "stage:govern",
+      "relation": "follows"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "stage:step",
+      "relation": "observes"
+    },
+    {
+      "from": "stage:govern",
+      "to": "stage:step",
+      "relation": "follows"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "stage:attempt",
+      "relation": "observes"
+    },
+    {
+      "from": "stage:step",
+      "to": "stage:attempt",
+      "relation": "follows"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "stage:outbox",
+      "relation": "observes"
+    },
+    {
+      "from": "stage:attempt",
+      "to": "stage:outbox",
+      "relation": "follows"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "stage:effect",
+      "relation": "observes"
+    },
+    {
+      "from": "stage:outbox",
+      "to": "stage:effect",
+      "relation": "follows"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "stage:observed_result",
+      "relation": "observes"
+    },
+    {
+      "from": "stage:effect",
+      "to": "stage:observed_result",
+      "relation": "follows"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "stage:evaluation",
+      "relation": "observes"
+    },
+    {
+      "from": "stage:observed_result",
+      "to": "stage:evaluation",
+      "relation": "follows"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "stage:replan",
+      "relation": "observes"
+    },
+    {
+      "from": "stage:evaluation",
+      "to": "stage:replan",
+      "relation": "follows"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "stage:response",
+      "relation": "observes"
+    },
+    {
+      "from": "stage:replan",
+      "to": "stage:response",
+      "relation": "follows"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "evidence:scripts/phase11-2-redteam.mjs",
+      "to": "invariant:INV-001",
+      "relation": "supports"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "evidence:scripts/phase11-2-redteam.mjs",
+      "to": "invariant:INV-002",
+      "relation": "supports"
+    },
+    {
+      "from": "evidence:certification/phase11/logs/bypass_audit.log",
+      "to": "invariant:INV-002",
+      "relation": "supports"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "evidence:packages/policy-engine/src",
+      "to": "invariant:INV-003",
+      "relation": "supports"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "evidence:certification/phase11/recovery-report.json",
+      "to": "invariant:INV-004",
+      "relation": "supports"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "evidence:packages/policy-engine/src",
+      "to": "invariant:INV-005",
+      "relation": "supports"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "evidence:certification/phase11/logs/governance_redteam.log",
+      "to": "invariant:INV-006",
+      "relation": "supports"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "evidence:certification/phase11/postgres-report.json",
+      "to": "invariant:INV-007",
+      "relation": "supports"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "evidence:certification/phase11/postgres-report.json",
+      "to": "invariant:INV-008",
+      "relation": "supports"
+    },
+    {
+      "from": "evidence:certification/phase11/evidence-graph.json",
+      "to": "invariant:INV-008",
+      "relation": "supports"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "evidence:certification/phase11/postgres-report.json",
+      "to": "invariant:INV-009",
+      "relation": "supports"
+    },
+    {
+      "from": "evidence:certification/phase11/chaos-report.json",
+      "to": "invariant:INV-009",
+      "relation": "supports"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "evidence:certification/phase11/postgres-report.json",
+      "to": "invariant:INV-010",
+      "relation": "supports"
+    },
+    {
+      "from": "evidence:certification/phase11/recovery-report.json",
+      "to": "invariant:INV-010",
+      "relation": "supports"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "evidence:certification/phase11/recovery-report.json",
+      "to": "invariant:INV-011",
+      "relation": "supports"
+    },
+    {
+      "from": "evidence:certification/phase11/eval-report.json",
+      "to": "invariant:INV-011",
+      "relation": "supports"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "evidence:certification/phase11/recovery-report.json",
+      "to": "invariant:INV-012",
+      "relation": "supports"
+    },
+    {
+      "from": "evidence:certification/phase11/eval-report.json",
+      "to": "invariant:INV-012",
+      "relation": "supports"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "evidence:certification/phase11/recovery-report.json",
+      "to": "invariant:INV-013",
+      "relation": "supports"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "evidence:certification/phase11/logs/governance_redteam.log",
+      "to": "invariant:INV-014",
+      "relation": "supports"
+    },
+    {
+      "from": "evidence:certification/phase11/logs/e2e.log",
+      "to": "invariant:INV-014",
+      "relation": "supports"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "evidence:certification/phase11/manifest.json",
+      "to": "invariant:INV-015",
+      "relation": "supports"
+    },
+    {
+      "from": "evidence:certification/current.json",
+      "to": "invariant:INV-015",
+      "relation": "supports"
+    },
+    {
+      "from": "evidence:certification/phase11/evidence-graph.json",
+      "to": "invariant:INV-015",
+      "relation": "supports"
+    },
+    {
+      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "evidence:certification/phase11/preflight-report.json",
+      "to": "invariant:INV-016",
+      "relation": "supports"
+    },
+    {
+      "from": "evidence:certification/phase11/negative-validation.json",
+      "to": "invariant:INV-016",
+      "relation": "supports"
+    },
+    {
+      "from": "invariant:INV-001",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "invariant:INV-002",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "invariant:INV-003",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "invariant:INV-004",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "invariant:INV-005",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "invariant:INV-006",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "invariant:INV-007",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "invariant:INV-008",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "invariant:INV-009",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "invariant:INV-010",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "invariant:INV-011",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "invariant:INV-012",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "invariant:INV-013",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "invariant:INV-014",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "invariant:INV-015",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "invariant:INV-016",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:prompt_integrity",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:verify",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:format",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:typecheck",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:lint",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:build",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:unit",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:coverage",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:security",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:supply_chain",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:worker_startup",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:postgres",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:e2e",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:evals",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:chaos",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:load",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:recovery",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:bypass_audit",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:certification_self_test",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:phase10_historical_verification",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:production_preflight",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:evidence_reports",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:independent_critic",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:trace_lineage",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:governance_redteam",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:tenant_redteam",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:certification_redteam",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:adversarial_proof",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:outbox_replay",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:clone_verify",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:candidate_clean",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:node_target",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:evidence_graph",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:PHASE11_FORMAL_CLOSURE",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
+      "from": "gate:prompt_integrity",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:verify",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:format",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:typecheck",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:lint",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:build",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:unit",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:coverage",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:security",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:supply_chain",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:worker_startup",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:postgres",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:e2e",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evals",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:chaos",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:load",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:recovery",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:bypass_audit",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_self_test",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:phase10_historical_verification",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:production_preflight",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_reports",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:independent_critic",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:trace_lineage",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:governance_redteam",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:tenant_redteam",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_redteam",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:adversarial_proof",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:outbox_replay",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:clone_verify",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:candidate_clean",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:node_target",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_graph",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:PHASE11_FORMAL_CLOSURE",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:prompt_integrity",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:verify",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:format",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:typecheck",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:lint",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:build",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:unit",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:coverage",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:security",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:supply_chain",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:worker_startup",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:postgres",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:e2e",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evals",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:chaos",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:load",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:recovery",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:bypass_audit",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_self_test",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:phase10_historical_verification",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:production_preflight",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_reports",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:independent_critic",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:trace_lineage",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:governance_redteam",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:tenant_redteam",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_redteam",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:adversarial_proof",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:outbox_replay",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:clone_verify",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:candidate_clean",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:node_target",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_graph",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:PHASE11_FORMAL_CLOSURE",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:prompt_integrity",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:verify",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:format",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:typecheck",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:lint",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:build",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:unit",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:coverage",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:security",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:supply_chain",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:worker_startup",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:postgres",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:e2e",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evals",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:chaos",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:load",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:recovery",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:bypass_audit",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_self_test",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:phase10_historical_verification",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:production_preflight",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_reports",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:independent_critic",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:trace_lineage",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:governance_redteam",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:tenant_redteam",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_redteam",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:adversarial_proof",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:outbox_replay",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:clone_verify",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:candidate_clean",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:node_target",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_graph",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:PHASE11_FORMAL_CLOSURE",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:prompt_integrity",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:verify",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:format",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:typecheck",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:lint",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:build",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:unit",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:coverage",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:security",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:supply_chain",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:worker_startup",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:postgres",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:e2e",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evals",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:chaos",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:load",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:recovery",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:bypass_audit",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_self_test",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:phase10_historical_verification",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:production_preflight",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_reports",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:independent_critic",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:trace_lineage",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:governance_redteam",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:tenant_redteam",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_redteam",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:adversarial_proof",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:outbox_replay",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:clone_verify",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:candidate_clean",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:node_target",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_graph",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:PHASE11_FORMAL_CLOSURE",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:prompt_integrity",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:verify",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:format",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:typecheck",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:lint",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:build",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:unit",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:coverage",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:security",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:supply_chain",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:worker_startup",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:postgres",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:e2e",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evals",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:chaos",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:load",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:recovery",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:bypass_audit",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_self_test",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:phase10_historical_verification",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:production_preflight",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_reports",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:independent_critic",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:trace_lineage",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:governance_redteam",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:tenant_redteam",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_redteam",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:adversarial_proof",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:outbox_replay",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:clone_verify",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:candidate_clean",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:node_target",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_graph",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:PHASE11_FORMAL_CLOSURE",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:prompt_integrity",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:verify",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:format",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:typecheck",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:lint",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:build",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:unit",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:coverage",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:security",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:supply_chain",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:worker_startup",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:postgres",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:e2e",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evals",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:chaos",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:load",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:recovery",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:bypass_audit",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_self_test",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:phase10_historical_verification",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:production_preflight",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_reports",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:independent_critic",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:trace_lineage",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:governance_redteam",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:tenant_redteam",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_redteam",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:adversarial_proof",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:outbox_replay",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:clone_verify",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:candidate_clean",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:node_target",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_graph",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:PHASE11_FORMAL_CLOSURE",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:prompt_integrity",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:verify",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:format",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:typecheck",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:lint",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:build",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:unit",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:coverage",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:security",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:supply_chain",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:worker_startup",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:postgres",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:e2e",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evals",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:chaos",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:load",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:recovery",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:bypass_audit",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_self_test",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:phase10_historical_verification",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:production_preflight",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_reports",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:independent_critic",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:trace_lineage",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:governance_redteam",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:tenant_redteam",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_redteam",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:adversarial_proof",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:outbox_replay",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:clone_verify",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:candidate_clean",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:node_target",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_graph",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:PHASE11_FORMAL_CLOSURE",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:prompt_integrity",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:verify",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:format",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:typecheck",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:lint",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:build",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:unit",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:coverage",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:security",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:supply_chain",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:worker_startup",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:postgres",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:e2e",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evals",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:chaos",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:load",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:recovery",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:bypass_audit",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_self_test",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:phase10_historical_verification",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:production_preflight",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_reports",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:independent_critic",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:trace_lineage",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:governance_redteam",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:tenant_redteam",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_redteam",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:adversarial_proof",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:outbox_replay",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:clone_verify",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:candidate_clean",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:node_target",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_graph",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:PHASE11_FORMAL_CLOSURE",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:prompt_integrity",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:verify",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:format",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:typecheck",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:lint",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:build",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:unit",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:coverage",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:security",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:supply_chain",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:worker_startup",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:postgres",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:e2e",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evals",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:chaos",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:load",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:recovery",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:bypass_audit",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_self_test",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:phase10_historical_verification",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:production_preflight",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_reports",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:independent_critic",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:trace_lineage",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:governance_redteam",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:tenant_redteam",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_redteam",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:adversarial_proof",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:outbox_replay",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:clone_verify",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:candidate_clean",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:node_target",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_graph",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:PHASE11_FORMAL_CLOSURE",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:prompt_integrity",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:verify",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:format",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:typecheck",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:lint",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:build",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:unit",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:coverage",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:security",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:supply_chain",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:worker_startup",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:postgres",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:e2e",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evals",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:chaos",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:load",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:recovery",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:bypass_audit",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_self_test",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:phase10_historical_verification",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:production_preflight",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_reports",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:independent_critic",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:trace_lineage",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:governance_redteam",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:tenant_redteam",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_redteam",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:adversarial_proof",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:outbox_replay",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:clone_verify",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:candidate_clean",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:node_target",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_graph",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:PHASE11_FORMAL_CLOSURE",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:prompt_integrity",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:verify",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:format",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:typecheck",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:lint",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:build",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:unit",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:coverage",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:security",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:supply_chain",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:worker_startup",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:postgres",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:e2e",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evals",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:chaos",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:load",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:recovery",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:bypass_audit",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_self_test",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:phase10_historical_verification",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:production_preflight",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_reports",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:independent_critic",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:trace_lineage",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:governance_redteam",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:tenant_redteam",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_redteam",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:adversarial_proof",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:outbox_replay",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:clone_verify",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:candidate_clean",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:node_target",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_graph",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:PHASE11_FORMAL_CLOSURE",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:prompt_integrity",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:verify",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:format",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:typecheck",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:lint",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:build",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:unit",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:coverage",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:security",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:supply_chain",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:worker_startup",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:postgres",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:e2e",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evals",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:chaos",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:load",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:recovery",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:bypass_audit",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_self_test",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:phase10_historical_verification",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:production_preflight",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_reports",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:independent_critic",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:trace_lineage",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:governance_redteam",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:tenant_redteam",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_redteam",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:adversarial_proof",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:outbox_replay",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:clone_verify",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:candidate_clean",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:node_target",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_graph",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:PHASE11_FORMAL_CLOSURE",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:prompt_integrity",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:verify",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:format",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:typecheck",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:lint",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:build",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:unit",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:coverage",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:security",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:supply_chain",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:worker_startup",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:postgres",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:e2e",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evals",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:chaos",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:load",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:recovery",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:bypass_audit",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_self_test",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:phase10_historical_verification",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:production_preflight",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_reports",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:independent_critic",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:trace_lineage",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:governance_redteam",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:tenant_redteam",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_redteam",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:adversarial_proof",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:outbox_replay",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:clone_verify",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:candidate_clean",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:node_target",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_graph",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:PHASE11_FORMAL_CLOSURE",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:prompt_integrity",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:verify",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:format",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:typecheck",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:lint",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:build",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:unit",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:coverage",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:security",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:supply_chain",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:worker_startup",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:postgres",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:e2e",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evals",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:chaos",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:load",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:recovery",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:bypass_audit",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_self_test",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:phase10_historical_verification",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:production_preflight",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_reports",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:independent_critic",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:trace_lineage",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:governance_redteam",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:tenant_redteam",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_redteam",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:adversarial_proof",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:outbox_replay",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:clone_verify",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:candidate_clean",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:node_target",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_graph",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:PHASE11_FORMAL_CLOSURE",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:prompt_integrity",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:verify",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:format",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:typecheck",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:lint",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:build",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:unit",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:coverage",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:security",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:supply_chain",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:worker_startup",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:postgres",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:e2e",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evals",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:chaos",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:load",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:recovery",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:bypass_audit",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_self_test",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:phase10_historical_verification",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:production_preflight",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_reports",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:independent_critic",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:trace_lineage",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:governance_redteam",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:tenant_redteam",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_redteam",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:adversarial_proof",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:outbox_replay",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:clone_verify",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:candidate_clean",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:node_target",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_graph",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:PHASE11_FORMAL_CLOSURE",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:prompt_integrity",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:verify",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:format",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:typecheck",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:lint",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:build",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:unit",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:coverage",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:security",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:supply_chain",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:worker_startup",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:postgres",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:e2e",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evals",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:chaos",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:load",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:recovery",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:bypass_audit",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_self_test",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:phase10_historical_verification",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:production_preflight",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_reports",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:independent_critic",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:trace_lineage",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:governance_redteam",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:tenant_redteam",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:certification_redteam",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:adversarial_proof",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:outbox_replay",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:clone_verify",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:candidate_clean",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:node_target",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:evidence_graph",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:PHASE11_FORMAL_CLOSURE",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    }
+  ],
+  "certificationId": "phase11-97c31146053f9e5b-mu4pxe3r",
+  "candidateCommit": "8c87e825316acf537fbc750a7b41c9e185bfae59"
+}
