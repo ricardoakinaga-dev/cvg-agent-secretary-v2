@@ -57,3 +57,22 @@ pré-BUILD. Nenhum dado real, segredo ou efeito externo foi usado.
 `READY_FOR_CONTROLLED_BUILD`. A implementação começa somente após a quality
 bar e o baseline serem materializados no run Gauntlet corrente. A decisão de
 release permanece `NO_GO` até evidência externa e humana independente.
+
+## Fechamento local — 2026-09-16
+
+O BUILD e a auditoria candidate-bound foram concluídos sob Node `22.23.2`, em
+ambiente controlado e synthetic-only. O pacote formal registrou:
+
+- `22/22` gates mecânicos `PASS` e `12/12` invariantes locais `PASS`;
+- `251` arquivos de teste / `1.761` testes PASS / `117` skips, PostgreSQL
+  descartável `23/201` PASS e Playwright `9/9` PASS;
+- coverage de `89.88%` statements, `83.25%` branches, `88.89%` functions e
+  `90.44%` lines;
+- verificadores current/evidence `PASS`; promoção para produção recusada por
+  `production_assurance_incomplete`, sem efeito de produção.
+
+Decisão: `CONDITIONAL_GO / AAA_CANDIDATE`, elegível no máximo para `STAGING`.
+Provider, canal, identidade externa, RAG institucional, RPO/RTO, piloto,
+rollback e sign-off humano permanecem pendentes e não foram simulados como
+validados. O resultado canônico e seus hashes ficam em `certification/phase11/`
+e `certification/current.json`.

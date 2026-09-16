@@ -1761,3 +1761,17 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 - prompt: intake exato de cinco fontes em [`prompt-master/20260915-formal-closure`](11_phase11/prompt-master/20260915-formal-closure/README.md), preservando o conjunto histórico de 14 fontes.
 - next_action: finalizar baseline candidate-bound e delta audit; executar scouts read-only; depois BUILD por fatias com teste focado, crítico fresco e evidência hashada.
 - blockers conhecidos: gates externos/humanos, durabilidade física/RPO-RTO e ambiente de piloto não disponíveis; Node24 é incompatível, Node22.23.2 está instalado e deve ser usado.
+
+# PHASE11.1-FORMAL-CLOSURE-20260916 — resultado da auditoria local
+
+## Concluído
+
+- [x] Preservar os cinco prompts byte a byte, SPEC, delta audit, quality bar e pacote canônico candidate-bound.
+- [x] Implementar budget/fencing/heartbeat/settlement atômicos, lineage durável, preflight PostgreSQL, observabilidade read-only e console visual responsivo.
+- [x] Executar 22 gates e 12 invariantes locais com Node `22.23.2`; unit `251/1.761`, PostgreSQL descartável `23/201`, E2E `9/9`, typecheck/lint/format/build/security/supply/worker PASS.
+- [x] Verificar o pacote corrente e recusar promoção para produção com `production_assurance_incomplete`.
+
+## Ainda bloqueado
+
+- [ ] Validar provider, canal, identidade externa, RAG institucional, RPO/RTO, piloto supervisionado, rollback e sign-off humano em ambientes autorizados.
+- [ ] Manter `CONTROLLED_LOCAL / PRODUCTION_NO_GO`; não automatizar consulta real, ação clínica, financeira ou prontuário definitivo.

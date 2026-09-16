@@ -5617,3 +5617,12 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - gate: `SPEC_APPROVED_CONTROLLED_BUILD` autoriza somente BUILD local sintético; nenhum gate externo, humano ou de produção foi concedido.
 - next_action: materializar baseline/evidence digest e executar descoberta independente read-only de certificação, orquestração e console.
 - evidências: `docs/phase11/PHASE11_DELTA_AUDIT.md`; `docs/02_spec/phase11_1_formal_closure_contract_20260915.md`; `docs/04_audit/evidence/AAA/AAA-21/quality-bar-phase11-1-v1.json`.
+
+# PHASE11.1-FORMAL-CLOSURE-20260916 — AUDIT local concluído
+
+- task: `PHASE11.1-FORMAL-CLOSURE-20260915`; pipeline `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`; execução `CONTROLLED_LOCAL` e produção `NO_GO`.
+- resultado: `CONDITIONAL_GO`; certificação `AAA_CANDIDATE`; elegibilidade máxima `STAGING`. O runner formal registrou 22/22 gates e 12/12 invariantes locais como `PASS`.
+- evidência executada sob Node `22.23.2`: unit `251/1.761` com `117` skips; PostgreSQL descartável `23/201`; E2E `9/9`; coverage `89.88%` statements, `83.25%` branches, `88.89%` functions e `90.44%` lines; typecheck, lint, Prettier, build, security, SBOM/licenses e worker startup PASS.
+- integridade: verificadores current/evidence PASS; `promotion:check --requested PRODUCTION` recusou promoção com `production_assurance_incomplete` e `noProductionEffect=true`.
+- decisão: não houve provider, canal, identidade, RAG institucional, piloto, rollback real, sign-off humano, deploy, dado real ou efeito clínico/financeiro/prontuário.
+- próximo passo: revisão independente e comprovação dos oito gates externos/humanos pendentes; nenhum resultado local autoriza produção.

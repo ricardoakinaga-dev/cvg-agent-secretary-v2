@@ -2525,3 +2525,12 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - gate: `SPEC_APPROVED_CONTROLLED_BUILD`; evidência [`docs/phase11/PHASE11_DELTA_AUDIT.md`](phase11/PHASE11_DELTA_AUDIT.md) e quality bar [`docs/04_audit/evidence/AAA/AAA-21/quality-bar-phase11-1-v1.json`](04_audit/evidence/AAA/AAA-21/quality-bar-phase11-1-v1.json).
 - next_action: executar baseline bruto e três scouts read-only; não aceitar nenhum veredicto dos scouts como aprovação e não editar `.gauntlet/state.json` histórico.
 - blockers: AUD-11-01..08 são gaps locais a revalidar; AUD-11-09 e gates externos/humanos são bloqueadores legítimos de Triple AAA; produção permanece bloqueada.
+
+# PHASE11.1-FORMAL-CLOSURE-20260916 — fechamento local candidate-bound
+
+- current_engine: `AUDIT`; task: `PHASE11.1-FORMAL-CLOSURE-20260915`; status: `CONDITIONAL_GO / AAA_CANDIDATE`; perfil elegível `STAGING`; produção `NO_GO`.
+- last_completed_action: o candidato foi selado sob Node `22.23.2` com PostgreSQL descartável autorizado; 22/22 gates mecânicos e 12/12 invariantes locais passaram. `certification:verify` e `evidence:verify` passaram no mesmo pacote.
+- verification: unit `251` arquivos / `1.761` testes PASS / `117` skips; PostgreSQL `23` arquivos / `201` testes PASS; E2E Playwright `9/9`; coverage statements `89.88%`, branches `83.25%`, functions `88.89%`, lines `90.44%`; security, SBOM/licenses, worker startup, typecheck, lint, format e build PASS.
+- evidence: pacote canônico em `certification/phase11/`, ponte `certification/current.json`, prompt preservado em `docs/11_phase11/prompt-master/20260915-formal-closure/` e crítica visual independente em `docs/04_audit/evidence/AAA/AAA-21/console-visual-critic-20260916.json`.
+- blockers: provider, canal, identidade externa, RAG institucional, RPO/RTO, piloto, rollback e sign-off humano continuam `NOT_VALIDATED/PENDING`; nenhuma evidência externa foi inventada.
+- next_action: manter produção bloqueada e, somente em ambientes autorizados, obter os gates externos/humanos e executar revisão independente de release.
