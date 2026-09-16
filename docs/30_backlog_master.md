@@ -1775,3 +1775,13 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 
 - [ ] Validar provider, canal, identidade externa, RAG institucional, RPO/RTO, piloto supervisionado, rollback e sign-off humano em ambientes autorizados.
 - [ ] Manter `CONTROLLED_LOCAL / PRODUCTION_NO_GO`; não automatizar consulta real, ação clínica, financeira ou prontuário definitivo.
+
+# PHASE11.2-TRIPLE-AAA-20260916 — resultado local
+
+- [x] Preservar e verificar as seis fontes do prompt, registrar PRD/SPEC/quality bar/delta audit e implementar o slice candidate-bound.
+- [x] Fechar runtime/orchestrator: lineage de avaliação em replan, fingerprint semântico, validação de capability/risk/tenant e journal obrigatório no kernel durável.
+- [x] Fechar recuperação/outbox: revalidação imediata antes do efeito, rejeição terminal, fencing e testes de replay/uncertainty.
+- [x] Fechar UI/evidência: matriz sintética `UNCERTAIN`, estados de erro/loading/empty/retry, acessibilidade, screenshots e relatórios human-readable.
+- [x] Executar os gates locais sob Node `22.23.2` e PostgreSQL descartável; nenhum dado real, provider, canal, RAG ou efeito externo foi utilizado.
+- [ ] Gerar e verificar o pacote canônico `certification/phase11/` após o commit de estado; manter a ponte `certification/current.json` candidate-bound.
+- [ ] Validar em ambiente autorizado os gates externos/humanos: provider, canal, identidade, RAG institucional, RPO/RTO, piloto, rollback e sign-off. Produção continua bloqueada.
