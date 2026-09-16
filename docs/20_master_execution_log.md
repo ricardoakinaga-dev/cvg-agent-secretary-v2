@@ -5630,7 +5630,7 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 # PHASE11.2-TRIPLE-AAA-20260916 — AUDIT local antes do selo canônico
 
 - pipeline: `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`; gate `SPEC_APPROVED_CONTROLLED_BUILD`; task registrada antes do BUILD.
-- source: `8448c971e44d32adaf1fc35427d193bbb87400a6`; candidate behavior `52c801c4bf526309ea8ef0fefe6cbc479477a6fe3f708ed2c040e7d3f53d0ca0`; tree `9f882a8aed7124016f6e97ced5c61236aa77f14ad6d6fd99ddeeb7ff256d0276`.
+- source implementation: `8448c971e44d32adaf1fc35427d193bbb87400a6`; final candidate anchor/digest is emitted by the canonical package after this log commit to avoid a self-referential digest.
 - implementation: prompt master de seis fontes, PRD/SPEC, preflight fail-closed, invariantes `INV-001..INV-016`, grafo de evidência, lineage de avaliação, fingerprint semântico, journal durável para não-read, revalidação de outbox e matriz visual `UNCERTAIN`.
 - verification: Node `22.23.2`; unit `253/1772` pass com `117` skips; coverage `89.49/82.59/88.50/90.03`; PostgreSQL descartável `23/201`; E2E `9/9`; evals `8/8`; chaos `18/18` + `2` skips; red-team `15/15`; preflight negativo PASS; audit/security/licenses/startup/build/format/lint/typecheck PASS.
 - critic: PASS read-only, sem mutação, cobrindo tenant scope, read-only UI, loading/error/empty/retry, `UNCERTAIN` e `375/768/1440`; nenhuma prova externa foi criada.

@@ -2538,7 +2538,7 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 # PHASE11.2-TRIPLE-AAA-20260916 — fechamento local candidate-bound
 
 - current_engine: `AUDIT`; task: `PHASE11.2-TRIPLE-AAA-20260916`; status: `IN_PROGRESS`; execution `CONTROLLED_LOCAL`; production `NO_GO`.
-- source_anchor: commit `8448c971e44d32adaf1fc35427d193bbb87400a6`; behavior candidate `52c801c4bf526309ea8ef0fefe6cbc479477a6fe3f708ed2c040e7d3f53d0ca0`; behavior tree `9f882a8aed7124016f6e97ced5c61236aa77f14ad6d6fd99ddeeb7ff256d0276`; scope `984` files.
+- implementation_commit: `8448c971e44d32adaf1fc35427d193bbb87400a6`; the final behavior candidate anchor and digest are recorded by the canonical certification package after this state-log commit.
 - prompt_intake: seis fontes preservadas byte a byte e verificadas em `docs/11_phase11/prompt-master/20260916-triple-aaa/`.
 - local_evidence: unit `253` arquivos / `1772` testes PASS / `117` skips; coverage `89.49%` statements, `82.59%` branches, `88.50%` functions, `90.03%` lines; PostgreSQL descartável `23/201`; Playwright `9/9`; evals `8/8`; chaos `18/18` com `2` skips declarados; security, SBOM/licenses, startup, typecheck, lint, format e build PASS.
 - adversarial_evidence: red-team Phase 11.2 `15/15`; preflight PRODUCTION inseguro rejeitado sem side effects; critic independente read-only `PASS`, viewports `375/768/1440`, mutation sentinel `PASS`.
