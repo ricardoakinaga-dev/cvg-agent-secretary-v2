@@ -693,7 +693,7 @@ describe('api PostgreSQL persistence mode', () => {
         }
         if (text.includes('FROM pg_constraint')) {
           return queryResult(
-            names.map((conname) => ({ conname }))
+            names.map((conname) => ({ conname, convalidated: true }))
           ) as unknown as QueryResult<T>
         }
         if (text.includes('FROM pg_indexes')) {
@@ -781,7 +781,7 @@ describe('api PostgreSQL persistence mode', () => {
         }
         if (text.includes('FROM pg_constraint')) {
           return queryResult(
-            names.map((conname) => ({ conname }))
+            names.map((conname) => ({ conname, convalidated: true }))
           ) as unknown as QueryResult<T>
         }
         if (text.includes('FROM pg_indexes')) {

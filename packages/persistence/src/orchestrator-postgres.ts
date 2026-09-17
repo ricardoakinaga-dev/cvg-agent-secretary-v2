@@ -1120,6 +1120,17 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
       // claim them. This keeps the recovery decision ahead of any duplicate
       // effect attempt.
       if (!['PENDING', 'READY'].includes(current.status)) return null
+      const deadline = effectiveGoalDeadline(
+        goal.createdAt,
+        goal.deadline ?? undefined,
+        goal.budget.maxDurationMs
+      )
+      if (deadline <= input.now) {
+        throw new OrchestrationError(
+          'budget_exhausted',
+          'Goal deadline is exhausted'
+        )
+      }
       if (goal.budget.usage.steps >= goal.budget.maxSteps)
         throw new OrchestrationError(
           'budget_exhausted',

@@ -1,6 +1,8 @@
+import { createHash } from 'node:crypto'
 import { TenantIdSchema, type TenantId } from '@cvg/platform'
 import {
   CVG_TENANT_CONTEXT_SETTING,
+  readPostgresMigrationSql,
   type PostgresPoolLike
 } from '@cvg/persistence'
 
@@ -38,6 +40,25 @@ export const WORKER_REQUIRED_MIGRATIONS = [
   '0021_orchestrator_iteration_budget',
   '0022_orchestrator_evaluation_lineage',
   '0023_orchestrator_replan_fencing'
+] as const
+
+export const WORKER_REQUIRED_CONSTRAINTS = [
+  'orchestrator_steps_goal_plan_lineage_fk',
+  'orchestrator_observations_plan_goal_lineage_fk',
+  'orchestrator_observations_step_lineage_fk',
+  'orchestrator_evaluations_plan_goal_lineage_fk',
+  'orchestrator_evaluations_step_lineage_fk',
+  'orchestrator_attempts_plan_goal_lineage_fk',
+  'orchestrator_attempts_step_lineage_fk',
+  'effect_journal_orchestration_lineage_check',
+  'effect_journal_orchestration_step_lineage_fk',
+  'effect_journal_orchestration_attempt_lineage_fk',
+  'outbox_events_orchestration_lineage_check',
+  'outbox_events_orchestration_step_lineage_fk',
+  'outbox_events_orchestration_attempt_lineage_fk',
+  'orchestrator_plans_triggering_evaluation_fk',
+  'orchestrator_plans_replan_source_pair_check',
+  'orchestrator_plans_replan_source_lineage_fk'
 ] as const
 
 export interface PostgresWorkerPreflightOptions {
@@ -164,20 +185,64 @@ export async function assertPostgresWorkerPreflight(
       )
     }
 
-    const migrations = await client.query<{ version: string }>(
-      `SELECT version FROM schema_migrations
+    const migrations = await client.query<{
+      version: string
+      checksum: string | null
+      applied_at: Date | string
+    }>(
+      `SELECT version, checksum, applied_at FROM schema_migrations
         WHERE version = ANY($1::text[])`,
       [WORKER_REQUIRED_MIGRATIONS]
     )
-    const appliedMigrations = new Set(
-      migrations.rows.map((migration) => migration.version)
-    )
-    const missingMigrations = WORKER_REQUIRED_MIGRATIONS.filter(
-      (version) => !appliedMigrations.has(version)
-    )
-    if (missingMigrations.length > 0) {
+    let previousAppliedAt = 0
+    const invalidMigrations: string[] = []
+    for (const version of WORKER_REQUIRED_MIGRATIONS) {
+      const migration = migrations.rows.find(
+        (candidate) => candidate.version === version
+      )
+      const expectedChecksum = createHash('sha256')
+        .update(await readPostgresMigrationSql(version))
+        .digest('hex')
+      const appliedAt = migration
+        ? new Date(migration.applied_at).getTime()
+        : Number.NaN
+      if (
+        !migration ||
+        migration.checksum !== expectedChecksum ||
+        !Number.isFinite(appliedAt) ||
+        appliedAt < previousAppliedAt
+      ) {
+        invalidMigrations.push(version)
+      }
+      if (Number.isFinite(appliedAt)) previousAppliedAt = appliedAt
+    }
+    if (invalidMigrations.length > 0) {
       throw new Error(
-        `PostgreSQL worker schema is missing migrations: ${missingMigrations.join(', ')}`
+        `PostgreSQL worker schema migrations are missing, stale or out of order: ${invalidMigrations.join(', ')}`
+      )
+    }
+
+    const constraints = await client.query<{
+      conname: string
+      convalidated: boolean
+    }>(
+      `SELECT conname, convalidated
+         FROM pg_constraint
+        WHERE connamespace = current_schema()::regnamespace
+          AND conname = ANY($1::text[])`,
+      [WORKER_REQUIRED_CONSTRAINTS]
+    )
+    const verifiedConstraints = new Set(
+      constraints.rows
+        .filter((constraint) => constraint.convalidated)
+        .map((constraint) => constraint.conname)
+    )
+    const missingOrUnvalidatedConstraints = WORKER_REQUIRED_CONSTRAINTS.filter(
+      (constraint) => !verifiedConstraints.has(constraint)
+    )
+    if (missingOrUnvalidatedConstraints.length > 0) {
+      throw new Error(
+        `PostgreSQL worker schema constraints are missing or unvalidated: ${missingOrUnvalidatedConstraints.join(', ')}`
       )
     }
 

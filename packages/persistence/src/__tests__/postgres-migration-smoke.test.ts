@@ -94,6 +94,7 @@ describe('postgres migration smoke', () => {
       'orchestrator_plans_replan_source_lineage_fk'
     )
     expect(replanFencing).toContain('idx_orchestrator_evaluations_lineage')
+    expect(replanFencing).toContain('VALIDATE CONSTRAINT')
   })
 
   it('ships an additive release-candidate validator integrity migration', async () => {

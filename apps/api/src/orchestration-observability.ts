@@ -22,16 +22,44 @@ function iso(value: Date | null | undefined): string | null {
   return value?.toISOString() ?? null
 }
 
+function safeRequiredText(value: string): string {
+  return safeText(value) ?? 'Não informado'
+}
+
+function toExecutionSnapshot(snapshot: Goal['executionSnapshot']) {
+  const toolVersions = Object.entries(snapshot.toolVersions).reduce<
+    Record<string, string>
+  >((result, [name, version]) => {
+    const safeName = safeText(name)
+    const safeVersion = safeText(version)
+    if (safeName && safeVersion) result[safeName] = safeVersion
+    return result
+  }, {})
+  return {
+    agentVersion: safeText(snapshot.agentVersion),
+    promptVersion: safeText(snapshot.promptVersion),
+    policyVersion: safeText(snapshot.policyVersion),
+    modelProfile: safeText(snapshot.modelProfile),
+    toolVersions,
+    ...(snapshot.runtimeMode !== undefined
+      ? { runtimeMode: safeRequiredText(snapshot.runtimeMode) }
+      : {}),
+    ...(snapshot.runtimeVersion !== undefined
+      ? { runtimeVersion: safeText(snapshot.runtimeVersion) }
+      : {})
+  }
+}
+
 export function toOrchestrationGoalView(goal: Goal) {
   return {
     id: goal.id,
     tenantId: goal.tenantId,
     status: goal.status,
     objective: safeText(goal.objective),
-    correlationId: goal.correlationId,
-    inboundMessageId: goal.inboundMessageId,
-    conversationId: goal.conversationId,
-    sessionId: goal.sessionId,
+    correlationId: safeRequiredText(goal.correlationId),
+    inboundMessageId: safeText(goal.inboundMessageId),
+    conversationId: safeText(goal.conversationId),
+    sessionId: safeText(goal.sessionId),
     activePlanId: goal.activePlanId,
     version: goal.version,
     lastReason: safeText(goal.lastReason),
@@ -76,19 +104,21 @@ function toStepView(step: PlanStep) {
     type: step.type,
     description: safeText(step.description),
     dependencies: [...step.dependencies],
-    requiredCapabilities: [...step.requiredCapabilities],
+    requiredCapabilities: step.requiredCapabilities
+      .map(safeText)
+      .filter((value): value is string => value !== null),
     riskLevel: step.riskLevel,
     approvalRequirement: step.approvalRequirement,
     status: step.status,
     attemptCount: step.attemptCount,
-    approvalId: step.approvalId,
-    toolId: step.toolId,
-    toolVersion: step.toolVersion,
-    resultHash: step.resultHash,
+    approvalId: safeText(step.approvalId),
+    toolId: safeText(step.toolId),
+    toolVersion: safeText(step.toolVersion),
+    resultHash: safeText(step.resultHash),
     lastError: safeText(step.lastError),
     startedAt: iso(step.startedAt),
     completedAt: iso(step.completedAt),
-    leaseOwner: step.leaseOwner,
+    leaseOwner: safeText(step.leaseOwner),
     leaseUntil: iso(step.leaseUntil),
     version: step.version,
     createdAt: step.createdAt.toISOString(),
@@ -103,13 +133,13 @@ function toObservationView(observation: ObservationRecord) {
     planId: observation.planId,
     stepId: observation.stepId,
     kind: observation.kind,
-    resultDigest: observation.resultDigest,
+    resultDigest: safeText(observation.resultDigest),
     evidence: observation.evidence.map((item) => ({
-      source: item.source,
+      source: safeRequiredText(item.source),
       reference: safeText(item.reference),
       verified: item.verified,
-      key: item.key ?? null,
-      digest: item.digest ?? null
+      key: safeText(item.key),
+      digest: safeText(item.digest)
     })),
     createdAt: observation.createdAt.toISOString()
   }
@@ -125,11 +155,11 @@ function toEvaluationView(evaluation: EvaluationRecord) {
     result: evaluation.result,
     reason: safeText(evaluation.reason),
     evidence: evaluation.evidence.map((item) => ({
-      source: item.source,
+      source: safeRequiredText(item.source),
       reference: safeText(item.reference),
       verified: item.verified,
-      key: item.key ?? null,
-      digest: item.digest ?? null
+      key: safeText(item.key),
+      digest: safeText(item.digest)
     })),
     createdAt: evaluation.createdAt.toISOString()
   }
@@ -141,8 +171,8 @@ function toAttemptView(attempt: AttemptRecord) {
     goalId: attempt.goalId,
     planId: attempt.planId,
     stepId: attempt.stepId,
-    workerId: attempt.workerId,
-    correlationId: attempt.correlationId,
+    workerId: safeRequiredText(attempt.workerId),
+    correlationId: safeRequiredText(attempt.correlationId),
     startedAt: attempt.startedAt.toISOString(),
     finishedAt: iso(attempt.finishedAt),
     outcome: attempt.outcome,
@@ -199,7 +229,7 @@ export function toOrchestrationGoalDetailView(input: {
               : {})
           }
     ),
-    executionSnapshot: input.goal.executionSnapshot,
+    executionSnapshot: toExecutionSnapshot(input.goal.executionSnapshot),
     replanCount: input.goal.budget.usage.replans,
     operatorState: {
       state: input.goal.status,

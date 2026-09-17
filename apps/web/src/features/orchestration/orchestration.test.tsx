@@ -161,6 +161,60 @@ describe('OrchestrationPanel', () => {
     expect(onSelectGoal).toHaveBeenCalledWith('goal_fixture_2')
   })
 
+  it('filters goals and details that do not belong to the active tenant', () => {
+    render(
+      <OrchestrationPanel
+        identity={{
+          operatorId: 'operator.fixture',
+          role: 'Supervisor',
+          tenantId: 'tenant_00000000-0000-4000-8000-000000000752'
+        }}
+        goals={[
+          goal({
+            tenantId: 'tenant_00000000-0000-4000-8000-000000000752',
+            id: 'goal_in_scope'
+          }),
+          goal({ id: 'goal_out_of_scope' })
+        ]}
+        detail={detail}
+        selectedGoalId="goal_out_of_scope"
+      />
+    )
+
+    expect(screen.getByRole('button', { name: /goal_in_scope/i })).toBeTruthy()
+    expect(
+      screen.queryByRole('button', { name: /goal_out_of_scope/i })
+    ).toBeNull()
+    expect(
+      screen.getByText(/detalhe recebido não pertence ao tenant ativo/i)
+    ).toBeTruthy()
+  })
+
+  it('marks an exactly exhausted budget as blocked, not merely a warning', () => {
+    const exhaustedDetail: OrchestrationGoalDetailView = {
+      ...detail,
+      budget: {
+        ...detail.budget,
+        maxToolCalls: 0,
+        usage: { ...detail.budget.usage, toolCalls: 0 }
+      }
+    }
+    const { container } = render(
+      <OrchestrationPanel
+        identity={{
+          operatorId: 'operator.fixture',
+          role: 'Supervisor',
+          tenantId: goal().tenantId
+        }}
+        goals={[goal()]}
+        detail={exhaustedDetail}
+        selectedGoalId={exhaustedDetail.id}
+      />
+    )
+
+    expect(container.querySelector('[data-level="exceeded"]')).toBeTruthy()
+  })
+
   it('does not render for roles without orchestration inspection permission', () => {
     render(
       <OrchestrationPanel

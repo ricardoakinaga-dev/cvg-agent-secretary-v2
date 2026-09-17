@@ -200,6 +200,7 @@ test('orchestration console exposes the synthetic state matrix read-only', async
   }
   const makeGoal = (id: string, status: string, reason: string) => ({
     id,
+    tenantId: 'tenant_00000000-0000-4000-8000-0000000002c1',
     status,
     objective: `Objetivo sintético ${id}`,
     correlationId: `corr_${id}`,
@@ -230,6 +231,7 @@ test('orchestration console exposes the synthetic state matrix read-only', async
   ]
   const detail = {
     ...goals[0],
+    tenantId: 'tenant_00000000-0000-4000-8000-0000000002c1',
     successCriteria: [],
     executionSnapshot: {
       agentVersion: 'synthetic-agent-v1',
@@ -431,50 +433,70 @@ test('orchestration console exposes the synthetic state matrix read-only', async
       })
     })
   })
-  await page.setViewportSize({ width: 1440, height: 900 })
-  await page.goto('/', { waitUntil: 'networkidle' })
+  for (const viewport of [
+    { name: 'mobile', width: 375, height: 812 },
+    { name: 'tablet', width: 768, height: 900 },
+    { name: 'desktop', width: 1440, height: 900 }
+  ]) {
+    await page.setViewportSize({
+      width: viewport.width,
+      height: viewport.height
+    })
+    await page.goto('/', { waitUntil: 'networkidle' })
 
-  const panel = page.locator('#orchestration-panel')
-  await expect(panel).toBeVisible()
-  await expect(
-    panel.getByText('Passo atual', { exact: true }).first()
-  ).toBeVisible()
-  await expect(
-    panel
-      .getByText('Verificar estado operacional sintético', { exact: true })
-      .first()
-  ).toBeVisible()
-  await expect(
-    panel.getByText('Replanejando', { exact: true }).first()
-  ).toBeVisible()
-  await expect(
-    panel.getByText('Handoff humano', { exact: true }).first()
-  ).toBeVisible()
-  await expect(
-    panel.getByText('Orçamento esgotado', { exact: true }).first()
-  ).toBeVisible()
-  await expect(panel.getByText('Falhou', { exact: true }).first()).toBeVisible()
-  await expect(panel.getByLabel('Incerto: 1')).toBeVisible()
-  await expect(panel.getByText('Iterações', { exact: true })).toBeVisible()
-  await expect(panel).toHaveScreenshot('orchestration-state-matrix.png', {
-    animations: 'disabled',
-    caret: 'hide',
-    maxDiffPixelRatio: 0.02
-  })
+    const panel = page.locator('#orchestration-panel')
+    await expect(panel).toBeVisible()
+    await panel.getByRole('button', { name: /goal_matrix_replanning/ }).click()
+    await panel.getByRole('button', { name: /goal_matrix_executing/ }).click()
+    await expect(
+      panel.getByText('Passo atual', { exact: true }).first()
+    ).toBeVisible()
+    await expect(
+      panel
+        .getByText('Verificar estado operacional sintético', { exact: true })
+        .first()
+    ).toBeVisible()
+    await expect(
+      panel.getByText('Replanejando', { exact: true }).first()
+    ).toBeVisible()
+    await expect(
+      panel.getByText('Handoff humano', { exact: true }).first()
+    ).toBeVisible()
+    await expect(
+      panel.getByText('Orçamento esgotado', { exact: true }).first()
+    ).toBeVisible()
+    await expect(
+      panel.getByText('Falhou', { exact: true }).first()
+    ).toBeVisible()
+    await expect(panel.getByLabel('Incerto: 1')).toBeVisible()
+    await expect(panel.getByText('Iterações', { exact: true })).toBeVisible()
+    await expect(panel).toHaveScreenshot(
+      viewport.name === 'desktop'
+        ? 'orchestration-state-matrix.png'
+        : `orchestration-state-matrix-${viewport.name}.png`,
+      {
+        animations: 'disabled',
+        caret: 'hide',
+        maxDiffPixelRatio: 0.02
+      }
+    )
 
-  await panel.getByRole('button', { name: /goal_matrix_uncertain/ }).click()
-  await expect(
-    panel.getByText('Reconciliação necessária', { exact: true })
-  ).toBeVisible()
-  await expect(
-    panel.getByText(/nenhuma repetição automática está autorizada/i)
-  ).toBeVisible()
-  await expect(panel).toHaveScreenshot(
-    'orchestration-uncertain-reconciliation.png',
-    {
-      animations: 'disabled',
-      caret: 'hide',
-      maxDiffPixelRatio: 0.02
+    if (viewport.name === 'desktop') {
+      await panel.getByRole('button', { name: /goal_matrix_uncertain/ }).click()
+      await expect(
+        panel.getByText('Reconciliação necessária', { exact: true })
+      ).toBeVisible()
+      await expect(
+        panel.getByText(/nenhuma repetição automática está autorizada/i)
+      ).toBeVisible()
+      await expect(panel).toHaveScreenshot(
+        'orchestration-uncertain-reconciliation.png',
+        {
+          animations: 'disabled',
+          caret: 'hide',
+          maxDiffPixelRatio: 0.02
+        }
+      )
     }
-  )
+  }
 })

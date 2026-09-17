@@ -205,7 +205,7 @@ function LatestAttempt({ step }: { step: StepView }) {
 
 function budgetLevel(used: number | null, limit: number): string {
   if (used === null) return 'configured'
-  if (limit <= 0 || used >= limit) return used > limit ? 'exceeded' : 'warning'
+  if (limit <= 0 || used >= limit) return 'exceeded'
   return used / limit >= 0.8 ? 'warning' : 'normal'
 }
 
@@ -286,6 +286,15 @@ export function OrchestrationPanel({
   const panelRef = useRef<HTMLElement | null>(null)
   const canInspect =
     identity?.role === 'Supervisor' || identity?.role === 'Admin'
+  const scopedTenantId = identity?.tenantId?.trim() ?? ''
+  const scopedGoals = scopedTenantId
+    ? goals.filter((goal) => goal.tenantId === scopedTenantId)
+    : []
+  const scopedDetail =
+    detail && scopedTenantId && detail.tenantId === scopedTenantId
+      ? detail
+      : null
+  const hasOutOfScopeDetail = Boolean(detail && !scopedDetail)
 
   useEffect(() => {
     if (error || detailError) panelRef.current?.focus()
@@ -296,39 +305,39 @@ export function OrchestrationPanel({
   const stats = [
     {
       label: 'Ativos',
-      value: goals.filter(
+      value: scopedGoals.filter(
         (goal) => !terminalStatuses.has(normalizeStatus(goal.status))
       ).length,
       status: 'active'
     },
     {
       label: 'Replanejando',
-      value: countStatus(goals, 'REPLANNING'),
+      value: countStatus(scopedGoals, 'REPLANNING'),
       status: 'replanning'
     },
     {
       label: 'Aprovação',
-      value: countStatus(goals, 'WAITING_APPROVAL'),
+      value: countStatus(scopedGoals, 'WAITING_APPROVAL'),
       status: 'waiting_approval'
     },
     {
       label: 'Handoff',
-      value: countStatus(goals, 'HUMAN_HANDOFF'),
+      value: countStatus(scopedGoals, 'HUMAN_HANDOFF'),
       status: 'human_handoff'
     },
     {
       label: 'Incerto',
-      value: countStatus(goals, 'UNCERTAIN'),
+      value: countStatus(scopedGoals, 'UNCERTAIN'),
       status: 'uncertain'
     },
     {
       label: 'Bloqueado',
-      value: countStatus(goals, 'BLOCKED'),
+      value: countStatus(scopedGoals, 'BLOCKED'),
       status: 'blocked'
     },
     {
       label: 'Falha',
-      value: countStatus(goals, 'FAILED'),
+      value: countStatus(scopedGoals, 'FAILED'),
       status: 'failed'
     },
     ...(deadLetterCount !== undefined
@@ -370,9 +379,9 @@ export function OrchestrationPanel({
           </span>
           <span
             className="counter"
-            aria-label={`${goals.length} Goals visíveis`}
+            aria-label={`${scopedGoals.length} Goals visíveis`}
           >
-            {goals.length}
+            {scopedGoals.length}
           </span>
         </div>
       </header>
@@ -410,7 +419,7 @@ export function OrchestrationPanel({
           ) : null}
         </div>
       ) : null}
-      {!isLoading && !error && goals.length === 0 ? (
+      {!isLoading && !error && scopedGoals.length === 0 ? (
         <div className="orchestrationEmpty" role="status">
           <strong>Nenhum Goal durável neste tenant.</strong>
           <span>
@@ -419,14 +428,14 @@ export function OrchestrationPanel({
           </span>
         </div>
       ) : null}
-      {!isLoading && !error && goals.length > 0 ? (
+      {!isLoading && !error && scopedGoals.length > 0 ? (
         <div className="orchestrationBody">
           <div
             className="list orchestrationList"
             role="list"
             aria-label="Goals duráveis"
           >
-            {goals.map((goal) => {
+            {scopedGoals.map((goal) => {
               const isSelected = selectedGoalId === goal.id
               const goalMetaId = getGoalMetaId(goal.id)
               const reason = formatReason(goal.lastReason)
@@ -503,13 +512,15 @@ export function OrchestrationPanel({
                 ) : null}
               </div>
             ) : null}
-            {!isDetailLoading && !detailError && !detail ? (
+            {!isDetailLoading && !detailError && !scopedDetail ? (
               <p className="state">
-                Selecione um Goal para ver planos e steps.
+                {hasOutOfScopeDetail
+                  ? 'O detalhe recebido não pertence ao tenant ativo e foi ocultado.'
+                  : 'Selecione um Goal para ver planos e steps.'}
               </p>
             ) : null}
-            {!isDetailLoading && !detailError && detail ? (
-              <GoalDetail detail={detail} />
+            {!isDetailLoading && !detailError && scopedDetail ? (
+              <GoalDetail detail={scopedDetail} />
             ) : null}
           </div>
         </div>

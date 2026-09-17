@@ -11,7 +11,7 @@
 | `npm run production:preflight -- --profile=PRODUCTION --expect=REJECT` | PASS do modo negativo; `actualStatus=FAIL`, `sideEffects=false`. |
 | `npm run test:worker:startup` | PASS; startup inválido e smoke controlado. |
 
-`apps/api/src/main.ts` e `apps/worker/src/main.ts` chamam o mesmo `production-preflight-core` antes de iniciar o caminho de serviço. O core exige PostgreSQL, migration database separado, RLS, migrations >= 23, kernel durável, identidade confiável, HTTPS, governança e atestações externas; apenas flags não produzem `PASS` de infraestrutura.
+`apps/api/src/main.ts` e `apps/worker/src/main.ts` chamam o mesmo `production-preflight-core` antes de iniciar o caminho de serviço. O core exige PostgreSQL, endpoints distintos, um atestado runtime hash-bound com fingerprints e schema/role verificados, migrations >= 23, RLS, kernel durável, identidade confiável, HTTPS, governança e atestações externas; apenas flags ou URLs sintéticas não produzem `PASS` de infraestrutura.
 
 ## Limitação
 

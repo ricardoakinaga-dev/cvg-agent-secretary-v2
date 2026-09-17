@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import { createHash } from 'node:crypto'
 import path from 'node:path'
 
 export const REQUIRED_PRODUCTION_MIGRATIONS = Object.freeze([
@@ -55,6 +56,81 @@ function check(checks, id, pass, detail) {
   checks.push({ id, status: pass ? 'PASS' : 'FAIL', detail })
 }
 
+function sha256(value) {
+  return createHash('sha256').update(value).digest('hex')
+}
+
+function verifyRuntimeAttestation(env, root) {
+  const relativeOrAbsolutePath = value(
+    env,
+    'CVG_PRODUCTION_PREFLIGHT_ATTESTATION_FILE'
+  )
+  const expectedDigest = value(
+    env,
+    'CVG_PRODUCTION_PREFLIGHT_ATTESTATION_SHA256'
+  ).toLowerCase()
+  if (!relativeOrAbsolutePath || !/^[0-9a-f]{64}$/.test(expectedDigest)) {
+    return {
+      pass: false,
+      detail:
+        'a hashed runtime attestation file is required; environment flags alone are not proof'
+    }
+  }
+  const filePath = path.isAbsolute(relativeOrAbsolutePath)
+    ? relativeOrAbsolutePath
+    : path.resolve(root, relativeOrAbsolutePath)
+  try {
+    const bytes = fs.readFileSync(filePath)
+    const observedDigest = sha256(bytes)
+    if (observedDigest !== expectedDigest) {
+      return {
+        pass: false,
+        detail: 'runtime attestation digest does not match the configured file'
+      }
+    }
+    const attestation = JSON.parse(bytes.toString('utf8'))
+    const now = Date.now()
+    const checkedAt = Date.parse(attestation.checkedAt ?? '')
+    const expiresAt = Date.parse(attestation.expiresAt ?? '')
+    const requiredMigrations = new Set(
+      REQUIRED_PRODUCTION_MIGRATIONS.map((migration) => migration.slice(0, -4))
+    )
+    const attestedMigrations = new Set(
+      Array.isArray(attestation.migrations) ? attestation.migrations : []
+    )
+    const migrationsMatch = [...requiredMigrations].every((migration) =>
+      attestedMigrations.has(migration)
+    )
+    const valid =
+      attestation.schemaVersion === 1 &&
+      attestation.kind === 'cvg-production-bootstrap-attestation' &&
+      attestation.profile === 'PRODUCTION' &&
+      attestation.databaseUrlSha256 === sha256(value(env, 'DATABASE_URL')) &&
+      attestation.migrationDatabaseUrlSha256 ===
+        sha256(value(env, 'DATABASE_MIGRATION_URL')) &&
+      migrationsMatch &&
+      attestation.databaseConnectivityVerified === true &&
+      attestation.rlsEnforced === true &&
+      attestation.constraintsValidated === true &&
+      attestation.runtimeRoleVerified === true &&
+      Number.isFinite(checkedAt) &&
+      Number.isFinite(expiresAt) &&
+      checkedAt <= now + 5 * 60 * 1000 &&
+      expiresAt > now
+    return {
+      pass: valid,
+      detail: valid
+        ? 'hashed runtime attestation matches database fingerprints and validated schema claims'
+        : 'runtime attestation is malformed, expired, future-dated or does not match the configured runtime'
+    }
+  } catch {
+    return {
+      pass: false,
+      detail: 'runtime attestation file is unavailable or invalid JSON'
+    }
+  }
+}
+
 export function evaluateProductionBootstrap({
   env = process.env,
   root = path.resolve(new URL('.', import.meta.url).pathname, '../..'),
@@ -90,6 +166,14 @@ export function evaluateProductionBootstrap({
     'bootstrap.migration_database',
     isPostgresUrl(env, 'DATABASE_MIGRATION_URL'),
     'DATABASE_MIGRATION_URL must be a separate PostgreSQL URL'
+  )
+  check(
+    checks,
+    'bootstrap.database_separation',
+    isPostgresUrl(env, 'DATABASE_URL') &&
+      isPostgresUrl(env, 'DATABASE_MIGRATION_URL') &&
+      value(env, 'DATABASE_URL') !== value(env, 'DATABASE_MIGRATION_URL'),
+    'DATABASE_URL and DATABASE_MIGRATION_URL must be distinct runtime and migration endpoints'
   )
   check(
     checks,
@@ -167,6 +251,13 @@ export function evaluateProductionBootstrap({
       'CVG_HUMAN_SIGNOFF'
     ].every((name) => isTrue(env, name)),
     'external and human attestations are required but remain separate from this local proof'
+  )
+  const runtimeAttestation = verifyRuntimeAttestation(env, root)
+  check(
+    checks,
+    'bootstrap.runtime_attestation',
+    runtimeAttestation.pass,
+    runtimeAttestation.detail
   )
   check(
     checks,

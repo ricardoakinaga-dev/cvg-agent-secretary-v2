@@ -7,7 +7,9 @@ import { createControlledNoopHandlers } from '../postgres-controlled.ts'
 import { createPostgresControlledWorker } from '../postgres-controlled.ts'
 import {
   assertPostgresWorkerPreflight,
-  WORKER_CRITICAL_TABLES
+  WORKER_CRITICAL_TABLES,
+  WORKER_REQUIRED_CONSTRAINTS,
+  WORKER_REQUIRED_MIGRATIONS
 } from '../postgres-role-preflight.ts'
 
 const testDatabaseUrl = process.env.TEST_DATABASE_URL
@@ -26,6 +28,12 @@ describe('worker PostgreSQL role preflight contract', () => {
         'orchestrator_observations',
         'orchestrator_evaluations'
       ])
+    )
+    expect(WORKER_REQUIRED_MIGRATIONS).toEqual(
+      expect.arrayContaining(['0023_orchestrator_replan_fencing'])
+    )
+    expect(WORKER_REQUIRED_CONSTRAINTS).toEqual(
+      expect.arrayContaining(['orchestrator_plans_replan_source_lineage_fk'])
     )
   })
 })

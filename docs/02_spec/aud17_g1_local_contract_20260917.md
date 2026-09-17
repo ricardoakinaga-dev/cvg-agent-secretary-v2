@@ -11,10 +11,11 @@ efeito clínico/financeiro ou alteração de prontuário.
 ## Decisões de boundary
 
 1. A autoridade de bootstrap será uma função pura compartilhada pelo comando
-   scripts/production-preflight.mjs e pelos entrypoints API/worker. Ela apenas
-   valida configuração e arquivos locais; checagens de banco continuam nos
-   preflights de runtime. Um processo de produção não pode iniciar antes de a
-   função retornar sucesso.
+   scripts/production-preflight.mjs e pelos entrypoints API/worker. Ela valida
+   configuração, separação dos endpoints e um atestado runtime hash-bound com
+   fingerprints de banco, migrations, RLS, constraints e role; checagens
+   conectadas continuam nos preflights de runtime. Um processo de produção não
+   pode iniciar antes de a função retornar sucesso.
 2. O cálculo de maturidade será uma rubrica explícita, separada da decisão
    binária de gate. Cada domínio expõe score, status, dimensões, pesos, provas,
    limitações e caps; evidência ausente, stale ou externa bloqueada reduz o
@@ -85,6 +86,9 @@ efeito clínico/financeiro ou alteração de prontuário.
 - DoD: processo negativo verifica exit não-zero e ausência de serving/claim;
   comando e entrypoints usam a mesma função; production:preflight PASS em
   modo --expect=REJECT continua sendo apenas prova do negativo.
+- O atestado `CVG_PRODUCTION_PREFLIGHT_ATTESTATION_FILE` e seu SHA-256 devem
+  ser emitidos por um preflight conectado/revisado; flags isoladas ou URLs
+  sintéticas não satisfazem essa prova.
 
 ### AUD17-08 — red-team conectado
 

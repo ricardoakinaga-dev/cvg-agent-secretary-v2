@@ -1,5 +1,7 @@
 import { execFileSync, spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { evaluateProductionBootstrap } from '../scripts/lib/production-preflight-core.mjs'
@@ -9,6 +11,14 @@ const script = path.join(repositoryRoot, 'scripts/production-preflight.mjs')
 const apiEntrypoint = path.join(repositoryRoot, 'apps/api/src/main.ts')
 const workerEntrypoint = path.join(repositoryRoot, 'apps/worker/src/main.ts')
 const tsxEntrypoint = path.join(repositoryRoot, 'node_modules/.bin/tsx')
+const attestationPath = path.join(
+  fs.mkdtempSync(path.join(os.tmpdir(), 'cvg-production-preflight-')),
+  'runtime-attestation.json'
+)
+
+function sha256(value) {
+  return createHash('sha256').update(value).digest('hex')
+}
 
 function runPreflight(overrides = {}, args = []) {
   const output = execFileSync(process.execPath, [script, ...args], {
@@ -20,7 +30,7 @@ function runPreflight(overrides = {}, args = []) {
 }
 
 function validProductionEnv() {
-  return {
+  const env = {
     NODE_ENV: 'production',
     API_PERSISTENCE_MODE: 'postgres',
     DATABASE_URL: 'postgres://runtime:secret@db.invalid/cvg',
@@ -54,6 +64,33 @@ function validProductionEnv() {
     CVG_ALLOW_REAL_EFFECTS: 'false',
     CVG_REAL_EFFECTS: 'false',
     OPENAI_API_KEY: 'sk_' + 'x'.repeat(24)
+  }
+  const attestation = {
+    schemaVersion: 1,
+    kind: 'cvg-production-bootstrap-attestation',
+    profile: 'PRODUCTION',
+    databaseUrlSha256: sha256(env.DATABASE_URL),
+    migrationDatabaseUrlSha256: sha256(env.DATABASE_MIGRATION_URL),
+    migrations: [
+      '0019_orchestrator_state',
+      '0020_orchestrator_lineage_hardening',
+      '0021_orchestrator_iteration_budget',
+      '0022_orchestrator_evaluation_lineage',
+      '0023_orchestrator_replan_fencing'
+    ],
+    databaseConnectivityVerified: true,
+    rlsEnforced: true,
+    constraintsValidated: true,
+    runtimeRoleVerified: true,
+    checkedAt: new Date(Date.now() - 1_000).toISOString(),
+    expiresAt: new Date(Date.now() + 86_400_000).toISOString()
+  }
+  const bytes = Buffer.from(JSON.stringify(attestation))
+  fs.writeFileSync(attestationPath, bytes)
+  return {
+    ...env,
+    CVG_PRODUCTION_PREFLIGHT_ATTESTATION_FILE: attestationPath,
+    CVG_PRODUCTION_PREFLIGHT_ATTESTATION_SHA256: sha256(bytes)
   }
 }
 
@@ -121,6 +158,31 @@ describe('production preflight', () => {
       { API_ALLOWED_ORIGINS: env.API_ALLOWED_ORIGINS },
       ['--expect=REJECT']
     )
+    expect(output.status).toBe('PASS')
+    expect(output.actualStatus).toBe('FAIL')
+    expect(output.blocking).toContain('bootstrap.authority')
+  })
+
+  it('rejects aliases between runtime and migration database endpoints', () => {
+    const output = runPreflight(
+      { DATABASE_MIGRATION_URL: 'postgres://runtime:secret@db.invalid/cvg' },
+      ['--expect=REJECT']
+    )
+
+    expect(output.status).toBe('PASS')
+    expect(output.actualStatus).toBe('FAIL')
+    expect(output.blocking).toContain('bootstrap.authority')
+  })
+
+  it('does not treat explicit flags as runtime proof without an attestation', () => {
+    const output = runPreflight(
+      {
+        CVG_PRODUCTION_PREFLIGHT_ATTESTATION_FILE: '',
+        CVG_PRODUCTION_PREFLIGHT_ATTESTATION_SHA256: ''
+      },
+      ['--expect=REJECT']
+    )
+
     expect(output.status).toBe('PASS')
     expect(output.actualStatus).toBe('FAIL')
     expect(output.blocking).toContain('bootstrap.authority')

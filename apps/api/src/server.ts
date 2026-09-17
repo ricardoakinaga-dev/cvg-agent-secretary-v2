@@ -4753,22 +4753,27 @@ export async function assertTenantIsolationSchema(
     )
   }
 
-  const constraints = await client.query<{ conname: string }>(
-    `SELECT conname
+  const constraints = await client.query<{
+    conname: string
+    convalidated: boolean
+  }>(
+    `SELECT conname, convalidated
      FROM pg_constraint
      WHERE connamespace = current_schema()::regnamespace
        AND conname = ANY($1::text[])`,
     [tenantIsolationRequiredConstraints]
   )
-  const constraintNames = new Set(
-    constraints.rows.map((constraint) => constraint.conname)
+  const validatedConstraintNames = new Set(
+    constraints.rows
+      .filter((constraint) => constraint.convalidated)
+      .map((constraint) => constraint.conname)
   )
   const missingConstraints = tenantIsolationRequiredConstraints.filter(
-    (constraint) => !constraintNames.has(constraint)
+    (constraint) => !validatedConstraintNames.has(constraint)
   )
   if (missingConstraints.length > 0) {
     throw new Error(
-      `PostgreSQL tenant isolation constraints are incomplete: ${missingConstraints.join(', ')}`
+      `PostgreSQL tenant isolation constraints are missing or unvalidated: ${missingConstraints.join(', ')}`
     )
   }
 

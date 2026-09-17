@@ -724,6 +724,42 @@ describe('durable Goal/Plan/Step orchestration', () => {
     expect(executorCalls).toBe(0)
   })
 
+  it('does not execute a claim that expires before the executor boundary', async () => {
+    let now = new Date(NOW)
+    const store = new InMemoryGoalPlanStore({ clock: () => now })
+    const goal = await buildGoal(store, { maxDurationMs: 1_000 })
+    const originalClaimStep = store.claimStep.bind(store)
+    store.claimStep = async (input) => {
+      const claimed = await originalClaimStep(input)
+      now = new Date(NOW.getTime() + 1_001)
+      return claimed
+    }
+    let executorCalls = 0
+    const result = await new GoalPlanOrchestrator({
+      store,
+      workerId: 'deadline-worker',
+      clock: () => now,
+      planner: {
+        async plan() {
+          return { reason: 'deadline race test', steps: [step('deadline')] }
+        }
+      },
+      evaluator: evaluatorForAllSteps(),
+      executor: {
+        async execute() {
+          executorCalls += 1
+          return { outcome: 'succeeded' as const, reason: 'must not run' }
+        }
+      }
+    }).run(TENANT, goal.id)
+
+    expect(result.goal.status).toBe('BUDGET_EXHAUSTED')
+    expect(result.reason).toBe('goal_deadline_expired_before_execution')
+    expect(result.executedStepIds).toEqual([])
+    expect(executorCalls).toBe(0)
+    expect(result.steps[0]?.status).toBe('FAILED')
+  })
+
   it('renews leases with a version CAS and rejects the pre-heartbeat lease', async () => {
     const store = new InMemoryGoalPlanStore({ clock: () => NOW })
     const goal = await buildGoal(store)

@@ -31,9 +31,19 @@ function completeInvariants(withEvidence = true) {
 function completeState(overrides = {}) {
   return {
     localEngineeringClosure: true,
+    externalIntegrationClosure: true,
+    supervisedPilotClosure: true,
+    productionAssuranceClosure: true,
+    implementationComplete: true,
     localVerificationComplete: true,
     evidenceComplete: true,
+    criticalInvariantsSatisfied: true,
+    externalValidationComplete: true,
+    pilotComplete: true,
     productionProofComplete: true,
+    adversarialProofComplete: true,
+    phase11FormalClosure: true,
+    eligibleForRequestedProfile: true,
     ...overrides
   }
 }
@@ -145,5 +155,22 @@ describe('Phase 11 executable score rubric', () => {
         })
       ])
     )
+  })
+
+  it('caps an otherwise green fixture when success state is absent', () => {
+    const result = computeScores({
+      gates: completeGates(),
+      invariants: completeInvariants(),
+      findings: { P0: [], P1: [], P2: [] }
+    })
+
+    expect(result.Architecture.value).toBeLessThan(99)
+    expect(result.Architecture.limitations).toContain(
+      'success_state_incomplete'
+    )
+    expect(result['Production Readiness']).toMatchObject({
+      value: 0,
+      status: 'BLOCKED'
+    })
   })
 })

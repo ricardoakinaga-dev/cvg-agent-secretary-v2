@@ -1830,6 +1830,17 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
     // Re-claiming it directly would let worker B race worker A's uncertain
     // effect and defeats the recovery decision boundary.
     if (!['PENDING', 'READY'].includes(step.status)) return null
+    const deadline = effectiveGoalDeadline(
+      goal.createdAt,
+      goal.deadline ?? undefined,
+      goal.budget.maxDurationMs
+    )
+    if (deadline <= input.now) {
+      throw new OrchestrationError(
+        'budget_exhausted',
+        'Goal deadline is exhausted'
+      )
+    }
     if (goal.budget.usage.steps >= goal.budget.maxSteps) {
       throw new OrchestrationError(
         'budget_exhausted',
@@ -2803,6 +2814,41 @@ export class GoalPlanOrchestrator {
         operation: 'step_claim',
         outcome: 'claimed'
       })
+      const claimedDeadline = effectiveGoalDeadline(
+        claimed.goal.createdAt,
+        claimed.goal.deadline ?? undefined,
+        claimed.goal.budget.maxDurationMs
+      )
+      if (claimedDeadline <= this.clock()) {
+        const expired = await this.options.store.settleStep({
+          lease: claimed.lease,
+          outcome: 'failed',
+          resultDigest: null,
+          reason: 'goal_deadline_expired_before_execution',
+          approvalId: null,
+          now: this.clock(),
+          modelCalls: 0,
+          toolCalls: 0,
+          costUsd: 0,
+          observation: {
+            kind: 'step_result',
+            resultDigest: null,
+            evidence: []
+          }
+        })
+        goal = await this.transition(
+          expired.goal,
+          'BUDGET_EXHAUSTED',
+          'goal_deadline_expired_before_execution'
+        )
+        return this.result(
+          goal,
+          plan,
+          await this.options.store.listSteps(scope, plan.id),
+          'goal_deadline_expired_before_execution',
+          executedStepIds
+        )
+      }
       executedStepIds.push(next.id)
       const abortController = new AbortController()
       let activeLease = claimed.lease

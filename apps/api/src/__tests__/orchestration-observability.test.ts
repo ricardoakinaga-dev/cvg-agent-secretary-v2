@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { buildServer } from '../server.ts'
+import { toOrchestrationGoalDetailView } from '../orchestration-observability.ts'
 import type { GoalPlanStore } from '@cvg/agent-runtime'
 
 const TENANT = 'tenant_00000000-0000-4000-8000-000000000731'
@@ -89,6 +90,66 @@ describe('durable orchestration observability API', () => {
       headers: headers(OTHER_TENANT)
     })
     expect(otherTenant.statusCode).toBe(404)
+  })
+
+  it('redacts sensitive metadata across the complete read model', async () => {
+    app = buildServer()
+    const store = app.persistence.orchestration as GoalPlanStore
+    const goal = await store.createGoal({
+      tenantId: TENANT,
+      objective: 'Synthetic metadata redaction fixture',
+      successCriteria: [],
+      correlationId: 'corr_00000000-0000-4000-8000-000000000733',
+      executionSnapshot: {
+        agentVersion: 'api_key=agent-secret',
+        promptVersion: 'prompt@example.com',
+        policyVersion: 'Bearer policy-secret',
+        modelProfile: 'deterministic',
+        toolVersions: { 'api_key=tool-secret': 'token=version-secret' }
+      }
+    })
+    const createdAt = new Date('2026-09-17T10:00:00.000Z')
+    const detail = toOrchestrationGoalDetailView({
+      goal,
+      plans: [],
+      stepsByPlan: new Map(),
+      observations: [
+        {
+          id: 'observation_redaction_1',
+          tenantId: TENANT,
+          goalId: goal.id,
+          planId: 'plan_redaction_1',
+          stepId: null,
+          kind: 'step_result',
+          resultDigest: 'api_key=observation-secret',
+          evidence: [
+            {
+              source: 'operational_state',
+              reference: 'api_key=reference-secret',
+              verified: true,
+              key: 'api_key=key-secret',
+              digest: 'token=digest-secret'
+            }
+          ],
+          createdAt
+        }
+      ],
+      evaluations: [],
+      attemptsByStep: new Map()
+    })
+
+    const serialized = JSON.stringify(detail)
+    expect(serialized).not.toContain('agent-secret')
+    expect(serialized).not.toContain('prompt@example.com')
+    expect(serialized).not.toContain('policy-secret')
+    expect(serialized).not.toContain('tool-secret')
+    expect(serialized).not.toContain('observation-secret')
+    expect(serialized).not.toContain('reference-secret')
+    expect(serialized).not.toContain('key-secret')
+    expect(serialized).not.toContain('digest-secret')
+    expect(detail.executionSnapshot.toolVersions).toEqual({
+      '[redacted-secret]': '[redacted-secret]'
+    })
   })
 
   it('rejects invalid Goal status filters without a broad query surface', async () => {

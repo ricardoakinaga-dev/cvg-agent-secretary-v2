@@ -1226,6 +1226,33 @@ export const PHASE11_SCORE_RUBRIC = Object.freeze({
   ]
 })
 
+const REQUIRED_SUCCESS_STATE_KEYS = Object.freeze([
+  'localEngineeringClosure',
+  'externalIntegrationClosure',
+  'supervisedPilotClosure',
+  'productionAssuranceClosure',
+  'implementationComplete',
+  'localVerificationComplete',
+  'evidenceComplete',
+  'criticalInvariantsSatisfied',
+  'externalValidationComplete',
+  'pilotComplete',
+  'productionProofComplete',
+  'adversarialProofComplete',
+  'phase11FormalClosure',
+  'eligibleForRequestedProfile'
+])
+
+function hasCompleteSuccessState(successState) {
+  return (
+    successState !== null &&
+    typeof successState === 'object' &&
+    REQUIRED_SUCCESS_STATE_KEYS.every(
+      (key) => typeof successState[key] === 'boolean'
+    )
+  )
+}
+
 function scoreEvidenceStatus(entry) {
   if (!entry) return 'MISSING'
   if (entry.status !== 'PASS') return entry.status
@@ -1351,7 +1378,9 @@ export function computeScores({
     invariants.map((invariant) => [invariant.id, invariant])
   )
   const findingPenalty = scoreFindingPenalty(findings)
+  const successStateComplete = hasCompleteSuccessState(successState)
   const localCap = Math.min(
+    successStateComplete ? 100 : 75,
     successState?.localEngineeringClosure === false ? 85 : 100,
     successState?.localVerificationComplete === false ? 75 : 100,
     successState?.evidenceComplete === false ? 80 : 100
@@ -1383,6 +1412,7 @@ export function computeScores({
       limitations.push('blocking_findings_penalty:' + findingPenalty)
     }
     if (productionBlocked) limitations.push('external_proof_incomplete')
+    if (!successStateComplete) limitations.push('success_state_incomplete')
     result[name] = {
       value,
       status: productionBlocked ? 'BLOCKED' : scoreStatus(dimensions, value),
