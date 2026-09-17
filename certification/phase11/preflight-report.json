@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "kind": "phase11-production_preflight-report",
-  "certificationId": "phase11-97c31146053f9e5b-mu4pxe3r",
-  "candidateCommit": "8c87e825316acf537fbc750a7b41c9e185bfae59",
-  "generatedAt": "2026-09-16T23:35:11.074Z",
+  "certificationId": "phase11-81962adcfc65cf7d-mu5kewem",
+  "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
+  "generatedAt": "2026-09-17T13:48:35.017Z",
   "gateId": "production_preflight",
   "status": "PASS",
   "command": "node scripts/production-preflight.mjs --profile=PRODUCTION --expect=REJECT",
@@ -19,6 +19,11 @@
     "expected": "REJECT",
     "sideEffects": false,
     "checks": [
+      {
+        "id": "bootstrap.authority",
+        "status": "FAIL",
+        "detail": "shared bootstrap preflight blocked: bootstrap.node_env,bootstrap.persistence,bootstrap.database,bootstrap.migration_database,bootstrap.database_separation,bootstrap.rls,bootstrap.no_auto_migrate,bootstrap.kernel,bootstrap.inbound,bootstrap.identity,bootstrap.secrets,bootstrap.http_security,bootstrap.governance,bootstrap.external_attestations,bootstrap.runtime_attestation"
+      },
       {
         "id": "profile.production",
         "status": "PASS",
@@ -137,7 +142,7 @@
       {
         "id": "governance.migrations",
         "status": "FAIL",
-        "detail": "CVG_MIGRATIONS_APPLIED_AT_LEAST must be >= 22; database state is not inferred"
+        "detail": "CVG_MIGRATIONS_APPLIED_AT_LEAST must be >= 23; database state is not inferred"
       },
       {
         "id": "governance.no_unrestricted_effects",
@@ -191,6 +196,7 @@
       }
     ],
     "blocking": [
+      "bootstrap.authority",
       "runtime.node_env",
       "runtime.persistence",
       "runtime.database",

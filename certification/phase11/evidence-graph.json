@@ -3,7 +3,7 @@
   "evidenceChain": true,
   "nodes": [
     {
-      "id": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "id": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "kind": "candidate"
     },
     {
@@ -205,6 +205,14 @@
       "kind": "implementation"
     },
     {
+      "id": "implementation:packages/persistence/migrations/0023_orchestrator_replan_fencing.sql",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:packages/persistence/migrations/0024_tenant_isolation_constraint_validation.sql",
+      "kind": "implementation"
+    },
+    {
       "id": "test:packages/agent-runtime/src/__tests__/orchestration.test.ts",
       "kind": "test"
     },
@@ -398,6 +406,10 @@
     },
     {
       "id": "implementation:packages/policy-engine/src",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:apps/api/src/__tests__/aud17-connected-redteam.test.ts",
       "kind": "implementation"
     },
     {
@@ -928,36 +940,36 @@
   "edges": [
     {
       "from": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-1.txt",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "scope_for"
     },
     {
       "from": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-2.txt",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "scope_for"
     },
     {
       "from": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-3.txt",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "scope_for"
     },
     {
       "from": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-4.txt",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "scope_for"
     },
     {
       "from": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-5.txt",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "scope_for"
     },
     {
       "from": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-6.txt",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "scope_for"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "requirement:P11.2-PROMPT",
       "relation": "evaluates"
     },
@@ -1007,7 +1019,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "requirement:P11.2-CANONICAL",
       "relation": "evaluates"
     },
@@ -1197,7 +1209,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "requirement:P11.2-CALCULUS",
       "relation": "evaluates"
     },
@@ -1377,7 +1389,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "requirement:P11.2-ORCHESTRATION",
       "relation": "evaluates"
     },
@@ -1399,6 +1411,16 @@
     {
       "from": "requirement:P11.2-ORCHESTRATION",
       "to": "implementation:packages/persistence/migrations/0022_orchestrator_evaluation_lineage.sql",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-ORCHESTRATION",
+      "to": "implementation:packages/persistence/migrations/0023_orchestrator_replan_fencing.sql",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-ORCHESTRATION",
+      "to": "implementation:packages/persistence/migrations/0024_tenant_isolation_constraint_validation.sql",
       "relation": "implemented_by"
     },
     {
@@ -1522,6 +1544,36 @@
       "relation": "verified_by"
     },
     {
+      "from": "implementation:packages/persistence/migrations/0023_orchestrator_replan_fencing.sql",
+      "to": "test:packages/agent-runtime/src/__tests__/orchestration.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0023_orchestrator_replan_fencing.sql",
+      "to": "test:packages/agent-runtime/src/__tests__/runtime-limits.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0023_orchestrator_replan_fencing.sql",
+      "to": "test:packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0024_tenant_isolation_constraint_validation.sql",
+      "to": "test:packages/agent-runtime/src/__tests__/orchestration.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0024_tenant_isolation_constraint_validation.sql",
+      "to": "test:packages/agent-runtime/src/__tests__/runtime-limits.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0024_tenant_isolation_constraint_validation.sql",
+      "to": "test:packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts",
+      "relation": "verified_by"
+    },
+    {
       "from": "execution:packages/agent-runtime/src/__tests__/orchestration.test.ts",
       "to": "artifact:runtime and recovery tests",
       "relation": "produced"
@@ -1557,7 +1609,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "requirement:P11.2-FENCING",
       "relation": "evaluates"
     },
@@ -1662,7 +1714,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "requirement:P11.2-EFFECT",
       "relation": "evaluates"
     },
@@ -1862,7 +1914,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "requirement:P11.2-LINEAGE",
       "relation": "evaluates"
     },
@@ -1997,7 +2049,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "requirement:P11.2-REDTEAM",
       "relation": "evaluates"
     },
@@ -2019,6 +2071,11 @@
     {
       "from": "requirement:P11.2-REDTEAM",
       "to": "implementation:apps/api/src/orchestration-observability.ts",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-REDTEAM",
+      "to": "implementation:apps/api/src/__tests__/aud17-connected-redteam.test.ts",
       "relation": "implemented_by"
     },
     {
@@ -2137,6 +2194,21 @@
       "relation": "verified_by"
     },
     {
+      "from": "implementation:apps/api/src/__tests__/aud17-connected-redteam.test.ts",
+      "to": "test:scripts/phase11-2-redteam.mjs",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:apps/api/src/__tests__/aud17-connected-redteam.test.ts",
+      "to": "test:apps/api/src/__tests__/tenant-inbound-isolation.test.ts",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:apps/api/src/__tests__/aud17-connected-redteam.test.ts",
+      "to": "test:packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts",
+      "relation": "verified_by"
+    },
+    {
       "from": "execution:scripts/phase11-2-redteam.mjs",
       "to": "artifact:security and negative tests",
       "relation": "produced"
@@ -2167,7 +2239,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "requirement:P11.2-POSTGRES",
       "relation": "evaluates"
     },
@@ -2189,6 +2261,16 @@
     {
       "from": "requirement:P11.2-POSTGRES",
       "to": "implementation:packages/persistence/migrations/0022_orchestrator_evaluation_lineage.sql",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-POSTGRES",
+      "to": "implementation:packages/persistence/migrations/0023_orchestrator_replan_fencing.sql",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-POSTGRES",
+      "to": "implementation:packages/persistence/migrations/0024_tenant_isolation_constraint_validation.sql",
       "relation": "implemented_by"
     },
     {
@@ -2242,6 +2324,16 @@
       "relation": "verified_by"
     },
     {
+      "from": "implementation:packages/persistence/migrations/0023_orchestrator_replan_fencing.sql",
+      "to": "test:npm run test:postgres",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:packages/persistence/migrations/0024_tenant_isolation_constraint_validation.sql",
+      "to": "test:npm run test:postgres",
+      "relation": "verified_by"
+    },
+    {
       "from": "execution:npm run test:postgres",
       "to": "artifact:postgres/recovery raw reports",
       "relation": "produced"
@@ -2257,7 +2349,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "requirement:P11.2-CONSOLE",
       "relation": "evaluates"
     },
@@ -2377,7 +2469,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "requirement:P11.2-PREFLIGHT",
       "relation": "evaluates"
     },
@@ -2447,7 +2539,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "requirement:P11.2-SUPPLY",
       "relation": "evaluates"
     },
@@ -2617,7 +2709,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "requirement:P11.2-EXTERNAL",
       "relation": "evaluates"
     },
@@ -2637,7 +2729,7 @@
       "relation": "materialized_as"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "requirement:P11.2-NO-PRODUCTION-EFFECT",
       "relation": "evaluates"
     },
@@ -2758,181 +2850,181 @@
     },
     {
       "from": "gate:prompt_integrity",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:verify",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:format",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:typecheck",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:lint",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:build",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:unit",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:coverage",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:security",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:supply_chain",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:worker_startup",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:postgres",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:e2e",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:evals",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:chaos",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:load",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:recovery",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:bypass_audit",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:certification_self_test",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:phase10_historical_verification",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:production_preflight",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:evidence_reports",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:independent_critic",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:trace_lineage",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:governance_redteam",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:tenant_redteam",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:certification_redteam",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:adversarial_proof",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:outbox_replay",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:clone_verify",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:candidate_clean",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:node_target",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:evidence_graph",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
       "from": "gate:PHASE11_FORMAL_CLOSURE",
-      "to": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "to": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "relation": "binds_to"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "stage:inbound",
       "relation": "observes"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "stage:observation",
       "relation": "observes"
     },
@@ -2942,7 +3034,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "stage:understand",
       "relation": "observes"
     },
@@ -2952,7 +3044,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "stage:goal",
       "relation": "observes"
     },
@@ -2962,7 +3054,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "stage:plan",
       "relation": "observes"
     },
@@ -2972,7 +3064,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "stage:govern",
       "relation": "observes"
     },
@@ -2982,7 +3074,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "stage:step",
       "relation": "observes"
     },
@@ -2992,7 +3084,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "stage:attempt",
       "relation": "observes"
     },
@@ -3002,7 +3094,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "stage:outbox",
       "relation": "observes"
     },
@@ -3012,7 +3104,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "stage:effect",
       "relation": "observes"
     },
@@ -3022,7 +3114,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "stage:observed_result",
       "relation": "observes"
     },
@@ -3032,7 +3124,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "stage:evaluation",
       "relation": "observes"
     },
@@ -3042,7 +3134,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "stage:replan",
       "relation": "observes"
     },
@@ -3052,7 +3144,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "stage:response",
       "relation": "observes"
     },
@@ -3062,7 +3154,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "invariant:INV-001",
       "relation": "proves"
     },
@@ -3072,7 +3164,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "invariant:INV-002",
       "relation": "proves"
     },
@@ -3087,7 +3179,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "invariant:INV-003",
       "relation": "proves"
     },
@@ -3097,7 +3189,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "invariant:INV-004",
       "relation": "proves"
     },
@@ -3107,7 +3199,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "invariant:INV-005",
       "relation": "proves"
     },
@@ -3117,7 +3209,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "invariant:INV-006",
       "relation": "proves"
     },
@@ -3127,7 +3219,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "invariant:INV-007",
       "relation": "proves"
     },
@@ -3137,7 +3229,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "invariant:INV-008",
       "relation": "proves"
     },
@@ -3152,7 +3244,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "invariant:INV-009",
       "relation": "proves"
     },
@@ -3167,7 +3259,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "invariant:INV-010",
       "relation": "proves"
     },
@@ -3182,7 +3274,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "invariant:INV-011",
       "relation": "proves"
     },
@@ -3197,7 +3289,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "invariant:INV-012",
       "relation": "proves"
     },
@@ -3212,7 +3304,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "invariant:INV-013",
       "relation": "proves"
     },
@@ -3222,7 +3314,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "invariant:INV-014",
       "relation": "proves"
     },
@@ -3237,7 +3329,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "invariant:INV-015",
       "relation": "proves"
     },
@@ -3257,7 +3349,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
+      "from": "candidate:81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
       "to": "invariant:INV-016",
       "relation": "proves"
     },
@@ -6242,6 +6334,6 @@
       "relation": "proves"
     }
   ],
-  "certificationId": "phase11-97c31146053f9e5b-mu4pxe3r",
-  "candidateCommit": "8c87e825316acf537fbc750a7b41c9e185bfae59"
+  "certificationId": "phase11-81962adcfc65cf7d-mu5kewem",
+  "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
 }

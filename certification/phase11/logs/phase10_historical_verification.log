@@ -1,13 +1,13 @@
 $ node scripts/phase10-verify.mjs --historical --base certification/logs/historical/2026-09-11-phase10
-# certificationId=phase11-97c31146053f9e5b-mu4pxe3r
-# candidateId=97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf
-# commit=8c87e825316acf537fbc750a7b41c9e185bfae59
-# treeHash=5bd92e8ac7132298708c51dfc9e6ec84c686be3b0c21d4932b183f1ebebaf85a
+# certificationId=phase11-81962adcfc65cf7d-mu5kewem
+# candidateId=81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747
+# commit=9c373bf1d2fcd43632da09d60b87455da6a18a09
+# treeHash=f888b174065e305ba819c16fb588813a3b8b7d9c2d2c45625e96bd9293a60fd6
 # gate=phase10_historical_verification
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=88
+# exitCode=0 durationMs=90
 
 
 [verify] PASS phase10-result.json matches schema

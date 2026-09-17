@@ -1,13 +1,13 @@
 $ npm test -- --run packages/persistence/src/__tests__/outbox-durability.test.ts apps/worker/src/__tests__/outbox-recovery.test.ts
-# certificationId=phase11-97c31146053f9e5b-mu4pxe3r
-# candidateId=97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf
-# commit=8c87e825316acf537fbc750a7b41c9e185bfae59
-# treeHash=5bd92e8ac7132298708c51dfc9e6ec84c686be3b0c21d4932b183f1ebebaf85a
+# certificationId=phase11-81962adcfc65cf7d-mu5kewem
+# candidateId=81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747
+# commit=9c373bf1d2fcd43632da09d60b87455da6a18a09
+# treeHash=f888b174065e305ba819c16fb588813a3b8b7d9c2d2c45625e96bd9293a60fd6
 # gate=outbox_replay
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=2992
+# exitCode=0 durationMs=2657
 
 
 > cvg-agent-secretary-v2@1.0.0 test
@@ -18,9 +18,9 @@ $ npm test -- --run packages/persistence/src/__tests__/outbox-durability.test.ts
 
 
  Test Files  2 passed (2)
-      Tests  6 passed | 5 skipped (11)
-   Start at  20:35:08
-   Duration  2.58s (transform 684ms, setup 0ms, import 1.07s, tests 17ms, environment 1.26s)
+      Tests  7 passed | 5 skipped (12)
+   Start at  10:48:32
+   Duration  2.23s (transform 578ms, setup 0ms, import 875ms, tests 18ms, environment 1.13s)
 
 
 

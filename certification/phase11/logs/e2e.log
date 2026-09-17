@@ -1,13 +1,13 @@
 $ npm run test:e2e
-# certificationId=phase11-97c31146053f9e5b-mu4pxe3r
-# candidateId=97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf
-# commit=8c87e825316acf537fbc750a7b41c9e185bfae59
-# treeHash=5bd92e8ac7132298708c51dfc9e6ec84c686be3b0c21d4932b183f1ebebaf85a
+# certificationId=phase11-81962adcfc65cf7d-mu5kewem
+# candidateId=81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747
+# commit=9c373bf1d2fcd43632da09d60b87455da6a18a09
+# treeHash=f888b174065e305ba819c16fb588813a3b8b7d9c2d2c45625e96bd9293a60fd6
 # gate=e2e
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=26780
+# exitCode=0 durationMs=28682
 
 
 > cvg-agent-secretary-v2@1.0.0 test:e2e
@@ -32,16 +32,16 @@ Running 9 tests using 1 worker
 [1A[2K[7/9] [chromium] › tests/e2e/visual-shell.spec.ts:99:5 › dead-letter diagnostics wrap long errors and remain tenant scoped
 [1A[2K[8/9] [chromium] › tests/e2e/visual-shell.spec.ts:162:5 › tenantless privileged sessions do not render or request the dead-letter queue
 [1A[2K[9/9] [chromium] › tests/e2e/visual-shell.spec.ts:180:5 › orchestration console exposes the synthetic state matrix read-only
-[1A[2K  9 passed (26.1s)
+[1A[2K  9 passed (28.0s)
 
-[1A[2K[WebServer] (node:870092) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K[WebServer] (node:1086936) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[1A[2K[WebServer] (node:870111) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K[WebServer] (node:1086947) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[1A[2K[WebServer] (node:870177) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K[WebServer] (node:1086985) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[1A[2K(node:870307) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:1087035) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-[1A[2K(node:870307) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:1087035) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 

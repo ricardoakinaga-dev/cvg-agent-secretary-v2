@@ -2,20 +2,20 @@
   "schemaVersion": 2,
   "phase": "11",
   "kind": "phase11-result",
-  "certificationId": "phase11-97c31146053f9e5b-mu4pxe3r",
-  "commit": "8c87e825316acf537fbc750a7b41c9e185bfae59",
-  "timestamp": "2026-09-16T23:35:11.270Z",
+  "certificationId": "phase11-81962adcfc65cf7d-mu5kewem",
+  "commit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
+  "timestamp": "2026-09-17T13:48:35.218Z",
   "candidate": {
     "schemaVersion": "phase11-candidate-v2",
-    "candidateId": "97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf",
-    "commit": "8c87e825316acf537fbc750a7b41c9e185bfae59",
-    "treeHash": "5bd92e8ac7132298708c51dfc9e6ec84c686be3b0c21d4932b183f1ebebaf85a",
-    "gitTreeHash": "332f1c2bed2768f6ba4d4c5ff9bd9fc3fbaf06f6",
+    "candidateId": "81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
+    "commit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
+    "treeHash": "f888b174065e305ba819c16fb588813a3b8b7d9c2d2c45625e96bd9293a60fd6",
+    "gitTreeHash": "515cd5220f3b64859d569535023e058413ef7829",
     "branch": "main",
     "dirty": false,
     "untrackedFiles": [],
-    "createdAt": "2026-09-16T23:14:53.129Z",
-    "fileCount": 984,
+    "createdAt": "2026-09-17T13:28:18.478Z",
+    "fileCount": 999,
     "files": [
       {
         "path": ".dockerignore",
@@ -25,8 +25,8 @@
       },
       {
         "path": ".env.example",
-        "sha256": "f4538285e8b32c6708bcf43c3a680fed8c2e65a423196319536e1a105a9bf4a7",
-        "size": 1530,
+        "sha256": "b958d313be64f3a428203d59064b108e18a9320e101f9e70347b8c776ed8b6a7",
+        "size": 1618,
         "tracked": true
       },
       {
@@ -186,6 +186,12 @@
         "tracked": true
       },
       {
+        "path": "apps/api/src/__tests__/aud17-connected-redteam.test.ts",
+        "sha256": "4156124595a6b79ac8347ae0073aafb57c058e204a9f2495712305bb2c9f9564",
+        "size": 4754,
+        "tracked": true
+      },
+      {
         "path": "apps/api/src/__tests__/audit-evidence-checkpoint-boundary.test.ts",
         "sha256": "77980c425b726fb5c3b8e6ce68572c12a5562667e6ee546e678ca5aaea9a470f",
         "size": 4459,
@@ -253,8 +259,8 @@
       },
       {
         "path": "apps/api/src/__tests__/identity-composition-wiring.test.ts",
-        "sha256": "f5518b767033166185c2469098ccd43fd9690ad66bb8782675710bf22dac401d",
-        "size": 9119,
+        "sha256": "117ff8fc84ce59fa80f7681fb8e6c8f90ace255680f7350fcbea95e2d0b54bdf",
+        "size": 10244,
         "tracked": true
       },
       {
@@ -319,8 +325,8 @@
       },
       {
         "path": "apps/api/src/__tests__/orchestration-observability.test.ts",
-        "sha256": "2295f144e59f766bebf1182968bd989c4beddd318e23015246fee53f4a1a3fa8",
-        "size": 3285,
+        "sha256": "787e7a8d74a386cfe8e1465179b122fc6b7b45078f3b90e49f109c6aa8b39cac",
+        "size": 6817,
         "tracked": true
       },
       {
@@ -349,8 +355,8 @@
       },
       {
         "path": "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
-        "sha256": "406384ddb50812b8b81c185e9d7a2038477c85acddca36ed7fa989a026f3b299",
-        "size": 65757,
+        "sha256": "41670c7221147b6b30b7f6a2fae07fda475f9e4f4aed69efb1aae7be4757c209",
+        "size": 66003,
         "tracked": true
       },
       {
@@ -439,8 +445,8 @@
       },
       {
         "path": "apps/api/src/__tests__/webhook-security.test.ts",
-        "sha256": "771147e81c1463dea8388f02f610ad19eaa33d915775e94fddf80215c3e0ccdb",
-        "size": 19066,
+        "sha256": "55ba9110c2f28cfdbd8e4269faebbd686b99a438323a8e3adcbf5242269307d6",
+        "size": 19530,
         "tracked": true
       },
       {
@@ -511,8 +517,8 @@
       },
       {
         "path": "apps/api/src/main.ts",
-        "sha256": "f669db17ca5999b014f381c24bc4e2d82a11dd860799b5c1ca40ad0bf04ed2ba",
-        "size": 1318,
+        "sha256": "7d087d7101aebeaa7529bc2b940c3849a7f431b4ffe8e2f57ce21dad6511ebcc",
+        "size": 1454,
         "tracked": true
       },
       {
@@ -529,8 +535,8 @@
       },
       {
         "path": "apps/api/src/orchestration-observability.ts",
-        "sha256": "5363969bc95e15a3db8d0bafa15d1e007670b5f517ea56f64df937f15cbcab43",
-        "size": 7743,
+        "sha256": "c2d8f029536faa3694bc8915efd866d5637fd739fd4d26d9fbc44941d5f43e7c",
+        "size": 9129,
         "tracked": true
       },
       {
@@ -631,8 +637,8 @@
       },
       {
         "path": "apps/api/src/server.ts",
-        "sha256": "e06c1066b7aa2bd208ec2093d2d9ad5b1efcdd37cd21cdd05f92cff7c11e502f",
-        "size": 200511,
+        "sha256": "ee40fe50e0c5d0a3717a93b9c59f682d429da9e9c8d2395f51aed159ad1e5fc3",
+        "size": 200939,
         "tracked": true
       },
       {
@@ -649,8 +655,8 @@
       },
       {
         "path": "apps/api/src/webhook-security.ts",
-        "sha256": "50fa63f8ae5b90c3fe60ad1b4efd12043cd908580afa3336f18aa698d9adca3c",
-        "size": 12830,
+        "sha256": "826cdf376d2f76bc84108c53c6827709c0e7dd1b60e08a0aa0d6bca1ea63acb8",
+        "size": 12844,
         "tracked": true
       },
       {
@@ -805,14 +811,14 @@
       },
       {
         "path": "apps/web/src/features/orchestration/index.tsx",
-        "sha256": "41d6d75f9ecb15b5823703826ee1accf8e52e4cba20c77fd4b7fd528179b20bc",
-        "size": 32495,
+        "sha256": "453db301d7c82d685f473df607b9a111fcaf28ad1149819ba75fc947ef421aa8",
+        "size": 35835,
         "tracked": true
       },
       {
         "path": "apps/web/src/features/orchestration/orchestration.test.tsx",
-        "sha256": "92d785f66f92a59c5c44b7a111073ebbb53f2171fbc733ed3564c49904c9d37d",
-        "size": 6932,
+        "sha256": "7d82ff3727a9e0c9577902bb48699068c8c27f820a99d0a4b7cd5caaaa5b71e1",
+        "size": 10134,
         "tracked": true
       },
       {
@@ -889,8 +895,8 @@
       },
       {
         "path": "apps/web/src/styles.css",
-        "sha256": "7e962f378251ea48abcb81286962c2be47cf67527741edc67210be258a87d333",
-        "size": 35132,
+        "sha256": "378b3ee410a81b9fa7f15d90b336bc0e29617c90a6d105ca1bbad5cb23db7d48",
+        "size": 36873,
         "tracked": true
       },
       {
@@ -955,8 +961,8 @@
       },
       {
         "path": "apps/worker/src/__tests__/kernel-composition-state.test.ts",
-        "sha256": "051183301303395c791936ab43ae6b2a59097fa77b0df39073bcc09fdfb9cb8d",
-        "size": 16552,
+        "sha256": "761aa15872030f255fb9cab3da0d83d4dea0603664ee8f7df6e18b771fad3390",
+        "size": 17093,
         "tracked": true
       },
       {
@@ -967,8 +973,8 @@
       },
       {
         "path": "apps/worker/src/__tests__/outbox-recovery.test.ts",
-        "sha256": "4930baaf23f8660030f3383db7dafe9a6b4b3b744ad8864a66146a55ad7a8277",
-        "size": 3996,
+        "sha256": "20190b1e3c7af8aec8c2d22f854a994784cd8cfe68b2a0bbc90ca80b2a310bd5",
+        "size": 5618,
         "tracked": true
       },
       {
@@ -991,8 +997,8 @@
       },
       {
         "path": "apps/worker/src/__tests__/postgres-role-preflight.test.ts",
-        "sha256": "60b6485560c0d4aa48b32cc36556bac4acaf0c04fad21a3ed25492fd3ab5bb14",
-        "size": 14563,
+        "sha256": "3ac7f75ddfd97ec695ff7af34280f18cae01aab8b2cf4e680e9cb0e190261950",
+        "size": 15692,
         "tracked": true
       },
       {
@@ -1057,20 +1063,20 @@
       },
       {
         "path": "apps/worker/src/kernel-composition.ts",
-        "sha256": "8e24301a22465b0dabc7b9b2a497bce832aed1bdea04575b560a76b302ff0358",
-        "size": 63133,
+        "sha256": "e0649d55693c89e55bcac6f88b56858765d41f6dc8784f9850b6517ce14a6a93",
+        "size": 64597,
         "tracked": true
       },
       {
         "path": "apps/worker/src/main.ts",
-        "sha256": "d1f7458cc191a8a08e0dbbced6a75f7a43f5decb87a5f5b024c5507e46af0503",
-        "size": 6859,
+        "sha256": "6b46285925d9139d8da33c12b1a729cb73cc6c77b32bf226505a2b2b2f23a635",
+        "size": 7456,
         "tracked": true
       },
       {
         "path": "apps/worker/src/outbox-revalidation.ts",
-        "sha256": "da6e0aedb9aea62798ca7db156ef2b72d0e9a1dba22b5784d5517d83009fac34",
-        "size": 2823,
+        "sha256": "d227aa221bf8dd33f85c736e387762dd36229e8316962a487023e434f80340b4",
+        "size": 2951,
         "tracked": true
       },
       {
@@ -1081,8 +1087,8 @@
       },
       {
         "path": "apps/worker/src/postgres-role-preflight.ts",
-        "sha256": "acfdea59b58a959170e8a5a5c9857f180c24362fa12fbca05953c1f8227a429b",
-        "size": 9777,
+        "sha256": "8e4d83ac45fccf4cc5df2169aedd12916b223642fdbd7f0fc85043d224a08fff",
+        "size": 13064,
         "tracked": true
       },
       {
@@ -1518,6 +1524,18 @@
         "tracked": true
       },
       {
+        "path": "docs/02_spec/aud17_01_baseline_contract_20260917.md",
+        "sha256": "cec83075780ad4ffa40e6d0364878a06b2d441146460cd6dbf7a166c1000eafa",
+        "size": 2880,
+        "tracked": true
+      },
+      {
+        "path": "docs/02_spec/aud17_g1_local_contract_20260917.md",
+        "sha256": "5e42f08316d28c0bcbb7ec283d3b446cdc96691f9c4ef67755cf05d650ca6f0b",
+        "size": 6828,
+        "tracked": true
+      },
+      {
         "path": "docs/02_spec/phase11_1_formal_closure_contract_20260915.md",
         "sha256": "12aa58fe6e23d3bc41ee3c0b8c824eeff44d6b352229a015e34623337a37e94b",
         "size": 4195,
@@ -1555,20 +1573,20 @@
       },
       {
         "path": "docs/03_build/0300_build_engineer_master.md",
-        "sha256": "2d34868d711d4de5763d72530692b0057803077636a0aa46edabe9152666f577",
-        "size": 4415,
+        "sha256": "25b012dc206a714acd392e9273e6bf4777d44ebfe3dd9c81c381c066167abf81",
+        "size": 4743,
         "tracked": true
       },
       {
         "path": "docs/03_build/0301_roadmap.md",
-        "sha256": "58ce99618753c53593363613416fbac4981667caed2a61aaa57938335dc462b1",
-        "size": 4009,
+        "sha256": "0518afe45705bd5a12154a9ab25e6b0b3784f9a01065ca8b8295c3e751c92990",
+        "size": 4267,
         "tracked": true
       },
       {
         "path": "docs/03_build/0302_backlog_master.md",
-        "sha256": "754773222d7e9ec91ff3cfb568efaa96fd0977d525157a99b6dfe68d7c6e92e2",
-        "size": 4750,
+        "sha256": "544f1ed5273ddc7da4d952a44ca4765a648a84a6ba553ee189d9761105dfffae",
+        "size": 5216,
         "tracked": true
       },
       {
@@ -1755,6 +1773,24 @@
         "path": "docs/03_build/0327_aaa_round2_coordination.md",
         "sha256": "664889f8379c99eca0f1e1170a88c132beecf64955d878ddecefb960d0adb7a6",
         "size": 33729,
+        "tracked": true
+      },
+      {
+        "path": "docs/03_build/0328_aud20260917_executive_plan.md",
+        "sha256": "b489ea39bfe96c168a3dd8300c534e51b0e76bff36d09e148f3e045a39eda418",
+        "size": 8473,
+        "tracked": true
+      },
+      {
+        "path": "docs/03_build/0329_aud20260917_roadmap.md",
+        "sha256": "d9da6b8e16cbd5a5ce559de3ce374386f977fc7aca0d29e69d6b19b44143a9a2",
+        "size": 3813,
+        "tracked": true
+      },
+      {
+        "path": "docs/03_build/0330_aud20260917_backlog.md",
+        "sha256": "d6895aab457d0a0fc1d67a5f63471e08971c5a93ce13715ebf63945f5c2de6b8",
+        "size": 18962,
         "tracked": true
       },
       {
@@ -2406,6 +2442,12 @@
         "tracked": true
       },
       {
+        "path": "docs/04_audit/0565_recent_implementations_audit_2026-09-17.md",
+        "sha256": "b930a450dbbfeaed1d1f2a70ae47a0a3b1c5af3f270466df2cd0a9fa60d5991b",
+        "size": 6539,
+        "tracked": true
+      },
+      {
         "path": "docs/04_audit/pilot_report_template.md",
         "sha256": "7a9aa9f17a1737741abe8eda3de3a13bb4ab4799325dd3e2c4ad8f297a11cba2",
         "size": 1593,
@@ -3019,20 +3061,20 @@
       },
       {
         "path": "docs/20_master_execution_log.md",
-        "sha256": "397e69a64d269a4115b8b150630fe60755380c903fb645ee6b1edfe7c9916b3f",
-        "size": 262060,
+        "sha256": "517b349be828f327e77f6a16d691cf26f1273d7f7aa6b13dad6b2877c303c76d",
+        "size": 272219,
         "tracked": true
       },
       {
         "path": "docs/30_backlog_master.md",
-        "sha256": "e9098d8a9369392a33cd44d2f071c1a932f5a6b0ddc583f939f2beb06aa95a31",
-        "size": 123565,
+        "sha256": "250c510b2e8f75672e538749e5e4842347414b72d6c67cc70a04b59dc587327a",
+        "size": 126341,
         "tracked": true
       },
       {
         "path": "docs/99_runtime_state.md",
-        "sha256": "084eba2eb87ec1e234e7dc1183b615776c3fef1887515fb864bb1983a1621010",
-        "size": 186238,
+        "sha256": "5a09d3f1aefab7c4a1132e7eba31782ee267d6380f2bb785461fe7ab2269106a",
+        "size": 196230,
         "tracked": true
       },
       {
@@ -3607,8 +3649,8 @@
       },
       {
         "path": "packages/agent-runtime/src/__tests__/orchestration.test.ts",
-        "sha256": "4ae445f09f5e57b4635566562c529616c2854bc3aff71f93f906d9dcfb10eeb2",
-        "size": 28404,
+        "sha256": "1eb45ebe05dae700fb286aecdb058df3ae952c24bc2556fb874de51eede6039f",
+        "size": 30972,
         "tracked": true
       },
       {
@@ -3667,8 +3709,8 @@
       },
       {
         "path": "packages/agent-runtime/src/contracts.ts",
-        "sha256": "35264231e0b5aebfc1b16ca56e3a020710c5845534ee2b950c02eb21d575e26b",
-        "size": 5585,
+        "sha256": "5b31483a4cd1b42d0e64fe8587658c490a811b85233ecedddb1df5fdd921f105",
+        "size": 5867,
         "tracked": true
       },
       {
@@ -3685,8 +3727,8 @@
       },
       {
         "path": "packages/agent-runtime/src/orchestration.ts",
-        "sha256": "8b232445f89d4f271fb7664483dd9679fdf6ca73a093b2e53d5238aa1fc6fe16",
-        "size": 91441,
+        "sha256": "fdb364d04344c99bcfc1265f09c909222ac180bc5307cbacf116a096fd314ac9",
+        "size": 97447,
         "tracked": true
       },
       {
@@ -3949,8 +3991,8 @@
       },
       {
         "path": "packages/chaos/src/__tests__/chaos-postgres.test.ts",
-        "sha256": "a122ae5179b6cabe18e99067beb60311c51ad8f19ee07aef14aa0cc5417c7418",
-        "size": 2520,
+        "sha256": "7756bc6d4ec3e96abaae67a014d6cd1154b78a5281b39451a44a886cee8323b4",
+        "size": 2805,
         "tracked": true
       },
       {
@@ -4332,6 +4374,18 @@
         "tracked": true
       },
       {
+        "path": "packages/persistence/migrations/0023_orchestrator_replan_fencing.sql",
+        "sha256": "94a33390987c78b5e1ba9907292fe77f77d6074a22fa7a8761bed78281ae58bf",
+        "size": 3673,
+        "tracked": true
+      },
+      {
+        "path": "packages/persistence/migrations/0024_tenant_isolation_constraint_validation.sql",
+        "sha256": "d1680430e5f1c1b7f296946b5b96304526962d356cc2d25e1b3a8bf26751c360",
+        "size": 3236,
+        "tracked": true
+      },
+      {
         "path": "packages/persistence/package.json",
         "sha256": "c753a38c26e670438d3270437e17d5610e81bb9127b51857f5a2012cb8273196",
         "size": 244,
@@ -4405,8 +4459,8 @@
       },
       {
         "path": "packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
-        "sha256": "21dc0eed434ae2386833d29c2ddc972d479fb170e0020de46a57dfc221ddc8f5",
-        "size": 11045,
+        "sha256": "d0d4dc08f69dda605f32b30dd31b7b33a0866fe3fc325ec18aee661cc405d4b5",
+        "size": 11129,
         "tracked": true
       },
       {
@@ -4471,8 +4525,8 @@
       },
       {
         "path": "packages/persistence/src/__tests__/postgres-migration-smoke.test.ts",
-        "sha256": "48787932d0fbea00630331e12bf4754710aeea33e1f2e7162496dd4c80c44656",
-        "size": 29696,
+        "sha256": "4c37ab9d56a9c60cf9f23700e9539ebf6ee6868db5c24d7519d66913652d754f",
+        "size": 30617,
         "tracked": true
       },
       {
@@ -4531,8 +4585,8 @@
       },
       {
         "path": "packages/persistence/src/__tests__/tenant-isolation.test.ts",
-        "sha256": "f09dc744d3e851bc886374d6dc1e7e67c825510d0805c2890029d7fa3eed5866",
-        "size": 43178,
+        "sha256": "69014bc198e44c3fbf69fc3d04a0637e4589cc0a790d224d892c97ac3f3f515f",
+        "size": 43509,
         "tracked": true
       },
       {
@@ -4585,8 +4639,8 @@
       },
       {
         "path": "packages/persistence/src/orchestrator-postgres.ts",
-        "sha256": "177b1c962041ecc518e63503ec2598aed11d1fe5a644d97334cc8ad4d0bc1595",
-        "size": 53082,
+        "sha256": "b7d1a42cebb1babb6cfcababc254415f537c5325a19bac9ea9b126f3afc16f77",
+        "size": 54946,
         "tracked": true
       },
       {
@@ -4609,8 +4663,8 @@
       },
       {
         "path": "packages/persistence/src/postgres.ts",
-        "sha256": "efa3ac308676ef3709d16821d0102f83b7ab97381b7d1865f32d8cc21a8d7523",
-        "size": 139609,
+        "sha256": "f9e9ec8677e0db78df9921cc0682edf0ca7bcbb6aa7f72d595e9d631ab370e02",
+        "size": 139696,
         "tracked": true
       },
       {
@@ -5215,8 +5269,8 @@
       },
       {
         "path": "packages/shared/src/__tests__/audit-governance-hardening.test.ts",
-        "sha256": "4730700d04e3591ec4da1e4341d76f09bb4e88ca22a7e1fcab746828e4148bca",
-        "size": 9376,
+        "sha256": "22c3d8f8ee12961856b8c701e493618541f6621652465e9a5c0657ed6ce39151",
+        "size": 10134,
         "tracked": true
       },
       {
@@ -5275,8 +5329,8 @@
       },
       {
         "path": "packages/shared/src/audit-governance.ts",
-        "sha256": "af164295fe469f9cebcc08b5a5909c1e517b9ecec90c8f6ed3422dfe6f8d88d2",
-        "size": 11508,
+        "sha256": "5c84572179d8cf80996d469d5dc5927ad55cb67e14ef1f9ec479099b16a33576",
+        "size": 11541,
         "tracked": true
       },
       {
@@ -5629,8 +5683,20 @@
       },
       {
         "path": "scripts/lib/phase11-rules.mjs",
-        "sha256": "6e06f1db7ab3715e1d4897c2fc4ae09e36ca446424aae80847104929cbcbec0e",
-        "size": 39030,
+        "sha256": "d9988e1cc4f3299f683154d392e21cf6908de53456082f11b6ff450787c33ee9",
+        "size": 44731,
+        "tracked": true
+      },
+      {
+        "path": "scripts/lib/production-preflight-core.d.mts",
+        "sha256": "9d406902380e86642ec6b3d61aadb49d464cbbc0458378e536f973c813bd2056",
+        "size": 606,
+        "tracked": true
+      },
+      {
+        "path": "scripts/lib/production-preflight-core.mjs",
+        "sha256": "f8e785b07985d33049e480f30cd7f1223cf84d234956e1c28aa620d64a177d28",
+        "size": 9196,
         "tracked": true
       },
       {
@@ -5689,8 +5755,8 @@
       },
       {
         "path": "scripts/phase11-certify.mjs",
-        "sha256": "c38316d5aa440c70ae4ccb91cce9e2150a9aacbce01b0ab17fef33ae9c85b496",
-        "size": 52040,
+        "sha256": "86753a5d783e6b4f43c90f49c1eaeeeedee0e15f1ac7c789a6f28f307c457bb8",
+        "size": 52504,
         "tracked": true
       },
       {
@@ -5707,8 +5773,8 @@
       },
       {
         "path": "scripts/production-preflight.mjs",
-        "sha256": "47ea97392c46cac25f42157cf56c0c629e05e8af68a84c8ef7fb5153d54b1d32",
-        "size": 7137,
+        "sha256": "08034526f25af6a5cf3942d0ae22e755dde9cddeac0b853be075ca6e83f1a108",
+        "size": 7671,
         "tracked": true
       },
       {
@@ -5785,50 +5851,68 @@
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts",
-        "sha256": "edeb8163d51a1e2cc7f3de26f20560af72e7599a1e3aeb131f8f2e3985e0378e",
-        "size": 13626,
+        "sha256": "0cad9c30822a9819a2c98f9c96ecfa1adef0c9bc808acbd0b21816bce5656fd6",
+        "size": 15992,
         "tracked": true
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts-snapshots/console-desktop-chromium-linux.png",
-        "sha256": "1d0c4a89e9d7d26ed70fe2c07d9d761452f3420c2e78c4f626c5b8c7e36685a2",
-        "size": 144322,
+        "sha256": "77eee87375c6d051b0b82a3f4b03dfcaf824a2218e8eda5cfc308557796fe320",
+        "size": 130304,
         "tracked": true
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts-snapshots/console-mobile-chromium-linux.png",
-        "sha256": "2a6284ed2daf42f1c94b013a2954e0b71583f2e5f6875e6be7e0f566e6cfa538",
-        "size": 71010,
+        "sha256": "c0939ad97d98b04d1042c32dd144597cf97bca8f7e735634d37a126f4c229afc",
+        "size": 73225,
         "tracked": true
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts-snapshots/console-tablet-chromium-linux.png",
-        "sha256": "fa9b1160cd7325175e710ac2f2e49c25c9c2bcc5f88fb53dec232e22ece9b5cb",
-        "size": 83811,
+        "sha256": "ca26690fb9a0c3f91336eeb946b453a061fbdbb2f51afe0354edeac53557268d",
+        "size": 94221,
         "tracked": true
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts-snapshots/console-wide-tablet-chromium-linux.png",
-        "sha256": "6915699a73413407303498975fd6c0ab80873eba094dfe8f29f03a7d49cb1bc0",
-        "size": 108737,
+        "sha256": "7f2d3f9f2f359bd018f52c1cd5a55a63cae71780ae8adca240bbd5449904e9a6",
+        "size": 118285,
         "tracked": true
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts-snapshots/dead-letter-panel-1024-chromium-linux.png",
-        "sha256": "4343aa7f82a228753cb70a64708167d1a9f520b687619394ddd460486357717c",
-        "size": 37946,
+        "sha256": "8eef9af4cd349e6d1bdb124be31fac52cb58a5b6ea76f5e338fd18e30780520d",
+        "size": 37877,
         "tracked": true
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts-snapshots/dead-letter-panel-375-chromium-linux.png",
-        "sha256": "cffc35a286df98248944cc099ef8a2c4be44d52c482fc580137b32095e20c55f",
-        "size": 32506,
+        "sha256": "05302306599d3ff3f9b9857def53b4bbdd3adcc315e30477b552ce175dcf55fb",
+        "size": 32263,
         "tracked": true
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts-snapshots/orchestration-state-matrix-chromium-linux.png",
-        "sha256": "eb40b71fbc36d044f53aec98ee117189a0bf48224c724b188aedef6d3c7d9253",
-        "size": 317563,
+        "sha256": "d6fe7735aa25843b6ddd6316d17e7643e45e4dcf4f7764c2a7aa35a7f4ab5eab",
+        "size": 326149,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/orchestration-state-matrix-mobile-chromium-linux.png",
+        "sha256": "26ce3f1ddee81273cb93c991e98132506fd0bd2699ef761eb83a0d0829f24e96",
+        "size": 312865,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/orchestration-state-matrix-tablet-chromium-linux.png",
+        "sha256": "b66db42c6acfe0af32cd395a6f8a54f8d15aca6646812992f48485cd045c5eff",
+        "size": 324662,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/orchestration-uncertain-reconciliation-chromium-linux.png",
+        "sha256": "c1429bad32650cc950bb597fe583b82cdcddb148658653f50430f8021bb061ce",
+        "size": 353768,
         "tracked": true
       },
       {
@@ -5850,9 +5934,15 @@
         "tracked": true
       },
       {
+        "path": "tests/phase11-score-rubric.test.js",
+        "sha256": "7a91e4317c3a62e1c871b5c7d68ef0b463e8f0409b3f0f18551f6f65dd5f7b46",
+        "size": 5233,
+        "tracked": true
+      },
+      {
         "path": "tests/production-preflight.test.js",
-        "sha256": "76630ecd8a9d62d1e16936ad115d99a0268f30f551a36e4c116d66818d8d120d",
-        "size": 3527,
+        "sha256": "75e738a0d1912652053699e45c5319c203f17d5d59405ddbdc63e0533938fda9",
+        "size": 7266,
         "tracked": true
       },
       {
@@ -5966,107 +6056,972 @@
   "requestedProfile": "STAGING",
   "scores": {
     "Architecture": {
-      "value": 99,
-      "rationale": "Durable kernel, worker composition and candidate-bound evidence are scored from executable gates and critical invariants.",
+      "value": 85,
+      "status": "PARTIAL",
+      "scoreModel": "weighted-executable-evidence-v1",
+      "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
+      "dimensions": [
+        {
+          "id": "build",
+          "weight": 0.35,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "build",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-002",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "worker_composition",
+          "weight": 0.35,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "worker_startup",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-003",
+              "status": "PASS"
+            },
+            {
+              "id": "INV-004",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "candidate_evidence",
+          "weight": 0.3,
+          "value": 50,
+          "status": "PARTIAL",
+          "external": false,
+          "gates": [
+            {
+              "id": "evidence_graph",
+              "status": "PASS_WITHOUT_EVIDENCE"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-008",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        }
+      ],
       "evidence": [
-        "apps/worker/src/kernel-composition.ts",
-        "certification/phase11/evidence-graph.json"
+        "gate:build",
+        "invariant:INV-002",
+        "gate:worker_startup",
+        "invariant:INV-003",
+        "invariant:INV-004",
+        "gate:evidence_graph",
+        "invariant:INV-008"
+      ],
+      "limitations": [
+        "candidate_evidence:PARTIAL"
       ]
     },
     "Engineering": {
-      "value": 99,
-      "rationale": "Formatting, type safety, lint, build and the repository verification aggregate are independently represented.",
+      "value": 100,
+      "status": "PASS",
+      "scoreModel": "weighted-executable-evidence-v1",
+      "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
+      "dimensions": [
+        {
+          "id": "static_quality",
+          "weight": 0.55,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "format",
+              "status": "PASS"
+            },
+            {
+              "id": "typecheck",
+              "status": "PASS"
+            },
+            {
+              "id": "lint",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "build_integrity",
+          "weight": 0.25,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "build",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "repository_verification",
+          "weight": 0.2,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "verify",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [],
+          "evidenceQuality": 100
+        }
+      ],
       "evidence": [
-        "certification/phase11/logs/format.log",
-        "certification/phase11/logs/verify.log"
-      ]
+        "gate:format",
+        "gate:typecheck",
+        "gate:lint",
+        "gate:build",
+        "gate:verify"
+      ],
+      "limitations": []
     },
     "Testing": {
-      "value": 99,
-      "rationale": "Unit, coverage, browser, evaluation and chaos lanes are required evidence rather than score declarations.",
+      "value": 100,
+      "status": "PASS",
+      "scoreModel": "weighted-executable-evidence-v1",
+      "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
+      "dimensions": [
+        {
+          "id": "unit_coverage",
+          "weight": 0.4,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "unit",
+              "status": "PASS"
+            },
+            {
+              "id": "coverage",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "browser_evaluation",
+          "weight": 0.3,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "e2e",
+              "status": "PASS"
+            },
+            {
+              "id": "evals",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "failure_perturbation",
+          "weight": 0.3,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "chaos",
+              "status": "PASS"
+            },
+            {
+              "id": "recovery",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [],
+          "evidenceQuality": 100
+        }
+      ],
       "evidence": [
-        "certification/phase11/logs/unit.log",
-        "certification/phase11/logs/e2e.log"
-      ]
+        "gate:unit",
+        "gate:coverage",
+        "gate:e2e",
+        "gate:evals",
+        "gate:chaos",
+        "gate:recovery"
+      ],
+      "limitations": []
     },
     "Security": {
-      "value": 99,
-      "rationale": "Security and red-team gates are reduced by any unresolved blocking finding.",
+      "value": 100,
+      "status": "PASS",
+      "scoreModel": "weighted-executable-evidence-v1",
+      "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
+      "dimensions": [
+        {
+          "id": "security_static",
+          "weight": 0.25,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "security",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-005",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "governance_attack_resistance",
+          "weight": 0.4,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "bypass_audit",
+              "status": "PASS"
+            },
+            {
+              "id": "governance_redteam",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-001",
+              "status": "PASS"
+            },
+            {
+              "id": "INV-002",
+              "status": "PASS"
+            },
+            {
+              "id": "INV-007",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "tenant_attack_resistance",
+          "weight": 0.35,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "tenant_redteam",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-006",
+              "status": "PASS"
+            },
+            {
+              "id": "INV-008",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        }
+      ],
       "evidence": [
-        "certification/phase11/logs/security.log",
-        "certification/phase11/negative-validation.json"
-      ]
+        "gate:security",
+        "invariant:INV-005",
+        "gate:bypass_audit",
+        "gate:governance_redteam",
+        "invariant:INV-001",
+        "invariant:INV-002",
+        "invariant:INV-007",
+        "gate:tenant_redteam",
+        "invariant:INV-006",
+        "invariant:INV-008"
+      ],
+      "limitations": []
     },
     "Reliability": {
-      "value": 99,
-      "rationale": "Durability, recovery, outbox replay, load and restart invariants cover failure behavior.",
+      "value": 100,
+      "status": "PASS",
+      "scoreModel": "weighted-executable-evidence-v1",
+      "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
+      "dimensions": [
+        {
+          "id": "durable_storage",
+          "weight": 0.3,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "postgres",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-009",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "recovery",
+          "weight": 0.35,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "recovery",
+              "status": "PASS"
+            },
+            {
+              "id": "outbox_replay",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-010",
+              "status": "PASS"
+            },
+            {
+              "id": "INV-011",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "load_restart",
+          "weight": 0.35,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "load",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-012",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        }
+      ],
       "evidence": [
-        "certification/phase11/postgres-report.json",
-        "certification/phase11/recovery-report.json"
-      ]
+        "gate:postgres",
+        "invariant:INV-009",
+        "gate:recovery",
+        "gate:outbox_replay",
+        "invariant:INV-010",
+        "invariant:INV-011",
+        "gate:load",
+        "invariant:INV-012"
+      ],
+      "limitations": []
     },
     "Agent Engineering": {
-      "value": 99,
-      "rationale": "Planner/replanner behavior and evidence-based completion are tied to runtime tests.",
+      "value": 100,
+      "status": "PASS",
+      "scoreModel": "weighted-executable-evidence-v1",
+      "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
+      "dimensions": [
+        {
+          "id": "runtime_behavior",
+          "weight": 0.4,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "unit",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-003",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "evaluation",
+          "weight": 0.3,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "evals",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-004",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "recovery_behavior",
+          "weight": 0.3,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "recovery",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-013",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        }
+      ],
       "evidence": [
-        "packages/agent-runtime/src/orchestration.ts",
-        "certification/phase11/eval-report.json"
-      ]
+        "gate:unit",
+        "invariant:INV-003",
+        "gate:evals",
+        "invariant:INV-004",
+        "gate:recovery",
+        "invariant:INV-013"
+      ],
+      "limitations": []
     },
     "Orchestrator Engineering": {
-      "value": 99,
-      "rationale": "Goal/plan/step lineage, bounded execution and recovery are independently scored.",
+      "value": 85,
+      "status": "PARTIAL",
+      "scoreModel": "weighted-executable-evidence-v1",
+      "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
+      "dimensions": [
+        {
+          "id": "lineage",
+          "weight": 0.35,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "unit",
+              "status": "PASS"
+            },
+            {
+              "id": "trace_lineage",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-002",
+              "status": "PASS"
+            },
+            {
+              "id": "INV-004",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "bounded_execution",
+          "weight": 0.35,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "recovery",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-012",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "evidence_continuity",
+          "weight": 0.3,
+          "value": 50,
+          "status": "PARTIAL",
+          "external": false,
+          "gates": [
+            {
+              "id": "evidence_graph",
+              "status": "PASS_WITHOUT_EVIDENCE"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-008",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        }
+      ],
       "evidence": [
-        "packages/agent-runtime/src/orchestration.ts",
-        "certification/phase11/evidence-graph.json"
+        "gate:unit",
+        "gate:trace_lineage",
+        "invariant:INV-002",
+        "invariant:INV-004",
+        "gate:recovery",
+        "invariant:INV-012",
+        "gate:evidence_graph",
+        "invariant:INV-008"
+      ],
+      "limitations": [
+        "evidence_continuity:PARTIAL"
       ]
     },
     "Governance": {
-      "value": 99,
-      "rationale": "Authority, approval, risk, takeover and certification attacks must all fail closed.",
+      "value": 100,
+      "status": "PASS",
+      "scoreModel": "weighted-executable-evidence-v1",
+      "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
+      "dimensions": [
+        {
+          "id": "authority",
+          "weight": 0.35,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "governance_redteam",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-001",
+              "status": "PASS"
+            },
+            {
+              "id": "INV-002",
+              "status": "PASS"
+            },
+            {
+              "id": "INV-005",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "approval_takeover",
+          "weight": 0.35,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "tenant_redteam",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-006",
+              "status": "PASS"
+            },
+            {
+              "id": "INV-007",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "certification",
+          "weight": 0.3,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "certification_redteam",
+              "status": "PASS"
+            },
+            {
+              "id": "certification_self_test",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-014",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        }
+      ],
       "evidence": [
-        "certification/phase11/negative-validation.json",
-        "certification/phase11/logs/governance_redteam.log"
-      ]
+        "gate:governance_redteam",
+        "invariant:INV-001",
+        "invariant:INV-002",
+        "invariant:INV-005",
+        "gate:tenant_redteam",
+        "invariant:INV-006",
+        "invariant:INV-007",
+        "gate:certification_redteam",
+        "gate:certification_self_test",
+        "invariant:INV-014"
+      ],
+      "limitations": []
     },
     "Observability": {
-      "value": 99,
-      "rationale": "The complete runtime stage chain and bounded redacted attributes are required.",
+      "value": 80,
+      "status": "PARTIAL",
+      "scoreModel": "weighted-executable-evidence-v1",
+      "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
+      "dimensions": [
+        {
+          "id": "trace_lineage",
+          "weight": 0.6,
+          "value": 67,
+          "status": "PARTIAL",
+          "external": false,
+          "gates": [
+            {
+              "id": "trace_lineage",
+              "status": "PASS"
+            },
+            {
+              "id": "evidence_graph",
+              "status": "PASS_WITHOUT_EVIDENCE"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-008",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "operator_evidence",
+          "weight": 0.4,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "evidence_reports",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [],
+          "evidenceQuality": 100
+        }
+      ],
       "evidence": [
-        "certification/phase11/evidence-graph.json",
-        "certification/phase11/logs/trace_lineage.log"
+        "gate:trace_lineage",
+        "gate:evidence_graph",
+        "invariant:INV-008",
+        "gate:evidence_reports"
+      ],
+      "limitations": [
+        "trace_lineage:PARTIAL"
       ]
     },
     "Auditability": {
-      "value": 99,
-      "rationale": "All declared evidence artifacts are hash-bound and pointer-addressable.",
+      "value": 40,
+      "status": "FAIL",
+      "scoreModel": "weighted-executable-evidence-v1",
+      "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
+      "dimensions": [
+        {
+          "id": "sealed_evidence",
+          "weight": 0.6,
+          "value": 0,
+          "status": "FAIL",
+          "external": false,
+          "gates": [
+            {
+              "id": "candidate_clean",
+              "status": "PASS_WITHOUT_EVIDENCE"
+            },
+            {
+              "id": "evidence_graph",
+              "status": "PASS_WITHOUT_EVIDENCE"
+            }
+          ],
+          "invariants": [],
+          "successState": {
+            "id": "evidenceComplete",
+            "status": "PASS"
+          },
+          "evidenceQuality": 0
+        },
+        {
+          "id": "current_pointer",
+          "weight": 0.4,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "verify",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [],
+          "successState": {
+            "id": "localVerificationComplete",
+            "status": "PASS"
+          },
+          "evidenceQuality": 100
+        }
+      ],
       "evidence": [
-        "certification/phase11/manifest.json",
-        "certification/current.json"
+        "gate:candidate_clean",
+        "gate:evidence_graph",
+        "gate:verify"
+      ],
+      "limitations": [
+        "sealed_evidence:FAIL"
       ]
     },
     "Data Governance": {
-      "value": 99,
-      "rationale": "Tenant context, RLS, payload binding and effect lineage are evaluated against durable storage evidence.",
+      "value": 70,
+      "status": "FAIL",
+      "scoreModel": "weighted-executable-evidence-v1",
+      "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
+      "dimensions": [
+        {
+          "id": "durable_tenant_scope",
+          "weight": 0.4,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "postgres",
+              "status": "PASS"
+            },
+            {
+              "id": "tenant_redteam",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-006",
+              "status": "PASS"
+            },
+            {
+              "id": "INV-009",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "payload_lineage",
+          "weight": 0.3,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "security",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [
+            {
+              "id": "INV-008",
+              "status": "PASS"
+            }
+          ],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "retention_audit",
+          "weight": 0.3,
+          "value": 0,
+          "status": "FAIL",
+          "external": false,
+          "gates": [
+            {
+              "id": "evidence_graph",
+              "status": "PASS_WITHOUT_EVIDENCE"
+            }
+          ],
+          "invariants": [],
+          "evidenceQuality": 0
+        }
+      ],
       "evidence": [
-        "certification/phase11/postgres-report.json",
-        "certification/phase11/logs/tenant_redteam.log"
+        "gate:postgres",
+        "gate:tenant_redteam",
+        "invariant:INV-006",
+        "invariant:INV-009",
+        "gate:security",
+        "invariant:INV-008",
+        "gate:evidence_graph"
+      ],
+      "limitations": [
+        "retention_audit:FAIL"
       ]
     },
     "DevEx": {
-      "value": 99,
-      "rationale": "The default verification contract, supply-chain checks and clean-clone portability are explicit gates.",
+      "value": 100,
+      "status": "PASS",
+      "scoreModel": "weighted-executable-evidence-v1",
+      "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
+      "dimensions": [
+        {
+          "id": "default_verification",
+          "weight": 0.4,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "verify",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "supply_chain",
+          "weight": 0.3,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "supply_chain",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [],
+          "evidenceQuality": 100
+        },
+        {
+          "id": "clean_clone",
+          "weight": 0.3,
+          "value": 100,
+          "status": "PASS",
+          "external": false,
+          "gates": [
+            {
+              "id": "clone_verify",
+              "status": "PASS"
+            }
+          ],
+          "invariants": [],
+          "evidenceQuality": 100
+        }
+      ],
       "evidence": [
-        "package.json",
-        "certification/phase11/logs/clone_verify.log"
-      ]
+        "gate:verify",
+        "gate:supply_chain",
+        "gate:clone_verify"
+      ],
+      "limitations": []
     },
     "Production Readiness": {
       "value": 0,
-      "rationale": "Production readiness is zero while external proof is incomplete (0 local blockers also considered).",
+      "status": "BLOCKED",
+      "scoreModel": "weighted-executable-evidence-v1",
+      "rationale": "Production score is zero until all external proof and human assurance are current; local gates cannot substitute for them.",
+      "dimensions": [
+        {
+          "id": "production_assurance",
+          "weight": 1,
+          "value": 50,
+          "status": "PARTIAL",
+          "external": true,
+          "gates": [
+            {
+              "id": "production_preflight",
+              "status": "PASS"
+            },
+            {
+              "id": "PHASE11_FORMAL_CLOSURE",
+              "status": "PASS_WITHOUT_EVIDENCE"
+            }
+          ],
+          "invariants": [],
+          "successState": {
+            "id": "productionProofComplete",
+            "status": "NOT_EXECUTED"
+          },
+          "evidenceQuality": 100
+        }
+      ],
       "evidence": [
-        "certification/phase11/integration-report.json",
-        "certification/phase11/recovery-report.json"
+        "gate:production_preflight",
+        "gate:PHASE11_FORMAL_CLOSURE"
+      ],
+      "limitations": [
+        "production_assurance:PARTIAL",
+        "external_proof_incomplete"
       ]
     }
   },
@@ -6305,162 +7260,162 @@
       "command": "npm run format:check",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 13122,
+      "durationMs": 14282,
       "log": "certification/phase11/logs/format.log",
-      "logSha256": "91b7131ee58f393aa1460435537e1c913f25f634049be2d224f41a8554f721fa"
+      "logSha256": "9f82753a84303a7b81ee0019bdc410bcb24b73fdb0fa6c0ce7105064fe8a7382"
     },
     {
       "id": "typecheck",
       "command": "npm run typecheck",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 10447,
+      "durationMs": 9899,
       "log": "certification/phase11/logs/typecheck.log",
-      "logSha256": "67572908b4c54a531a3c1d5783ffe832648a29ff942114f8b8adc15d94e438c0"
+      "logSha256": "e50bdcd9fadaaa6c9991aabb2e74bf48be76b0f39643b28a569500d6cd638400"
     },
     {
       "id": "lint",
       "command": "npm run lint",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 7100,
+      "durationMs": 6877,
       "log": "certification/phase11/logs/lint.log",
-      "logSha256": "240bece3ba5bd90cb4a1c2fa671c30eed918746da47038ccdbd54528909287a9"
+      "logSha256": "e1f7f77d867c0a611b5c36a1275e644e1aaa3cdfcd20ba732b642fd75008121b"
     },
     {
       "id": "build",
       "command": "npm run build",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 11062,
+      "durationMs": 10145,
       "log": "certification/phase11/logs/build.log",
-      "logSha256": "8dbaa7c25f41fd5d3875229ffed009b0eb70c1a1676f54ad6f9c87cc2b3b9835"
+      "logSha256": "a83cfbcd94f401d5132633dd238091caa886b1110f115c7d9cc7e77e41081f58"
     },
     {
       "id": "unit",
       "command": "npm test",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 245256,
+      "durationMs": 240033,
       "log": "certification/phase11/logs/unit.log",
-      "logSha256": "027e96a65f38428df743a2a9b404e5c369e97091e42bce25c0b5d8a7fdddebcf"
+      "logSha256": "892a8f8b66ee5b3cfd8e2a095ab8e305ce6de504958468294300fc55da563edd"
     },
     {
       "id": "coverage",
       "command": "npm run test:coverage",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 273973,
+      "durationMs": 266791,
       "log": "certification/phase11/logs/coverage.log",
-      "logSha256": "8a9f9287b6c8fac318d347dec921a5b9092d1d60dd663bd2f55d95df6a673a59"
+      "logSha256": "af419658142725475f332a48b1a5648716ce37b4f93b126d432df64f5626ea89"
     },
     {
       "id": "security",
       "command": "npm run audit:security",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 669,
+      "durationMs": 648,
       "log": "certification/phase11/logs/security.log",
-      "logSha256": "d4f96900e6249ccacc07d8943ed86d7a8cf3e2bc09079748e9772d86084255de"
+      "logSha256": "959a541ab054e5226bc7cc70a89711047483fa41115b5c4936fbcc846fb9cbfa"
     },
     {
       "id": "supply_chain",
       "command": "npm run sbom && npm run licenses:check",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 260,
+      "durationMs": 255,
       "log": "certification/phase11/logs/supply_chain.log",
-      "logSha256": "25b64885076dea0081a147591c91f1a00837f30a09cc2dd0a28956198147d52a"
+      "logSha256": "9c5bcc736717980ff5c1cae1523fcfa8ee1784596d3dd4edd4322890cdc52a77"
     },
     {
       "id": "worker_startup",
       "command": "npm run test:worker:startup",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 1311,
+      "durationMs": 1235,
       "log": "certification/phase11/logs/worker_startup.log",
-      "logSha256": "1352de075bb63415c32d54de6d2fc473da4f791a9c24bafe051ebc0eeb71b20a"
+      "logSha256": "af72b99f73e89efad1d1d18521be3234b2127b744a5ab77b5449f50b637e1eb3"
     },
     {
       "id": "postgres",
       "command": "npm run test:postgres",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 58845,
+      "durationMs": 56402,
       "log": "certification/phase11/logs/postgres.log",
-      "logSha256": "d790bc6bf356a87e54fe7f64089c6bbfcaa7bc406738d0f7ac43fbd3049210f5"
+      "logSha256": "fc0caa9342eef82ce41bb440765da8c103f0ba1a9707b0be5153757f9f98614e"
     },
     {
       "id": "e2e",
       "command": "npm run test:e2e",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 26780,
+      "durationMs": 28682,
       "log": "certification/phase11/logs/e2e.log",
-      "logSha256": "af3f4d7432e4212cf43a6f3dfb7aa92785f8dd677196c4422f02913333c758fe"
+      "logSha256": "a974b81308b57c7f3fa586b7a03ad9d36cf0e72eb22f18c30132be1ba65ca2f9"
     },
     {
       "id": "evals",
       "command": "npm run test:evals && npx tsx scripts/phase10-eval-report.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 2360,
+      "durationMs": 1737,
       "log": "certification/phase11/logs/evals.log",
-      "logSha256": "002c7550a64c06b6061abe46c2586883786322911aba2fd93e57a3343641502f"
+      "logSha256": "644dacc07450a3b5ba4de5c8aa29257f7fb1e99bbd7c8e422a25c831d34cb610"
     },
     {
       "id": "chaos",
       "command": "npm run test:chaos -- --reporter=json --outputFile=certification/chaos-report.json",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 4780,
+      "durationMs": 3418,
       "log": "certification/phase11/logs/chaos.log",
-      "logSha256": "5c98cd67a49deb34534433bcd81bae6ce3da89101623fcf4c2aac6bf63d71bde"
+      "logSha256": "f11e39caa1d4ed9259ff8cb548eee64f892b8f4e0d5f725ee6e3f7127fa5c14b"
     },
     {
       "id": "load",
       "command": "npx tsx scripts/phase10-load.ts --events=10000",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 16592,
+      "durationMs": 10385,
       "log": "certification/phase11/logs/load.log",
-      "logSha256": "97fea40849c4611c149677cbe6ecab9cb12d223d0766bd471216fd3bf8a2f9f6"
+      "logSha256": "1126faa1e780dbd30c3ead0d116f0682cc2cbc8a26a45faef9275698cf873ba9"
     },
     {
       "id": "recovery",
       "command": "npm test -- --run packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts apps/worker/src/__tests__/outbox-recovery.test.ts apps/worker/src/__tests__/worker-sweeps.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 4121,
+      "durationMs": 3776,
       "log": "certification/phase11/logs/recovery.log",
-      "logSha256": "f8f28951bf2931d34a1fccf616f5aa148a6da2ddad3fbb85a7b2b3cf0fd76345"
+      "logSha256": "4f6d2f2568905d88048c62a93791fa6301bdf8ddbd20a1c1a4e9bab128506693"
     },
     {
       "id": "bypass_audit",
       "command": "node scripts/phase11-bypass-audit.mjs",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 39,
+      "durationMs": 41,
       "log": "certification/phase11/logs/bypass_audit.log",
-      "logSha256": "ebf07340a990b0953b37c361cb01bf376932e8ce2b355d97c50ad5848b3c7249"
+      "logSha256": "3a8cce082a6a99311ad6581d03fb9676c853a3ff399755d6fab07344d6b0df62"
     },
     {
       "id": "certification_self_test",
       "command": "node scripts/phase11-self-test.mjs",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 88,
+      "durationMs": 92,
       "log": "certification/phase11/logs/certification_self_test.log",
-      "logSha256": "253bb6b122c7f1d97a358dacca18923b8be8c886e6c66e17dd2d1fcda09ce9ed"
+      "logSha256": "e76363bc125303d858c5f0b7eb4403897b8fd5600036d8334ba75458ff3811df"
     },
     {
       "id": "phase10_historical_verification",
       "command": "node scripts/phase10-verify.mjs --historical --base certification/logs/historical/2026-09-11-phase10",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 88,
+      "durationMs": 90,
       "log": "certification/phase11/logs/phase10_historical_verification.log",
-      "logSha256": "e653d591e2f42b3b13f3a872c5b2d71ec417fda192a372b177c7c256486d3a4f"
+      "logSha256": "931f6d830164960d5faaef4f59a34825997d0441c05d28d3ee85976f4d7ea9c1"
     },
     {
       "id": "evidence_graph",
@@ -6488,18 +7443,18 @@
       "command": "npm run verify",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 528473,
+      "durationMs": 547338,
       "log": "certification/phase11/logs/verify.log",
-      "logSha256": "935d13e620aa44135ccc7ec77896922b1e7999a9b2121b5924d188b5cdc9718d"
+      "logSha256": "23f893dc779ef052d9595bce23fe52b940884ef6adb993357064e10cb2eae927"
     },
     {
       "id": "production_preflight",
       "command": "node scripts/production-preflight.mjs --profile=PRODUCTION --expect=REJECT",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 31,
+      "durationMs": 38,
       "log": "certification/phase11/logs/production_preflight.log",
-      "logSha256": "7ac7e86a2222f85f40d8d24d318caa8b07f95c804e6534ad4d96117dc77aba63"
+      "logSha256": "478fe275d4afdf72697aced5f264300c342f2bff80c4ef00c01dee45f1838eea"
     },
     {
       "id": "evidence_reports",
@@ -6508,52 +7463,52 @@
       "exitCode": 0,
       "durationMs": 31,
       "log": "certification/phase11/logs/evidence_reports.log",
-      "logSha256": "1f1508ef372d3d6d48655165cccd7f1fb5359084596212b30cd9843cb40db1d1"
+      "logSha256": "a8e06003597848a32eba8301111f9525b21eaeb1c70600c8d7ed6090fadbea9c"
     },
     {
       "id": "independent_critic",
       "command": "node scripts/phase11-2-evidence-check.mjs --critic",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 32,
+      "durationMs": 34,
       "log": "certification/phase11/logs/independent_critic.log",
-      "logSha256": "3a37c6a26002c24c1eebbbc39cc262bf169bf97bfa16ad174bc432af0f4ae781"
+      "logSha256": "3b5d6174c4dedb98cf831de5433690aeed0ff99a8cea0071d1be611bc229bbce"
     },
     {
       "id": "trace_lineage",
       "command": "npm test -- --run apps/api/src/__tests__/orchestration-observability.test.ts packages/observability/src/__tests__/observability.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 2997,
+      "durationMs": 3001,
       "log": "certification/phase11/logs/trace_lineage.log",
-      "logSha256": "884c49bbe9c86c73852da664a43b08435145bc768ebf4f49d82b24f3c4a2a74c"
+      "logSha256": "61196bba80d0dc53837fefbd92b59627e69cf80902b5e79e57e9b2edbb906881"
     },
     {
       "id": "governance_redteam",
       "command": "npm test -- --run packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts packages/platform/src/__tests__/tool-invocation-boundary-hardening.test.ts packages/platform/src/__tests__/critical-safety-preflight.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 3000,
+      "durationMs": 3003,
       "log": "certification/phase11/logs/governance_redteam.log",
-      "logSha256": "3ec566d0b0dd4d2ee298f3c4edf6708241b9c6583ae72b7c5510cb8a5f359d82"
+      "logSha256": "56cc8840a52fa447fcb747a2ead9fcff9b9b02af819dde7cbf8d7166e307f712"
     },
     {
       "id": "tenant_redteam",
       "command": "npm test -- --run apps/api/src/__tests__/tenant-inbound-isolation.test.ts packages/persistence/src/__tests__/tenant-isolation.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 3002,
+      "durationMs": 3035,
       "log": "certification/phase11/logs/tenant_redteam.log",
-      "logSha256": "877f0bb5959ab3bc1a57a1fb9cc66c2d58a91e22be531b26e34bed04eebe13cf"
+      "logSha256": "03c01d3654e788f2753d97393673ab3b2e62a19c5ef70113e41c9411975296da"
     },
     {
       "id": "certification_redteam",
-      "command": "node scripts/phase11-2-redteam.mjs --suite=certification",
+      "command": "node scripts/phase11-2-redteam.mjs --suite=certification && npm test -- --run apps/api/src/__tests__/aud17-connected-redteam.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 92,
+      "durationMs": 2230,
       "log": "certification/phase11/logs/certification_redteam.log",
-      "logSha256": "c0eb10b3db6f492af18d8ed3864b621833cd92e50ae7024bb50d644c9f907f89"
+      "logSha256": "37473f028293d91b40bb3e8377859820d16220c845f6aac2f22819617c2a40e9"
     },
     {
       "id": "adversarial_proof",
@@ -6562,25 +7517,25 @@
       "exitCode": 0,
       "durationMs": 91,
       "log": "certification/phase11/logs/adversarial_proof.log",
-      "logSha256": "fbbe98f1b7963fc3a9ca15712338520c583bc3f3ecb3abd6d7f4df21ad587ecf"
+      "logSha256": "a3e0439290b1c452085a1f4657376fc82de5499fcf77b5a685f27159acf242fb"
     },
     {
       "id": "outbox_replay",
       "command": "npm test -- --run packages/persistence/src/__tests__/outbox-durability.test.ts apps/worker/src/__tests__/outbox-recovery.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 2992,
+      "durationMs": 2657,
       "log": "certification/phase11/logs/outbox_replay.log",
-      "logSha256": "3de7bb3d0da349f997aae7231be4ca2b9db1a3ded35be948dbdbd14fe720aedb"
+      "logSha256": "242af45dc4944ddf26fdd2e984d261b3908538b948c491806ce3634e405c920e"
     },
     {
       "id": "clone_verify",
       "command": "node scripts/phase11-2-redteam.mjs --suite=clone",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 95,
+      "durationMs": 87,
       "log": "certification/phase11/logs/clone_verify.log",
-      "logSha256": "7cfd7da1c05a877c0d713861c9adb461caf88520e8779f9a1762264aadb538ce"
+      "logSha256": "63b640c9ac6d1b797619fcd2327b57e6654e864da19bf15790a5e8a01e5f2ba0"
     },
     {
       "id": "PHASE11_FORMAL_CLOSURE",
@@ -6601,7 +7556,8 @@
         "scripts/phase11-2-redteam.mjs",
         "scripts/phase11-2-evidence-check.mjs",
         "packages/policy-engine/src",
-        "apps/api/src/orchestration-observability.ts"
+        "apps/api/src/orchestration-observability.ts",
+        "apps/api/src/__tests__/aud17-connected-redteam.test.ts"
       ],
       "testRefs": [
         "scripts/phase11-2-redteam.mjs"
@@ -6624,7 +7580,8 @@
         "scripts/phase11-2-redteam.mjs",
         "scripts/phase11-2-evidence-check.mjs",
         "packages/policy-engine/src",
-        "apps/api/src/orchestration-observability.ts"
+        "apps/api/src/orchestration-observability.ts",
+        "apps/api/src/__tests__/aud17-connected-redteam.test.ts"
       ],
       "testRefs": [
         "scripts/phase11-2-redteam.mjs"
@@ -6649,7 +7606,8 @@
         "scripts/phase11-2-redteam.mjs",
         "scripts/phase11-2-evidence-check.mjs",
         "packages/policy-engine/src",
-        "apps/api/src/orchestration-observability.ts"
+        "apps/api/src/orchestration-observability.ts",
+        "apps/api/src/__tests__/aud17-connected-redteam.test.ts"
       ],
       "testRefs": [
         "scripts/phase11-2-redteam.mjs"
@@ -6672,7 +7630,8 @@
         "scripts/phase11-2-redteam.mjs",
         "scripts/phase11-2-evidence-check.mjs",
         "packages/policy-engine/src",
-        "apps/api/src/orchestration-observability.ts"
+        "apps/api/src/orchestration-observability.ts",
+        "apps/api/src/__tests__/aud17-connected-redteam.test.ts"
       ],
       "testRefs": [
         "scripts/phase11-2-redteam.mjs"
@@ -6695,7 +7654,8 @@
         "scripts/phase11-2-redteam.mjs",
         "scripts/phase11-2-evidence-check.mjs",
         "packages/policy-engine/src",
-        "apps/api/src/orchestration-observability.ts"
+        "apps/api/src/orchestration-observability.ts",
+        "apps/api/src/__tests__/aud17-connected-redteam.test.ts"
       ],
       "testRefs": [
         "scripts/phase11-2-redteam.mjs"
@@ -6718,7 +7678,8 @@
         "scripts/phase11-2-redteam.mjs",
         "scripts/phase11-2-evidence-check.mjs",
         "packages/policy-engine/src",
-        "apps/api/src/orchestration-observability.ts"
+        "apps/api/src/orchestration-observability.ts",
+        "apps/api/src/__tests__/aud17-connected-redteam.test.ts"
       ],
       "testRefs": [
         "scripts/phase11-2-redteam.mjs"
@@ -6741,7 +7702,8 @@
         "scripts/phase11-2-redteam.mjs",
         "scripts/phase11-2-evidence-check.mjs",
         "packages/policy-engine/src",
-        "apps/api/src/orchestration-observability.ts"
+        "apps/api/src/orchestration-observability.ts",
+        "apps/api/src/__tests__/aud17-connected-redteam.test.ts"
       ],
       "testRefs": [
         "scripts/phase11-2-redteam.mjs"
@@ -6764,7 +7726,8 @@
         "scripts/phase11-2-redteam.mjs",
         "scripts/phase11-2-evidence-check.mjs",
         "packages/policy-engine/src",
-        "apps/api/src/orchestration-observability.ts"
+        "apps/api/src/orchestration-observability.ts",
+        "apps/api/src/__tests__/aud17-connected-redteam.test.ts"
       ],
       "testRefs": [
         "scripts/phase11-2-redteam.mjs"
@@ -6789,7 +7752,8 @@
         "scripts/phase11-2-redteam.mjs",
         "scripts/phase11-2-evidence-check.mjs",
         "packages/policy-engine/src",
-        "apps/api/src/orchestration-observability.ts"
+        "apps/api/src/orchestration-observability.ts",
+        "apps/api/src/__tests__/aud17-connected-redteam.test.ts"
       ],
       "testRefs": [
         "scripts/phase11-2-redteam.mjs"
@@ -6814,7 +7778,8 @@
         "scripts/phase11-2-redteam.mjs",
         "scripts/phase11-2-evidence-check.mjs",
         "packages/policy-engine/src",
-        "apps/api/src/orchestration-observability.ts"
+        "apps/api/src/orchestration-observability.ts",
+        "apps/api/src/__tests__/aud17-connected-redteam.test.ts"
       ],
       "testRefs": [
         "scripts/phase11-2-redteam.mjs"
@@ -6839,7 +7804,8 @@
         "scripts/phase11-2-redteam.mjs",
         "scripts/phase11-2-evidence-check.mjs",
         "packages/policy-engine/src",
-        "apps/api/src/orchestration-observability.ts"
+        "apps/api/src/orchestration-observability.ts",
+        "apps/api/src/__tests__/aud17-connected-redteam.test.ts"
       ],
       "testRefs": [
         "scripts/phase11-2-redteam.mjs"
@@ -6864,7 +7830,8 @@
         "scripts/phase11-2-redteam.mjs",
         "scripts/phase11-2-evidence-check.mjs",
         "packages/policy-engine/src",
-        "apps/api/src/orchestration-observability.ts"
+        "apps/api/src/orchestration-observability.ts",
+        "apps/api/src/__tests__/aud17-connected-redteam.test.ts"
       ],
       "testRefs": [
         "scripts/phase11-2-redteam.mjs"
@@ -6889,7 +7856,8 @@
         "scripts/phase11-2-redteam.mjs",
         "scripts/phase11-2-evidence-check.mjs",
         "packages/policy-engine/src",
-        "apps/api/src/orchestration-observability.ts"
+        "apps/api/src/orchestration-observability.ts",
+        "apps/api/src/__tests__/aud17-connected-redteam.test.ts"
       ],
       "testRefs": [
         "scripts/phase11-2-redteam.mjs"
@@ -6912,7 +7880,8 @@
         "scripts/phase11-2-redteam.mjs",
         "scripts/phase11-2-evidence-check.mjs",
         "packages/policy-engine/src",
-        "apps/api/src/orchestration-observability.ts"
+        "apps/api/src/orchestration-observability.ts",
+        "apps/api/src/__tests__/aud17-connected-redteam.test.ts"
       ],
       "testRefs": [
         "scripts/phase11-2-redteam.mjs"
@@ -6937,7 +7906,8 @@
         "scripts/phase11-2-redteam.mjs",
         "scripts/phase11-2-evidence-check.mjs",
         "packages/policy-engine/src",
-        "apps/api/src/orchestration-observability.ts"
+        "apps/api/src/orchestration-observability.ts",
+        "apps/api/src/__tests__/aud17-connected-redteam.test.ts"
       ],
       "testRefs": [
         "scripts/phase11-2-redteam.mjs"
@@ -6964,7 +7934,8 @@
         "scripts/phase11-2-redteam.mjs",
         "scripts/phase11-2-evidence-check.mjs",
         "packages/policy-engine/src",
-        "apps/api/src/orchestration-observability.ts"
+        "apps/api/src/orchestration-observability.ts",
+        "apps/api/src/__tests__/aud17-connected-redteam.test.ts"
       ],
       "testRefs": [
         "scripts/phase11-2-redteam.mjs"
@@ -6998,9 +7969,9 @@
   "evals": {
     "schemaVersion": 1,
     "kind": "phase11-evals-report",
-    "certificationId": "phase11-97c31146053f9e5b-mu4pxe3r",
-    "candidateCommit": "8c87e825316acf537fbc750a7b41c9e185bfae59",
-    "generatedAt": "2026-09-16T23:35:11.073Z",
+    "certificationId": "phase11-81962adcfc65cf7d-mu5kewem",
+    "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
+    "generatedAt": "2026-09-17T13:48:35.017Z",
     "gateId": "evals",
     "status": "PASS",
     "command": "npm run test:evals && npx tsx scripts/phase10-eval-report.ts",
@@ -7010,8 +7981,8 @@
     "raw": {
       "suiteId": "phase10-core-v1",
       "agentId": "deterministic-eval-agent-v1",
-      "startedAt": "2026-09-16T23:34:32.900Z",
-      "finishedAt": "2026-09-16T23:34:32.907Z",
+      "startedAt": "2026-09-17T13:48:02.913Z",
+      "finishedAt": "2026-09-17T13:48:02.918Z",
       "metrics": {
         "scenarios": 56,
         "taskSuccessRate": 0.9464285714285714,
@@ -7064,9 +8035,9 @@
   "chaos": {
     "schemaVersion": 1,
     "kind": "phase11-chaos-report",
-    "certificationId": "phase11-97c31146053f9e5b-mu4pxe3r",
-    "candidateCommit": "8c87e825316acf537fbc750a7b41c9e185bfae59",
-    "generatedAt": "2026-09-16T23:35:11.073Z",
+    "certificationId": "phase11-81962adcfc65cf7d-mu5kewem",
+    "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
+    "generatedAt": "2026-09-17T13:48:35.017Z",
     "gateId": "chaos",
     "status": "PASS",
     "command": "npm run test:chaos -- --reporter=json --outputFile=certification/chaos-report.json",
@@ -7099,7 +8070,7 @@
         "updated": 0,
         "didUpdate": false
       },
-      "startTime": 1789601673331,
+      "startTime": 1789652883291,
       "success": true,
       "testResults": [
         {
@@ -7127,8 +8098,8 @@
               "tags": []
             }
           ],
-          "startTime": 1789601673331,
-          "endTime": 1789601673331,
+          "startTime": 1789652883291,
+          "endTime": 1789652883291,
           "status": "passed",
           "message": "",
           "name": "/home/ricardo/cvg-agent-secretary-v2/packages/chaos/src/__tests__/chaos-postgres.test.ts"
@@ -7142,7 +8113,7 @@
               "fullName": "chaos: outbox and side effects CHAOS-01 worker crash before side effect: lease expires and another worker claims",
               "status": "passed",
               "title": "CHAOS-01 worker crash before side effect: lease expires and another worker claims",
-              "duration": 8.085010000000239,
+              "duration": 4.956071999999949,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -7154,7 +8125,7 @@
               "fullName": "chaos: outbox and side effects CHAOS-02 worker crash after provider response: retry does not duplicate the effect",
               "status": "passed",
               "title": "CHAOS-02 worker crash after provider response: retry does not duplicate the effect",
-              "duration": 2.7625490000000354,
+              "duration": 1.492275999999947,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -7166,7 +8137,7 @@
               "fullName": "chaos: outbox and side effects CHAOS-03 worker crash after external effect before ack: exactly one external effect",
               "status": "passed",
               "title": "CHAOS-03 worker crash after external effect before ack: exactly one external effect",
-              "duration": 3.55279900000005,
+              "duration": 2.3111599999999726,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -7178,7 +8149,7 @@
               "fullName": "chaos: outbox and side effects CHAOS-14 duplicate worker claim: only one owner at a time",
               "status": "passed",
               "title": "CHAOS-14 duplicate worker claim: only one owner at a time",
-              "duration": 0.6659990000002836,
+              "duration": 0.625103000000081,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -7190,7 +8161,7 @@
               "fullName": "chaos: providers and latency CHAOS-06 provider timeout is bounded by the deadline",
               "status": "passed",
               "title": "CHAOS-06 provider timeout is bounded by the deadline",
-              "duration": 107.66465599999992,
+              "duration": 105.84904000000006,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -7202,7 +8173,7 @@
               "fullName": "chaos: providers and latency CHAOS-07 provider 429 is retried with bounded backoff",
               "status": "passed",
               "title": "CHAOS-07 provider 429 is retried with bounded backoff",
-              "duration": 2.073337000000265,
+              "duration": 1.3746169999999438,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -7214,7 +8185,7 @@
               "fullName": "chaos: providers and latency CHAOS-08 provider 503 fails closed with provider_unavailable",
               "status": "passed",
               "title": "CHAOS-08 provider 503 fails closed with provider_unavailable",
-              "duration": 1.0578989999999067,
+              "duration": 0.6495079999999689,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -7226,7 +8197,7 @@
               "fullName": "chaos: providers and latency CHAOS-15 network latency: slow success still completes inside the deadline",
               "status": "passed",
               "title": "CHAOS-15 network latency: slow success still completes inside the deadline",
-              "duration": 51.67927799999961,
+              "duration": 51.12054400000011,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -7238,7 +8209,7 @@
               "fullName": "chaos: channels and idempotency CHAOS-09 duplicate webhook produces a single inbound event",
               "status": "passed",
               "title": "CHAOS-09 duplicate webhook produces a single inbound event",
-              "duration": 4.3653800000001866,
+              "duration": 2.520440000000008,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -7250,7 +8221,7 @@
               "fullName": "chaos: channels and idempotency CHAOS-10 out-of-order webhooks are all accepted without loss",
               "status": "passed",
               "title": "CHAOS-10 out-of-order webhooks are all accepted without loss",
-              "duration": 1.5044490000000224,
+              "duration": 0.8527769999998327,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -7262,7 +8233,7 @@
               "fullName": "chaos: channels and idempotency CHAOS-13 replayed token is rejected by the replay store",
               "status": "passed",
               "title": "CHAOS-13 replayed token is rejected by the replay store",
-              "duration": 0.5833049999996547,
+              "duration": 0.22738299999991796,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -7274,7 +8245,7 @@
               "fullName": "chaos: channels and idempotency CHAOS-16 channel provider outage: retry sends exactly once",
               "status": "passed",
               "title": "CHAOS-16 channel provider outage: retry sends exactly once",
-              "duration": 2.7815740000000915,
+              "duration": 1.880198000000064,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -7286,7 +8257,7 @@
               "fullName": "chaos: approvals and tenants CHAOS-11 expired approval fails closed during execution",
               "status": "passed",
               "title": "CHAOS-11 expired approval fails closed during execution",
-              "duration": 2.273740000000089,
+              "duration": 2.149128000000019,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -7298,7 +8269,7 @@
               "fullName": "chaos: approvals and tenants CHAOS-12 tenant mismatch is denied across approval and policy boundaries",
               "status": "passed",
               "title": "CHAOS-12 tenant mismatch is denied across approval and policy boundaries",
-              "duration": 1.6512619999998606,
+              "duration": 1.1621020000000044,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -7310,14 +8281,14 @@
               "fullName": "chaos ledger records every scenario with an explicit status",
               "status": "passed",
               "title": "records every scenario with an explicit status",
-              "duration": 0.40889100000003964,
+              "duration": 0.2876649999998335,
               "failureMessages": [],
               "meta": {},
               "tags": []
             }
           ],
-          "startTime": 1789601675399,
-          "endTime": 1789601675591.409,
+          "startTime": 1789652884789,
+          "endTime": 1789652884968.2876,
           "status": "passed",
           "message": "",
           "name": "/home/ricardo/cvg-agent-secretary-v2/packages/chaos/src/__tests__/chaos.test.ts"
@@ -7331,7 +8302,7 @@
               "fullName": "chaos fault primitives scripts fetch responses and exhausts deterministically",
               "status": "passed",
               "title": "scripts fetch responses and exhausts deterministically",
-              "duration": 5.099166000000196,
+              "duration": 3.9395099999999275,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -7343,7 +8314,7 @@
               "fullName": "chaos fault primitives delays and aborts",
               "status": "passed",
               "title": "delays and aborts",
-              "duration": 2.9777789999998276,
+              "duration": 2.3815210000000206,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -7355,14 +8326,14 @@
               "fullName": "chaos fault primitives records pass, fail and not-executed scenarios",
               "status": "passed",
               "title": "records pass, fail and not-executed scenarios",
-              "duration": 1.4500479999999243,
+              "duration": 1.0247659999999996,
               "failureMessages": [],
               "meta": {},
               "tags": []
             }
           ],
-          "startTime": 1789601677630,
-          "endTime": 1789601677639.45,
+          "startTime": 1789652886299,
+          "endTime": 1789652886307.0247,
           "status": "passed",
           "message": "",
           "name": "/home/ricardo/cvg-agent-secretary-v2/packages/chaos/src/__tests__/faults-coverage.test.ts"
@@ -7373,9 +8344,9 @@
   "load": {
     "schemaVersion": 1,
     "kind": "phase11-load-report",
-    "certificationId": "phase11-97c31146053f9e5b-mu4pxe3r",
-    "candidateCommit": "8c87e825316acf537fbc750a7b41c9e185bfae59",
-    "generatedAt": "2026-09-16T23:35:11.074Z",
+    "certificationId": "phase11-81962adcfc65cf7d-mu5kewem",
+    "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
+    "generatedAt": "2026-09-17T13:48:35.017Z",
     "gateId": "load",
     "status": "PASS",
     "command": "npx tsx scripts/phase10-load.ts --events=10000",
@@ -7385,31 +8356,31 @@
     "raw": {
       "schemaVersion": 1,
       "kind": "phase10-load-report",
-      "generatedAt": "2026-09-16T23:34:54.277Z",
+      "generatedAt": "2026-09-17T13:48:16.722Z",
       "scope": "in-memory outbox contract; synthetic payloads; not a production benchmark",
       "events": 10000,
       "workers": 2,
-      "enqueueMs": 1556.58,
-      "drainMs": 14167.26,
-      "totalMs": 15725.95,
-      "throughputPerSecond": 635.89,
+      "enqueueMs": 714.54,
+      "drainMs": 9090.73,
+      "totalMs": 9808.09,
+      "throughputPerSecond": 1019.57,
       "processed": 10000,
       "loss": 0,
       "duplicates": 0,
       "latencyMs": {
-        "p50": 1.851,
-        "p95": 6.734,
-        "p99": 9.915,
-        "max": 42.004
+        "p50": 1.673,
+        "p95": 2.939,
+        "p99": 3.878,
+        "max": 9.283
       }
     }
   },
   "recovery": {
     "schemaVersion": 1,
     "kind": "phase11-recovery-report",
-    "certificationId": "phase11-97c31146053f9e5b-mu4pxe3r",
-    "candidateCommit": "8c87e825316acf537fbc750a7b41c9e185bfae59",
-    "generatedAt": "2026-09-16T23:35:11.074Z",
+    "certificationId": "phase11-81962adcfc65cf7d-mu5kewem",
+    "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
+    "generatedAt": "2026-09-17T13:48:35.017Z",
     "gateId": "recovery",
     "status": "PASS",
     "command": "npm test -- --run packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts apps/worker/src/__tests__/outbox-recovery.test.ts apps/worker/src/__tests__/worker-sweeps.test.ts",
@@ -7424,9 +8395,9 @@
   "postgres": {
     "schemaVersion": 1,
     "kind": "phase11-postgres-report",
-    "certificationId": "phase11-97c31146053f9e5b-mu4pxe3r",
-    "candidateCommit": "8c87e825316acf537fbc750a7b41c9e185bfae59",
-    "generatedAt": "2026-09-16T23:35:11.074Z",
+    "certificationId": "phase11-81962adcfc65cf7d-mu5kewem",
+    "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
+    "generatedAt": "2026-09-17T13:48:35.017Z",
     "gateId": "postgres",
     "status": "PASS",
     "command": "npm run test:postgres",
@@ -7442,9 +8413,9 @@
   "integrations": {
     "schemaVersion": 1,
     "kind": "phase11-integration-report",
-    "certificationId": "phase11-97c31146053f9e5b-mu4pxe3r",
-    "candidateCommit": "8c87e825316acf537fbc750a7b41c9e185bfae59",
-    "generatedAt": "2026-09-16T23:35:11.074Z",
+    "certificationId": "phase11-81962adcfc65cf7d-mu5kewem",
+    "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
+    "generatedAt": "2026-09-17T13:48:35.017Z",
     "mode": "CONTROLLED_LOCAL",
     "realEffects": false,
     "realData": false,

@@ -1,13 +1,13 @@
-$ node scripts/phase11-2-redteam.mjs --suite=certification
-# certificationId=phase11-97c31146053f9e5b-mu4pxe3r
-# candidateId=97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf
-# commit=8c87e825316acf537fbc750a7b41c9e185bfae59
-# treeHash=5bd92e8ac7132298708c51dfc9e6ec84c686be3b0c21d4932b183f1ebebaf85a
+$ node scripts/phase11-2-redteam.mjs --suite=certification && npm test -- --run apps/api/src/__tests__/aud17-connected-redteam.test.ts
+# certificationId=phase11-81962adcfc65cf7d-mu5kewem
+# candidateId=81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747
+# commit=9c373bf1d2fcd43632da09d60b87455da6a18a09
+# treeHash=f888b174065e305ba819c16fb588813a3b8b7d9c2d2c45625e96bd9293a60fd6
 # gate=certification_redteam
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=92
+# exitCode=0 durationMs=2230
 
 {
   "schemaVersion": 1,
@@ -42,5 +42,18 @@ $ node scripts/phase11-2-redteam.mjs --suite=certification
     }
   ]
 }
+
+> cvg-agent-secretary-v2@1.0.0 test
+> vitest run --no-file-parallelism --maxWorkers=2 --run apps/api/src/__tests__/aud17-connected-redteam.test.ts
+
+
+ RUN  v4.1.11 /home/ricardo/cvg-agent-secretary-v2
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  10:48:30
+   Duration  1.74s (transform 683ms, setup 0ms, import 962ms, tests 121ms, environment 551ms)
+
 
 

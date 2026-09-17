@@ -1,13 +1,13 @@
 $ npm test -- --run apps/api/src/__tests__/orchestration-observability.test.ts packages/observability/src/__tests__/observability.test.ts
-# certificationId=phase11-97c31146053f9e5b-mu4pxe3r
-# candidateId=97c31146053f9e5b9f4bfe9bf0db1b59e5b6e42dee74fe047ae30361911d14bf
-# commit=8c87e825316acf537fbc750a7b41c9e185bfae59
-# treeHash=5bd92e8ac7132298708c51dfc9e6ec84c686be3b0c21d4932b183f1ebebaf85a
+# certificationId=phase11-81962adcfc65cf7d-mu5kewem
+# candidateId=81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747
+# commit=9c373bf1d2fcd43632da09d60b87455da6a18a09
+# treeHash=f888b174065e305ba819c16fb588813a3b8b7d9c2d2c45625e96bd9293a60fd6
 # gate=trace_lineage
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=2997
+# exitCode=0 durationMs=3001
 
 
 > cvg-agent-secretary-v2@1.0.0 test
@@ -18,9 +18,9 @@ $ npm test -- --run apps/api/src/__tests__/orchestration-observability.test.ts p
 
 
  Test Files  2 passed (2)
-      Tests  15 passed (15)
-   Start at  20:34:59
-   Duration  2.59s (transform 758ms, setup 0ms, import 1.14s, tests 163ms, environment 1.08s)
+      Tests  16 passed (16)
+   Start at  10:48:21
+   Duration  2.59s (transform 727ms, setup 0ms, import 1.11s, tests 176ms, environment 1.10s)
 
 
 
