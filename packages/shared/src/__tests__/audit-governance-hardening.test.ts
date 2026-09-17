@@ -72,6 +72,32 @@ describe('audit evidence payload sanitization', () => {
     expect(result.redactedFields).toEqual(['note'])
   })
 
+  it('drops human identity fields from audit evidence payloads', () => {
+    const result = sanitizeAuditEvidencePayload({
+      name: 'Paciente Ficticio',
+      fullName: 'Outra Pessoa Fictícia',
+      cns: '123456789012345',
+      nested: {
+        name: 'Pessoa aninhada',
+        cns: '987654321098765'
+      },
+      safeStatus: 'ready'
+    })
+
+    expect(result.payload).toEqual({ safeStatus: 'ready', nested: {} })
+    expect(result.redactedFields).toEqual(
+      expect.arrayContaining([
+        'name',
+        'fullName',
+        'cns',
+        'nested.name',
+        'nested.cns'
+      ])
+    )
+    expect(JSON.stringify(result.payload)).not.toContain('Paciente')
+    expect(JSON.stringify(result.payload)).not.toContain('123456789012345')
+  })
+
   it('keeps root arrays, primitives and null unchanged', () => {
     expect(sanitizeAuditEvidencePayload(['plain', 7]).payload).toEqual([
       'plain',
