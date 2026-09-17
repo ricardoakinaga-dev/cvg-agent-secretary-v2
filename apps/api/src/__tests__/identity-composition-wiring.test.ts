@@ -250,7 +250,7 @@ describe('identity composition wiring', () => {
     expect(message).not.toContain(SECRET)
   })
 
-  it('fails the real entrypoint closed in production without a configured resolver', async () => {
+  it('fails the real entrypoint closed before resolver composition without runtime proof', async () => {
     const entrypointEnv: NodeJS.ProcessEnv = {
       ...process.env,
       NODE_ENV: 'production',
@@ -298,7 +298,7 @@ describe('identity composition wiring', () => {
     const result = await runApiEntrypoint(entrypointEnv)
 
     expect(result.code).toBe(1)
-    expect(result.output).toContain('operator identity resolver')
+    expect(result.output).toContain('bootstrap.runtime_attestation')
     expect(result.output).not.toContain(SECRET)
   }, 30_000)
 })
