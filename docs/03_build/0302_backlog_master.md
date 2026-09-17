@@ -2,7 +2,7 @@
 
 ## Programa pós-auditoria de 17/09/2026
 
-O [backlog 0330](0330_aud20260917_backlog.md) é a fonte operacional das 15 tasks `AUD17`; [plano 0328](0328_aud20260917_executive_plan.md) e [roadmap 0329](0329_aud20260917_roadmap.md) definem gates e ordem. As tasks locais AUD17-01..11 têm resultados registrados no backlog/evidências; AUD17-12 está em selo final e AUD17-13..15 seguem bloqueadas externamente.
+O [backlog 0330](0330_aud20260917_backlog.md) é a fonte operacional das 15 tasks `AUD17`; [plano 0328](0328_aud20260917_executive_plan.md) e [roadmap 0329](0329_aud20260917_roadmap.md) definem gates e ordem. As tasks locais AUD17-01..11 têm resultados registrados no backlog/evidências; AUD17-12 foi concluída localmente com `NO_GO` controlado por lacuna PostgreSQL/formal; AUD17-13..15 seguem bloqueadas externamente.
 
 ## Complemento pós-auditoria de 13/09/2026
 

@@ -5678,3 +5678,14 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - limitation: `npm run test:postgres` executou `14` arquivos/`86` testes PASS com `9` arquivos/`115` testes SKIP por ausência de `TEST_DATABASE_URL`; prova física, RPO/RTO, restore, IdP/provider/canal/RAG, piloto, rollback e sign-off continuam fora do escopo local.
 - decision: `AUD17-02..04` e `AUD17-06..11` possuem evidência local; `AUD17-05` permanece `NOT_EXECUTED_NO_TEST_DATABASE`; `AUD17-12` entra em `IN_PROGRESS_FINAL_SEAL`; produção permanece `NO_GO`.
 - next_action: criar o commit local do candidato, executar `npm run certify` sob Node 22, validar current/evidence verifier e registrar a crítica independente fresca antes do veredicto.
+
+# AUD17-G2-LOCAL-CERTIFICATION-20260917 — fechamento controlado
+
+- task: `AUD17-12`; pipeline: `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`; execution: `CONTROLLED_LOCAL`; profile requested: `STAGING`; decision: `NO_GO`; production: `NO_GO`.
+- candidate: o selo foi executado após commit local do escopo canônico; o identificador, commit e tree hash finais estão registrados em `certification/current.json`, `certification/phase11/manifest.json` e `certification/phase11/phase11-result.json`.
+- command matrix: `npm run certify` sob Node `22.23.2` terminou com `255` arquivos de unidade (`1790` PASS, `117` SKIP) e coverage `89.45/82.72/88.68/89.98`; gates de formato, tipo, lint, build, security, supply-chain, startup, E2E, evals, chaos, load, recovery, bypass, red-team, clone e lineage `PASS`; PostgreSQL `NOT_EXECUTED` por ausência de `TEST_DATABASE_URL`.
+- verification: `npm run certification:verify:phase11` `PASS`; `npm run evidence:verify:phase11` `PASS`; `npm run production:preflight -- --profile=PRODUCTION --expect=REJECT` `PASS` com `sideEffects=false`; `npm run promotion:check` `FAIL` esperado, `eligible=false`, `reason=production_assurance_incomplete`.
+- formal closure: `PHASE11_FORMAL_CLOSURE` `FAIL` porque a prova PostgreSQL e `INV-007..010` não foram executadas; `AUD-11-05`, `AUD-11-06` e `AUD-11-07` continuam `PARTIAL`. Isso impede o perfil solicitado e não é mascarado por média de scores.
+- external/human: `modelProvider`, `channel`, `externalIdentity`, `institutionalRag`, `rpoRto`, `pilot`, `rollback` `NOT_VALIDATED`; `humanSignoff` `PENDING`. Nenhuma integração real, piloto, aprovação ou efeito externo ocorreu.
+- decision: `AUD17-12` concluída localmente com `NO_GO` controlado; `AUD17-05` e `AUD17-13..15` permanecem abertas/bloqueadas por suas dependências. Nenhum push foi feito.
+- next_action: executar a rodada PostgreSQL autorizada e, em seguida, as qualificações externas/humanas; até lá manter `CONTROLLED_LOCAL` e produção `NO_GO`.

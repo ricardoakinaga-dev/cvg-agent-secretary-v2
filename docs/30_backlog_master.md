@@ -1800,6 +1800,6 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 - [x] `AUD17-02..04`: matriz/SPEC e rubrica/runtime corrigidos; resultados locais registrados.
 - [x] `AUD17-06..11`: efeitos, preflight, red-team, qualidade, console e runbook exercitados localmente; lacunas de PostgreSQL permanecem explícitas.
 - [ ] `AUD17-05`: prova PostgreSQL descartável ainda não executada por ausência de `TEST_DATABASE_URL`; não é considerada PASS.
-- [ ] `AUD17-12`: selo candidate-bound final em execução; depende de commit local, `certify`, verifier e crítica fresca.
+- [x] `AUD17-12`: selo candidate-bound final concluído localmente; `certify` resultou `NO_GO` para o perfil solicitado, current/evidence verifier passaram, e a crítica fresca fica registrada nas evidências AUD17. Persistem PostgreSQL/formal closure e gates externos/humanos.
 - [ ] `AUD17-13..15`: bloqueadas por integrações externas, RPO/RTO/rollback/piloto e sign-off humano; nunca promover por fixture local.
 - Produção `NO_GO`; execução local não concede staging/produção nem substitui autoridade externa/humana.

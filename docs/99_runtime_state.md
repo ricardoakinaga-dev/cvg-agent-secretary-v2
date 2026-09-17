@@ -2590,3 +2590,13 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - verification_state: Node `22.23.2`; full `npm test` `255` arquivos/`1783` PASS/`117` SKIP; coverage `89.52%/82.77%/88.59%/90.06%`; E2E `9/9`; evals `8/8`; chaos `18/18` + `2` SKIP; PG `86` PASS/`115` SKIP por ausência de URL; security/licenses/startup/readiness/bypass/red-team PASS.
 - gap_state: AUD17-05 não pode ser marcado PASS sem PostgreSQL; os gates externos/humanos e prova física de operação permanecem `BLOCKED_EXTERNAL`; a árvore ainda está dirty/unsealed até o commit e certificação.
 - next_action: selar o candidato local em AUD17-12, reexecutar verifier/promotion e anexar crítica independente fresca; manter produção `NO_GO`.
+
+# AUD17-G2-LOCAL-CERTIFICATION-20260917 — fechamento controlado
+
+- current_engine: `AUDIT`; task: `AUD17-12`; status: `COMPLETED_LOCAL_NO_GO`; execution: `CONTROLLED_LOCAL`; requested profile: `STAGING`; eligible profile: `CONTROLLED_LOCAL`; production: `NO_GO`.
+- authorization: somente dados sintéticos, adapters controlados e banco descartável; nenhum provider/canal/IdP/RAG real, egress, deploy, publicação ou efeito externo foi executado.
+- last_completed_action: executado `npm run certify` sob Node `22.23.2` no candidato limpo; 255 arquivos de unidade (`1790` testes PASS, `117` SKIP), coverage `89.45%` statements / `82.72%` branches / `88.68%` functions / `89.98%` lines; gates locais de formato, tipo, lint, build, segurança, startup, E2E, evals, chaos, load, recovery, red-team, rastreabilidade e verificadores passaram.
+- verification_state: `certification:verify:phase11` PASS; `evidence:verify:phase11` PASS; `production:preflight --profile=PRODUCTION --expect=REJECT` PASS; `promotion:check` corretamente `eligible=false`; `postgres` `NOT_EXECUTED` por ausência de `TEST_DATABASE_URL`; `PHASE11_FORMAL_CLOSURE` `FAIL` por invariantes persistentes não executadas.
+- gap_state: `AUD17-05` permanece `NOT_EXECUTED_NO_TEST_DATABASE`; `INV-007..010` não executadas; `AUD-11-05..07` permanecem `PARTIAL`; provider, canal, identidade externa, RAG institucional, RPO/RTO, piloto, rollback e signoff humano seguem `NOT_VALIDATED`/`PENDING`.
+- decision: certificação `NO_GO` para o perfil solicitado; o resultado local é válido apenas como `CONTROLLED_LOCAL` e não concede staging ou produção. O pacote atual e seus hashes são a fonte em `certification/current.json` e `certification/phase11/phase11-result.json`.
+- next_action: com autorização própria, fornecer PostgreSQL descartável para executar AUD17-05/INV-007..010; somente depois qualificar gates externos e decisão humana. Não fazer push ou deploy nesta rodada.
