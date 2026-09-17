@@ -95,6 +95,15 @@ describe('postgres migration smoke', () => {
     )
     expect(replanFencing).toContain('idx_orchestrator_evaluations_lineage')
     expect(replanFencing).toContain('VALIDATE CONSTRAINT')
+
+    const tenantIsolationValidation = await readPostgresMigrationSql(
+      '0024_tenant_isolation_constraint_validation'
+    )
+    expect(tenantIsolationValidation).toContain('VALIDATE CONSTRAINT')
+    expect(tenantIsolationValidation).toContain('messages_tenant_id_not_null')
+    expect(tenantIsolationValidation).toContain(
+      'outbox_events_processing_fencing_check'
+    )
   })
 
   it('ships an additive release-candidate validator integrity migration', async () => {

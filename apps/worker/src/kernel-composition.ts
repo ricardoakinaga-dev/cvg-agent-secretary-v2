@@ -3,6 +3,8 @@ import {
   createGovernedRuntimeComposition,
   evaluateSuccessCriteria,
   GoalPlanOrchestrator,
+  MAX_GOVERNED_TURN_MODEL_CALLS,
+  MAX_GOVERNED_TURN_TOOL_CALLS,
   resolveWorkflowCoordinator,
   toGovernedTurnInput,
   type EffectScope,
@@ -113,7 +115,8 @@ const DURABLE_KERNEL_REQUIRED_MIGRATIONS = [
   '0020_orchestrator_lineage_hardening',
   '0021_orchestrator_iteration_budget',
   '0022_orchestrator_evaluation_lineage',
-  '0023_orchestrator_replan_fencing'
+  '0023_orchestrator_replan_fencing',
+  '0024_tenant_isolation_constraint_validation'
 ] as const
 
 /**
@@ -778,7 +781,20 @@ export function createPostgresKernelRuntime(
           },
           modelProfile:
             goal.executionSnapshot.modelProfile === 'fast' ? 'fast' : 'fast',
-          limits,
+          // The Goal budget is aggregate across resumable steps, while the
+          // governed runtime schema limits a single turn. Preserve the former
+          // and clamp only at this durable execution boundary.
+          limits: {
+            ...limits,
+            maxModelCalls: Math.min(
+              MAX_GOVERNED_TURN_MODEL_CALLS,
+              Math.max(0, limits.maxModelCalls)
+            ),
+            maxToolCalls: Math.min(
+              MAX_GOVERNED_TURN_TOOL_CALLS,
+              Math.max(0, limits.maxToolCalls)
+            )
+          },
           ...(typeof input.messageId === 'string'
             ? { inboundMessageId: input.messageId }
             : {}),

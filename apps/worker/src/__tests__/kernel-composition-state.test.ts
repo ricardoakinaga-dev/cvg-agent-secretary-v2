@@ -189,7 +189,8 @@ describe('governed kernel durable continuation state', () => {
               { version: '0020_orchestrator_lineage_hardening' },
               { version: '0021_orchestrator_iteration_budget' },
               { version: '0022_orchestrator_evaluation_lineage' },
-              { version: '0023_orchestrator_replan_fencing' }
+              { version: '0023_orchestrator_replan_fencing' },
+              { version: '0024_tenant_isolation_constraint_validation' }
             ]
           }
         }

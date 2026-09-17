@@ -347,7 +347,8 @@ Object.assign(implementationMap, {
     'packages/persistence/src/orchestrator-postgres.ts',
     'packages/persistence/migrations/0021_orchestrator_iteration_budget.sql',
     'packages/persistence/migrations/0022_orchestrator_evaluation_lineage.sql',
-    'packages/persistence/migrations/0023_orchestrator_replan_fencing.sql'
+    'packages/persistence/migrations/0023_orchestrator_replan_fencing.sql',
+    'packages/persistence/migrations/0024_tenant_isolation_constraint_validation.sql'
   ],
   'P11.2-FENCING': [
     'packages/persistence/src/orchestrator-postgres.ts',
@@ -378,7 +379,8 @@ Object.assign(implementationMap, {
     'packages/persistence/migrations/0020_orchestrator_lineage_hardening.sql',
     'packages/persistence/migrations/0021_orchestrator_iteration_budget.sql',
     'packages/persistence/migrations/0022_orchestrator_evaluation_lineage.sql',
-    'packages/persistence/migrations/0023_orchestrator_replan_fencing.sql'
+    'packages/persistence/migrations/0023_orchestrator_replan_fencing.sql',
+    'packages/persistence/migrations/0024_tenant_isolation_constraint_validation.sql'
   ],
   'P11.2-CONSOLE': [
     'apps/web/src/features/orchestration/index.tsx',

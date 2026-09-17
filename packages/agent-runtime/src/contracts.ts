@@ -11,11 +11,25 @@ import type {
 import type { EffectJournalPort } from './effect-journal.ts'
 import type { TraceContext } from '@cvg/observability'
 
+/** Maximum model/tool calls accepted by one governed turn. */
+export const MAX_GOVERNED_TURN_MODEL_CALLS = 4
+export const MAX_GOVERNED_TURN_TOOL_CALLS = 4
+
 export const LoopLimitsSchema = z
   .object({
     maxSteps: z.number().int().min(1).max(32).default(8),
-    maxModelCalls: z.number().int().min(0).max(4).default(1),
-    maxToolCalls: z.number().int().min(0).max(4).default(1),
+    maxModelCalls: z
+      .number()
+      .int()
+      .min(0)
+      .max(MAX_GOVERNED_TURN_MODEL_CALLS)
+      .default(1),
+    maxToolCalls: z
+      .number()
+      .int()
+      .min(0)
+      .max(MAX_GOVERNED_TURN_TOOL_CALLS)
+      .default(1),
     maxDurationMs: z.number().int().min(100).max(300_000).default(30_000),
     maxCostUsd: z.number().min(0).max(100).default(0.5)
   })

@@ -862,8 +862,16 @@ describe('tenant-scoped PostgreSQL boundary', () => {
             reference: 'fixture-baseline-2026-08-24'
           }
         })
-        await runPostgresMigrations(admin, { schemaName })
-        await runPostgresMigrations(admin, { schemaName })
+        await runPostgresMigrations(admin, {
+          schemaName,
+          migrations: ['0000_initial', '0001_tenant_isolation']
+        })
+        await expect(
+          runPostgresMigrations(admin, {
+            schemaName,
+            migrations: ['0024_tenant_isolation_constraint_validation']
+          })
+        ).rejects.toThrow(/constraint .* violated/)
 
         const quarantined = await admin.query<{
           table_name: string
@@ -1168,7 +1176,10 @@ describe('tenant-scoped PostgreSQL boundary', () => {
         expect(attemptedOutboxMutation.rowCount).toBe(0)
 
         const flagsBeforeRerun = flags.rows
-        await runPostgresMigrations(admin, { schemaName })
+        await runPostgresMigrations(admin, {
+          schemaName,
+          migrations: ['0000_initial', '0001_tenant_isolation']
+        })
         const flagsAfterRerun = await admin.query(
           `SELECT 'audit_events' AS table_name, tenant_isolation_quarantined AS quarantined
              FROM audit_events WHERE id = $1

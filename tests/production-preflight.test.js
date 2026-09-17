@@ -76,7 +76,8 @@ function validProductionEnv() {
       '0020_orchestrator_lineage_hardening',
       '0021_orchestrator_iteration_budget',
       '0022_orchestrator_evaluation_lineage',
-      '0023_orchestrator_replan_fencing'
+      '0023_orchestrator_replan_fencing',
+      '0024_tenant_isolation_constraint_validation'
     ],
     databaseConnectivityVerified: true,
     rlsEnforced: true,

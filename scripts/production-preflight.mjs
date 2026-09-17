@@ -234,7 +234,8 @@ add(
     '0020_orchestrator_lineage_hardening.sql',
     '0021_orchestrator_iteration_budget.sql',
     '0022_orchestrator_evaluation_lineage.sql',
-    '0023_orchestrator_replan_fencing.sql'
+    '0023_orchestrator_replan_fencing.sql',
+    '0024_tenant_isolation_constraint_validation.sql'
   ].every((file) => fileExists(`packages/persistence/migrations/${file}`)),
   'required orchestrator migration sources must be present'
 )

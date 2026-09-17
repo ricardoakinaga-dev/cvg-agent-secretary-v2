@@ -64,6 +64,23 @@ function replayPool(
 const itWithPostgres = testDatabaseUrl ? it : it.skip
 
 describe('HmacWebhookVerifier', () => {
+  it('uses the verifier clock for the default replay store', async () => {
+    const now = Date.parse('2026-09-17T10:00:00.000Z')
+    const verifier = new HmacWebhookVerifier({
+      secret,
+      now: () => now
+    })
+    const input = signingInput({ timestampSeconds: now / 1000 })
+
+    await expect(
+      verifier.verify({
+        headers: signedHeaders(input),
+        body: input.body,
+        channel: input.channel
+      })
+    ).resolves.toBe(true)
+  })
+
   it('accepts a valid signature and claims an event only once', async () => {
     const now = Math.floor(Date.now() / 1000) * 1000
     const replayStore = new InMemoryWebhookReplayStore()

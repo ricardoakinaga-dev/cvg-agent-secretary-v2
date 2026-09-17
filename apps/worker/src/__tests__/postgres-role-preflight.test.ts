@@ -1,8 +1,11 @@
-import { randomBytes } from 'node:crypto'
+import { createHash, randomBytes } from 'node:crypto'
 import { Client, Pool } from 'pg'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import type { TenantId } from '@cvg/platform'
-import { runPostgresMigrations } from '@cvg/persistence'
+import {
+  readPostgresMigrationSql,
+  runPostgresMigrations
+} from '@cvg/persistence'
 import { createControlledNoopHandlers } from '../postgres-controlled.ts'
 import { createPostgresControlledWorker } from '../postgres-controlled.ts'
 import {
@@ -30,7 +33,10 @@ describe('worker PostgreSQL role preflight contract', () => {
       ])
     )
     expect(WORKER_REQUIRED_MIGRATIONS).toEqual(
-      expect.arrayContaining(['0023_orchestrator_replan_fencing'])
+      expect.arrayContaining([
+        '0023_orchestrator_replan_fencing',
+        '0024_tenant_isolation_constraint_validation'
+      ])
     )
     expect(WORKER_REQUIRED_CONSTRAINTS).toEqual(
       expect.arrayContaining(['orchestrator_plans_replan_source_lineage_fk'])
@@ -377,6 +383,27 @@ describeWithPostgres('worker PostgreSQL role preflight', () => {
           return { rows: [{ can_create: false }] }
         }
         if (sql.includes('FROM pg_class')) return { rows: criticalTableRows }
+        if (sql.includes('FROM schema_migrations')) {
+          return {
+            rows: await Promise.all(
+              WORKER_REQUIRED_MIGRATIONS.map(async (version, index) => ({
+                version,
+                checksum: createHash('sha256')
+                  .update(await readPostgresMigrationSql(version))
+                  .digest('hex'),
+                applied_at: new Date(2026, 7, 24, 10, index)
+              }))
+            )
+          }
+        }
+        if (sql.includes('FROM pg_constraint')) {
+          return {
+            rows: WORKER_REQUIRED_CONSTRAINTS.map((conname) => ({
+              conname,
+              convalidated: true
+            }))
+          }
+        }
         if (sql.includes('FROM pg_policies')) {
           return {
             rows: WORKER_CRITICAL_TABLES.map((table) => {

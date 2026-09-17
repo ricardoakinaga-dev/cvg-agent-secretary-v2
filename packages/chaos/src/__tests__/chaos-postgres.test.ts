@@ -5,7 +5,12 @@ const TEST_DATABASE_URL = process.env.TEST_DATABASE_URL
 
 describe.skipIf(!TEST_DATABASE_URL)('chaos: PostgreSQL resilience', () => {
   it('CHAOS-04 temporary disconnect: pool recovers after backend termination', async () => {
-    const pool = new Pool({ connectionString: TEST_DATABASE_URL, max: 2 })
+    const applicationName = 'cvg-chaos-04'
+    const pool = new Pool({
+      connectionString: TEST_DATABASE_URL,
+      max: 2,
+      options: `-c application_name=${applicationName}`
+    })
     // A terminated backend emits an error on the idle/checked-out socket; the
     // pool reports it as an error event. Queries still reject explicitly.
     pool.on('error', () => {})
@@ -47,14 +52,20 @@ describe.skipIf(!TEST_DATABASE_URL)('chaos: PostgreSQL resilience', () => {
   })
 
   it('CHAOS-05 mass termination: connections are re-established cleanly', async () => {
-    const pool = new Pool({ connectionString: TEST_DATABASE_URL, max: 3 })
+    const applicationName = 'cvg-chaos-05'
+    const pool = new Pool({
+      connectionString: TEST_DATABASE_URL,
+      max: 3,
+      options: `-c application_name=${applicationName}`
+    })
     pool.on('error', () => {})
     try {
       await Promise.all([pool.query('SELECT 1'), pool.query('SELECT 1')])
       const admin = new Client({ connectionString: TEST_DATABASE_URL })
       await admin.connect()
       await admin.query(
-        'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid()'
+        'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = current_database() AND application_name = $1 AND pid <> pg_backend_pid()',
+        [applicationName]
       )
       await admin.end()
       const recovered = await pool.query<{ answer: number }>(

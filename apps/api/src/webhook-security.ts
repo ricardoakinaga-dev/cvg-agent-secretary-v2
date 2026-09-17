@@ -215,8 +215,9 @@ export class HmacWebhookVerifier {
     if (this.secrets.length === 0) {
       throw new Error('At least one webhook signing secret is required')
     }
-    this.replayStore = options.replayStore ?? new InMemoryWebhookReplayStore()
     this.now = options.now ?? Date.now
+    this.replayStore =
+      options.replayStore ?? new InMemoryWebhookReplayStore(this.now)
     this.toleranceSeconds =
       options.toleranceSeconds ?? DEFAULT_TOLERANCE_SECONDS
     if (
