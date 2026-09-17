@@ -98,7 +98,32 @@ describe('durable orchestration observability API', () => {
     const goal = await store.createGoal({
       tenantId: TENANT,
       objective: 'Synthetic metadata redaction fixture',
-      successCriteria: [],
+      successCriteria: [
+        {
+          kind: 'EVENT',
+          eventType: 'api_key=criterion-event-secret',
+          source: 'audit'
+        },
+        {
+          kind: 'STATE',
+          resourceType: 'api_key=criterion-resource-secret',
+          field: 'api_key=criterion-field-secret',
+          expected: 'ready',
+          source: 'operational_state'
+        },
+        {
+          kind: 'FACT',
+          key: 'api_key=criterion-key-secret',
+          expected: true,
+          source: 'human_record'
+        },
+        {
+          kind: 'SEMANTIC',
+          description: 'api_key=criterion-description-secret',
+          requiredEvidenceKeys: [],
+          source: 'audit'
+        }
+      ],
       correlationId: 'corr_00000000-0000-4000-8000-000000000733',
       executionSnapshot: {
         agentVersion: 'api_key=agent-secret',
@@ -147,6 +172,21 @@ describe('durable orchestration observability API', () => {
     expect(serialized).not.toContain('reference-secret')
     expect(serialized).not.toContain('key-secret')
     expect(serialized).not.toContain('digest-secret')
+    expect(serialized).not.toContain('criterion-event-secret')
+    expect(serialized).not.toContain('criterion-resource-secret')
+    expect(serialized).not.toContain('criterion-field-secret')
+    expect(serialized).not.toContain('criterion-key-secret')
+    expect(serialized).not.toContain('criterion-description-secret')
+    expect(detail.successCriteria).toMatchObject([
+      { kind: 'EVENT', eventType: '[redacted-secret]' },
+      {
+        kind: 'STATE',
+        resourceType: '[redacted-secret]',
+        field: '[redacted-secret]'
+      },
+      { kind: 'FACT', key: '[redacted-secret]' },
+      { kind: 'SEMANTIC', description: '[redacted-secret]' }
+    ])
     expect(detail.executionSnapshot.toolVersions).toEqual({
       '[redacted-secret]': '[redacted-secret]'
     })

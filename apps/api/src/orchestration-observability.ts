@@ -218,12 +218,17 @@ export function toOrchestrationGoalDetailView(input: {
             kind: criterion.kind,
             source: criterion.source,
             ...(criterion.kind === 'EVENT'
-              ? { eventType: criterion.eventType }
+              ? { eventType: safeRequiredText(criterion.eventType) }
               : {}),
             ...(criterion.kind === 'STATE'
-              ? { resourceType: criterion.resourceType, field: criterion.field }
+              ? {
+                  resourceType: safeRequiredText(criterion.resourceType),
+                  field: safeRequiredText(criterion.field)
+                }
               : {}),
-            ...(criterion.kind === 'FACT' ? { key: criterion.key } : {}),
+            ...(criterion.kind === 'FACT'
+              ? { key: safeRequiredText(criterion.key) }
+              : {}),
             ...(criterion.kind === 'SEMANTIC'
               ? { description: safeText(criterion.description) }
               : {})
