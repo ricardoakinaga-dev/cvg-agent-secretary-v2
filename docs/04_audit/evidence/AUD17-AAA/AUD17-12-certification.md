@@ -17,10 +17,10 @@ Status da task: `COMPLETED_LOCAL_CONDITIONAL_GO`.
 
 | Campo | Valor |
 |---|---|
-| certificationId | `phase11-4fdbd4821c7b2701-mu5iat94` |
-| candidateId | `4fdbd4821c7b270174b9ea2445e4aa03b3a6d1aff1dbdff505e129cc56342375` |
-| commit | `c24c7126646a088aa9cb2bc63deed6169d394260` |
-| treeHash | `a97389be03c58c7ed2e6e91ba1a4ae6f8376d8fd40f5cf572b2ab86f7b75ba61` |
+| certificationId | `phase11-bd7eeec6ca045a43-mu5jjthz` |
+| candidateId | `bd7eeec6ca045a43fa44440aabffa0230c22ab9d286404fb9071ea425ae49d56` |
+| commit | `a98659c62c13eb411a427d9879caad3581669b34` |
+| treeHash | `5602ddfe5e0705491be7ffbe78f6dbed26348e776c4c7c62b487247a4802756e` |
 | arquivos no candidato | `999` |
 | árvore | `dirty=false`, `untrackedFiles=[]` |
 | Node | `22.23.2` |
@@ -60,7 +60,8 @@ porque a decisão externa/humana não foi concedida.
 - chaos: 18 PASS, 2 SKIP na suíte in-memory do certificador; os cenários
   PostgreSQL CHAOS-04/05 passaram na execução conectada da suíte PostgreSQL;
 - load sintético in-memory: 10.000 eventos, 2 workers, 10.000 processados,
-  perda 0, duplicatas 0, throughput 1.041,1/s;
+  perda 0, duplicatas 0, throughput 1.049,06/s; p50 1,573 ms, p95 2,989 ms,
+  p99 4,008 ms, máximo 8,313 ms;
 - segurança: 0 vulnerabilidades; licenses `372` verificadas, `0` negadas.
 
 ## Verificações pós-selo
