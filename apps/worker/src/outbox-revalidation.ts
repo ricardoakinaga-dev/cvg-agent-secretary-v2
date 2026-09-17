@@ -1,7 +1,7 @@
 import type {
+  InboundRuntimeContext,
   OutboxDispatchRevalidation,
-  OutboxEventRecord,
-  TenantScopedPostgresRuntimeRepository
+  OutboxEventRecord
 } from '@cvg/persistence'
 import { TenantIdSchema, canBotRespond, type TenantId } from '@cvg/platform'
 import { OutboxDispatchRejectedError } from './jobs/process-outbox-event.ts'
@@ -14,10 +14,14 @@ import { OutboxDispatchRejectedError } from './jobs/process-outbox-event.ts'
  * current runtime context and takeover state.
  */
 export function createControlledOutboxRevalidator(
-  conversations: Pick<
-    TenantScopedPostgresRuntimeRepository,
-    'findInboundRuntimeContext'
-  >,
+  conversations: {
+    findInboundRuntimeContext: (
+      tenantId: TenantId,
+      conversationId: string,
+      sessionId: string | null,
+      messageId: string
+    ) => InboundRuntimeContext | null | Promise<InboundRuntimeContext | null>
+  },
   expectedTenantId: TenantId
 ): OutboxDispatchRevalidation {
   return async (event: OutboxEventRecord): Promise<void> => {

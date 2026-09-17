@@ -80,6 +80,20 @@ describe('postgres migration smoke', () => {
     expect(evaluationLineage).toContain('triggering_evaluation_id')
     expect(evaluationLineage).toContain('orchestrator_evaluations')
     expect(evaluationLineage).toContain('NOT VALID')
+
+    const replanFencing = await readPostgresMigrationSql(
+      '0023_orchestrator_replan_fencing'
+    )
+    expect(replanFencing).toContain(
+      'orchestrator_evaluations_tenant_id_id_goal_id_plan_id_key'
+    )
+    expect(replanFencing).toContain(
+      'orchestrator_plans_replan_source_pair_check'
+    )
+    expect(replanFencing).toContain(
+      'orchestrator_plans_replan_source_lineage_fk'
+    )
+    expect(replanFencing).toContain('idx_orchestrator_evaluations_lineage')
   })
 
   it('ships an additive release-candidate validator integrity migration', async () => {

@@ -366,6 +366,42 @@ test('orchestration console exposes the synthetic state matrix read-only', async
       }
     ]
   }
+  const uncertainDetail = {
+    ...detail,
+    ...goals[6],
+    activePlanId: 'plan_matrix_1',
+    operatorState: {
+      ...detail.operatorState,
+      state: 'UNCERTAIN',
+      reason: 'effect_reconciliation_required',
+      currentStepStatus: 'UNCERTAIN',
+      lastEvaluation: {
+        result: 'unknown',
+        reason: 'effect outcome requires reconciliation',
+        createdAt: timestamp
+      }
+    },
+    plans: detail.plans.map((plan) => ({
+      ...plan,
+      steps: plan.steps.map((step, index) =>
+        index === 0
+          ? {
+              ...step,
+              status: 'UNCERTAIN',
+              lastError: 'synthetic_effect_reconciliation_required',
+              attempts: [
+                {
+                  ...step.attempts[0],
+                  outcome: 'UNCERTAIN',
+                  errorClass: 'effect_outcome_unknown',
+                  finishedAt: timestamp
+                }
+              ]
+            }
+          : step
+      )
+    }))
+  }
 
   await page.addInitScript({
     content:
@@ -387,7 +423,12 @@ test('orchestration console exposes the synthetic state matrix read-only', async
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ success: true, data: detail })
+      body: JSON.stringify({
+        success: true,
+        data: url.pathname.endsWith('/goal_matrix_uncertain')
+          ? uncertainDetail
+          : detail
+      })
     })
   })
   await page.setViewportSize({ width: 1440, height: 900 })
@@ -420,4 +461,20 @@ test('orchestration console exposes the synthetic state matrix read-only', async
     caret: 'hide',
     maxDiffPixelRatio: 0.02
   })
+
+  await panel.getByRole('button', { name: /goal_matrix_uncertain/ }).click()
+  await expect(
+    panel.getByText('Reconciliação necessária', { exact: true })
+  ).toBeVisible()
+  await expect(
+    panel.getByText(/nenhuma repetição automática está autorizada/i)
+  ).toBeVisible()
+  await expect(panel).toHaveScreenshot(
+    'orchestration-uncertain-reconciliation.png',
+    {
+      animations: 'disabled',
+      caret: 'hide',
+      maxDiffPixelRatio: 0.02
+    }
+  )
 })

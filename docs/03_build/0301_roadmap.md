@@ -1,5 +1,9 @@
 # 0301 — Roadmap
 
+## Programa pós-auditoria de 17/09/2026
+
+Consultar [roadmap 0329](0329_aud20260917_roadmap.md), [plano 0328](0328_aud20260917_executive_plan.md) e [backlog 0330](0330_aud20260917_backlog.md). Seus marcos P0–P4 não renumeram as fases históricas abaixo.
+
 ## Complemento pós-auditoria de 13/09/2026
 
 Consultar [plano para produção](../PLANO_EXECUTIVO_PRODUCAO.md), [roadmap](../ROADMAP_PRODUCAO.md) e [backlog consolidado](../BACKLOG_PRODUCAO.md). Os 42 IDs AAA mantêm seus contratos/status; 14 IDs PROD acrescentam correções e pré-requisitos de saída. Não concluir pela evidência histórica de outro candidato. Este índice não concede gate de BUILD ou produção.

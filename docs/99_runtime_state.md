@@ -2544,3 +2544,49 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - adversarial_evidence: red-team Phase 11.2 `15/15`; preflight PRODUCTION inseguro rejeitado sem side effects; critic independente read-only `PASS`, viewports `375/768/1440`, mutation sentinel `PASS`.
 - next_action: gerar o pacote canônico após este metadata commit e verificar `certification/current.json`, hashes, grafo e promoção.
 - blockers: provider, canal, identidade externa, RAG institucional, RPO/RTO, piloto supervisionado, rollback e sign-off humano continuam não validados; `CONDITIONAL_GO / AAA_CANDIDATE` pode ser elegível apenas para `STAGING`, nunca produção.
+
+# AUD-RECENT-20260917 — inspeção independente das entregas Phase 11.1/11.2
+
+- current_engine: `AUDIT`; task: `AUD-RECENT-20260917`; status: `READY_FOR_NEXT_STEP`; production `NO_GO`.
+- last_completed_action: auditado o commit `c8e514d` com inspeção do programa, verificador current/evidence PASS, 26/26 testes focados PASS sob Node 22.23.2, preflight negativo PASS e promoção PRODUCTION recusada por oito gates externos. Relatório: `docs/04_audit/0565_recent_implementations_audit_2026-09-17.md`.
+- reconciliation: o pacote canônico da Phase 11.2 foi gerado e verificado após o registro anterior; a pendência documental anterior foi superada. As atualizações documentais desta auditoria alteram a árvore de trabalho e não estão cobertas pelo selo `c8e514d`.
+- next_action: revisar AUD-20260917-01..04, reconciliar/re-selar o candidato após as alterações documentais e manter os gates externos/humanos separados antes de qualquer decisão de release.
+- blockers: provider, canal, identidade, RAG institucional, RPO/RTO, piloto, rollback e signoff continuam sem validação; nenhum dado ou efeito real foi utilizado.
+- current_tree_verification: após a persistência documental, `phase11-verify` retornou `FAIL` por candidato stale/dirty/untracked; é necessária nova qualificação antes de reutilizar o certificado na árvore atual.
+
+# PLAN-AUD17-AAA-20260917 — plano, roadmap e backlog pós-auditoria
+
+- current_engine: `BUILD` / atividade `PLAN`; task: `PLAN-AUD17-AAA-20260917`; status: `READY_FOR_NEXT_STEP`; production `NO_GO`.
+- last_completed_action: plano executivo 0328, roadmap 0329 e backlog 0330 publicados para os nove itens do relatório 0565, com 15 tasks e gates G0–G4; nenhuma implementação ou gate foi concedido nesta rodada.
+- repository_state: há alterações documentais não commitadas da auditoria e deste planejamento; o pacote selado `c8e514d` é histórico para esses bytes. Não qualificar a árvore atual sem novo candidato limpo.
+- next_action: executar `AUD17-01` como contrato/baseline e obter SPEC/revisão aplicáveis antes de qualquer código; seguir o DAG até certificação local e, separadamente, os gates externos/humanos.
+- blockers: provider, canal, IdP, RAG institucional, RPO/RTO, piloto, rollback e signoff permanecem sem validação; produção bloqueada.
+
+# AUD17-01-START-20260917 — contrato e baseline reconciliados
+
+- current_engine: `SPEC -> BUILD`; activity: `PLAN/VERIFY`; task: `AUD17-01`; status: `IN_PROGRESS`; production `NO_GO`.
+- authorization: execução local controlada autorizada pelo usuário; somente dados sintéticos, adapters controlados e banco descartável; sem provider/canal/IdP/RAG real, deploy, commit/push ou efeito externo nesta task.
+- last_completed_action: lidos AGENTS, runtime state, execution log, backlog, auditoria, plano, roadmap, PRD, SPEC e quality bar Phase 11.2; reproduzido o negativo stale em `certification:verify`/`evidence:verify:phase11`; registrada a barra AUD17 e o contrato/baseline de `AUD17-01`.
+- repository_state: HEAD `c8e514dbfcf689968eb606ab94119c850ecc80a6`; seis documentos modificados e quatro não rastreados já pertenciam ao usuário; preservados sem reset/limpeza.
+- verification_state: `AUD17-01` baseline `CURRENT` no escopo documental; certificado `c8e514d` `HISTORICAL_FOR_CURRENT_TREE`; negativos stale `PASS_AS_EXPECTED_NEGATIVE`.
+- next_action: iniciar `AUD17-02` com matriz requisito→prova. Oito gates externos/humanos continuam `BLOCKED_EXTERNAL`.
+- evidence: `docs/04_audit/evidence/AUD17-AAA/AUD17-01-baseline.md`, `docs/02_spec/aud17_01_baseline_contract_20260917.md`, `docs/04_audit/evidence/AUD17-AAA/quality-bar-v1.json`.
+
+# AUD17-02-START-20260917 — matriz requisito→prova congelada
+
+- current_engine: `SPEC -> BUILD`; activity: `PLAN/VERIFY`; task: `AUD17-02`; status: `IN_PROGRESS`; execution: `CONTROLLED_LOCAL`; production: `NO_GO`.
+- authorization: somente dados sintéticos, adapters controlados e banco descartável; sem provider/canal/IdP/RAG real, egress, deploy, commit/push ou efeito externo nesta fase.
+- last_completed_action: baseline AUD17-01 reexecutado após os artefatos documentais; matriz AUD17-02 criada e validada com nove áreas, quatro findings e tasks 01..15, incluindo owners, boundaries, negativos e dependências.
+- repository_state: HEAD continua `c8e514dbfcf689968eb606ab94119c850ecc80a6`; árvore segue dirty/unsealed por alterações documentais de auditoria/planejamento; nenhum usuário foi descartado.
+- verification_state: `AUD17-01 VERIFIED_LOCAL`; `AUD17-02 IN_PROGRESS`; certification/evidence verifier continuam `FAIL` esperado por stale candidate; external/human gates `BLOCKED_EXTERNAL`.
+- next_action: abrir contratos G1 e começar a implementação local de scoring, preflight, runtime/persistence e efeitos em lanes disjuntas, com testes negativos antes do GREEN.
+- evidence: `docs/04_audit/evidence/AUD17-AAA/AUD17-02-requirements-matrix.json` e `docs/04_audit/evidence/AUD17-AAA/AUD17-01-baseline.md`.
+
+# AUD17-G1-LOCAL-BUILD-20260917 — implementação local auditável antes do selo
+
+- current_engine: `AUDIT`; task: `AUD17-12`; status: `IN_PROGRESS_FINAL_SEAL`; execution: `CONTROLLED_LOCAL`; production: `NO_GO`.
+- authorization: somente código, testes e evidências com dados sintéticos, adapters controlados e banco descartável; nenhum egress, provider/canal/IdP/RAG, deploy, efeito real ou decisão humana foi executado.
+- last_completed_action: concluídas as fatias locais AUD17-03..11 contra a SPEC G1; scoring por evidência, preflight obrigatório nos entrypoints, fencing/budget/replan, migration 0023, outbox/UNCERTAIN, red-team conectado, console read-only e runbook registrados.
+- verification_state: Node `22.23.2`; full `npm test` `255` arquivos/`1783` PASS/`117` SKIP; coverage `89.52%/82.77%/88.59%/90.06%`; E2E `9/9`; evals `8/8`; chaos `18/18` + `2` SKIP; PG `86` PASS/`115` SKIP por ausência de URL; security/licenses/startup/readiness/bypass/red-team PASS.
+- gap_state: AUD17-05 não pode ser marcado PASS sem PostgreSQL; os gates externos/humanos e prova física de operação permanecem `BLOCKED_EXTERNAL`; a árvore ainda está dirty/unsealed até o commit e certificação.
+- next_action: selar o candidato local em AUD17-12, reexecutar verifier/promotion e anexar crítica independente fresca; manter produção `NO_GO`.

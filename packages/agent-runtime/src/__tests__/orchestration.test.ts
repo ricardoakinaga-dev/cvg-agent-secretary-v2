@@ -297,6 +297,13 @@ describe('durable Goal/Plan/Step orchestration', () => {
     expect(validatePlanGraph(plan, stable).fingerprint).toBe(
       validatePlanGraph(plan, renamed).fingerprint
     )
+    const permuted = [
+      step('renamed_b', ['renamed_a'], 'second'),
+      step('renamed_a', [], 'first')
+    ]
+    expect(validatePlanGraph(plan, stable).fingerprint).toBe(
+      validatePlanGraph(plan, permuted).fingerprint
+    )
     expect(() =>
       validatePlanGraph(plan, [{ ...step('unsafe'), riskLevel: 'READ_ONLY' }])
     ).toThrow(/cannot cover capability/)
@@ -642,6 +649,8 @@ describe('durable Goal/Plan/Step orchestration', () => {
     const recovered = await store.recoverExpiredLease({
       tenantId: TENANT,
       stepId: 'leased',
+      leaseToken: firstClaim!.lease.leaseToken,
+      stepVersion: firstClaim!.lease.stepVersion,
       now,
       decision: 'retry',
       reason: 'synthetic worker crash before effect'
@@ -682,6 +691,37 @@ describe('durable Goal/Plan/Step orchestration', () => {
       costUsd: 0
     })
     expect(await store.listAttempts(TENANT, 'leased')).toHaveLength(2)
+  })
+
+  it('blocks a budgeted tool step before the executor is invoked', async () => {
+    const store = new InMemoryGoalPlanStore({ clock: () => NOW })
+    const goal = await buildGoal(store, {
+      maxToolCalls: 0,
+      maxDurationMs: 10_000
+    })
+    let executorCalls = 0
+    const result = await new GoalPlanOrchestrator({
+      store,
+      workerId: 'budget-worker',
+      clock: () => NOW,
+      planner: {
+        async plan() {
+          return { reason: 'tool budget test', steps: [step('blocked-tool')] }
+        }
+      },
+      evaluator: evaluatorForAllSteps(),
+      executor: {
+        async execute() {
+          executorCalls += 1
+          return { outcome: 'succeeded' as const, reason: 'must not run' }
+        }
+      }
+    }).run(TENANT, goal.id)
+
+    expect(result.goal.status).toBe('BUDGET_EXHAUSTED')
+    expect(result.reason).toBe('execution_budget_exhausted')
+    expect(result.executedStepIds).toEqual([])
+    expect(executorCalls).toBe(0)
   })
 
   it('renews leases with a version CAS and rejects the pre-heartbeat lease', async () => {

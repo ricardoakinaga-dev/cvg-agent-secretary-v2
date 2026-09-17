@@ -17,10 +17,29 @@ import {
   resolveWorkerRuntimeKind
 } from './kernel-composition.ts'
 import { InMemoryDatabase, OutboxRepository } from '@cvg/persistence'
+import { assertProductionBootstrap } from '../../../scripts/lib/production-preflight-core.mjs'
 
 const startupFailure = getWorkerStartupFailure()
+let productionBootstrapFailure: Error | undefined
+try {
+  assertProductionBootstrap(process.env)
+} catch (error) {
+  productionBootstrapFailure =
+    error instanceof Error
+      ? error
+      : new Error('Production bootstrap preflight failed')
+}
 
-if (startupFailure) {
+if (productionBootstrapFailure) {
+  console.error(
+    JSON.stringify({
+      event: 'worker.startup_failed',
+      code: 'production_bootstrap_preflight_failed',
+      message: productionBootstrapFailure.message
+    })
+  )
+  process.exitCode = 1
+} else if (startupFailure) {
   console.error(
     JSON.stringify({
       event: 'worker.startup_failed',

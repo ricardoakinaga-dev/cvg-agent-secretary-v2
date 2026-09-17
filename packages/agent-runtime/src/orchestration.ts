@@ -563,6 +563,9 @@ export interface ResolveWaitingApprovalInput {
 export interface RecoverExpiredLeaseInput {
   tenantId: OrchestrationTenantId
   stepId: string
+  /** Snapshot captured by listExpiredLeases; recovery is CAS/fenced. */
+  leaseToken: string | null
+  stepVersion: number
   now: Date
   decision: 'retry' | 'uncertain'
   reason: string
@@ -1079,20 +1082,13 @@ export function validatePlanGraph(
   for (const id of [...ids].sort()) visit(id)
 
   // The fingerprint is a semantic graph identity. Generated step IDs and
-  // dependency labels are deliberately replaced with their stable positions
-  // in the planner-provided draft, so a replan cannot evade LOOP_DETECTED by
-  // minting a new identifier for the same behavior.
-  const indexById = new Map(
-    drafts.map((step, index) => [draftStepId(step, index), index])
-  )
-  const fingerprint = hashCanonical({
-    schemaVersion: 'semantic-plan-v2',
-    steps: [...drafts].map((step) => ({
+  // dependency labels are deliberately replaced with structural keys in a
+  // canonical ordering, so a replan cannot evade LOOP_DETECTED by minting a
+  // new identifier or merely permuting equivalent steps.
+  const semanticKey = (step: PlanStepDraft): string =>
+    canonicalizeJson({
       type: step.type,
       description: step.description,
-      dependencies: [...(step.dependencies ?? [])]
-        .map((dependency) => indexById.get(dependency))
-        .sort((left, right) => (left ?? -1) - (right ?? -1)),
       requiredCapabilities: [...step.requiredCapabilities].sort(),
       riskLevel: step.riskLevel,
       approvalRequirement: step.approvalRequirement,
@@ -1110,6 +1106,41 @@ export function validatePlanGraph(
         modelMessages: step.intent.modelMessages,
         structuredOutput: step.intent.structuredOutput
       }
+    })
+  const draftsById = new Map(
+    drafts.map((step, index) => [draftStepId(step, index), step])
+  )
+  const structuralKeys = new Map<string, string>()
+  for (const id of order) {
+    const step = draftsById.get(id)
+    if (!step) {
+      throw new OrchestrationError(
+        'invalid_plan',
+        `Plan step ${id} is missing from the validated graph`
+      )
+    }
+    structuralKeys.set(
+      id,
+      hashCanonical({
+        semanticKey: semanticKey(step),
+        dependencyKeys: (normalizedDependencies.get(id) ?? [])
+          .map((dependency) => structuralKeys.get(dependency))
+          .sort()
+      })
+    )
+  }
+  const canonicalIds = [...ids].sort((left, right) =>
+    (structuralKeys.get(left) ?? '').localeCompare(
+      structuralKeys.get(right) ?? ''
+    )
+  )
+  const fingerprint = hashCanonical({
+    schemaVersion: 'semantic-plan-v2',
+    steps: canonicalIds.map((id) => ({
+      semanticKey: semanticKey(draftsById.get(id)!),
+      dependencyKeys: (normalizedDependencies.get(id) ?? [])
+        .map((dependency) => structuralKeys.get(dependency))
+        .sort()
     }))
   })
   return { topologicalOrder: order, fingerprint }
@@ -1221,6 +1252,45 @@ function assertSettleAccounting(input: SettleStepInput): void {
   }
 }
 
+export function stepBudgetExhaustion(
+  goal: Goal,
+  step: PlanStep
+): 'model_calls' | 'tool_calls' | 'cost_usd' | null {
+  if (
+    step.intent.modelMessages !== null &&
+    goal.budget.usage.modelCalls >= goal.budget.maxModelCalls
+  ) {
+    return 'model_calls'
+  }
+  if (
+    step.toolId !== null &&
+    goal.budget.usage.toolCalls >= goal.budget.maxToolCalls
+  ) {
+    return 'tool_calls'
+  }
+  if (
+    (step.intent.modelMessages !== null || step.toolId !== null) &&
+    goal.budget.usage.costUsd >= goal.budget.maxCostUsd
+  ) {
+    return 'cost_usd'
+  }
+  return null
+}
+
+export function effectiveGoalDeadline(
+  createdAt: Date,
+  requestedDeadline: Date | undefined,
+  maxDurationMs: number
+): Date {
+  const durationDeadline = createdAt.getTime() + maxDurationMs
+  const requested = requestedDeadline?.getTime()
+  return new Date(
+    requested === undefined
+      ? durationDeadline
+      : Math.min(requested, durationDeadline)
+  )
+}
+
 /** In-memory durable-contract reference store used by unit tests and local controlled mode. */
 export class InMemoryGoalPlanStore implements GoalPlanStore {
   private readonly goals = new Map<string, Goal>()
@@ -1276,9 +1346,11 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
       status: 'OBSERVING',
       createdAt: new Date(createdAt),
       updatedAt: new Date(createdAt),
-      deadline: input.deadline
-        ? new Date(input.deadline)
-        : new Date(createdAt.getTime() + budget.maxDurationMs),
+      deadline: effectiveGoalDeadline(
+        createdAt,
+        input.deadline,
+        budget.maxDurationMs
+      ),
       budget,
       correlationId: input.correlationId,
       version: 1,
@@ -1483,6 +1555,28 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
         'Goal replan budget is exhausted'
       )
     }
+    const triggeringEvaluationId = input.triggeringEvaluationId ?? null
+    if ((input.parentPlanId === null) !== (triggeringEvaluationId === null)) {
+      throw new OrchestrationError(
+        'invalid_plan',
+        'A replan must bind both its parent plan and triggering evaluation'
+      )
+    }
+    if (triggeringEvaluationId !== null) {
+      const evaluation = this.evaluations.get(
+        this.key(tenantId, triggeringEvaluationId)
+      )
+      if (
+        !evaluation ||
+        evaluation.goalId !== input.goalId ||
+        evaluation.planId !== input.parentPlanId
+      ) {
+        throw new OrchestrationError(
+          'invalid_plan',
+          'Triggering evaluation must belong to the same Goal and parent Plan'
+        )
+      }
+    }
     const planId = createDomainId('plan')
     if (input.parentPlanId !== null) {
       const parent = this.plans.get(this.key(tenantId, input.parentPlanId))
@@ -1522,7 +1616,7 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
       version: input.planVersion,
       parentPlanId: input.parentPlanId,
       reason: input.reason,
-      triggeringEvaluationId: input.triggeringEvaluationId ?? null,
+      triggeringEvaluationId,
       status: 'ACTIVE',
       createdAt: new Date(createdAt),
       updatedAt: new Date(createdAt),
@@ -1740,6 +1834,13 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
       throw new OrchestrationError(
         'budget_exhausted',
         'Goal step budget is exhausted'
+      )
+    }
+    const exhausted = stepBudgetExhaustion(goal, step)
+    if (exhausted !== null) {
+      throw new OrchestrationError(
+        'budget_exhausted',
+        `Goal ${exhausted.replace('_', ' ')} budget is exhausted`
       )
     }
     const leaseToken = createDomainId('lease')
@@ -1986,7 +2087,13 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
         'not_found',
         `Goal not found: ${step.goalId}`
       )
-    if (!step.leaseUntil || step.leaseUntil > input.now)
+    if (
+      !step.leaseUntil ||
+      step.leaseUntil > input.now ||
+      step.leaseToken === null ||
+      step.leaseToken !== input.leaseToken ||
+      step.version !== input.stepVersion
+    )
       return { goal: clone(goal), step: clone(step) }
     const target: PlanStepStatus =
       input.decision === 'retry' ? 'READY' : 'UNCERTAIN'
@@ -2229,6 +2336,13 @@ export interface GovernedStepExecutor {
     step: PlanStep
     lease: StepLease
     signal: AbortSignal
+    /** Remaining allowance; the executor must pass it to the governed runtime. */
+    limits: {
+      maxModelCalls: number
+      maxToolCalls: number
+      maxDurationMs: number
+      maxCostUsd: number
+    }
   }): Promise<StepExecutionResult>
 }
 
@@ -2651,6 +2765,21 @@ export class GoalPlanOrchestrator {
           executedStepIds
         )
       }
+      const budgetExhaustion = stepBudgetExhaustion(goal, next)
+      if (budgetExhaustion !== null) {
+        goal = await this.transition(
+          goal,
+          'BUDGET_EXHAUSTED',
+          `${budgetExhaustion}_budget_exhausted_before_execution`
+        )
+        return this.result(
+          goal,
+          plan,
+          steps,
+          'execution_budget_exhausted',
+          executedStepIds
+        )
+      }
       const claimed = await this.options.store.claimStep({
         tenantId: scope,
         goalId: goal.id,
@@ -2708,16 +2837,45 @@ export class GoalPlanOrchestrator {
         Math.max(50, Math.floor(this.leaseMs / 3))
       )
       let execution: StepExecutionResult
+      const remainingGoalMs = goal.deadline
+        ? goal.deadline.getTime() - this.clock().getTime()
+        : goal.createdAt.getTime() +
+          goal.budget.maxDurationMs -
+          this.clock().getTime()
+      const executionTimeoutMs = Math.max(
+        1,
+        Math.min(next.timeoutMs, Math.max(1, remainingGoalMs))
+      )
       const stepTimeout = setTimeout(() => {
         abortController.abort('step_timeout')
-      }, next.timeoutMs)
+      }, executionTimeoutMs)
       try {
         execution = await this.options.executor.execute({
           goal: claimed.goal,
           plan: claimed.plan,
           step: claimed.step,
           lease: activeLease,
-          signal: abortController.signal
+          signal: abortController.signal,
+          limits: {
+            maxModelCalls: Math.max(
+              0,
+              claimed.goal.budget.maxModelCalls -
+                claimed.goal.budget.usage.modelCalls
+            ),
+            maxToolCalls: Math.max(
+              0,
+              claimed.goal.budget.maxToolCalls -
+                claimed.goal.budget.usage.toolCalls
+            ),
+            maxDurationMs: Math.max(
+              100,
+              Math.min(next.timeoutMs, Math.max(100, remainingGoalMs))
+            ),
+            maxCostUsd: Math.max(
+              0,
+              claimed.goal.budget.maxCostUsd - claimed.goal.budget.usage.costUsd
+            )
+          }
         })
       } catch (error) {
         execution = {
@@ -2872,6 +3030,8 @@ export class GoalPlanOrchestrator {
       await this.options.store.recoverExpiredLease({
         tenantId,
         stepId: step.id,
+        leaseToken: step.leaseToken,
+        stepVersion: step.version,
         now: this.clock(),
         decision,
         reason:

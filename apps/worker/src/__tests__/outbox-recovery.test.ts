@@ -1,5 +1,9 @@
 import { TenantIdSchema } from '@cvg/platform'
-import { InMemoryDatabase, OutboxRepository } from '@cvg/persistence'
+import {
+  InMemoryDatabase,
+  OutboxRepository,
+  type OutboxEventRecord
+} from '@cvg/persistence'
 import { describe, expect, it } from 'vitest'
 import {
   OutboxDispatchRejectedError,
@@ -51,6 +55,55 @@ describe('worker outbox recovery', () => {
     })
     expect(processed).toMatchObject({ status: 'processed', attempts: 2 })
     expect(calls).toBe(2)
+    expect(db.state.outboxEffects).toHaveLength(1)
+  })
+
+  it('replays a crash window through an idempotent synthetic effect', async () => {
+    let now = new Date('2026-09-05T12:00:00.000Z')
+    const db = new InMemoryDatabase()
+    const adapter = new OutboxRepository(db, {
+      now: () => now,
+      leaseMs: 1_000,
+      backoffBaseMs: 10,
+      backoffMaxMs: 10
+    })
+    await adapter.enqueue({
+      tenantId,
+      type: 'message.outbound',
+      payload: { fixture: 'crash-window' },
+      idempotencyKey: 'worker-crash-window-161',
+      correlationId
+    })
+    const applied = new Set<string>()
+    let handlerCalls = 0
+    const effect = (event: OutboxEventRecord) => {
+      handlerCalls += 1
+      const idempotencyKey = event.idempotencyKey ?? event.id
+      const firstObservation = !applied.has(idempotencyKey)
+      applied.add(idempotencyKey)
+      if (firstObservation)
+        throw new Error('synthetic crash after local effect')
+      return { deduplicated: true }
+    }
+
+    const failed = await processOutboxEvent({
+      tenantId,
+      workerId: 'worker-crash-window',
+      adapter,
+      effect
+    })
+    expect(failed).toMatchObject({ status: 'failed', attempts: 1 })
+    now = new Date((failed as { availableAt: Date }).availableAt.getTime())
+    const processed = await processOutboxEvent({
+      tenantId,
+      workerId: 'worker-crash-window',
+      adapter,
+      effect
+    })
+
+    expect(processed).toMatchObject({ status: 'processed', attempts: 2 })
+    expect(handlerCalls).toBe(2)
+    expect(applied).toEqual(new Set(['worker-crash-window-161']))
     expect(db.state.outboxEffects).toHaveLength(1)
   })
 

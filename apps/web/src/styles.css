@@ -983,6 +983,23 @@ textarea {
   background: #fbfdfd;
 }
 
+.orchestrationEmpty {
+  display: grid;
+  gap: 5px;
+  margin: 14px;
+  padding: 12px 13px;
+  border: 1px dashed #b9d4d0;
+  border-radius: 9px;
+  background: #f4fbf9;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.orchestrationEmpty strong {
+  color: var(--ink);
+}
+
 .orchestrationDetailBody {
   display: grid;
   gap: 0;
@@ -1166,6 +1183,67 @@ textarea {
 
 .orchestrationFailure code {
   overflow-wrap: anywhere;
+}
+
+.orchestrationUncertainty {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(190px, 0.75fr);
+  gap: 12px;
+  margin: 12px 14px;
+  padding: 12px 13px;
+  border: 1px solid #e7c36d;
+  border-left: 4px solid #c08b18;
+  border-radius: 9px;
+  background: #fffaf0;
+  color: #765000;
+}
+
+.orchestrationUncertaintyEyebrow {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.orchestrationUncertainty h3 {
+  margin: 0;
+  color: #5c4100;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.orchestrationUncertainty p {
+  margin: 5px 0 0;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.orchestrationUncertainty dl {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+}
+
+.orchestrationUncertainty dl > div {
+  display: grid;
+  gap: 2px;
+}
+
+.orchestrationUncertainty dt {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.orchestrationUncertainty dd {
+  margin: 0;
+  color: #5c4100;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.35;
 }
 
 .orchestrationEvidenceGrid {
@@ -1411,6 +1489,24 @@ textarea {
   color: var(--muted);
   font-size: 10px;
   line-height: 1.4;
+}
+
+.orchestrationAttempt {
+  min-width: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.orchestrationAttempt[data-status='UNCERTAIN'],
+.orchestrationAttempt[data-status='uncertain'] {
+  color: #765000;
+}
+
+.orchestrationAttempt[data-status='FAILED'],
+.orchestrationAttempt[data-status='failed'] {
+  color: var(--danger);
 }
 
 .orchestrationCapabilities,
@@ -1922,7 +2018,8 @@ textarea {
   }
 
   .orchestrationPriorityGrid,
-  .orchestrationEvidenceGrid {
+  .orchestrationEvidenceGrid,
+  .orchestrationUncertainty {
     grid-template-columns: 1fr;
   }
 

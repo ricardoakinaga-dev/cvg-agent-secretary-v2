@@ -998,162 +998,412 @@ export function evaluatePhase11(input) {
   })
 }
 
+export const PHASE11_SCORE_RUBRIC = Object.freeze({
+  Architecture: [
+    { id: 'build', weight: 0.35, gates: ['build'], invariants: ['INV-002'] },
+    {
+      id: 'worker_composition',
+      weight: 0.35,
+      gates: ['worker_startup'],
+      invariants: ['INV-003', 'INV-004']
+    },
+    {
+      id: 'candidate_evidence',
+      weight: 0.3,
+      gates: ['evidence_graph'],
+      invariants: ['INV-008']
+    }
+  ],
+  Engineering: [
+    {
+      id: 'static_quality',
+      weight: 0.55,
+      gates: ['format', 'typecheck', 'lint'],
+      invariants: []
+    },
+    { id: 'build_integrity', weight: 0.25, gates: ['build'], invariants: [] },
+    {
+      id: 'repository_verification',
+      weight: 0.2,
+      gates: ['verify'],
+      invariants: []
+    }
+  ],
+  Testing: [
+    {
+      id: 'unit_coverage',
+      weight: 0.4,
+      gates: ['unit', 'coverage'],
+      invariants: []
+    },
+    {
+      id: 'browser_evaluation',
+      weight: 0.3,
+      gates: ['e2e', 'evals'],
+      invariants: []
+    },
+    {
+      id: 'failure_perturbation',
+      weight: 0.3,
+      gates: ['chaos', 'recovery'],
+      invariants: []
+    }
+  ],
+  Security: [
+    {
+      id: 'security_static',
+      weight: 0.25,
+      gates: ['security'],
+      invariants: ['INV-005']
+    },
+    {
+      id: 'governance_attack_resistance',
+      weight: 0.4,
+      gates: ['bypass_audit', 'governance_redteam'],
+      invariants: ['INV-001', 'INV-002', 'INV-007']
+    },
+    {
+      id: 'tenant_attack_resistance',
+      weight: 0.35,
+      gates: ['tenant_redteam'],
+      invariants: ['INV-006', 'INV-008']
+    }
+  ],
+  Reliability: [
+    {
+      id: 'durable_storage',
+      weight: 0.3,
+      gates: ['postgres'],
+      invariants: ['INV-009']
+    },
+    {
+      id: 'recovery',
+      weight: 0.35,
+      gates: ['recovery', 'outbox_replay'],
+      invariants: ['INV-010', 'INV-011']
+    },
+    {
+      id: 'load_restart',
+      weight: 0.35,
+      gates: ['load'],
+      invariants: ['INV-012']
+    }
+  ],
+  'Agent Engineering': [
+    {
+      id: 'runtime_behavior',
+      weight: 0.4,
+      gates: ['unit'],
+      invariants: ['INV-003']
+    },
+    {
+      id: 'evaluation',
+      weight: 0.3,
+      gates: ['evals'],
+      invariants: ['INV-004']
+    },
+    {
+      id: 'recovery_behavior',
+      weight: 0.3,
+      gates: ['recovery'],
+      invariants: ['INV-013']
+    }
+  ],
+  'Orchestrator Engineering': [
+    {
+      id: 'lineage',
+      weight: 0.35,
+      gates: ['unit', 'trace_lineage'],
+      invariants: ['INV-002', 'INV-004']
+    },
+    {
+      id: 'bounded_execution',
+      weight: 0.35,
+      gates: ['recovery'],
+      invariants: ['INV-012']
+    },
+    {
+      id: 'evidence_continuity',
+      weight: 0.3,
+      gates: ['evidence_graph'],
+      invariants: ['INV-008']
+    }
+  ],
+  Governance: [
+    {
+      id: 'authority',
+      weight: 0.35,
+      gates: ['governance_redteam'],
+      invariants: ['INV-001', 'INV-002', 'INV-005']
+    },
+    {
+      id: 'approval_takeover',
+      weight: 0.35,
+      gates: ['tenant_redteam'],
+      invariants: ['INV-006', 'INV-007']
+    },
+    {
+      id: 'certification',
+      weight: 0.3,
+      gates: ['certification_redteam', 'certification_self_test'],
+      invariants: ['INV-014']
+    }
+  ],
+  Observability: [
+    {
+      id: 'trace_lineage',
+      weight: 0.6,
+      gates: ['trace_lineage', 'evidence_graph'],
+      invariants: ['INV-008']
+    },
+    {
+      id: 'operator_evidence',
+      weight: 0.4,
+      gates: ['evidence_reports'],
+      invariants: []
+    }
+  ],
+  Auditability: [
+    {
+      id: 'sealed_evidence',
+      weight: 0.6,
+      gates: ['candidate_clean', 'evidence_graph'],
+      invariants: [],
+      successState: 'evidenceComplete'
+    },
+    {
+      id: 'current_pointer',
+      weight: 0.4,
+      gates: ['verify'],
+      invariants: [],
+      successState: 'localVerificationComplete'
+    }
+  ],
+  'Data Governance': [
+    {
+      id: 'durable_tenant_scope',
+      weight: 0.4,
+      gates: ['postgres', 'tenant_redteam'],
+      invariants: ['INV-006', 'INV-009']
+    },
+    {
+      id: 'payload_lineage',
+      weight: 0.3,
+      gates: ['security'],
+      invariants: ['INV-008']
+    },
+    {
+      id: 'retention_audit',
+      weight: 0.3,
+      gates: ['evidence_graph'],
+      invariants: []
+    }
+  ],
+  DevEx: [
+    {
+      id: 'default_verification',
+      weight: 0.4,
+      gates: ['verify'],
+      invariants: []
+    },
+    {
+      id: 'supply_chain',
+      weight: 0.3,
+      gates: ['supply_chain'],
+      invariants: []
+    },
+    { id: 'clean_clone', weight: 0.3, gates: ['clone_verify'], invariants: [] }
+  ],
+  'Production Readiness': [
+    {
+      id: 'production_assurance',
+      weight: 1,
+      gates: ['production_preflight', 'PHASE11_FORMAL_CLOSURE'],
+      invariants: [],
+      successState: 'productionProofComplete',
+      external: true
+    }
+  ]
+})
+
+function scoreEvidenceStatus(entry) {
+  if (!entry) return 'MISSING'
+  if (entry.status !== 'PASS') return entry.status
+  if (
+    (typeof entry.logSha256 === 'string' && entry.logSha256.length > 0) ||
+    (Array.isArray(entry.evidence) && entry.evidence.length > 0) ||
+    (entry.metrics &&
+      typeof entry.metrics === 'object' &&
+      Object.keys(entry.metrics).length > 0)
+  ) {
+    return 'PASS'
+  }
+  return 'PASS_WITHOUT_EVIDENCE'
+}
+
+function scoreEvidencePresent(entry) {
+  return scoreEvidenceStatus(entry) === 'PASS'
+}
+
+function scoreFactor(factor, gateMap, invariantMap, successState) {
+  const inputs = [
+    ...factor.gates.map((id) => ({ kind: 'gate', id, entry: gateMap.get(id) })),
+    ...factor.invariants.map((id) => ({
+      kind: 'invariant',
+      id,
+      entry: invariantMap.get(id)
+    }))
+  ]
+  const statuses = inputs.map((input) => ({
+    ...input,
+    status: scoreEvidenceStatus(input.entry)
+  }))
+  const stateRequired = factor.successState !== undefined
+  const statePass =
+    !stateRequired || successState?.[factor.successState] === true
+  const passingInputs = statuses.filter((input) => input.status === 'PASS')
+  const inputScore =
+    inputs.length === 0
+      ? statePass
+        ? 1
+        : 0
+      : passingInputs.length / inputs.length
+  const evidenceRatio =
+    passingInputs.length === 0
+      ? 0
+      : passingInputs.filter((input) => scoreEvidencePresent(input.entry))
+          .length / passingInputs.length
+  const evidenceMultiplier = inputs.length === 0 ? 1 : 0.7 + evidenceRatio * 0.3
+  const value = Math.round(inputScore * evidenceMultiplier * 100)
+  const status =
+    value === 0
+      ? stateRequired && !statePass
+        ? 'NOT_EXECUTED'
+        : statuses.some((input) => input.status === 'BLOCKED')
+          ? 'BLOCKED'
+          : 'FAIL'
+      : value >= 97 &&
+          statuses.every((input) => input.status === 'PASS') &&
+          statePass
+        ? 'PASS'
+        : statuses.some((input) => input.status === 'BLOCKED')
+          ? 'BLOCKED'
+          : 'PARTIAL'
+  return {
+    id: factor.id,
+    weight: factor.weight,
+    value,
+    status,
+    external: factor.external === true,
+    gates: statuses
+      .filter((input) => input.kind === 'gate')
+      .map((input) => ({ id: input.id, status: input.status })),
+    invariants: statuses
+      .filter((input) => input.kind === 'invariant')
+      .map((input) => ({ id: input.id, status: input.status })),
+    ...(stateRequired
+      ? {
+          successState: {
+            id: factor.successState,
+            status: statePass ? 'PASS' : 'NOT_EXECUTED'
+          }
+        }
+      : {}),
+    evidenceQuality: Math.round(evidenceRatio * 100)
+  }
+}
+
+function scoreFindingPenalty(findings) {
+  const normalized = normalizeFindings(findings)
+  const weights = { P0: 40, P1: 30, P2: 15 }
+  return Math.min(
+    100,
+    Object.entries(weights).reduce(
+      (total, [severity, weight]) =>
+        total +
+        normalized[severity].filter(
+          (finding) => finding.blocking !== false && finding.status !== 'CLOSED'
+        ).length *
+          weight,
+      0
+    )
+  )
+}
+
+function scoreStatus(factors, value) {
+  if (factors.some((factor) => factor.status === 'FAIL')) return 'FAIL'
+  if (factors.some((factor) => factor.status === 'BLOCKED')) return 'BLOCKED'
+  if (value === 0) return 'NOT_EXECUTED'
+  if (value >= 97 && factors.every((factor) => factor.status === 'PASS')) {
+    return 'PASS'
+  }
+  return 'PARTIAL'
+}
+
 export function computeScores({
   gates = [],
   invariants = [],
   findings = {},
   successState
 }) {
-  const normalized = normalizeFindings(findings)
-  const blocking = [
-    ...normalized.P0,
-    ...normalized.P1,
-    ...normalized.P2
-  ].filter((item) => item.blocking !== false && item.status !== 'CLOSED').length
-  const boundedScore = (passed, total) =>
-    Math.min(99, Math.round((passed / total) * 100))
   const gateMap = new Map(gates.map((gate) => [gate.id, gate]))
   const invariantMap = new Map(
     invariants.map((invariant) => [invariant.id, invariant])
   )
-  const blendedScore = (gateIds, invariantIds = []) => {
-    const total = gateIds.length + invariantIds.length
-    const passed =
-      gateIds.filter((id) => gateMap.get(id)?.status === 'PASS').length +
-      invariantIds.filter((id) => invariantMap.get(id)?.status === 'PASS')
-        .length
-    return boundedScore(passed, Math.max(total, 1))
-  }
-  const domain = (value, rationale, evidence) => ({
-    value,
-    rationale,
-    evidence
-  })
-  return {
-    Architecture: domain(
-      blendedScore(
-        ['build', 'worker_startup', 'evidence_graph'],
-        ['INV-002', 'INV-008']
-      ),
-      'Durable kernel, worker composition and candidate-bound evidence are scored from executable gates and critical invariants.',
-      [
-        'apps/worker/src/kernel-composition.ts',
-        'certification/phase11/evidence-graph.json'
-      ]
-    ),
-    Engineering: domain(
-      blendedScore(['format', 'typecheck', 'lint', 'build', 'verify']),
-      'Formatting, type safety, lint, build and the repository verification aggregate are independently represented.',
-      [
-        'certification/phase11/logs/format.log',
-        'certification/phase11/logs/verify.log'
-      ]
-    ),
-    Testing: domain(
-      blendedScore(['unit', 'coverage', 'e2e', 'evals', 'chaos']),
-      'Unit, coverage, browser, evaluation and chaos lanes are required evidence rather than score declarations.',
-      [
-        'certification/phase11/logs/unit.log',
-        'certification/phase11/logs/e2e.log'
-      ]
-    ),
-    Security: domain(
-      blendedScore(
-        ['security', 'bypass_audit', 'governance_redteam', 'tenant_redteam'],
-        ['INV-001', 'INV-005', 'INV-008']
-      ),
-      'Security and red-team gates are reduced by any unresolved blocking finding.',
-      [
-        'certification/phase11/logs/security.log',
-        'certification/phase11/negative-validation.json'
-      ]
-    ),
-    Reliability: domain(
-      blendedScore(
-        ['postgres', 'recovery', 'outbox_replay', 'load'],
-        ['INV-009', 'INV-010', 'INV-011', 'INV-012']
-      ),
-      'Durability, recovery, outbox replay, load and restart invariants cover failure behavior.',
-      [
-        'certification/phase11/postgres-report.json',
-        'certification/phase11/recovery-report.json'
-      ]
-    ),
-    'Agent Engineering': domain(
-      blendedScore(
-        ['unit', 'evals', 'recovery'],
-        ['INV-003', 'INV-004', 'INV-013']
-      ),
-      'Planner/replanner behavior and evidence-based completion are tied to runtime tests.',
-      [
-        'packages/agent-runtime/src/orchestration.ts',
-        'certification/phase11/eval-report.json'
-      ]
-    ),
-    'Orchestrator Engineering': domain(
-      blendedScore(
-        ['unit', 'recovery', 'trace_lineage'],
-        ['INV-002', 'INV-004', 'INV-012']
-      ),
-      'Goal/plan/step lineage, bounded execution and recovery are independently scored.',
-      [
-        'packages/agent-runtime/src/orchestration.ts',
-        'certification/phase11/evidence-graph.json'
-      ]
-    ),
-    Governance: domain(
-      blendedScore(
-        ['governance_redteam', 'certification_redteam'],
-        ['INV-001', 'INV-002', 'INV-005', 'INV-006', 'INV-007', 'INV-014']
-      ),
-      'Authority, approval, risk, takeover and certification attacks must all fail closed.',
-      [
-        'certification/phase11/negative-validation.json',
-        'certification/phase11/logs/governance_redteam.log'
-      ]
-    ),
-    Observability: domain(
-      blendedScore(['trace_lineage', 'evidence_graph'], ['INV-008']),
-      'The complete runtime stage chain and bounded redacted attributes are required.',
-      [
-        'certification/phase11/evidence-graph.json',
-        'certification/phase11/logs/trace_lineage.log'
-      ]
-    ),
-    Auditability: domain(
-      successState?.evidenceComplete ? 99 : 0,
-      successState?.evidenceComplete
-        ? 'All declared evidence artifacts are hash-bound and pointer-addressable.'
-        : 'The canonical evidence package is incomplete or not sealed.',
-      ['certification/phase11/manifest.json', 'certification/current.json']
-    ),
-    'Data Governance': domain(
-      blendedScore(
-        ['postgres', 'tenant_redteam', 'security'],
-        ['INV-006', 'INV-008', 'INV-009']
-      ),
-      'Tenant context, RLS, payload binding and effect lineage are evaluated against durable storage evidence.',
-      [
-        'certification/phase11/postgres-report.json',
-        'certification/phase11/logs/tenant_redteam.log'
-      ]
-    ),
-    DevEx: domain(
-      blendedScore(['verify', 'supply_chain', 'clone_verify']),
-      'The default verification contract, supply-chain checks and clean-clone portability are explicit gates.',
-      ['package.json', 'certification/phase11/logs/clone_verify.log']
-    ),
-    'Production Readiness': domain(
-      successState?.productionProofComplete ? 99 : 0,
-      successState?.productionProofComplete
-        ? 'External integrations, measured RPO/RTO, pilot, rollback and human signoff are current.'
-        : `Production readiness is zero while external proof is incomplete (${blocking} local blockers also considered).`,
-      [
-        'certification/phase11/integration-report.json',
-        'certification/phase11/recovery-report.json'
-      ]
+  const findingPenalty = scoreFindingPenalty(findings)
+  const localCap = Math.min(
+    successState?.localEngineeringClosure === false ? 85 : 100,
+    successState?.localVerificationComplete === false ? 75 : 100,
+    successState?.evidenceComplete === false ? 80 : 100
+  )
+  const result = {}
+  for (const [name, rubric] of Object.entries(PHASE11_SCORE_RUBRIC)) {
+    const dimensions = rubric.map((factor) =>
+      scoreFactor(factor, gateMap, invariantMap, successState)
     )
+    const rawValue = Math.round(
+      dimensions.reduce(
+        (total, dimension) => total + dimension.value * dimension.weight,
+        0
+      )
+    )
+    const productionBlocked =
+      name === 'Production Readiness' &&
+      successState?.productionProofComplete !== true
+    const value = productionBlocked
+      ? 0
+      : Math.max(
+          0,
+          Math.min(100, Math.min(rawValue, localCap) - findingPenalty)
+        )
+    const limitations = dimensions
+      .filter((dimension) => dimension.status !== 'PASS')
+      .map((dimension) => dimension.id + ':' + dimension.status)
+    if (findingPenalty > 0) {
+      limitations.push('blocking_findings_penalty:' + findingPenalty)
+    }
+    if (productionBlocked) limitations.push('external_proof_incomplete')
+    result[name] = {
+      value,
+      status: productionBlocked ? 'BLOCKED' : scoreStatus(dimensions, value),
+      scoreModel: 'weighted-executable-evidence-v1',
+      rationale:
+        name === 'Production Readiness'
+          ? 'Production score is zero until all external proof and human assurance are current; local gates cannot substitute for them.'
+          : 'Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.',
+      dimensions,
+      evidence: [
+        ...new Set(
+          dimensions.flatMap((dimension) => [
+            ...dimension.gates.map((item) => 'gate:' + item.id),
+            ...dimension.invariants.map((item) => 'invariant:' + item.id)
+          ])
+        )
+      ],
+      limitations
+    }
   }
+  return result
 }
 
 export function computePromotionDecision({

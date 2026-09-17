@@ -97,6 +97,7 @@ export class KernelRuntimeConfigurationError extends Error {
 
 const DURABLE_KERNEL_REQUIRED_TABLES = [
   'effect_journal',
+  'outbox_events',
   'runtime_approvals',
   'runtime_audit_events',
   'orchestrator_goals',
@@ -105,6 +106,14 @@ const DURABLE_KERNEL_REQUIRED_TABLES = [
   'orchestrator_attempts',
   'orchestrator_observations',
   'orchestrator_evaluations'
+] as const
+
+const DURABLE_KERNEL_REQUIRED_MIGRATIONS = [
+  '0019_orchestrator_state',
+  '0020_orchestrator_lineage_hardening',
+  '0021_orchestrator_iteration_budget',
+  '0022_orchestrator_evaluation_lineage',
+  '0023_orchestrator_replan_fencing'
 ] as const
 
 /**
@@ -390,6 +399,18 @@ export async function assertPostgresKernelPrerequisites(
           `SELECT 1 FROM ${table} WHERE tenant_id = $1 LIMIT 0`,
           [tenantId]
         )
+      }
+      const migrations = await client.query<{ version: string }>(
+        `SELECT version FROM schema_migrations
+          WHERE version = ANY($1::text[])`,
+        [DURABLE_KERNEL_REQUIRED_MIGRATIONS]
+      )
+      const applied = new Set(migrations.rows.map((row) => row.version))
+      const missing = DURABLE_KERNEL_REQUIRED_MIGRATIONS.filter(
+        (version) => !applied.has(version)
+      )
+      if (missing.length > 0) {
+        throw new Error(`missing migrations: ${missing.join(', ')}`)
       }
     })
   } catch (error) {
@@ -713,7 +734,8 @@ export function createPostgresKernelRuntime(
         goal,
         step,
         lease,
-        signal
+        signal,
+        limits
       }): Promise<StepExecutionResult> {
         assertControlledKernelSnapshot(goal.executionSnapshot)
         const workflowStep: WorkflowStep = {
@@ -756,6 +778,7 @@ export function createPostgresKernelRuntime(
           },
           modelProfile:
             goal.executionSnapshot.modelProfile === 'fast' ? 'fast' : 'fast',
+          limits,
           ...(typeof input.messageId === 'string'
             ? { inboundMessageId: input.messageId }
             : {}),

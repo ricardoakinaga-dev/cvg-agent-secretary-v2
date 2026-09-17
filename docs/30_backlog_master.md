@@ -1783,5 +1783,23 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 - [x] Fechar recuperação/outbox: revalidação imediata antes do efeito, rejeição terminal, fencing e testes de replay/uncertainty.
 - [x] Fechar UI/evidência: matriz sintética `UNCERTAIN`, estados de erro/loading/empty/retry, acessibilidade, screenshots e relatórios human-readable.
 - [x] Executar os gates locais sob Node `22.23.2` e PostgreSQL descartável; nenhum dado real, provider, canal, RAG ou efeito externo foi utilizado.
-- [ ] Gerar e verificar o pacote canônico `certification/phase11/` após o commit de estado; manter a ponte `certification/current.json` candidate-bound.
+- [x] Pacote canônico selado em `c8e514d` e verificadores current/evidence PASS na auditoria de 2026-09-17; o selo qualifica esse commit, não as alterações documentais posteriores.
 - [ ] Validar em ambiente autorizado os gates externos/humanos: provider, canal, identidade, RAG institucional, RPO/RTO, piloto, rollback e sign-off. Produção continua bloqueada.
+
+# AUD-RECENT-20260917 — pendências da inspeção
+
+- [ ] AUD-20260917-01 (P1): reconciliar o controle de execução com o pacote já selado e re-selar qualquer candidato posterior às alterações documentais.
+- [ ] AUD-20260917-02 (P1 para release): vincular o preflight ao bootstrap/deploy e comprovar estado real de banco, integrações e aprovações antes de homologação.
+- [ ] AUD-20260917-03 (P2): separar as notas binárias do certificador de avaliação de maturidade operacional.
+- [ ] AUD-20260917-04 (externo): qualificar os oito gates externos/humanos em ambiente autorizado; produção segue `NO_GO`.
+
+# PLAN-AUD17-AAA-20260917 — programa de melhoria
+
+- [x] Criar [plano executivo](03_build/0328_aud20260917_executive_plan.md), [roadmap](03_build/0329_aud20260917_roadmap.md) e [backlog de 15 tasks](03_build/0330_aud20260917_backlog.md), rastreando os nove itens e AUD-20260917-01..04.
+- [x] `AUD17-01`: baseline stale reconciliado, contrato/negativos congelados e evidência registrada.
+- [x] `AUD17-02..04`: matriz/SPEC e rubrica/runtime corrigidos; resultados locais registrados.
+- [x] `AUD17-06..11`: efeitos, preflight, red-team, qualidade, console e runbook exercitados localmente; lacunas de PostgreSQL permanecem explícitas.
+- [ ] `AUD17-05`: prova PostgreSQL descartável ainda não executada por ausência de `TEST_DATABASE_URL`; não é considerada PASS.
+- [ ] `AUD17-12`: selo candidate-bound final em execução; depende de commit local, `certify`, verifier e crítica fresca.
+- [ ] `AUD17-13..15`: bloqueadas por integrações externas, RPO/RTO/rollback/piloto e sign-off humano; nunca promover por fixture local.
+- Produção `NO_GO`; execução local não concede staging/produção nem substitui autoridade externa/humana.

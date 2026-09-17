@@ -4332,7 +4332,8 @@ const tenantIsolationMigrationVersions = [
   '0019_orchestrator_state',
   '0020_orchestrator_lineage_hardening',
   '0021_orchestrator_iteration_budget',
-  '0022_orchestrator_evaluation_lineage'
+  '0022_orchestrator_evaluation_lineage',
+  '0023_orchestrator_replan_fencing'
 ] as const
 
 const tenantIsolationRequiredConstraints = [
@@ -4445,6 +4446,9 @@ const tenantIsolationRequiredConstraints = [
   'orchestrator_observations_step_lineage_fk',
   'orchestrator_evaluations_plan_goal_lineage_fk',
   'orchestrator_evaluations_step_lineage_fk',
+  'orchestrator_evaluations_tenant_id_id_goal_id_plan_id_key',
+  'orchestrator_plans_replan_source_pair_check',
+  'orchestrator_plans_replan_source_lineage_fk',
   'orchestrator_attempts_tenant_id_id_lineage_key',
   'orchestrator_attempts_plan_goal_lineage_fk',
   'orchestrator_attempts_step_lineage_fk',
@@ -4532,6 +4536,7 @@ const tenantIsolationRequiredIndexes = [
   'orchestrator_plans_tenant_id_id_goal_id_key',
   'orchestrator_steps_tenant_id_id_goal_plan_key',
   'orchestrator_attempts_tenant_id_id_lineage_key',
+  'idx_orchestrator_evaluations_lineage',
   'idx_effect_journal_orchestration_lineage',
   'idx_outbox_events_orchestration_lineage'
 ] as const

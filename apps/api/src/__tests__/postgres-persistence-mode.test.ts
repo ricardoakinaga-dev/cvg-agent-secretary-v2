@@ -230,7 +230,8 @@ describe('api PostgreSQL persistence mode', () => {
       '0019_orchestrator_state',
       '0020_orchestrator_lineage_hardening',
       '0021_orchestrator_iteration_budget',
-      '0022_orchestrator_evaluation_lineage'
+      '0022_orchestrator_evaluation_lineage',
+      '0023_orchestrator_replan_fencing'
     ] as const
     const rows: Array<{
       version: string
@@ -262,7 +263,8 @@ describe('api PostgreSQL persistence mode', () => {
               '0019_orchestrator_state',
               '0020_orchestrator_lineage_hardening',
               '0021_orchestrator_iteration_budget',
-              '0022_orchestrator_evaluation_lineage'
+              '0022_orchestrator_evaluation_lineage',
+              '0023_orchestrator_replan_fencing'
             ])
           )
         }

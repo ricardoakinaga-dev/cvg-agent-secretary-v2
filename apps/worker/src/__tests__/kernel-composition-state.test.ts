@@ -182,6 +182,17 @@ describe('governed kernel durable continuation state', () => {
         if (text === 'SHOW search_path') {
           return { rows: [{ search_path: searchPath }] }
         }
+        if (text.includes('FROM schema_migrations')) {
+          return {
+            rows: [
+              { version: '0019_orchestrator_state' },
+              { version: '0020_orchestrator_lineage_hardening' },
+              { version: '0021_orchestrator_iteration_budget' },
+              { version: '0022_orchestrator_evaluation_lineage' },
+              { version: '0023_orchestrator_replan_fencing' }
+            ]
+          }
+        }
         const match = /^SELECT 1 FROM ([a-z_]+) /.exec(text)
         if (match?.[1]) queriedTables.push(match[1])
         return { rows: [] }
@@ -197,6 +208,7 @@ describe('governed kernel durable continuation state', () => {
     ).resolves.toBeUndefined()
     expect(queriedTables).toEqual([
       'effect_journal',
+      'outbox_events',
       'runtime_approvals',
       'runtime_audit_events',
       'orchestrator_goals',

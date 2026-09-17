@@ -5636,3 +5636,45 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - critic: PASS read-only, sem mutação, cobrindo tenant scope, read-only UI, loading/error/empty/retry, `UNCERTAIN` e `375/768/1440`; nenhuma prova externa foi criada.
 - status: `IN_PROGRESS` até o pacote canônico ser gerado e verificado; release local pretendido `CONDITIONAL_GO / AAA_CANDIDATE / STAGING`; produção `NO_GO`.
 - next_action: executar `npm run certify` com Node 22 e PostgreSQL descartável autorizado; depois commitar apenas o pacote canônico e executar `certification:verify`/`promotion:check`.
+
+# AUD-RECENT-20260917 — auditoria das entregas recentes
+
+- inspected: `c8e514d` e contratos Phase 11.2; código de orquestração, outbox, preflight, API/worker, console e pacote de evidência.
+- executed: `phase11-verify` current/evidence PASS; quatro arquivos/26 testes focados PASS sob Node 22.23.2; preflight PRODUCTION inseguro rejeitado; `promotion-check --requested PRODUCTION` recusou com `production_assurance_incomplete` e oito gates externos pendentes. A primeira tentativa dos testes falhou por bloqueio de subprocesso `EPERM` no sandbox, corrigida por repetição autorizada fora dele.
+- decision: parecer `CONDITIONAL_GO` apenas para avaliação local/staging controlada, produção `NO_GO`; achados AUD-20260917-01..04 e notas em `docs/04_audit/0565_recent_implementations_audit_2026-09-17.md`. Suíte integral e banco não foram reexecutados nesta rodada; números anteriores permanecem evidência do pacote selado.
+- next_action: reconciliar e re-selar o candidato após estas alterações documentais; tratar preflight declarativo e obter gates externos somente em ambiente autorizado.
+- post_write_check: `git diff --check` PASS; `phase11-verify` FAIL na árvore de trabalho com `candidate_tree_stale`, dirty/untracked e hash drift documental. O PASS anterior permanece vinculado somente a `c8e514d`.
+
+# PLAN-AUD17-AAA-20260917 — planejamento executivo pós-auditoria
+
+- source: relatório 0565 e estado local com certificado stale após a auditoria; nove itens e achados AUD-20260917-01..04.
+- action: criados plano 0328, roadmap 0329 e backlog 0330 com 15 tasks, gates G0–G4, critérios testáveis, dependências, prova local versus externa e preservação das restrições CVG. Índices 0300/0301/0302 atualizados.
+- decision: apenas planejamento documental, sem código, testes de produto, contato externo, commit, re-selo, deploy ou autoridade de produção. `AUD17-01` é a primeira task; `AUD17-13..15` dependem de ambiente/decisão externa.
+- next_action: preparar contrato e baseline `AUD17-01` sobre a árvore atual, preservando alterações não commitadas; seguir gate aplicável antes de BUILD.
+
+# AUD17-01-START-20260917 — contrato e baseline reconciliados
+
+- task: `AUD17-01`; pipeline: `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`; atividade: `PLAN/VERIFY`; autorização: BUILD local sintético autorizado pelo pedido do usuário, sem efeitos externos.
+- action: barra [`docs/04_audit/evidence/AUD17-AAA/quality-bar-v1.json`](04_audit/evidence/AUD17-AAA/quality-bar-v1.json) congelada com 15 critérios; contrato [`docs/02_spec/aud17_01_baseline_contract_20260917.md`](02_spec/aud17_01_baseline_contract_20260917.md) e baseline [`docs/04_audit/evidence/AUD17-AAA/AUD17-01-baseline.md`](04_audit/evidence/AUD17-AAA/AUD17-01-baseline.md) registrados antes de qualquer código.
+- baseline: HEAD `c8e514dbfcf689968eb606ab94119c850ecc80a6`; árvore com seis arquivos modificados e quatro não rastreados pertencentes à auditoria/planejamento; nenhum foi revertido.
+- negative: sob Node `22.23.2`, `npm run certification:verify` exit `1`/`FAIL` por candidate stale/dirty/untracked/hash drift; `npm run evidence:verify:phase11` exit `1`; `npm run promotion:check` exit `1`, `eligible=false`, `noProductionEffect=true` e oito gates externos pendentes.
+- decision: o selo `c8e514d` permanece histórico; o novo bar não herda PASS antigo; produção permanece `NO_GO`.
+- next_action: iniciar `AUD17-02` com matriz requisito→prova. Nenhuma integração real é necessária ou autorizada; os oito gates externos/humanos continuam `BLOCKED_EXTERNAL`.
+
+# AUD17-02-START-20260917 — matriz requisito→prova congelada
+
+- task: `AUD17-02`; pipeline: `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`; atividade: `PLAN/VERIFY`; status: `IN_PROGRESS`.
+- action: reexecutado o baseline stale sob Node `22.23.2` após registrar os artefatos de AUD17-01; criada a matriz própria com nove áreas, quatro findings, quinze tasks, boundary público, negativo, owner, dependências, evidência e estado local/externo.
+- evidence: `docs/04_audit/evidence/AUD17-AAA/AUD17-02-requirements-matrix.json`; JSON validado; `AUD17-01` marcado `VERIFIED_LOCAL` no backlog.
+- decision: nenhum requisito foi marcado PASS por existência documental; AUD17-03..12 continuam aguardando BUILD/AUDIT; AUD17-13..15 seguem `BLOCKED_EXTERNAL`.
+- next_action: congelar contratos das primeiras fatias locais e executar AUD17-03, AUD17-04, AUD17-05 e AUD17-07 conforme o DAG, sem alterar a barra histórica nem tocar em serviços reais.
+
+# AUD17-G1-LOCAL-BUILD-20260917 — hardening local concluído, selo pendente
+
+- task set: `AUD17-02..11`; pipeline: `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`; execução `CONTROLLED_LOCAL`; Node qualificado `22.23.2`; somente dados sintéticos/adapters controlados; sem provider, canal, IdP, RAG, egress, deploy ou efeito real.
+- contracts: matriz requisito→prova e SPEC G1 congeladas antes do BUILD; barra `AUD17-AAA-V1` preservada sem alteração; evidências por task em `docs/04_audit/evidence/AUD17-AAA/`.
+- implementation: scoring ponderado com evidência, preflight compartilhado API/worker, deadlines/budgets/fencing/replan, migration `0023_orchestrator_replan_fencing`, outbox/revalidação/UNCERTAIN, red-team conectado e console read-only com screenshots populadas.
+- verification: typecheck/lint/format/build, suíte integral `255` arquivos (`1783` PASS, `117` skips), coverage `89.52/82.77/88.59/90.06`, E2E `9/9`, evals `8/8`, chaos `18/18` + `2` skips, security `0` vulnerabilidades, licenses `372/0`, startup/readiness, red-team `15/15`, bypass `47` arquivos sem findings e testes conectados de inbound→outbox→worker/effect journal PASS.
+- limitation: `npm run test:postgres` executou `14` arquivos/`86` testes PASS com `9` arquivos/`115` testes SKIP por ausência de `TEST_DATABASE_URL`; prova física, RPO/RTO, restore, IdP/provider/canal/RAG, piloto, rollback e sign-off continuam fora do escopo local.
+- decision: `AUD17-02..04` e `AUD17-06..11` possuem evidência local; `AUD17-05` permanece `NOT_EXECUTED_NO_TEST_DATABASE`; `AUD17-12` entra em `IN_PROGRESS_FINAL_SEAL`; produção permanece `NO_GO`.
+- next_action: criar o commit local do candidato, executar `npm run certify` sob Node 22, validar current/evidence verifier e registrar a crítica independente fresca antes do veredicto.

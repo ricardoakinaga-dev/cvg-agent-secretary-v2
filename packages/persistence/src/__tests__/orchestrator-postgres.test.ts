@@ -264,6 +264,8 @@ describeWithPostgres('durable orchestrator PostgreSQL store', () => {
     const recovered = await store.recoverExpiredLease({
       tenantId: TENANT,
       stepId: 'leased',
+      leaseToken: first!.lease.leaseToken,
+      stepVersion: renewed!.stepVersion,
       now: new Date(now.getTime() + 151),
       decision: 'retry',
       reason: 'worker crashed before controlled effect'

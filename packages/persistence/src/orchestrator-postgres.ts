@@ -6,6 +6,7 @@ import {
   assertPlanTransition,
   assertPlanStepTransition,
   createExecutionBudget,
+  effectiveGoalDeadline,
   materializePlanSteps,
   OrchestrationError,
   OrchestrationTenantIdSchema,
@@ -14,6 +15,7 @@ import {
   PlanStepStatusSchema,
   GoalStatusSchema,
   RUNNABLE_GOAL_STATUSES,
+  stepBudgetExhaustion,
   type ActivatePlanInput,
   type ActivatePlanResult,
   type AttemptRecord,
@@ -406,8 +408,11 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
     }
     const createdAt = this.clock()
     const budget = createExecutionBudget(input.budget)
-    const deadline =
-      input.deadline ?? new Date(createdAt.getTime() + budget.maxDurationMs)
+    const deadline = effectiveGoalDeadline(
+      createdAt,
+      input.deadline,
+      budget.maxDurationMs
+    )
     const id = createDomainId('goal')
     const snapshot: Goal['executionSnapshot'] = {
       agentVersion: input.executionSnapshot?.agentVersion ?? null,
@@ -687,6 +692,32 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
           'Goal replan budget is exhausted'
         )
       }
+      const triggeringEvaluationId = input.triggeringEvaluationId ?? null
+      if ((input.parentPlanId === null) !== (triggeringEvaluationId === null)) {
+        throw new OrchestrationError(
+          'invalid_plan',
+          'A replan must bind both its parent plan and triggering evaluation'
+        )
+      }
+      if (triggeringEvaluationId !== null) {
+        const evaluationResult = await client.query<EvaluationRow>(
+          `SELECT * FROM orchestrator_evaluations
+             WHERE tenant_id = $1 AND id = $2
+             FOR SHARE`,
+          [scope, triggeringEvaluationId]
+        )
+        const evaluation = evaluationResult.rows[0]
+        if (
+          !evaluation ||
+          evaluation.goal_id !== input.goalId ||
+          evaluation.plan_id !== input.parentPlanId
+        ) {
+          throw new OrchestrationError(
+            'invalid_plan',
+            'Triggering evaluation must belong to the same Goal and parent Plan'
+          )
+        }
+      }
       if (input.parentPlanId !== null) {
         const parent = toPlan(
           await one<PlanRow>(
@@ -747,7 +778,7 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
         version: input.planVersion,
         parentPlanId: input.parentPlanId,
         reason: input.reason,
-        triggeringEvaluationId: input.triggeringEvaluationId ?? null,
+        triggeringEvaluationId,
         status: 'ACTIVE',
         createdAt,
         updatedAt: createdAt,
@@ -1094,6 +1125,13 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
           'budget_exhausted',
           'Goal step budget is exhausted'
         )
+      const exhausted = stepBudgetExhaustion(goal, current)
+      if (exhausted !== null) {
+        throw new OrchestrationError(
+          'budget_exhausted',
+          `Goal ${exhausted.replace('_', ' ')} budget is exhausted`
+        )
+      }
       if (current.dependencies.length > 0) {
         const dependencyRows = await client.query<
           Pick<StepRow, 'id' | 'status'>
@@ -1443,7 +1481,13 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
           [scope, input.stepId]
         )
       )
-      if (!current.leaseUntil || current.leaseUntil > input.now)
+      if (
+        !current.leaseUntil ||
+        current.leaseUntil > input.now ||
+        current.leaseToken === null ||
+        current.leaseToken !== input.leaseToken ||
+        current.version !== input.stepVersion
+      )
         return { goal, step: current }
       const target: PlanStep['status'] =
         input.decision === 'retry' ? 'READY' : 'UNCERTAIN'
@@ -1455,9 +1499,17 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
           SET status = $3, last_error = $4, lease_owner = NULL,
               lease_token = NULL, lease_until = NULL, version = version + 1,
               updated_at = $5
-        WHERE tenant_id = $1 AND id = $2 AND version = $6
+        WHERE tenant_id = $1 AND id = $2 AND version = $6 AND lease_token = $7
         RETURNING *`,
-          [scope, current.id, target, input.reason, input.now, current.version]
+          [
+            scope,
+            current.id,
+            target,
+            input.reason,
+            input.now,
+            current.version,
+            input.leaseToken
+          ]
         )
       )
       let targetGoalStatus: GoalStatus = goal.status

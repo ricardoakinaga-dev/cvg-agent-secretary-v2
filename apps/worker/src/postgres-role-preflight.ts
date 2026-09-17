@@ -32,6 +32,14 @@ export const WORKER_CRITICAL_TABLES = [
   'orchestrator_evaluations'
 ] as const
 
+export const WORKER_REQUIRED_MIGRATIONS = [
+  '0019_orchestrator_state',
+  '0020_orchestrator_lineage_hardening',
+  '0021_orchestrator_iteration_budget',
+  '0022_orchestrator_evaluation_lineage',
+  '0023_orchestrator_replan_fencing'
+] as const
+
 export interface PostgresWorkerPreflightOptions {
   tenantId: TenantId
   /** Additional tables may be checked; the critical baseline is always kept. */
@@ -153,6 +161,23 @@ export async function assertPostgresWorkerPreflight(
     ) {
       throw new Error(
         'PostgreSQL worker tables must be tenant-isolated and not owned by the runtime role'
+      )
+    }
+
+    const migrations = await client.query<{ version: string }>(
+      `SELECT version FROM schema_migrations
+        WHERE version = ANY($1::text[])`,
+      [WORKER_REQUIRED_MIGRATIONS]
+    )
+    const appliedMigrations = new Set(
+      migrations.rows.map((migration) => migration.version)
+    )
+    const missingMigrations = WORKER_REQUIRED_MIGRATIONS.filter(
+      (version) => !appliedMigrations.has(version)
+    )
+    if (missingMigrations.length > 0) {
+      throw new Error(
+        `PostgreSQL worker schema is missing migrations: ${missingMigrations.join(', ')}`
       )
     }
 

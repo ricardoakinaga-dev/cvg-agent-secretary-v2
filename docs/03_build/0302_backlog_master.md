@@ -1,5 +1,9 @@
 # 0302 — Backlog Master
 
+## Programa pós-auditoria de 17/09/2026
+
+O [backlog 0330](0330_aud20260917_backlog.md) é a fonte operacional das 15 tasks `AUD17`; [plano 0328](0328_aud20260917_executive_plan.md) e [roadmap 0329](0329_aud20260917_roadmap.md) definem gates e ordem. As tasks locais AUD17-01..11 têm resultados registrados no backlog/evidências; AUD17-12 está em selo final e AUD17-13..15 seguem bloqueadas externamente.
+
 ## Complemento pós-auditoria de 13/09/2026
 
 Consultar [plano para produção](../PLANO_EXECUTIVO_PRODUCAO.md), [roadmap](../ROADMAP_PRODUCAO.md) e [backlog consolidado](../BACKLOG_PRODUCAO.md). Os 42 IDs AAA mantêm seus contratos/status; 14 IDs PROD acrescentam correções e pré-requisitos de saída. Não concluir pela evidência histórica de outro candidato. Este índice não concede gate de BUILD ou produção.

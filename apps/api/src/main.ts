@@ -2,8 +2,10 @@ import { buildServerFromEnv, type RuntimeLogEntry } from './server.ts'
 import { createConfiguredOperatorIdentityResolver } from './operator-identity.ts'
 import { serializeStartupFailure } from './startup-failure.ts'
 import { createShutdownController, parseEnv } from '@cvg/shared'
+import { assertProductionBootstrap } from '../../../scripts/lib/production-preflight-core.mjs'
 
 async function start() {
+  assertProductionBootstrap(process.env)
   parseEnv(process.env)
   const operatorIdentityResolver = createConfiguredOperatorIdentityResolver(
     process.env

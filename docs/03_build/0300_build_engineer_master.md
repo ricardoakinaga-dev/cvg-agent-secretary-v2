@@ -1,5 +1,9 @@
 # 0300 — Build Engineer Master
 
+## Programa pós-auditoria de 17/09/2026
+
+O plano [0328](0328_aud20260917_executive_plan.md), roadmap [0329](0329_aud20260917_roadmap.md) e backlog [0330](0330_aud20260917_backlog.md) cobrem os nove itens da auditoria 0565. São planejamento documental; o BUILD depende da SPEC/gate de cada task. Produção permanece `NO_GO`.
+
 ## Complemento pós-auditoria de 13/09/2026
 
 Consultar [plano para produção](../PLANO_EXECUTIVO_PRODUCAO.md), [roadmap](../ROADMAP_PRODUCAO.md) e [backlog consolidado](../BACKLOG_PRODUCAO.md). Os 42 IDs AAA mantêm seus contratos/status; 14 IDs PROD acrescentam correções e pré-requisitos de saída. Não concluir pela evidência histórica de outro candidato. Este índice não concede gate de BUILD ou produção.

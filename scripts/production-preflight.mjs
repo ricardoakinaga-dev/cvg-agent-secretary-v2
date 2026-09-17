@@ -12,6 +12,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
+import { evaluateProductionBootstrap } from './lib/production-preflight-core.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const args = new Map()
@@ -64,6 +65,21 @@ function add(id, pass, detail) {
 function fileExists(relativePath) {
   return fs.existsSync(path.join(root, relativePath))
 }
+
+const authoritativeBootstrap = evaluateProductionBootstrap({
+  env,
+  root,
+  profile
+})
+
+add(
+  'bootstrap.authority',
+  authoritativeBootstrap.status === 'PASS',
+  authoritativeBootstrap.blocking.length === 0
+    ? 'shared bootstrap preflight passed'
+    : 'shared bootstrap preflight blocked: ' +
+        authoritativeBootstrap.blocking.join(',')
+)
 
 add(
   'profile.production',
@@ -184,8 +200,8 @@ add(
 )
 add(
   'governance.migrations',
-  Number(value('CVG_MIGRATIONS_APPLIED_AT_LEAST')) >= 22,
-  'CVG_MIGRATIONS_APPLIED_AT_LEAST must be >= 22; database state is not inferred'
+  Number(value('CVG_MIGRATIONS_APPLIED_AT_LEAST')) >= 23,
+  'CVG_MIGRATIONS_APPLIED_AT_LEAST must be >= 23; database state is not inferred'
 )
 add(
   'governance.no_unrestricted_effects',
@@ -217,7 +233,8 @@ add(
     '0019_orchestrator_state.sql',
     '0020_orchestrator_lineage_hardening.sql',
     '0021_orchestrator_iteration_budget.sql',
-    '0022_orchestrator_evaluation_lineage.sql'
+    '0022_orchestrator_evaluation_lineage.sql',
+    '0023_orchestrator_replan_fencing.sql'
   ].every((file) => fileExists(`packages/persistence/migrations/${file}`)),
   'required orchestrator migration sources must be present'
 )

@@ -232,6 +232,56 @@ describe('OrchestrationPanel', () => {
         selectedGoalId={null}
       />
     )
-    expect(screen.getByText(/nenhum goal durável disponível/i)).toBeTruthy()
+    expect(screen.getByText(/nenhum goal durável neste tenant/i)).toBeTruthy()
+  })
+
+  it('makes UNCERTAIN reconciliation and latest attempt evidence explicit', () => {
+    const uncertainDetail: OrchestrationGoalDetailView = {
+      ...detail,
+      status: 'UNCERTAIN',
+      operatorState: {
+        ...detail.operatorState,
+        state: 'UNCERTAIN',
+        currentStepId: 'step_fixture_1',
+        currentStepStatus: 'UNCERTAIN',
+        leaseOwner: 'worker_synthetic_1',
+        leaseUntil: '2026-09-15T12:02:00.000Z'
+      },
+      plans: detail.plans.map((plan) => ({
+        ...plan,
+        steps: plan.steps.map((step) => ({
+          ...step,
+          status: 'UNCERTAIN',
+          attempts: [
+            {
+              id: 'attempt_fixture_1',
+              workerId: 'worker_synthetic_1',
+              correlationId: goal().correlationId,
+              startedAt: '2026-09-15T12:00:30.000Z',
+              finishedAt: '2026-09-15T12:01:30.000Z',
+              outcome: 'UNCERTAIN',
+              errorClass: 'effect_state_unknown'
+            }
+          ]
+        }))
+      }))
+    }
+    render(
+      <OrchestrationPanel
+        identity={{
+          operatorId: 'operator.fixture',
+          role: 'Supervisor',
+          tenantId: goal().tenantId
+        }}
+        goals={[goal({ status: 'UNCERTAIN' })]}
+        detail={uncertainDetail}
+        selectedGoalId={uncertainDetail.id}
+      />
+    )
+
+    expect(screen.getByText(/reconciliação necessária/i)).toBeTruthy()
+    expect(screen.getByText(/retomada automática suspensa/i)).toBeTruthy()
+    expect(screen.getByText(/effect_state_unknown/i)).toBeTruthy()
+    expect(screen.getAllByText(/worker_synthetic_1/i).length).toBeGreaterThan(1)
   })
 })

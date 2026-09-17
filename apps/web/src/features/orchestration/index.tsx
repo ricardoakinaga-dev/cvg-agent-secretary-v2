@@ -174,6 +174,35 @@ function getOwnership(
   }
 }
 
+function getUncertainSteps(detail: OrchestrationGoalDetailView): StepView[] {
+  return detail.plans
+    .flatMap((plan) => plan.steps)
+    .filter((step) => normalizeStatus(step.status) === 'UNCERTAIN')
+}
+
+function LatestAttempt({ step }: { step: StepView }) {
+  const latestAttempt = step.attempts.at(-1)
+  if (!latestAttempt) return null
+  const outcome = latestAttempt.outcome
+    ? formatStatus(latestAttempt.outcome)
+    : 'Em andamento'
+  return (
+    <span
+      className="orchestrationAttempt"
+      data-status={latestAttempt.outcome ?? 'running'}
+    >
+      Última tentativa: <strong>{outcome}</strong> · worker{' '}
+      <code>{displayDiagnostic(latestAttempt.workerId)}</code>
+      {latestAttempt.errorClass ? (
+        <>
+          {' '}
+          · erro <code>{displayDiagnostic(latestAttempt.errorClass)}</code>
+        </>
+      ) : null}
+    </span>
+  )
+}
+
 function budgetLevel(used: number | null, limit: number): string {
   if (used === null) return 'configured'
   if (limit <= 0 || used >= limit) return used > limit ? 'exceeded' : 'warning'
@@ -382,9 +411,13 @@ export function OrchestrationPanel({
         </div>
       ) : null}
       {!isLoading && !error && goals.length === 0 ? (
-        <p className="state" role="status">
-          Nenhum Goal durável disponível para inspeção.
-        </p>
+        <div className="orchestrationEmpty" role="status">
+          <strong>Nenhum Goal durável neste tenant.</strong>
+          <span>
+            O read model não encontrou execução sintética disponível para o
+            escopo atual; isso não representa uma fila global vazia.
+          </span>
+        </div>
       ) : null}
       {!isLoading && !error && goals.length > 0 ? (
         <div className="orchestrationBody">
@@ -517,6 +550,9 @@ function GoalDetail({ detail }: { detail: OrchestrationGoalDetailView }) {
     detail.operatorState.deadline ?? detail.deadline
   )
   const detailStatus = normalizeStatus(detail.operatorState.state).toLowerCase()
+  const uncertainSteps = getUncertainSteps(detail)
+  const hasUncertainty =
+    detailStatus === 'uncertain' || uncertainSteps.length > 0
 
   return (
     <div className="orchestrationDetailBody">
@@ -577,6 +613,37 @@ function GoalDetail({ detail }: { detail: OrchestrationGoalDetailView }) {
           {deadline ? <span>Prazo: {deadline}</span> : null}
         </article>
       </div>
+
+      {hasUncertainty ? (
+        <section
+          className="orchestrationUncertainty"
+          aria-labelledby="orchestration-uncertainty-title"
+        >
+          <div>
+            <span className="orchestrationUncertaintyEyebrow">
+              Reconciliação necessária
+            </span>
+            <h3 id="orchestration-uncertainty-title">
+              O efeito não pode ser classificado como concluído com segurança.
+            </h3>
+            <p>
+              {uncertainSteps.length > 0
+                ? `${uncertainSteps.length} step(s) permanecem UNCERTAIN; nenhuma repetição automática está autorizada.`
+                : 'O Goal está UNCERTAIN; o próximo passo seguro é reconciliação humana ou evidência operacional adicional.'}
+            </p>
+          </div>
+          <dl>
+            <div>
+              <dt>Próxima ação segura</dt>
+              <dd>Reconciliar estado e registrar decisão controlada</dd>
+            </div>
+            <div>
+              <dt>Automação</dt>
+              <dd>Retomada automática suspensa</dd>
+            </div>
+          </dl>
+        </section>
+      ) : null}
 
       <dl className="recordMeta orchestrationMeta">
         <div>
@@ -840,6 +907,14 @@ function GoalDetail({ detail }: { detail: OrchestrationGoalDetailView }) {
                     : 'Não informada'}
                 </dd>
               </div>
+              <div>
+                <dt>Worker/lease</dt>
+                <dd>
+                  {detail.operatorState.leaseOwner
+                    ? `${displayDiagnostic(detail.operatorState.leaseOwner)} · até ${formatTimestamp(detail.operatorState.leaseUntil) ?? 'sem prazo'}`
+                    : 'Nenhum lease ativo'}
+                </dd>
+              </div>
             </dl>
           </div>
         </div>
@@ -923,6 +998,7 @@ function GoalDetail({ detail }: { detail: OrchestrationGoalDetailView }) {
                         <span>Dependências: {step.dependencies.length}</span>
                         <span>Tentativas: {step.attemptCount}</span>
                       </div>
+                      <LatestAttempt step={step} />
                       {step.requiredCapabilities.length > 0 ? (
                         <span className="orchestrationCapabilities">
                           Capacidades:{' '}

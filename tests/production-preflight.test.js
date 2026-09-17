@@ -1,10 +1,14 @@
-import { execFileSync } from 'node:child_process'
+import { execFileSync, spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { evaluateProductionBootstrap } from '../scripts/lib/production-preflight-core.mjs'
 
 const repositoryRoot = path.resolve(import.meta.dirname, '..')
 const script = path.join(repositoryRoot, 'scripts/production-preflight.mjs')
+const apiEntrypoint = path.join(repositoryRoot, 'apps/api/src/main.ts')
+const workerEntrypoint = path.join(repositoryRoot, 'apps/worker/src/main.ts')
+const tsxEntrypoint = path.join(repositoryRoot, 'node_modules/.bin/tsx')
 
 function runPreflight(overrides = {}, args = []) {
   const output = execFileSync(process.execPath, [script, ...args], {
@@ -38,7 +42,7 @@ function validProductionEnv() {
     CVG_RISK_POLICY: 'required',
     CVG_APPROVAL_STORE: 'postgres',
     CVG_EFFECT_JOURNAL: 'postgres',
-    CVG_MIGRATIONS_APPLIED_AT_LEAST: '22',
+    CVG_MIGRATIONS_APPLIED_AT_LEAST: '23',
     CVG_EXTERNAL_PROVIDER_APPROVED: 'true',
     CVG_EXTERNAL_CHANNEL_APPROVED: 'true',
     CVG_EXTERNAL_IDENTITY_APPROVED: 'true',
@@ -101,5 +105,43 @@ describe('production preflight', () => {
         'governance.risk'
       ])
     )
+  })
+
+  it('shares the authoritative bootstrap decision and rejects mixed origins', () => {
+    const env = {
+      ...validProductionEnv(),
+      API_ALLOWED_ORIGINS:
+        'https://console.example.test,http://unsafe.example.test'
+    }
+    const result = evaluateProductionBootstrap({ env, root: repositoryRoot })
+    expect(result.status).toBe('FAIL')
+    expect(result.blocking).toContain('bootstrap.http_security')
+
+    const output = runPreflight(
+      { API_ALLOWED_ORIGINS: env.API_ALLOWED_ORIGINS },
+      ['--expect=REJECT']
+    )
+    expect(output.status).toBe('PASS')
+    expect(output.actualStatus).toBe('FAIL')
+    expect(output.blocking).toContain('bootstrap.authority')
+  })
+
+  it('runs the shared gate before API and worker bootstrap', () => {
+    for (const entrypoint of [apiEntrypoint, workerEntrypoint]) {
+      const result = spawnSync(process.execPath, [tsxEntrypoint, entrypoint], {
+        cwd: repositoryRoot,
+        env: {
+          ...process.env,
+          NODE_ENV: 'production',
+          API_PERSISTENCE_MODE: 'memory'
+        },
+        encoding: 'utf8',
+        timeout: 10_000
+      })
+      expect(result.status).not.toBe(0)
+      expect(result.stdout + result.stderr).toMatch(
+        /Production bootstrap preflight failed/
+      )
+    }
   })
 })

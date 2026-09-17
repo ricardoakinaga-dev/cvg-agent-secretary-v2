@@ -113,7 +113,7 @@ const commandEntries = [
   ],
   [
     'certification_redteam',
-    'node scripts/phase11-2-redteam.mjs --suite=certification'
+    'node scripts/phase11-2-redteam.mjs --suite=certification && npm test -- --run apps/api/src/__tests__/aud17-connected-redteam.test.ts'
   ],
   ['adversarial_proof', 'node scripts/phase11-2-redteam.mjs --suite=all'],
   [
@@ -346,7 +346,8 @@ Object.assign(implementationMap, {
     'packages/agent-runtime/src/orchestration.ts',
     'packages/persistence/src/orchestrator-postgres.ts',
     'packages/persistence/migrations/0021_orchestrator_iteration_budget.sql',
-    'packages/persistence/migrations/0022_orchestrator_evaluation_lineage.sql'
+    'packages/persistence/migrations/0022_orchestrator_evaluation_lineage.sql',
+    'packages/persistence/migrations/0023_orchestrator_replan_fencing.sql'
   ],
   'P11.2-FENCING': [
     'packages/persistence/src/orchestrator-postgres.ts',
@@ -369,13 +370,15 @@ Object.assign(implementationMap, {
     'scripts/phase11-2-redteam.mjs',
     'scripts/phase11-2-evidence-check.mjs',
     'packages/policy-engine/src',
-    'apps/api/src/orchestration-observability.ts'
+    'apps/api/src/orchestration-observability.ts',
+    'apps/api/src/__tests__/aud17-connected-redteam.test.ts'
   ],
   'P11.2-POSTGRES': [
     'packages/persistence/migrations/0019_orchestrator_state.sql',
     'packages/persistence/migrations/0020_orchestrator_lineage_hardening.sql',
     'packages/persistence/migrations/0021_orchestrator_iteration_budget.sql',
-    'packages/persistence/migrations/0022_orchestrator_evaluation_lineage.sql'
+    'packages/persistence/migrations/0022_orchestrator_evaluation_lineage.sql',
+    'packages/persistence/migrations/0023_orchestrator_replan_fencing.sql'
   ],
   'P11.2-CONSOLE': [
     'apps/web/src/features/orchestration/index.tsx',

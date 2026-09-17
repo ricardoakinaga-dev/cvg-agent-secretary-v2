@@ -263,8 +263,36 @@ describe('identity composition wiring', () => {
       API_REQUIRE_HTTPS: 'true',
       API_PERSISTENCE_MODE: 'postgres',
       DATABASE_URL: 'postgres://fixture:fixture@127.0.0.1:1/fixture',
+      DATABASE_MIGRATION_URL:
+        'postgres://migration:fixture@127.0.0.1:1/fixture',
+      POSTGRES_AUTO_MIGRATE: 'false',
       OUTBOX_DURABLE_INBOUND: 'true',
+      CVG_WORKER_RUNTIME: 'kernel',
+      CVG_DURABLE_KERNEL_ORCHESTRATOR: 'true',
+      CVG_WORKER_QUEUE_ADAPTER: 'postgres-controlled',
       CVG_IDENTITY_MODE: 'trusted'
+    }
+    entrypointEnv.CVG_WORKER_TENANT_ID = tenantId
+    entrypointEnv.CVG_WORKER_AGENT_ID =
+      'agent_00000000-0000-4000-8000-0000000009b1'
+    entrypointEnv.CVG_POLICY_MODE = 'deny_by_default'
+    entrypointEnv.CVG_RISK_POLICY = 'required'
+    entrypointEnv.CVG_APPROVAL_STORE = 'postgres'
+    entrypointEnv.CVG_EFFECT_JOURNAL = 'postgres'
+    entrypointEnv.CVG_MIGRATIONS_APPLIED_AT_LEAST = '23'
+    entrypointEnv.CVG_ALLOW_REAL_EFFECTS = 'false'
+    entrypointEnv.CVG_REAL_EFFECTS = 'false'
+    for (const name of [
+      'CVG_EXTERNAL_PROVIDER_APPROVED',
+      'CVG_EXTERNAL_CHANNEL_APPROVED',
+      'CVG_EXTERNAL_IDENTITY_APPROVED',
+      'CVG_EXTERNAL_RAG_APPROVED',
+      'CVG_RPO_RTO_MEASURED',
+      'CVG_SUPERVISED_PILOT_COMPLETE',
+      'CVG_ROLLBACK_VERIFIED',
+      'CVG_HUMAN_SIGNOFF'
+    ]) {
+      entrypointEnv[name] = 'true'
     }
     delete entrypointEnv[OPERATOR_IDENTITY_KEYRING_ENV]
     const result = await runApiEntrypoint(entrypointEnv)
