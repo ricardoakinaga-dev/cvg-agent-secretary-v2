@@ -3,11 +3,18 @@
   "kind": "AUD17-AAA-requirements-to-proof-matrix",
   "version": "AUD17-AAA-V1",
   "task": "AUD17-02",
-  "status": "G1_LOCAL_VERIFIED_WITH_EXTERNAL_GAPS",
+  "status": "G2_LOCAL_VERIFIED_WITH_EXTERNAL_GAPS",
   "scope": "controlled_local",
   "candidate": {
     "historical_commit": "c8e514dbfcf689968eb606ab94119c850ecc80a6",
-    "current_tree_status": "DIRTY_AND_UNSEALED_BEFORE_FINAL_SEAL",
+    "current_commit": "c24c7126646a088aa9cb2bc63deed6169d394260",
+    "candidate_id": "4fdbd4821c7b270174b9ea2445e4aa03b3a6d1aff1dbdff505e129cc56342375",
+    "tree_hash": "a97389be03c58c7ed2e6e91ba1a4ae6f8376d8fd40f5cf572b2ab86f7b75ba61",
+    "certification_id": "phase11-4fdbd4821c7b2701-mu5iat94",
+    "current_tree_status": "CLEAN_AND_SEALED_LOCAL_WITH_EXTERNAL_GAPS",
+    "dirty": false,
+    "untracked_files": [],
+    "file_count": 999,
     "node": "22.23.2",
     "synthetic_only": true,
     "external_effects": false
@@ -64,7 +71,7 @@
       "negative_case": "Cycle, deadline, cumulative budget exhaustion, stale lease and restart must terminate or continue from persisted state without reset/replay.",
       "evidence_owner": "runtime-platform",
       "evidence": ["focused runtime tests", "PostgreSQL orchestration tests", "current trace/evidence graph", "fresh critic"],
-      "status": "VERIFIED_LOCAL_WITH_PG_GAP"
+      "status": "VERIFIED_LOCAL"
     },
     {
       "id": "persistence",
@@ -75,7 +82,7 @@
       "negative_case": "Double claim, CAS race, expired lease, tenant mismatch, interrupted migration and logical restore must preserve invariants.",
       "evidence_owner": "data-platform",
       "evidence": ["raw PostgreSQL logs", "migration/restore reports", "concurrency tests", "explicit physical-RPO limitation"],
-      "status": "NOT_EXECUTED_NO_TEST_DATABASE"
+      "status": "VERIFIED_LOCAL_WITH_PHYSICAL_GAP"
     },
     {
       "id": "effects",
@@ -86,7 +93,7 @@
       "negative_case": "Crash before/after adapter invocation, lost acknowledgement, replay, takeover or approval race must never duplicate an effect; ambiguity is UNCERTAIN.",
       "evidence_owner": "runtime-platform",
       "evidence": ["adapter counters", "outbox/effect journal rows", "audit lineage", "vertical flow log"],
-      "status": "VERIFIED_LOCAL_WITH_PG_GAP"
+      "status": "VERIFIED_LOCAL"
     },
     {
       "id": "security_governance",
@@ -97,7 +104,7 @@
       "negative_case": "Untrusted actor, cross-tenant input, prompt/tool/channel injection, approval replay, stale worker and secret-bearing logs fail closed without leakage/effect.",
       "evidence_owner": "security",
       "evidence": ["frozen synthetic red-team corpus", "request/SQL/audit assertions", "redacted logs", "fresh independent critique"],
-      "status": "VERIFIED_LOCAL_WITH_PG_GAP"
+      "status": "VERIFIED_LOCAL"
     },
     {
       "id": "certification_traceability",
@@ -108,7 +115,7 @@
       "negative_case": "Stale, dirty, untracked, scope-drifted or recalculation-inconsistent evidence must be rejected; external blockers cannot be hidden by scores.",
       "evidence_owner": "certification",
       "evidence": ["AUD17 bar and matrix", "raw command logs", "candidate manifest", "verifier output", "fresh critic report"],
-      "status": "IN_PROGRESS_FINAL_SEAL_PENDING"
+      "status": "VERIFIED_LOCAL_WITH_EXTERNAL_GAPS"
     },
     {
       "id": "tests_quality",
@@ -119,7 +126,7 @@
       "negative_case": "Mandatory skips, stale logs, implementation-mirroring tests and selected policy/fencing/certification mutants must not pass.",
       "evidence_owner": "quality-engineering",
       "evidence": ["raw logs", "coverage by module", "skip inventory", "mutation kill report", "clean rerun"],
-      "status": "VERIFIED_LOCAL_WITH_REQUIRED_PG_SKIPS"
+      "status": "VERIFIED_LOCAL"
     },
     {
       "id": "operator_console",
@@ -159,19 +166,19 @@
     {"id": "AUD17-01", "priority": "P0", "status": "PASS", "gate": "G0_BASELINE", "proof": "AUD17-01-baseline.md", "negative": "stale current/evidence verifier fails", "owner": "program-control", "depends_on": []},
     {"id": "AUD17-02", "priority": "P0", "status": "VERIFIED_LOCAL", "gate": "G0_TRACEABILITY", "proof": "AUD17-02-requirements-matrix.json; aud17_g1_local_contract_20260917.md", "negative": "unowned or unmapped criterion is not closable", "owner": "program-control", "depends_on": ["AUD17-01"]},
     {"id": "AUD17-03", "priority": "P2", "status": "VERIFIED_LOCAL", "gate": "G1_CALCULUS", "proof": "AUD17-03-score-rubric.md; tests/phase11-score-rubric.test.js", "negative": "NOT_EXECUTED/external evidence cannot yield high score/GO", "owner": "certification", "depends_on": ["AUD17-02"]},
-    {"id": "AUD17-04", "priority": "P1", "status": "VERIFIED_LOCAL_WITH_PG_GAP", "gate": "G1_RUNTIME", "proof": "AUD17-04-runtime.md; packages/agent-runtime/src/__tests__/orchestration.test.ts", "negative": "restart/cycle/budget cannot reset or replay", "owner": "runtime-platform", "depends_on": ["AUD17-02"]},
-    {"id": "AUD17-05", "priority": "P1", "status": "NOT_EXECUTED_NO_TEST_DATABASE", "gate": "G1_POSTGRES", "proof": "AUD17-05-persistence.md; packages/persistence/src/__tests__/postgres-migration-smoke.test.ts", "negative": "stale worker/double claim cannot settle", "owner": "data-platform", "depends_on": ["AUD17-02"]},
-    {"id": "AUD17-06", "priority": "P0", "status": "VERIFIED_LOCAL_WITH_PG_GAP", "gate": "G1_EFFECTS", "proof": "AUD17-06-effects.md; apps/api/src/__tests__/aud17-connected-redteam.test.ts; apps/worker/src/__tests__/outbox-recovery.test.ts", "negative": "ambiguous adapter boundary becomes UNCERTAIN", "owner": "runtime-platform", "depends_on": ["AUD17-02", "AUD17-04", "AUD17-05"]},
+    {"id": "AUD17-04", "priority": "P1", "status": "VERIFIED_LOCAL", "gate": "G1_RUNTIME", "proof": "AUD17-04-runtime.md; packages/agent-runtime/src/__tests__/orchestration.test.ts", "negative": "restart/cycle/budget cannot reset or replay", "owner": "runtime-platform", "depends_on": ["AUD17-02"]},
+    {"id": "AUD17-05", "priority": "P1", "status": "VERIFIED_LOCAL_WITH_PHYSICAL_GAP", "gate": "G1_POSTGRES", "proof": "AUD17-05-persistence.md; packages/persistence/src/__tests__/postgres-migration-smoke.test.ts", "negative": "stale worker/double claim cannot settle", "owner": "data-platform", "depends_on": ["AUD17-02"]},
+    {"id": "AUD17-06", "priority": "P0", "status": "VERIFIED_LOCAL", "gate": "G1_EFFECTS", "proof": "AUD17-06-effects.md; apps/api/src/__tests__/aud17-connected-redteam.test.ts; apps/worker/src/__tests__/outbox-recovery.test.ts", "negative": "ambiguous adapter boundary becomes UNCERTAIN", "owner": "runtime-platform", "depends_on": ["AUD17-02", "AUD17-04", "AUD17-05"]},
     {"id": "AUD17-07", "priority": "P0", "status": "VERIFIED_LOCAL_FAIL_CLOSED", "gate": "G1_PREFLIGHT", "proof": "AUD17-07-preflight.md; tests/production-preflight.test.js", "negative": "forged readiness cannot start serving", "owner": "runtime-platform", "depends_on": ["AUD17-02"]},
-    {"id": "AUD17-08", "priority": "P0", "status": "VERIFIED_LOCAL_WITH_PG_GAP", "gate": "G1_REDTEAM", "proof": "AUD17-08-redteam.md; scripts/phase11-2-redteam.mjs; apps/api/src/__tests__/aud17-connected-redteam.test.ts", "negative": "trust-boundary attacks fail closed", "owner": "security", "depends_on": ["AUD17-06", "AUD17-07"]},
-    {"id": "AUD17-09", "priority": "P1", "status": "VERIFIED_LOCAL_WITH_REQUIRED_PG_SKIPS", "gate": "G1_QUALITY", "proof": "AUD17-09-quality.md; full test/coverage/evals/chaos/security logs", "negative": "mandatory skip or selected mutant cannot pass", "owner": "quality-engineering", "depends_on": ["AUD17-02"]},
+    {"id": "AUD17-08", "priority": "P0", "status": "VERIFIED_LOCAL", "gate": "G1_REDTEAM", "proof": "AUD17-08-redteam.md; scripts/phase11-2-redteam.mjs; apps/api/src/__tests__/aud17-connected-redteam.test.ts", "negative": "trust-boundary attacks fail closed", "owner": "security", "depends_on": ["AUD17-06", "AUD17-07"]},
+    {"id": "AUD17-09", "priority": "P1", "status": "VERIFIED_LOCAL", "gate": "G1_QUALITY", "proof": "AUD17-09-quality.md; full test/coverage/evals/chaos/security logs", "negative": "mandatory skip or selected mutant cannot pass", "owner": "quality-engineering", "depends_on": ["AUD17-02"]},
     {"id": "AUD17-10", "priority": "P1", "status": "VERIFIED_LOCAL", "gate": "G1_CONSOLE", "proof": "AUD17-10-console.md; tests/e2e/visual-shell.spec.ts; visual snapshots", "negative": "console cannot expose misleading/cross-tenant state", "owner": "console", "depends_on": ["AUD17-02", "AUD17-04"]},
     {"id": "AUD17-11", "priority": "P1", "status": "VERIFIED_LOCAL_WITH_RUNBOOK", "gate": "G1_OPERATIONS", "proof": "AUD17-11-operations.md; docs/04_audit/evidence/AUD17-AAA/AUD17-11-operations.md", "negative": "missing stage/sensitive content cannot be silent", "owner": "operations", "depends_on": ["AUD17-06", "AUD17-08", "AUD17-10"]},
-    {"id": "AUD17-12", "priority": "P0", "status": "IN_PROGRESS_FINAL_SEAL", "gate": "G2_CERTIFICATION", "proof": "AUD17-12-certification.md; pending final candidate package", "negative": "stale/dirty candidate cannot verify or promote", "owner": "certification", "depends_on": ["AUD17-01", "AUD17-02", "AUD17-03", "AUD17-04", "AUD17-05", "AUD17-06", "AUD17-07", "AUD17-08", "AUD17-09", "AUD17-10", "AUD17-11"]},
+    {"id": "AUD17-12", "priority": "P0", "status": "COMPLETED_LOCAL_CONDITIONAL_GO", "gate": "G2_CERTIFICATION", "proof": "AUD17-12-certification.md; certification/phase11/phase11-result.json; certification/current.json; current/evidence verifier PASS", "negative": "stale/dirty candidate cannot verify or promote", "owner": "certification", "depends_on": ["AUD17-01", "AUD17-02", "AUD17-03", "AUD17-04", "AUD17-05", "AUD17-06", "AUD17-07", "AUD17-08", "AUD17-09", "AUD17-10", "AUD17-11"]},
     {"id": "AUD17-13", "priority": "P0", "status": "BLOCKED_EXTERNAL", "gate": "G3_INTEGRATIONS", "proof": "external qualification dossier unavailable", "negative": "fixtures cannot mark real provider/channel/IdP/RAG PASS", "owner": "release-authority", "depends_on": ["AUD17-12"]},
     {"id": "AUD17-14", "priority": "P0", "status": "BLOCKED_EXTERNAL", "gate": "G3_OPERATIONS", "proof": "physical RPO/RTO, rollback and pilot unavailable", "negative": "disposable PostgreSQL cannot prove physical recovery", "owner": "release-authority", "depends_on": ["AUD17-13"]},
     {"id": "AUD17-15", "priority": "P0", "status": "BLOCKED_EXTERNAL", "gate": "G4_HUMAN_RELEASE", "proof": "fresh release signoff unavailable", "negative": "local score cannot produce RELEASE_READY", "owner": "release-authority", "depends_on": ["AUD17-12", "AUD17-13", "AUD17-14"]}
   ],
   "closure_rule": "A row is PASS only with current executable evidence bound to the final candidate/config; document existence alone is insufficient. External and human rows remain BLOCKED_EXTERNAL until authorized evidence exists.",
-  "next_action": "Finalize AUD17-12: commit the scoped local candidate, run certification/verifier, collect the fresh independent critics and keep AUD17-13..15 blocked until authorized external and human evidence exists."
+  "next_action": "Execute AUD17-05 with authorized disposable PostgreSQL to run INV-007..010; then qualify AUD17-13..15 only with authorized external evidence and human signoff. Keep production NO_GO."
 }

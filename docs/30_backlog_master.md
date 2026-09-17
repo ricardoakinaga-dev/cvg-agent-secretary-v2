@@ -1788,7 +1788,7 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 
 # AUD-RECENT-20260917 — pendências da inspeção
 
-- [ ] AUD-20260917-01 (P1): reconciliar o controle de execução com o pacote já selado e re-selar qualquer candidato posterior às alterações documentais.
+- [x] AUD-20260917-01 (P1): controle de execução reconciliado e candidato posterior re-selado após as alterações de implementação e documentação; o ponteiro corrente é a fonte canônica.
 - [ ] AUD-20260917-02 (P1 para release): vincular o preflight ao bootstrap/deploy e comprovar estado real de banco, integrações e aprovações antes de homologação.
 - [ ] AUD-20260917-03 (P2): separar as notas binárias do certificador de avaliação de maturidade operacional.
 - [ ] AUD-20260917-04 (externo): qualificar os oito gates externos/humanos em ambiente autorizado; produção segue `NO_GO`.
@@ -1799,7 +1799,13 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 - [x] `AUD17-01`: baseline stale reconciliado, contrato/negativos congelados e evidência registrada.
 - [x] `AUD17-02..04`: matriz/SPEC e rubrica/runtime corrigidos; resultados locais registrados.
 - [x] `AUD17-06..11`: efeitos, preflight, red-team, qualidade, console e runbook exercitados localmente; lacunas de PostgreSQL permanecem explícitas.
-- [ ] `AUD17-05`: prova PostgreSQL descartável ainda não executada por ausência de `TEST_DATABASE_URL`; não é considerada PASS.
-- [x] `AUD17-12`: selo candidate-bound final concluído localmente; `certify` resultou `NO_GO` para o perfil solicitado, current/evidence verifier passaram, e a crítica fresca fica registrada nas evidências AUD17. Persistem PostgreSQL/formal closure e gates externos/humanos.
+- [x] `AUD17-05`: `VERIFIED_LOCAL_WITH_PHYSICAL_GAP`; PostgreSQL descartável autorizado executou 23 arquivos e 202 testes sem falhas, incluindo migration `0024`, tenant/RLS, fencing, outbox/replay e cenários de caos. Backup/restore físico e RPO/RTO continuam externos.
+- [x] `AUD17-12`: selo candidate-bound local concluído com `CONDITIONAL_GO`, `AAA_CANDIDATE` e elegibilidade máxima `STAGING`; current/evidence verifier passaram e `INV-007..010` fecharam. Produção segue `NO_GO` pelos oito gates externos/humanos.
 - [ ] `AUD17-13..15`: bloqueadas por integrações externas, RPO/RTO/rollback/piloto e sign-off humano; nunca promover por fixture local.
 - Produção `NO_GO`; execução local não concede staging/produção nem substitui autoridade externa/humana.
+
+# AUD17-AAA-20260917 — fechamento local e próxima etapa
+
+- [x] Implementação local de persistência/fencing corrigida com migration aditiva `0024`, budgets governados, preflight atualizado e regressões de HMAC/chaos cobertas.
+- [x] Certificação local candidate-bound reexecutada sob Node `22.23.2` e PostgreSQL descartável; pacote e verificadores correntes devem ser consultados em `certification/current.json`.
+- [ ] Próxima etapa: qualificar `AUD17-13` (integrações reais autorizadas), `AUD17-14` (RPO/RTO físico, rollback e piloto) e `AUD17-15` (revisão/signoff humano). Nenhum efeito real, deploy, publicação ou push é autorizado por este fechamento local.

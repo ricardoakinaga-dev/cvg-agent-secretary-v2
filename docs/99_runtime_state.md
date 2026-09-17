@@ -2600,3 +2600,13 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - gap_state: `AUD17-05` permanece `NOT_EXECUTED_NO_TEST_DATABASE`; `INV-007..010` não executadas; `AUD-11-05..07` permanecem `PARTIAL`; provider, canal, identidade externa, RAG institucional, RPO/RTO, piloto, rollback e signoff humano seguem `NOT_VALIDATED`/`PENDING`.
 - decision: certificação `NO_GO` para o perfil solicitado; o resultado local é válido apenas como `CONTROLLED_LOCAL` e não concede staging ou produção. O pacote atual e seus hashes são a fonte em `certification/current.json` e `certification/phase11/phase11-result.json`.
 - next_action: com autorização própria, fornecer PostgreSQL descartável para executar AUD17-05/INV-007..010; somente depois qualificar gates externos e decisão humana. Não fazer push ou deploy nesta rodada.
+
+# AUD17-G3-LOCAL-POSTGRES-AND-RESEAL-20260917 — estado corrente
+
+- current_engine: `AUDIT`; task: `AUD17-12`; status: `COMPLETED_LOCAL_CONDITIONAL_GO`; execution: `CONTROLLED_LOCAL`; requested profile: `STAGING`; eligible profile: `STAGING`; production: `NO_GO`.
+- authorization: execução local controlada com Node `22.23.2`, dados sintéticos, PostgreSQL `16.4-alpine` descartável dedicado e `CVG_REAL_EFFECTS=0`; sem provider, canal, IdP, RAG, egress, deploy, publicação ou ação real.
+- last_completed_action: corrigidos os bloqueios de persistência e reexecutado o selo local após migration aditiva `0024`, atualização dos preflights/entrypoints, regressões de budget, chaos e replay HMAC; o ponteiro `certification/current.json` é a identidade canônica do selo.
+- verification_state: `npm run test:postgres` `23` arquivos/`202` testes PASS; `format:check`, `typecheck`, `lint`, `build`, unidade, coverage, E2E, evals, chaos, load, recovery, red-team, lineage, current/evidence verifier e `PHASE11_FORMAL_CLOSURE` PASS; `INV-001..016` PASS.
+- gap_state: oito gates externos/humanos permanecem `BLOCKED_EXTERNAL`: provider, canal, identidade externa, RAG institucional, RPO/RTO físico, piloto, rollback e sign-off. A prova local não substitui autorização nem release.
+- decision: `CONDITIONAL_GO` somente para `STAGING` controlado; produção permanece `NO_GO`, com `promotion:check` inelegível e preflight de produção rejeitando configuração insegura.
+- next_action: abrir `AUD17-13..15` em ambiente aprovado, começando pelas integrações autorizadas e depois RPO/RTO/rollback/piloto e signoff humano. Não fazer push ou deploy nesta rodada.

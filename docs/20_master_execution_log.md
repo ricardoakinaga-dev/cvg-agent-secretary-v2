@@ -5689,3 +5689,13 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - external/human: `modelProvider`, `channel`, `externalIdentity`, `institutionalRag`, `rpoRto`, `pilot`, `rollback` `NOT_VALIDATED`; `humanSignoff` `PENDING`. Nenhuma integração real, piloto, aprovação ou efeito externo ocorreu.
 - decision: `AUD17-12` concluída localmente com `NO_GO` controlado; `AUD17-05` e `AUD17-13..15` permanecem abertas/bloqueadas por suas dependências. Nenhum push foi feito.
 - next_action: executar a rodada PostgreSQL autorizada e, em seguida, as qualificações externas/humanas; até lá manter `CONTROLLED_LOCAL` e produção `NO_GO`.
+
+# AUD17-G3-LOCAL-POSTGRES-AND-RESEAL-20260917 — correções e avanço controlado
+
+- task: `AUD17-05` → `AUD17-12`; pipeline `DISCOVERY -> PRD -> SPEC -> BUILD -> AUDIT`; execução `CONTROLLED_LOCAL`; perfil solicitado `STAGING`; produção `NO_GO`.
+- source implementation: commit local `c24c712` (`fix(audit): close postgres persistence blockers`); somente dados sintéticos, banco PostgreSQL descartável dedicado e efeitos externos desabilitados.
+- implementation: migration aditiva `0024_tenant_isolation_constraint_validation` para validar constraints históricas `NOT VALID` fail-closed; versão registrada nos entrypoints/preflights; budgets por turno limitados aos contratos governados; caos PostgreSQL com conexões isoladas; clock do replay HMAC compartilhado com o store.
+- verification: sob Node `22.23.2`, `npm run test:postgres` passou com 23 arquivos/202 testes e zero falhas; `format:check`, `typecheck`, `lint`, `build` e focused regressions passaram; `INV-007..010` agora `PASS` e `PHASE11_FORMAL_CLOSURE` passou no selo local.
+- certification: `npm run certify` fechou `CONDITIONAL_GO`, `AAA_CANDIDATE`, elegível até `STAGING` controlado; current/evidence verifier passaram, preflight de produção recusou corretamente e `promotion:check` manteve `eligible=false`.
+- external/human: provider, canal, identidade externa, RAG institucional, RPO/RTO físico, piloto, rollback e sign-off humano permanecem `NOT_VALIDATED`/`PENDING`; não houve integração real, deploy, publicação ou efeito clínico/financeiro/prontuário/agenda.
+- next_action: iniciar somente em ambiente autorizado as tasks `AUD17-13`, `AUD17-14` e `AUD17-15`, com donos, escopo, egress, evidência assinada e decisão humana. O estado canônico está em `certification/current.json`; nenhum push foi feito.
