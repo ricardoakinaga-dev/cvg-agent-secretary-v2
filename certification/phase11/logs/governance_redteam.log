@@ -1,13 +1,13 @@
 $ npm test -- --run packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts packages/platform/src/__tests__/tool-invocation-boundary-hardening.test.ts packages/platform/src/__tests__/critical-safety-preflight.test.ts
-# certificationId=phase11-9988762db1fc6c28-mua51bhb
-# candidateId=9988762db1fc6c28b6aec31472a3cc95c14c2f7571db996aa09984fe5d1deb12
-# commit=cc28bfba2e293384b393ce4a568f645d05f3b85a
-# treeHash=586cf14ffd76296f73dfee6dbf25eaa02bf5620cf0bf157634d2e9df762769bb
+# certificationId=phase11-fbca3d2b66326053-mua77vjl
+# candidateId=fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89
+# commit=fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6
+# treeHash=69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23
 # gate=governance_redteam
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=4019
+# exitCode=0 durationMs=3276
 
 
 > cvg-agent-secretary-v2@1.0.0 test
@@ -19,8 +19,8 @@ $ npm test -- --run packages/policy-engine/src/__tests__/policy-engine-branch-ha
 
  Test Files  3 passed (3)
       Tests  27 passed (27)
-   Start at  15:57:54
-   Duration  3.49s (transform 401ms, setup 0ms, import 694ms, tests 240ms, environment 2.13s)
+   Start at  16:46:38
+   Duration  2.83s (transform 282ms, setup 0ms, import 521ms, tests 177ms, environment 1.79s)
 
 
 

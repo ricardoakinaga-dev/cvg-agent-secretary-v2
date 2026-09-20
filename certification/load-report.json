@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
   "kind": "phase10-load-report",
-  "generatedAt": "2026-09-20T18:57:43.906Z",
+  "generatedAt": "2026-09-20T19:46:29.523Z",
   "scope": "in-memory outbox contract; synthetic payloads; not a production benchmark",
   "events": 10000,
   "workers": 2,
-  "enqueueMs": 771.48,
-  "drainMs": 11320.1,
-  "totalMs": 12094.32,
-  "throughputPerSecond": 826.83,
+  "enqueueMs": 794.14,
+  "drainMs": 11049.04,
+  "totalMs": 11845.77,
+  "throughputPerSecond": 844.18,
   "processed": 10000,
   "loss": 0,
   "duplicates": 0,
   "latencyMs": {
-    "p50": 1.872,
-    "p95": 4.564,
-    "p99": 5.687,
-    "max": 9.786
+    "p50": 2.046,
+    "p95": 3.713,
+    "p99": 4.553,
+    "max": 10.027
   }
 }
