@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "kind": "phase11-critic-report",
+  "critic": {
+    "identity": "critic.agent.<independent-identity>",
+    "freshContext": true,
+    "builderIdentity": "builder.agent.<builder-identity>",
+    "independence": {
+      "criteria": [
+        "fresh-context",
+        "separate-identity",
+        "artifact-only-input",
+        "no-worktree-write",
+        "no-builder-justification"
+      ],
+      "builderJustificationIncluded": false,
+      "builderConclusionReused": false,
+      "writeAccessToWorktree": false
+    }
+  },
+  "binding": {
+    "candidateId": "<64-hex candidateId recomputed by the critic>",
+    "commit": "<git commit analyzed>",
+    "treeHash": "<phase11 treeHash analyzed>"
+  },
+  "fingerprint": {
+    "algorithm": "sha256-candidate-v1",
+    "before": "<64-hex worktree fingerprint before the read-only review>",
+    "after": "<64-hex worktree fingerprint after the read-only review>"
+  },
+  "verdict": {
+    "status": "PASS",
+    "summary": "Synthetic independent review summary."
+  },
+  "findings": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "checks": [
+    {
+      "id": "CHK-EXAMPLE",
+      "status": "PASS",
+      "method": "Describe the executable verification actually performed.",
+      "evidence": ["certification/logs/unit.log"]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "certification/logs/unit.log",
+      "sha256": "<64-hex digest of the cited file>",
+      "size": 0
+    }
+  ],
+  "disclaimers": {
+    "syntheticOnly": true,
+    "productionBlocked": true
+  }
+}

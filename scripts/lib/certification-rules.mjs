@@ -4,6 +4,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { z } from 'zod'
 import { EVAL_CONTRACT, evalContractViolations } from './eval-contract.mjs'
+import { classifySkips, extractSkipsFromVitestJson } from './skip-policy.mjs'
 
 export const PHASE10_REQUIRED_LOCAL_GATES = [
   'format',
@@ -403,7 +404,9 @@ export const GATE_EVIDENCE_MATRIX = {
   unit: {
     log: 'certification/logs/unit.log',
     kind: 'vitest',
-    skipPolicy: 'declared'
+    skipPolicy: 'declared',
+    skipInventory: 'certification/logs/unit-report.json',
+    results: ['certification/logs/unit-report.json']
   },
   coverage: {
     log: 'certification/logs/coverage.log',
@@ -457,6 +460,8 @@ export const GATE_ENVIRONMENT_EVIDENCE_MATRIX = {
     log: 'certification/logs/postgres.log',
     kind: 'vitest',
     skipPolicy: 'none',
+    skipInventory: 'certification/logs/postgres-report.json',
+    results: ['certification/logs/postgres-report.json'],
     optional: true
   }
 }
@@ -526,7 +531,7 @@ export function parseLogHeader(log) {
     const trimmed = line.trim()
     if (!trimmed.startsWith('#')) continue
     for (const match of trimmed.matchAll(
-      /(runId|candidateId|gate|exitCode)=([^\s]+)/g
+      /(runId|candidateId|gate|exitCode|database)=([^\s]+)/g
     )) {
       header[match[1]] = match[2]
     }
@@ -686,7 +691,74 @@ export function evaluateEvalReportEvidence(
   }
 }
 
-function deriveGateOutcome({ gate, entry, artifactReader, log, result }) {
+function readSkipInventory(artifactReader, entry, failures, gateId) {
+  if (!entry.skipInventory) return null
+  const content = artifactReader(entry.skipInventory)
+  if (content === undefined) {
+    failures.push(`required_skip_inventory_missing:${gateId}`)
+    return null
+  }
+  try {
+    return JSON.parse(content.toString('utf8'))
+  } catch {
+    failures.push(`required_skip_inventory_invalid:${gateId}`)
+    return null
+  }
+}
+
+/**
+ * Executable required-skip policy: a skipped test only survives when a frozen
+ * optional rule in the versioned manifest matches it under the recorded
+ * execution context. A free-text `skipJustification` never waives it.
+ */
+function enforceRequiredSkipPolicy({
+  gate,
+  entry,
+  skipped,
+  inventory,
+  requiredSkips,
+  skipContext,
+  failures
+}) {
+  if (skipped === 0) return
+  if (!requiredSkips) {
+    failures.push('required_skip_manifest_missing')
+    return
+  }
+  if (!entry.skipInventory) return
+  if (!inventory) return
+  const inventorySkips = extractSkipsFromVitestJson(inventory)
+  const declared = Number.isInteger(inventory?.numPendingTests)
+    ? inventory.numPendingTests
+    : inventorySkips.length
+  if (declared !== skipped || inventorySkips.length !== skipped) {
+    failures.push(
+      `skip_inventory_mismatch:${gate.id}:summary=${skipped}:declared=${declared}:records=${inventorySkips.length}`
+    )
+    return
+  }
+  const classified = classifySkips({
+    skips: inventorySkips,
+    gate: gate.id,
+    databaseAvailable: skipContext.databaseAvailable === true,
+    manifest: requiredSkips,
+    postgresScopedFiles: skipContext.postgresScopedFiles ?? [],
+    root: skipContext.root ?? null
+  })
+  for (const record of classified.required) {
+    failures.push(`required_skip:${gate.id}:${record.file}::${record.name}`)
+  }
+}
+
+function deriveGateOutcome({
+  gate,
+  entry,
+  artifactReader,
+  log,
+  result,
+  requiredSkips = null,
+  skipContext = {}
+}) {
   const failures = []
   const text = log.toString('utf8')
   switch (entry.kind) {
@@ -753,6 +825,23 @@ function deriveGateOutcome({ gate, entry, artifactReader, log, result }) {
         } else if (!gate.skipJustification) {
           failures.push(`undeclared_skips:${gate.id}`)
         }
+      }
+      if (entry.kind === 'vitest') {
+        const inventory = readSkipInventory(
+          artifactReader,
+          entry,
+          failures,
+          gate.id
+        )
+        enforceRequiredSkipPolicy({
+          gate,
+          entry,
+          skipped: summary.tests.skipped,
+          inventory,
+          requiredSkips,
+          skipContext,
+          failures
+        })
       }
       return { pass, failures }
     }
@@ -1058,7 +1147,13 @@ function deriveGateOutcome({ gate, entry, artifactReader, log, result }) {
  * status coherence, skip policy and duplicate ownership. Historical mode does
  * not call this function.
  */
-export function verifyGateEvidence({ result, manifest, artifactReader }) {
+export function verifyGateEvidence({
+  result,
+  manifest,
+  artifactReader,
+  requiredSkips = null,
+  skipContext = {}
+}) {
   const failures = []
   const runId = result.runId
   const candidateId = result.candidate?.candidateId
@@ -1161,7 +1256,13 @@ export function verifyGateEvidence({ result, manifest, artifactReader }) {
       entry,
       artifactReader,
       log: logContent,
-      result
+      result,
+      requiredSkips,
+      skipContext: {
+        ...skipContext,
+        databaseAvailable:
+          skipContext.databaseAvailable ?? header.database === 'present'
+      }
     })
     failures.push(...derived.failures)
     if (gate.status === 'PASS' && derived.pass !== true) {
@@ -1201,7 +1302,9 @@ export function verifyQualification({
   currentCandidateId,
   currentCommit,
   currentDirty,
-  enforceEvidence = false
+  enforceEvidence = false,
+  requiredSkips = null,
+  skipContext = {}
 }) {
   const failures = []
   for (const id of requiredGates) {
@@ -1248,7 +1351,15 @@ export function verifyQualification({
     failures.push('candidate_dirty_state_changed')
   }
   if (enforceEvidence) {
-    failures.push(...verifyGateEvidence({ result, manifest, artifactReader }))
+    failures.push(
+      ...verifyGateEvidence({
+        result,
+        manifest,
+        artifactReader,
+        requiredSkips,
+        skipContext
+      })
+    )
   }
   for (const artifact of manifest.artifacts) {
     const content = artifactReader(artifact.path)

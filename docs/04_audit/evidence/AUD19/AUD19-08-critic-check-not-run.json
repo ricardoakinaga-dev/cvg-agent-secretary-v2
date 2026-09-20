@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "kind": "phase11-2-evidence-check",
+  "mode": "critic",
+  "status": "NOT_RUN",
+  "syntheticOnly": true,
+  "sideEffects": false,
+  "checks": [
+    {
+      "id": "CRITIC:input",
+      "status": "FAIL",
+      "detail": "critic report not found: docs/04_audit/evidence/AUD19/AUD19-08-critic-report.json (NOT_RUN, no behavioral input)"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "kind": "phase11-2-evidence-check",
+  "mode": "reports",
+  "status": "FAIL",
+  "syntheticOnly": true,
+  "sideEffects": false,
+  "checks": [
+    {
+      "id": "REPORTS:manifest",
+      "status": "FAIL",
+      "detail": "missing digest-bound reports manifest: docs/phase11/reports-manifest.json"
+    }
+  ]
+}

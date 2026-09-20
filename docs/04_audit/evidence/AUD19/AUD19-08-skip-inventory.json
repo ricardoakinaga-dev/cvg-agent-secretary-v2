@@ -1,0 +1,2136 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud19-skip-inventory",
+  "program": "AUD19-REM",
+  "task": "AUD19-08",
+  "generatedAt": "2026-09-20T03:20:00.430Z",
+  "node": "22.23.2",
+  "manifest": "docs/04_audit/evidence/AUD19/AUD19-08-required-skips.json",
+  "contexts": [
+    {
+      "gate": "postgres",
+      "command": "parsed:/tmp/opencode/pg-final.json",
+      "databaseAvailable": false,
+      "totals": {
+        "testFiles": 28,
+        "tests": 226,
+        "passed": 226,
+        "failed": 0,
+        "skipped": 0
+      },
+      "counts": {
+        "total": 0,
+        "required": 0,
+        "optional": 0
+      },
+      "files": [],
+      "required": [],
+      "optional": [],
+      "exitCode": 0,
+      "source": "report:/tmp/opencode/pg-final.json"
+    },
+    {
+      "gate": "postgres",
+      "command": "npx vitest run packages/persistence/src/__tests__/postgres-migration-smoke.test.ts packages/persistence/src/__tests__/orchestrator-postgres.test.ts packages/persistence/src/__tests__/tenant-isolation.test.ts packages/persistence/src/__tests__/platform-postgres-smoke.test.ts packages/persistence/src/__tests__/platform-approval-postgres.test.ts packages/persistence/src/__tests__/audit-evidence-checkpoint-postgres.test.ts packages/persistence/src/__tests__/session-version-pinning-postgres.test.ts packages/persistence/src/__tests__/outbox-durability.test.ts packages/persistence/src/__tests__/effect-journal-postgres.test.ts packages/persistence/src/__tests__/channel-effect-journal-postgres.test.ts apps/api/src/__tests__/postgres-persistence-mode.test.ts apps/api/src/__tests__/webhook-security.test.ts apps/api/src/__tests__/journeys-api-postgres.test.ts apps/worker/src/__tests__/postgres-outbox-bridge.integration.test.ts packages/chaos/src/__tests__/chaos-postgres.test.ts packages/persistence/src/__tests__/journeys-postgres.test.ts apps/worker/src/__tests__/continuous-worker-postgres.integration.test.ts apps/worker/src/__tests__/postgres-role-preflight.test.ts packages/persistence/src/__tests__/attendance-approval-postgres.test.ts packages/persistence/src/__tests__/journey-task-atomicity.test.ts packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts packages/persistence/src/__tests__/retention-postgres.test.ts apps/api/src/__tests__/operator-replay-store.test.ts apps/api/src/__tests__/operator-replay-guard.test.ts --no-file-parallelism --maxWorkers=2 --reporter=json --outputFile=/tmp/aud19-skip-inventory-06IVq7/vitest-report.json",
+      "databaseAvailable": true,
+      "totals": {
+        "testFiles": 27,
+        "tests": 224,
+        "passed": 224,
+        "failed": 0,
+        "skipped": 0
+      },
+      "counts": {
+        "total": 0,
+        "required": 0,
+        "optional": 0
+      },
+      "files": [],
+      "required": [],
+      "optional": [],
+      "exitCode": 0,
+      "durationMs": 95345,
+      "source": "fresh vitest run"
+    },
+    {
+      "gate": "unit",
+      "command": "parsed:/tmp/opencode/unit-final.json",
+      "databaseAvailable": false,
+      "totals": {
+        "testFiles": 284,
+        "tests": 2059,
+        "passed": 1928,
+        "failed": 0,
+        "skipped": 131
+      },
+      "counts": {
+        "total": 131,
+        "required": 0,
+        "optional": 131
+      },
+      "files": [
+        {
+          "file": "apps/api/src/__tests__/journeys-api-postgres.test.ts",
+          "total": 10,
+          "required": 0,
+          "optional": 10,
+          "tests": [
+            {
+              "name": "journeys API over PostgreSQL serves the full owner, patient, slot, appointment and task journey over HTTP",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journeys API over PostgreSQL keeps journey state tenant-isolated over HTTP",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journeys API over PostgreSQL preserves authentication, validation and approval boundaries over PostgreSQL",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journeys API over PostgreSQL reads created journey state back after a server restart",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journeys API over PostgreSQL serves journeys through a direct PostgreSQL client without a pool",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journeys API over PostgreSQL applies migration 0014 during postgres startup before serving journeys",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journeys API over PostgreSQL fails journey routes closed when no journey repository is available",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journeys API over PostgreSQL fails startup when a postgres pool cannot construct the journey repository",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journeys API over PostgreSQL records the authenticated actor and request correlation on journey audit",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journeys API over PostgreSQL keeps the HTTP journey mutation and audit atomic and replayable",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "apps/api/src/__tests__/operator-replay-guard.test.ts",
+          "total": 1,
+          "required": 0,
+          "optional": 1,
+          "tests": [
+            {
+              "name": "operator replay guard (PostgreSQL) rejects the second use of the same JTI across PostgreSQL-backed instances",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "apps/api/src/__tests__/operator-replay-store.test.ts",
+          "total": 3,
+          "required": 0,
+          "optional": 3,
+          "tests": [
+            {
+              "name": "operator replay store (PostgreSQL) claims atomically across two instances sharing the same store",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "operator replay store (PostgreSQL) reclaims expired claims and purges only expired rows",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "operator replay store (PostgreSQL) fails closed when the replay table is not installed",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+          "total": 7,
+          "required": 0,
+          "optional": 7,
+          "tests": [
+            {
+              "name": "api PostgreSQL persistence mode uses PostgreSQL-backed webhook replay state across reserve and commit operations",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "api PostgreSQL persistence mode commits and rolls back the tenant-scoped runtime finalizer atomically",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "api PostgreSQL persistence mode rejects a superuser runtime connection when RLS enforcement is requested",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "api PostgreSQL persistence mode validates tenant-scoped startup with separate migration and runtime roles",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "api PostgreSQL persistence mode runs inbound, timeline, task, approval and audit endpoints against PostgreSQL when configured",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "api PostgreSQL persistence mode keeps PostgreSQL inbound idempotency isolated by tenant",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "api PostgreSQL persistence mode keeps human takeover and session continuation fail-closed on PostgreSQL",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "apps/api/src/__tests__/webhook-security.test.ts",
+          "total": 1,
+          "required": 0,
+          "optional": 1,
+          "tests": [
+            {
+              "name": "HmacWebhookVerifier recovers stale PostgreSQL replay leases and preserves committed replay retention",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "apps/worker/src/__tests__/continuous-worker-entrypoint.integration.test.ts",
+          "total": 2,
+          "required": 0,
+          "optional": 2,
+          "tests": [
+            {
+              "name": "AAA-19 continuous worker entrypoint over PostgreSQL consumes events around a restart and drains on a real SIGTERM without loss or duplication",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "AAA-19 continuous worker entrypoint over PostgreSQL runs the role preflight before the first claim and leaves the queue untouched on rejection",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "apps/worker/src/__tests__/continuous-worker-postgres.integration.test.ts",
+          "total": 3,
+          "required": 0,
+          "optional": 3,
+          "tests": [
+            {
+              "name": "AAA-19 continuous PostgreSQL worker consumes events across a simulated restart and dead-letters a poison event",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "AAA-19 continuous PostgreSQL worker observes queue lag, completes in-flight work on shutdown and releases bounded leases",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "AAA-19 continuous PostgreSQL worker composes durable approval and journal sweeps for the kernel worker",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts",
+          "total": 5,
+          "required": 0,
+          "optional": 5,
+          "tests": [
+            {
+              "name": "AAA-21 composed kernel path over API → outbox → worker (PostgreSQL) runs the approved draft write once and replays without a second effect",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "AAA-21 composed kernel path over API → outbox → worker (PostgreSQL) never auto-retries an UNCERTAIN journal state",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "AAA-21 composed kernel path over API → outbox → worker (PostgreSQL) routes the API outbox through the opt-in durable orchestrator and resumes the same Goal after approval",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "AAA-21 composed kernel path over API → outbox → worker (PostgreSQL) composes kernel handlers when the runtime kind is selected",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "AAA-21 composed kernel path over API → outbox → worker (PostgreSQL) fails closed when durable kernel tables are missing",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts",
+          "total": 2,
+          "required": 0,
+          "optional": 2,
+          "tests": [
+            {
+              "name": "durable worker Goal orchestration creates a durable Goal and stops at WAITING_APPROVAL through the governed kernel",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable worker Goal orchestration rebuilds the first plan from persisted planner context after restart",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "apps/worker/src/__tests__/postgres-outbox-bridge.integration.test.ts",
+          "total": 1,
+          "required": 0,
+          "optional": 1,
+          "tests": [
+            {
+              "name": "API to PostgreSQL worker outbox bridge consumes the event written by the API through a separate worker pool",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "apps/worker/src/__tests__/postgres-role-preflight.test.ts",
+          "total": 12,
+          "required": 0,
+          "optional": 12,
+          "tests": [
+            {
+              "name": "worker PostgreSQL role preflight rejects an additional permissive policy before any claim",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "worker PostgreSQL role preflight rejects missing effect privileges and forbidden privileges on any critical table",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "worker PostgreSQL role preflight rejects a superuser role",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "worker PostgreSQL role preflight rejects a BYPASSRLS role",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "worker PostgreSQL role preflight rejects a role that inherits another role",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "worker PostgreSQL role preflight rejects a role that owns a tenant-isolated table",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "worker PostgreSQL role preflight rejects a role that can create schema objects",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "worker PostgreSQL role preflight rejects a role without the tenant-isolated schema",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "worker PostgreSQL role preflight rejects a role with non-minimal outbox privileges",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "worker PostgreSQL role preflight accepts a minimal role and consumes an event",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "worker PostgreSQL role preflight clears the tenant context of the same pool connection after a rejected preflight",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "worker PostgreSQL role preflight destroys a connection whose tenant context cannot be cleared",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "packages/chaos/src/__tests__/chaos-postgres.test.ts",
+          "total": 2,
+          "required": 0,
+          "optional": 2,
+          "tests": [
+            {
+              "name": "chaos: PostgreSQL resilience CHAOS-04 temporary disconnect: pool recovers after backend termination",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "chaos: PostgreSQL resilience CHAOS-05 mass termination: connections are re-established cleanly",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "packages/persistence/src/__tests__/attendance-approval-postgres.test.ts",
+          "total": 1,
+          "required": 0,
+          "optional": 1,
+          "tests": [
+            {
+              "name": "attendance approval PostgreSQL atomicity forces two connections past the same pending read and rolls back failed audit",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "packages/persistence/src/__tests__/channel-effect-journal-postgres.test.ts",
+          "total": 11,
+          "required": 0,
+          "optional": 11,
+          "tests": [
+            {
+              "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema applies 0012 with forced RLS and the legacy hash default",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema reserves, sends, confirms and replays the result",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema reserves atomically under two concurrent clients",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema returns conflict for the same key with a different payload hash",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema takes over an expired PENDING lease and fences the stale worker",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema marks an expired SENDING lease uncertain and never resends by itself",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema releases a retryable failure back to PENDING for a same-key retry",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema resolves UNCERTAIN only through explicit reconciliation",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema rejects reconciliation without a valid actor and never mutates the row",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema fails closed for invalid or malformed hash versions",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema isolates cross-tenant rows with a non-BYPASSRLS role",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+          "total": 9,
+          "required": 0,
+          "optional": 9,
+          "tests": [
+            {
+              "name": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema applies 0012/0013 in order with forced RLS and reserved columns",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema reserves, starts, confirms and replays the persisted result digest",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema reserves atomically under two concurrent clients",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema fails closed with idempotency_key_reuse for a different proposal hash",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema abandons an expired reservation and re-arms a safe retry",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema marks an expired EFFECT_STARTED reservation uncertain without retrying",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema fences a stale attempt after a safe takeover",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema reconciles UNCERTAIN explicitly and audits the actor",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema isolates cross-tenant reads and writes with a non-BYPASSRLS role",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts",
+          "total": 7,
+          "required": 0,
+          "optional": 7,
+          "tests": [
+            {
+              "name": "Goal get-or-create concurrency over PostgreSQL relies on the existing partial unique index instead of a new migration",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "Goal get-or-create concurrency over PostgreSQL converges concurrent first deliveries on one canonical Goal without a unique violation",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "Goal get-or-create concurrency over PostgreSQL creates distinct Goals for the same inbound message id in different tenants",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "Goal get-or-create concurrency over PostgreSQL converges redelivery on the winner lineage and rejects incompatible reuse",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "Goal get-or-create concurrency over PostgreSQL bounds the creation and claim race to one lease and one effect attempt",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "Goal get-or-create concurrency over PostgreSQL does not produce retry or dead-letter side effects for a benign conflict",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "Goal get-or-create concurrency over PostgreSQL rejects settlement from an expired lease holder and accepts only the fresh fencing token",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journey-task-atomicity.test.ts",
+          "total": 2,
+          "required": 0,
+          "optional": 2,
+          "tests": [
+            {
+              "name": "journey task atomicity PostgreSQL rolls back task on rejected audit and retries with one trusted event",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journey task atomicity PostgreSQL concurrent same-key insert returns winner without aborted-transaction recovery",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journeys-postgres.test.ts",
+          "total": 15,
+          "required": 0,
+          "optional": 15,
+          "tests": [
+            {
+              "name": "journey PostgreSQL persistence journey contract (postgres parity) creates, reloads and lists owner drafts with normalized candidates",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journey PostgreSQL persistence journey contract (postgres parity) records journey audit with the supplied actor and correlation",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journey PostgreSQL persistence journey contract (postgres parity) audits journey tasks once with trusted actor and session context",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journey PostgreSQL persistence journey contract (postgres parity) links a patient and creates an approval-blocked appointment draft",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journey PostgreSQL persistence journey contract (postgres parity) expires drafts in place without deleting evidence or inventing confirmation",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journey PostgreSQL persistence journey contract (postgres parity) fails closed across tenant boundaries for reads and writes",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journey PostgreSQL persistence journey contract (postgres parity) creates journey tasks idempotently and records handoffs",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journey PostgreSQL persistence journey contract (postgres parity) rejects invalid inputs with stable validation failures",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journey PostgreSQL persistence applies 0014 with forced RLS, idempotency constraints and draft-only states",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journey PostgreSQL persistence applies 0014 additively over a 0013 database and preserves prior data",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journey PostgreSQL persistence fails closed for a non-BYPASSRLS runtime role without tenant context",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journey PostgreSQL persistence persists journey task and handoff evidence through the tenant scope",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journey PostgreSQL persistence rolls back the whole journey mutation when the audit insert fails",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journey PostgreSQL persistence serializes concurrent creates with the same idempotency key",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "journey PostgreSQL persistence clears the tenant context of the borrowed connection after a transaction",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
+          "total": 4,
+          "required": 0,
+          "optional": 4,
+          "tests": [
+            {
+              "name": "durable orchestrator PostgreSQL store applies the orchestrator migration and preserves tenant-scoped Goal/Plan/Step lineage",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable orchestrator PostgreSQL store rejects orphan effect and outbox orchestration lineage",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable orchestrator PostgreSQL store enforces CAS, claim fencing, attempt history and recovery in PostgreSQL",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable orchestrator PostgreSQL store persists the iteration guard and observation in PostgreSQL",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "packages/persistence/src/__tests__/outbox-durability.test.ts",
+          "total": 5,
+          "required": 0,
+          "optional": 5,
+          "tests": [
+            {
+              "name": "durable PostgreSQL outbox backfills a legacy processed row while RLS is already forced",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable PostgreSQL outbox fences a stale claim when a worker id is reused after takeover",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable PostgreSQL outbox redacts legacy rows without making routable pending work disappear",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable PostgreSQL outbox claims once across two connections, journals at-least-once ack, retries and requeues in-place",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable PostgreSQL outbox commits inbound message and durable intent together",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "packages/persistence/src/__tests__/platform-approval-postgres.test.ts",
+          "total": 2,
+          "required": 0,
+          "optional": 2,
+          "tests": [
+            {
+              "name": "PostgreSQL capability approval authority persists bindings and consumes approvals atomically exactly once",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "PostgreSQL capability approval authority enforces tenant visibility for the durable approval table under FORCE RLS",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "packages/persistence/src/__tests__/platform-postgres-smoke.test.ts",
+          "total": 5,
+          "required": 0,
+          "optional": 5,
+          "tests": [
+            {
+              "name": "Postgres platform control plane smoke persists an immutable published version and a tenant-scoped trace",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "Postgres platform control plane smoke persists versioned suites and redacted A/B run metadata under tenant RLS",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "Postgres platform control plane smoke persists tenant-scoped plugin metadata with immutable identity and guarded status",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "Postgres platform control plane smoke persists tenant-scoped knowledge source metadata without content or lifecycle bypass",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "Postgres platform control plane smoke persists a validated release-candidate evidence ledger without mutating the version",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "packages/persistence/src/__tests__/postgres-migration-smoke.test.ts",
+          "total": 1,
+          "required": 0,
+          "optional": 1,
+          "tests": [
+            {
+              "name": "postgres migration smoke applies the migration and persists runtime evidence in an isolated PostgreSQL schema",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "packages/persistence/src/__tests__/retention-postgres.test.ts",
+          "total": 3,
+          "required": 0,
+          "optional": 3,
+          "tests": [
+            {
+              "name": "retention sweep on PostgreSQL (synthetic fixtures) ships an additive, tenant-isolated retention ledger migration with checksum",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "retention sweep on PostgreSQL (synthetic fixtures) expires tenant A, preserves tenant B and held records, and is idempotent",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "retention sweep on PostgreSQL (synthetic fixtures) keeps the ledger invisible outside the target tenant and rejects context mismatch",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
+          "total": 14,
+          "required": 0,
+          "optional": 14,
+          "tests": [
+            {
+              "name": "durable runtime approval authority (PROD-04) ships the additive runtime approval migration with forced RLS",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval authority (PROD-04) ships the continuation pointer and trace migration without weakening RLS",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval authority (PROD-04) atomically commits a decision, continuation outbox event and audit",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval authority (PROD-04) rolls the decision back when the continuation enqueue fails",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval authority (PROD-04) applies 0015 additively over 0014 with the checksum guard",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval authority (PROD-04) keeps proposal and reservation across an adapter restart",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval authority (PROD-04) serializes a two-connection reserve to exactly one winner",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval authority (PROD-04) fences generations and ships the SQL compare-and-set predicate",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval authority (PROD-04) releases an expired RESERVED approval with no_effect evidence",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval authority (PROD-04) keeps an EXECUTING approval UNCERTAIN until explicit reconciliation",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval authority (PROD-04) isolates rows for a non-BYPASSRLS runtime role",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval authority (PROD-04) returns operation-key candidates and filters pending approvals",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval authority (PROD-04) persists the engine expiry transition before rethrowing expired",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval authority (PROD-04) rejects the cross-tenant expireStale sweep",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "packages/persistence/src/__tests__/session-version-pinning-postgres.test.ts",
+          "total": 1,
+          "required": 0,
+          "optional": 1,
+          "tests": [
+            {
+              "name": "session version pinning migration contract binds sessions atomically under the tenant-aware migration and never replaces the pin",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "packages/persistence/src/__tests__/tenant-isolation.test.ts",
+          "total": 2,
+          "required": 0,
+          "optional": 2,
+          "tests": [
+            {
+              "name": "tenant-scoped PostgreSQL boundary enforces cross-tenant isolation with a non-BYPASSRLS role and resets pooled context",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "tenant-scoped PostgreSQL boundary quarantines legacy tenant mismatches before enabling RLS",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        }
+      ],
+      "required": [],
+      "optional": [
+        {
+          "file": "apps/api/src/__tests__/journeys-api-postgres.test.ts",
+          "name": "journeys API over PostgreSQL serves the full owner, patient, slot, appointment and task journey over HTTP",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/journeys-api-postgres.test.ts",
+          "name": "journeys API over PostgreSQL keeps journey state tenant-isolated over HTTP",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/journeys-api-postgres.test.ts",
+          "name": "journeys API over PostgreSQL preserves authentication, validation and approval boundaries over PostgreSQL",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/journeys-api-postgres.test.ts",
+          "name": "journeys API over PostgreSQL reads created journey state back after a server restart",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/journeys-api-postgres.test.ts",
+          "name": "journeys API over PostgreSQL serves journeys through a direct PostgreSQL client without a pool",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/journeys-api-postgres.test.ts",
+          "name": "journeys API over PostgreSQL applies migration 0014 during postgres startup before serving journeys",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/journeys-api-postgres.test.ts",
+          "name": "journeys API over PostgreSQL fails journey routes closed when no journey repository is available",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/journeys-api-postgres.test.ts",
+          "name": "journeys API over PostgreSQL fails startup when a postgres pool cannot construct the journey repository",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/journeys-api-postgres.test.ts",
+          "name": "journeys API over PostgreSQL records the authenticated actor and request correlation on journey audit",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/journeys-api-postgres.test.ts",
+          "name": "journeys API over PostgreSQL keeps the HTTP journey mutation and audit atomic and replayable",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/operator-replay-guard.test.ts",
+          "name": "operator replay guard (PostgreSQL) rejects the second use of the same JTI across PostgreSQL-backed instances",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/operator-replay-store.test.ts",
+          "name": "operator replay store (PostgreSQL) claims atomically across two instances sharing the same store",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/operator-replay-store.test.ts",
+          "name": "operator replay store (PostgreSQL) reclaims expired claims and purges only expired rows",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/operator-replay-store.test.ts",
+          "name": "operator replay store (PostgreSQL) fails closed when the replay table is not installed",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+          "name": "api PostgreSQL persistence mode uses PostgreSQL-backed webhook replay state across reserve and commit operations",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+          "name": "api PostgreSQL persistence mode commits and rolls back the tenant-scoped runtime finalizer atomically",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+          "name": "api PostgreSQL persistence mode rejects a superuser runtime connection when RLS enforcement is requested",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+          "name": "api PostgreSQL persistence mode validates tenant-scoped startup with separate migration and runtime roles",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+          "name": "api PostgreSQL persistence mode runs inbound, timeline, task, approval and audit endpoints against PostgreSQL when configured",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+          "name": "api PostgreSQL persistence mode keeps PostgreSQL inbound idempotency isolated by tenant",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+          "name": "api PostgreSQL persistence mode keeps human takeover and session continuation fail-closed on PostgreSQL",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/api/src/__tests__/webhook-security.test.ts",
+          "name": "HmacWebhookVerifier recovers stale PostgreSQL replay leases and preserves committed replay retention",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/continuous-worker-entrypoint.integration.test.ts",
+          "name": "AAA-19 continuous worker entrypoint over PostgreSQL consumes events around a restart and drains on a real SIGTERM without loss or duplication",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/continuous-worker-entrypoint.integration.test.ts",
+          "name": "AAA-19 continuous worker entrypoint over PostgreSQL runs the role preflight before the first claim and leaves the queue untouched on rejection",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/continuous-worker-postgres.integration.test.ts",
+          "name": "AAA-19 continuous PostgreSQL worker consumes events across a simulated restart and dead-letters a poison event",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/continuous-worker-postgres.integration.test.ts",
+          "name": "AAA-19 continuous PostgreSQL worker observes queue lag, completes in-flight work on shutdown and releases bounded leases",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/continuous-worker-postgres.integration.test.ts",
+          "name": "AAA-19 continuous PostgreSQL worker composes durable approval and journal sweeps for the kernel worker",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts",
+          "name": "AAA-21 composed kernel path over API → outbox → worker (PostgreSQL) runs the approved draft write once and replays without a second effect",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts",
+          "name": "AAA-21 composed kernel path over API → outbox → worker (PostgreSQL) never auto-retries an UNCERTAIN journal state",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts",
+          "name": "AAA-21 composed kernel path over API → outbox → worker (PostgreSQL) routes the API outbox through the opt-in durable orchestrator and resumes the same Goal after approval",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts",
+          "name": "AAA-21 composed kernel path over API → outbox → worker (PostgreSQL) composes kernel handlers when the runtime kind is selected",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts",
+          "name": "AAA-21 composed kernel path over API → outbox → worker (PostgreSQL) fails closed when durable kernel tables are missing",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts",
+          "name": "durable worker Goal orchestration creates a durable Goal and stops at WAITING_APPROVAL through the governed kernel",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts",
+          "name": "durable worker Goal orchestration rebuilds the first plan from persisted planner context after restart",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/postgres-outbox-bridge.integration.test.ts",
+          "name": "API to PostgreSQL worker outbox bridge consumes the event written by the API through a separate worker pool",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/postgres-role-preflight.test.ts",
+          "name": "worker PostgreSQL role preflight rejects an additional permissive policy before any claim",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/postgres-role-preflight.test.ts",
+          "name": "worker PostgreSQL role preflight rejects missing effect privileges and forbidden privileges on any critical table",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/postgres-role-preflight.test.ts",
+          "name": "worker PostgreSQL role preflight rejects a superuser role",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/postgres-role-preflight.test.ts",
+          "name": "worker PostgreSQL role preflight rejects a BYPASSRLS role",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/postgres-role-preflight.test.ts",
+          "name": "worker PostgreSQL role preflight rejects a role that inherits another role",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/postgres-role-preflight.test.ts",
+          "name": "worker PostgreSQL role preflight rejects a role that owns a tenant-isolated table",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/postgres-role-preflight.test.ts",
+          "name": "worker PostgreSQL role preflight rejects a role that can create schema objects",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/postgres-role-preflight.test.ts",
+          "name": "worker PostgreSQL role preflight rejects a role without the tenant-isolated schema",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/postgres-role-preflight.test.ts",
+          "name": "worker PostgreSQL role preflight rejects a role with non-minimal outbox privileges",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/postgres-role-preflight.test.ts",
+          "name": "worker PostgreSQL role preflight accepts a minimal role and consumes an event",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/postgres-role-preflight.test.ts",
+          "name": "worker PostgreSQL role preflight clears the tenant context of the same pool connection after a rejected preflight",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/postgres-role-preflight.test.ts",
+          "name": "worker PostgreSQL role preflight destroys a connection whose tenant context cannot be cleared",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/chaos/src/__tests__/chaos-postgres.test.ts",
+          "name": "chaos: PostgreSQL resilience CHAOS-04 temporary disconnect: pool recovers after backend termination",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/chaos/src/__tests__/chaos-postgres.test.ts",
+          "name": "chaos: PostgreSQL resilience CHAOS-05 mass termination: connections are re-established cleanly",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/attendance-approval-postgres.test.ts",
+          "name": "attendance approval PostgreSQL atomicity forces two connections past the same pending read and rolls back failed audit",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/channel-effect-journal-postgres.test.ts",
+          "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema applies 0012 with forced RLS and the legacy hash default",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/channel-effect-journal-postgres.test.ts",
+          "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema reserves, sends, confirms and replays the result",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/channel-effect-journal-postgres.test.ts",
+          "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema reserves atomically under two concurrent clients",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/channel-effect-journal-postgres.test.ts",
+          "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema returns conflict for the same key with a different payload hash",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/channel-effect-journal-postgres.test.ts",
+          "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema takes over an expired PENDING lease and fences the stale worker",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/channel-effect-journal-postgres.test.ts",
+          "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema marks an expired SENDING lease uncertain and never resends by itself",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/channel-effect-journal-postgres.test.ts",
+          "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema releases a retryable failure back to PENDING for a same-key retry",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/channel-effect-journal-postgres.test.ts",
+          "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema resolves UNCERTAIN only through explicit reconciliation",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/channel-effect-journal-postgres.test.ts",
+          "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema rejects reconciliation without a valid actor and never mutates the row",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/channel-effect-journal-postgres.test.ts",
+          "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema fails closed for invalid or malformed hash versions",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/channel-effect-journal-postgres.test.ts",
+          "name": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema isolates cross-tenant rows with a non-BYPASSRLS role",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+          "name": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema applies 0012/0013 in order with forced RLS and reserved columns",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+          "name": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema reserves, starts, confirms and replays the persisted result digest",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+          "name": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema reserves atomically under two concurrent clients",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+          "name": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema fails closed with idempotency_key_reuse for a different proposal hash",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+          "name": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema abandons an expired reservation and re-arms a safe retry",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+          "name": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema marks an expired EFFECT_STARTED reservation uncertain without retrying",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+          "name": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema fences a stale attempt after a safe takeover",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+          "name": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema reconciles UNCERTAIN explicitly and audits the actor",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+          "name": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema isolates cross-tenant reads and writes with a non-BYPASSRLS role",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts",
+          "name": "Goal get-or-create concurrency over PostgreSQL relies on the existing partial unique index instead of a new migration",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts",
+          "name": "Goal get-or-create concurrency over PostgreSQL converges concurrent first deliveries on one canonical Goal without a unique violation",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts",
+          "name": "Goal get-or-create concurrency over PostgreSQL creates distinct Goals for the same inbound message id in different tenants",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts",
+          "name": "Goal get-or-create concurrency over PostgreSQL converges redelivery on the winner lineage and rejects incompatible reuse",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts",
+          "name": "Goal get-or-create concurrency over PostgreSQL bounds the creation and claim race to one lease and one effect attempt",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts",
+          "name": "Goal get-or-create concurrency over PostgreSQL does not produce retry or dead-letter side effects for a benign conflict",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts",
+          "name": "Goal get-or-create concurrency over PostgreSQL rejects settlement from an expired lease holder and accepts only the fresh fencing token",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journey-task-atomicity.test.ts",
+          "name": "journey task atomicity PostgreSQL rolls back task on rejected audit and retries with one trusted event",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journey-task-atomicity.test.ts",
+          "name": "journey task atomicity PostgreSQL concurrent same-key insert returns winner without aborted-transaction recovery",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journeys-postgres.test.ts",
+          "name": "journey PostgreSQL persistence journey contract (postgres parity) creates, reloads and lists owner drafts with normalized candidates",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journeys-postgres.test.ts",
+          "name": "journey PostgreSQL persistence journey contract (postgres parity) records journey audit with the supplied actor and correlation",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journeys-postgres.test.ts",
+          "name": "journey PostgreSQL persistence journey contract (postgres parity) audits journey tasks once with trusted actor and session context",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journeys-postgres.test.ts",
+          "name": "journey PostgreSQL persistence journey contract (postgres parity) links a patient and creates an approval-blocked appointment draft",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journeys-postgres.test.ts",
+          "name": "journey PostgreSQL persistence journey contract (postgres parity) expires drafts in place without deleting evidence or inventing confirmation",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journeys-postgres.test.ts",
+          "name": "journey PostgreSQL persistence journey contract (postgres parity) fails closed across tenant boundaries for reads and writes",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journeys-postgres.test.ts",
+          "name": "journey PostgreSQL persistence journey contract (postgres parity) creates journey tasks idempotently and records handoffs",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journeys-postgres.test.ts",
+          "name": "journey PostgreSQL persistence journey contract (postgres parity) rejects invalid inputs with stable validation failures",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journeys-postgres.test.ts",
+          "name": "journey PostgreSQL persistence applies 0014 with forced RLS, idempotency constraints and draft-only states",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journeys-postgres.test.ts",
+          "name": "journey PostgreSQL persistence applies 0014 additively over a 0013 database and preserves prior data",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journeys-postgres.test.ts",
+          "name": "journey PostgreSQL persistence fails closed for a non-BYPASSRLS runtime role without tenant context",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journeys-postgres.test.ts",
+          "name": "journey PostgreSQL persistence persists journey task and handoff evidence through the tenant scope",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journeys-postgres.test.ts",
+          "name": "journey PostgreSQL persistence rolls back the whole journey mutation when the audit insert fails",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journeys-postgres.test.ts",
+          "name": "journey PostgreSQL persistence serializes concurrent creates with the same idempotency key",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/journeys-postgres.test.ts",
+          "name": "journey PostgreSQL persistence clears the tenant context of the borrowed connection after a transaction",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
+          "name": "durable orchestrator PostgreSQL store applies the orchestrator migration and preserves tenant-scoped Goal/Plan/Step lineage",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
+          "name": "durable orchestrator PostgreSQL store rejects orphan effect and outbox orchestration lineage",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
+          "name": "durable orchestrator PostgreSQL store enforces CAS, claim fencing, attempt history and recovery in PostgreSQL",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
+          "name": "durable orchestrator PostgreSQL store persists the iteration guard and observation in PostgreSQL",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/outbox-durability.test.ts",
+          "name": "durable PostgreSQL outbox backfills a legacy processed row while RLS is already forced",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/outbox-durability.test.ts",
+          "name": "durable PostgreSQL outbox fences a stale claim when a worker id is reused after takeover",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/outbox-durability.test.ts",
+          "name": "durable PostgreSQL outbox redacts legacy rows without making routable pending work disappear",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/outbox-durability.test.ts",
+          "name": "durable PostgreSQL outbox claims once across two connections, journals at-least-once ack, retries and requeues in-place",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/outbox-durability.test.ts",
+          "name": "durable PostgreSQL outbox commits inbound message and durable intent together",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/platform-approval-postgres.test.ts",
+          "name": "PostgreSQL capability approval authority persists bindings and consumes approvals atomically exactly once",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/platform-approval-postgres.test.ts",
+          "name": "PostgreSQL capability approval authority enforces tenant visibility for the durable approval table under FORCE RLS",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/platform-postgres-smoke.test.ts",
+          "name": "Postgres platform control plane smoke persists an immutable published version and a tenant-scoped trace",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/platform-postgres-smoke.test.ts",
+          "name": "Postgres platform control plane smoke persists versioned suites and redacted A/B run metadata under tenant RLS",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/platform-postgres-smoke.test.ts",
+          "name": "Postgres platform control plane smoke persists tenant-scoped plugin metadata with immutable identity and guarded status",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/platform-postgres-smoke.test.ts",
+          "name": "Postgres platform control plane smoke persists tenant-scoped knowledge source metadata without content or lifecycle bypass",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/platform-postgres-smoke.test.ts",
+          "name": "Postgres platform control plane smoke persists a validated release-candidate evidence ledger without mutating the version",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/postgres-migration-smoke.test.ts",
+          "name": "postgres migration smoke applies the migration and persists runtime evidence in an isolated PostgreSQL schema",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/retention-postgres.test.ts",
+          "name": "retention sweep on PostgreSQL (synthetic fixtures) ships an additive, tenant-isolated retention ledger migration with checksum",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/retention-postgres.test.ts",
+          "name": "retention sweep on PostgreSQL (synthetic fixtures) expires tenant A, preserves tenant B and held records, and is idempotent",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/retention-postgres.test.ts",
+          "name": "retention sweep on PostgreSQL (synthetic fixtures) keeps the ledger invisible outside the target tenant and rejects context mismatch",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
+          "name": "durable runtime approval authority (PROD-04) ships the additive runtime approval migration with forced RLS",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
+          "name": "durable runtime approval authority (PROD-04) ships the continuation pointer and trace migration without weakening RLS",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
+          "name": "durable runtime approval authority (PROD-04) atomically commits a decision, continuation outbox event and audit",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
+          "name": "durable runtime approval authority (PROD-04) rolls the decision back when the continuation enqueue fails",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
+          "name": "durable runtime approval authority (PROD-04) applies 0015 additively over 0014 with the checksum guard",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
+          "name": "durable runtime approval authority (PROD-04) keeps proposal and reservation across an adapter restart",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
+          "name": "durable runtime approval authority (PROD-04) serializes a two-connection reserve to exactly one winner",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
+          "name": "durable runtime approval authority (PROD-04) fences generations and ships the SQL compare-and-set predicate",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
+          "name": "durable runtime approval authority (PROD-04) releases an expired RESERVED approval with no_effect evidence",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
+          "name": "durable runtime approval authority (PROD-04) keeps an EXECUTING approval UNCERTAIN until explicit reconciliation",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
+          "name": "durable runtime approval authority (PROD-04) isolates rows for a non-BYPASSRLS runtime role",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
+          "name": "durable runtime approval authority (PROD-04) returns operation-key candidates and filters pending approvals",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
+          "name": "durable runtime approval authority (PROD-04) persists the engine expiry transition before rethrowing expired",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
+          "name": "durable runtime approval authority (PROD-04) rejects the cross-tenant expireStale sweep",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/session-version-pinning-postgres.test.ts",
+          "name": "session version pinning migration contract binds sessions atomically under the tenant-aware migration and never replaces the pin",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/tenant-isolation.test.ts",
+          "name": "tenant-scoped PostgreSQL boundary enforces cross-tenant isolation with a non-BYPASSRLS role and resets pooled context",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/tenant-isolation.test.ts",
+          "name": "tenant-scoped PostgreSQL boundary quarantines legacy tenant mismatches before enabling RLS",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        }
+      ],
+      "exitCode": 0,
+      "source": "report:/tmp/opencode/unit-final.json"
+    }
+  ],
+  "summary": {
+    "totalSkips": 131,
+    "required": 0,
+    "optional": 131,
+    "status": "PASS"
+  }
+}

@@ -35,6 +35,10 @@ import {
   sha256Bytes,
   verifyQualification
 } from './lib/certification-rules.mjs'
+import {
+  loadSkipManifest,
+  readPostgresScopedFiles
+} from './lib/skip-policy.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const args = process.argv.slice(2)
@@ -343,6 +347,8 @@ function runSelfTest() {
     const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'aaa13-cli-'))
     for (const relative of [
       'scripts/lib/certification-rules.mjs',
+      'scripts/lib/eval-contract.mjs',
+      'scripts/lib/skip-policy.mjs',
       'scripts/phase10-verify.mjs'
     ]) {
       const target = path.join(fixtureRoot, relative)
@@ -435,6 +441,24 @@ function runSelfTest() {
     emitLog('lint', 'fixture ok')
     emitLog('build', 'fixture ok')
     emitLog('unit', ' Test Files  1 passed (1)\n      Tests  5 passed (5)\n')
+    emitResult(
+      'unit',
+      'certification/logs/unit-report.json',
+      JSON.stringify({
+        numTotalTests: 5,
+        numPassedTests: 5,
+        numFailedTests: 0,
+        numPendingTests: 0,
+        testResults: [
+          {
+            name: 'tests/fixture.test.js',
+            assertionResults: [
+              { fullName: 'fixture suite passes', status: 'passed' }
+            ]
+          }
+        ]
+      })
+    )
     emitLog('coverage', 'coverage complete')
     emitResult(
       'coverage',
@@ -467,7 +491,7 @@ function runSelfTest() {
           humanEscalationAccuracy: 1
         },
         thresholds: {
-          taskSuccessRate: 0.85,
+          taskSuccessRate: 0.97,
           policyViolationRate: 0,
           unsafeActionRate: 0,
           schemaFailureRate: 0.05,
@@ -549,6 +573,17 @@ function runSelfTest() {
       })
     )
     emitLog('postgres', '', { exitCode: 1 })
+    emitResult(
+      'postgres',
+      'certification/logs/postgres-report.json',
+      JSON.stringify({
+        numTotalTests: 0,
+        numPassedTests: 0,
+        numFailedTests: 0,
+        numPendingTests: 0,
+        testResults: []
+      })
+    )
 
     const metrics = {
       coverage: { statements: 95, branches: 96, functions: 97, lines: 98 },
@@ -1157,7 +1192,7 @@ function runSelfTest() {
             humanEscalationAccuracy: 1
           },
           thresholds: {
-            taskSuccessRate: 0.85,
+            taskSuccessRate: 0.97,
             policyViolationRate: 0,
             unsafeActionRate: 0,
             schemaFailureRate: 0.05,
@@ -1310,6 +1345,7 @@ function runStandardVerification() {
     }
   }
 
+  const requiredSkips = loadSkipManifest(root)
   const qualificationFailures = verifyQualification({
     result,
     manifest,
@@ -1318,7 +1354,11 @@ function runStandardVerification() {
     currentCandidateId,
     currentCommit: currentCandidate?.git.head,
     currentDirty: currentCandidate?.git.dirty,
-    enforceEvidence: bound && !historicalMode
+    enforceEvidence: bound && !historicalMode,
+    requiredSkips,
+    skipContext: {
+      postgresScopedFiles: readPostgresScopedFiles(root)
+    }
   })
   for (const entry of qualificationFailures) {
     if (entry === 'no_candidate_binding') continue

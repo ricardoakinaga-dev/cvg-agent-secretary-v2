@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud19-required-skips",
+  "program": "AUD19-REM",
+  "task": "AUD19-08",
+  "version": 1,
+  "frozenAt": "2026-09-20",
+  "defaultClassification": "required",
+  "policy": {
+    "unclassified": "required",
+    "databasePresent": "required",
+    "postgresGate": "required",
+    "justificationCannotWaive": true,
+    "note": "A free-text skipJustification can never downgrade a required skip. Optional skips must match a frozen rule below under the exact execution context; everything else fails closed."
+  },
+  "required": [
+    {
+      "id": "REQ-POSTGRES-GATE-ANY",
+      "gate": "postgres",
+      "filePattern": "**",
+      "when": "always",
+      "reason": "The dedicated PostgreSQL gate must execute every selected test against the live database; any skip is missing mandatory evidence (aaa_quality_contract.md 9: skips obrigatorios = 0)."
+    },
+    {
+      "id": "REQ-DATABASE-PRESENT",
+      "gate": "*",
+      "filePattern": "**",
+      "when": "database_present",
+      "reason": "A conditional database test that still skips while TEST_DATABASE_URL is available is a broken or disabled requirement, not a legitimate environment skip."
+    }
+  ],
+  "optional": [
+    {
+      "id": "OPT-DATABASE-CONDITIONAL-UNIT",
+      "gate": "unit",
+      "filePattern": "**",
+      "when": "database_absent",
+      "requiresPostgresScope": true,
+      "coveredByGate": "postgres",
+      "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+    }
+  ]
+}

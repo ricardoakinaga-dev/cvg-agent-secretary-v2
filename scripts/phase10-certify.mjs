@@ -36,11 +36,19 @@ const commands = [
   { id: 'typecheck', command: 'npm run typecheck' },
   { id: 'lint', command: 'npm run lint' },
   { id: 'build', command: 'npm run build' },
-  { id: 'unit', command: 'npm test' },
+  {
+    id: 'unit',
+    command:
+      'npm test -- --reporter=default --reporter=json --outputFile=certification/logs/unit-report.json'
+  },
   { id: 'coverage', command: 'npm run test:coverage' },
   { id: 'security', command: 'npm run audit:security' },
   { id: 'worker_startup', command: 'npm run test:worker:startup' },
-  { id: 'postgres', command: 'npm run test:postgres' },
+  {
+    id: 'postgres',
+    command:
+      'npm run test:postgres -- --reporter=default --reporter=json --outputFile=certification/logs/postgres-report.json'
+  },
   { id: 'e2e', command: 'npm run test:e2e' },
   { id: 'evals', command: 'npx tsx scripts/phase10-eval-report.ts' },
   {
@@ -70,7 +78,7 @@ function run(entry, { runId, candidateId }) {
   const log = [
     `$ ${entry.command}`,
     `# runId=${runId} candidateId=${candidateId} gate=${entry.id} command=${entry.command}`,
-    `# exitCode=${result.status ?? 1} durationMs=${durationMs}`,
+    `# exitCode=${result.status ?? 1} durationMs=${durationMs} database=${process.env.TEST_DATABASE_URL ? 'present' : 'absent'}`,
     '',
     result.stdout ?? '',
     result.stderr ?? ''
