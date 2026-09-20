@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-live-candidate-receipt",
+  "program": "AUD20-REM",
+  "task": "AUD20-01",
+  "observedAt": "2026-09-20T21:47:13.801Z",
+  "command": "node --input-type=module -e buildPhase11Candidate + manifest assertions",
+  "sideEffects": false,
+  "status": "PASS",
+  "manifest": "docs/04_audit/evidence/AUD20/AUD20-01-candidate-manifest.json",
+  "checks": {
+    "candidateId": true,
+    "commit": true,
+    "treeHash": true,
+    "gitTreeHash": true,
+    "fileCount": true,
+    "dirty": true,
+    "untrackedFiles": true
+  },
+  "manifestCandidate": {
+    "candidateId": "bea683171cc2bf5ae7b3d7254a231cc4f7716555d0d8ea000661027a23fc4767",
+    "commit": "c198343424bdc170fc8d26003ffc6965ebe26bb8",
+    "treeHash": "c032c47c2f819fef44666ab650a26001904a2a602fdbe6394e4378719422abf9",
+    "gitTreeHash": "8259ec41eb67fe0058323cb2b2c1faf88b495bc7",
+    "fileCount": 1104,
+    "dirty": false,
+    "untrackedFiles": []
+  },
+  "liveCandidate": {
+    "candidateId": "bea683171cc2bf5ae7b3d7254a231cc4f7716555d0d8ea000661027a23fc4767",
+    "commit": "c198343424bdc170fc8d26003ffc6965ebe26bb8",
+    "treeHash": "c032c47c2f819fef44666ab650a26001904a2a602fdbe6394e4378719422abf9",
+    "gitTreeHash": "8259ec41eb67fe0058323cb2b2c1faf88b495bc7",
+    "fileCount": 1104,
+    "dirty": false,
+    "untrackedFiles": []
+  },
+  "environment": {
+    "node": "v22.23.2",
+    "platform": "linux"
+  }
+}

@@ -2695,3 +2695,14 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - gate_state: G0 ainda nao aprovado; `AUD20-02..12` permanecem `BLOCKED`; nenhuma implementacao, migration, rebuild ou re-selo AUD20 foi iniciado.
 - next_action: revisão independente da SPEC/barra de `AUD20-01` e registro do G0; não iniciar código, re-selo ou qualificação externa antes do gate aplicável e manter staging real e produção `NO_GO`.
 - evidence: `docs/02_spec/aud20_01_baseline_contract_20260920.md`, `docs/04_audit/evidence/AUD20/AUD20-01-baseline.md`, `docs/04_audit/evidence/AUD20/AUD20-requirements-matrix.json`, `docs/04_audit/evidence/AUD20/AUD20-quality-bar.json`.
+
+# AUD20-G0-APPROVED-20260920 — transicao para AUD20-02
+
+- current_engine: `SPEC -> BUILD`; activity: `GATE`; task: `AUD20-02`; status: `READY_FOR_NEXT_STEP`; execution: `CONTROLLED_LOCAL`; staging: `NO_GO`; production: `NO_GO`.
+- authorization: G0 `SPEC_APPROVED_CONTROLLED_BUILD` aprovado pela solicitacao humana corrente e revisao independente `PACKAGE_READY`; escopo restrito a codigo/testes/DB/Docker/Playwright descartaveis locais; sem provider/canal/IdP/RAG real, egress, credenciais, dado real ou efeito externo.
+- last_completed_action: `AUD20-01` `COMPLETED`; SPEC, quality bar, matriz, manifesto candidate-bound, receipts live/command e revisao independente registrados; nenhum re-selo historico foi promovido.
+- repository_state: checkpoint documental `98ec5e8`, SPEC/gate `c198343`; manifesto e receipt final devem ser regenerados depois desta transicao documental; evidence AUD20 permanece fora do candidate scope.
+- verification_state: package review `PACKAGE_READY`; `docs:check`, `docs-integrity`, Prettier e `git diff --check` PASS; certification/evidence/critic historicos continuam FAIL fechado por candidate drift; production preflight permanece FAIL com `sideEffects:false`.
+- gate_state: `AUD20-01=COMPLETED`; `AUD20-02=READY_FOR_NEXT_STEP`; `AUD20-03..12=BLOCKED` pelo DAG; `AUD20-13..15=BLOCKED`; staging/production `NO_GO`.
+- next_action: executar `AUD20-02` com RED/GREEN do piso de eval, preservando `0,97` e os negativos `AUD20-N01/N02`; não iniciar qualificação externa e manter staging real e produção `NO_GO`.
+- evidence: `docs/04_audit/evidence/AUD20/AUD20-01-independent-review.md`, `docs/04_audit/evidence/AUD20/AUD20-01-live-candidate-receipt.json`, `docs/04_audit/evidence/AUD20/AUD20-01-command-receipt.json`.

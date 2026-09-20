@@ -37,22 +37,23 @@
 
 ## Tasks correntes (estados oficiais)
 
-- status: `IN_PROGRESS`
-- task corrente: `AUD20-01` — congelar SPEC/barra, negativos e matriz da remediação 0567.
+- status: `READY_FOR_NEXT_STEP`
+- task corrente: `AUD20-02` — tornar o piso de eval irredutível sob BUILD local controlado.
 
-| Faixa                 | Estado        | Nota                                                                                 |
-| --------------------- | ------------- | ------------------------------------------------------------------------------------ |
-| AUD20-01              | `IN_PROGRESS` | Baseline/SPEC/matriz/barra em revisão; BUILD ainda não autorizado                    |
-| AUD20-02..12          | `BLOCKED`     | Dependem de G0 e do DAG técnico do backlog 0334                                      |
-| AUD20-13..15          | `BLOCKED`     | Opção A registrada; faltam inputs, owners, ambiente e gates anteriores               |
-| AUD19-01..06,08,09,11 | `BLOCKED`     | Claims de conclusão supersedidos; remediação mapeada ao DAG AUD20                    |
-| AUD19-07,10           | `COMPLETED`   | Entregas locais preservadas; limitações/P2 seguem no programa AUD20                  |
-| AUD19-12              | `BLOCKED`     | Selo histórico; crítico corrente falha e imagens não correspondem ao candidato final |
-| AUD19-13..15          | `BLOCKED`     | Nenhuma integração/restore/piloto/sign-off executado                                 |
+| Faixa                 | Estado                | Nota                                                                                 |
+| --------------------- | --------------------- | ------------------------------------------------------------------------------------ |
+| AUD20-01              | `COMPLETED`           | SPEC, barra, matriz, receipts e revisão concluídos; G0 local controlado aprovado     |
+| AUD20-02              | `READY_FOR_NEXT_STEP` | Próxima task; threshold `0,97` e negativos N01/N02 congelados                        |
+| AUD20-03..12          | `BLOCKED`             | Dependem do DAG técnico após AUD20-02                                                |
+| AUD20-13..15          | `BLOCKED`             | Opção A registrada; faltam inputs, owners, ambiente e gates anteriores               |
+| AUD19-01..06,08,09,11 | `BLOCKED`             | Claims de conclusão supersedidos; remediação mapeada ao DAG AUD20                    |
+| AUD19-07,10           | `COMPLETED`           | Entregas locais preservadas; limitações/P2 seguem no programa AUD20                  |
+| AUD19-12              | `BLOCKED`             | Selo histórico; crítico corrente falha e imagens não correspondem ao candidato final |
+| AUD19-13..15          | `BLOCKED`             | Nenhuma integração/restore/piloto/sign-off executado                                 |
 
 ## Decisões correntes
 
-- Pacote histórico armazenado: `fbca3d2b…@fa78f92`; o P0 de integridade da auditoria 0567 rejeita sua elegibilidade para staging no HEAD atual. O candidato vivo da baseline AUD20-01 é `b4cb18ac…@98ec5e8`; o antigo `9988762d…@cc28bfb` é histórico.
+- Pacote histórico armazenado: `fbca3d2b…@fa78f92`; o P0 de integridade da auditoria 0567 rejeita sua elegibilidade para staging no HEAD atual. A baseline/manifesto AUD20-01 registra o candidato documental corrente; o antigo `9988762d…@cc28bfb` é histórico.
 - P1 local de branches de módulos críticos: fechado com testes de comportamento e gate versionado (`docs/03_build/tracking/aud19-critical-coverage.json`): kernel `97,09%`, approval `98,72%`, policy `97,87%`, journal `98,15%`, canal `97,41%`, RLS `100%`; piso mantido em `>=95%`.
 - Task success de evals: `>=97%` (fonte operacional `scripts/lib/eval-contract.mjs`);
   `53/56 = 94,64%` é negativo conhecido e deve falhar.
@@ -62,4 +63,4 @@
 
 ## Próxima ação
 
-- Próxima ação: revisão independente da SPEC/barra de `AUD20-01` e registro do G0; não iniciar código, re-selo ou qualificação externa antes do gate aplicável e manter staging real e produção `NO_GO`.
+- Próxima ação: executar `AUD20-02` com RED/GREEN do piso de eval, preservando `0,97` e os negativos `AUD20-N01/N02`; não iniciar qualificação externa e manter staging real e produção `NO_GO`.

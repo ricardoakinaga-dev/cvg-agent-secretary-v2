@@ -5778,3 +5778,13 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - decision: G0 ainda `IN_PROGRESS`; AUD20-02..12 `BLOCKED`; staging e producao `NO_GO`; o ponteiro `fbca3d2b...@fa78f92` nao qualifica o candidato live.
 - next_action: revisao independente do pacote AUD20-01 e registro explicito do G0 antes de qualquer BUILD.
 - evidence: `docs/02_spec/aud20_01_baseline_contract_20260920.md`, `docs/04_audit/evidence/AUD20/AUD20-01-baseline.md`, `docs/04_audit/evidence/AUD20/AUD20-requirements-matrix.json`, `docs/04_audit/evidence/AUD20/AUD20-quality-bar.json`.
+
+# AUD20-G0-APPROVED-20260920 — transicao para AUD20-02
+
+- timestamp: `2026-09-20`; pipeline `SPEC -> BUILD`; atividade `GATE`; task corrente `AUD20-02`; status `READY_FOR_NEXT_STEP`.
+- action: revisao independente classificou o pacote AUD20-01 como `PACKAGE_READY`; receipts live/command foram registrados; G0 foi aprovado formalmente para BUILD local controlado.
+- result: `AUD20-01=COMPLETED`; SPEC/barra/matriz/ownership/negativos candidate-bound; `AUD20-02` e a unica proxima task; `AUD20-03..12` seguem bloqueadas pelo DAG.
+- boundary: nenhum re-selo de `certification/current.json`, provider/canal/IdP/RAG, egress, credencial, dado real, staging, producao ou efeito externo.
+- decision: `SPEC_APPROVED_CONTROLLED_BUILD` apenas para escopo local controlado; staging real, producao e AUD20-13..15 permanecem `NO_GO`/`BLOCKED`.
+- next_action: executar `AUD20-02` com RED/GREEN do piso `0,97` e negativos `AUD20-N01/N02`.
+- evidence: `docs/02_spec/aud20_01_baseline_contract_20260920.md`, `docs/04_audit/evidence/AUD20/AUD20-requirements-matrix.json`, `docs/04_audit/evidence/AUD20/AUD20-quality-bar.json`, receipts e revisao independente AUD20-01.

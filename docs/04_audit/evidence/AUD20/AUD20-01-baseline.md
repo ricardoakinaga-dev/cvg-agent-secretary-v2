@@ -23,6 +23,30 @@
 The pointer is historical for the live tree. It is not reclassified as current
 and no re-seal was performed.
 
+## Candidate-bound package manifest
+
+The AUD20-01 documentation package was committed as `c198343424bdc170fc8d26003ffc6965ebe26bb8`.
+The generated manifest records the complete candidate file list and SHA-256
+values for the package scope:
+
+| Field | Value |
+| --- | --- |
+| candidateId | `bea683171cc2bf5ae7b3d7254a231cc4f7716555d0d8ea000661027a23fc4767` |
+| commit | `c198343424bdc170fc8d26003ffc6965ebe26bb8` |
+| treeHash | `c032c47c2f819fef44666ab650a26001904a2a602fdbe6394e4378719422abf9` |
+| gitTreeHash | `8259ec41eb67fe0058323cb2b2c1faf88b495bc7` |
+| fileCount | `1104` |
+| manifest SHA-256 | `3ec9e740325eccfb5c65b53bf4248769b97f6492eae037a8548bb01d740a56c2` |
+| dirty | `false` |
+
+Manifest: `docs/04_audit/evidence/AUD20/AUD20-01-candidate-manifest.json`.
+The evidence directory is excluded from the product candidate scope; the
+manifest never contains file contents or secrets.
+
+Live receipt: `docs/04_audit/evidence/AUD20/AUD20-01-live-candidate-receipt.json`.
+All candidate identity assertions were recomputed from the live repository and
+returned `PASS` under Node `22.23.2`.
+
 ## Commands and observed results
 
 | Command | Exit | Result |
@@ -39,6 +63,10 @@ and no re-seal was performed.
 The two verifier failures and the critic failure are expected G0 negatives: the
 old certificate was generated for another candidate and must not qualify the
 current tree.
+
+Sanitized command receipt: `docs/04_audit/evidence/AUD20/AUD20-01-command-receipt.json`.
+It records each command, exit code, stdout/stderr digest and structured summary
+without persisting secrets or raw sensitive payloads.
 
 ## Not executed in AUD20-01
 

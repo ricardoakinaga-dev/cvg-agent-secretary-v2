@@ -5,7 +5,7 @@
   "task": "AUD20-01",
   "sourceContract": "docs/02_spec/aaa_quality_contract.md",
   "version": "aud20-v1",
-  "status": "FROZEN_PENDING_G0_REVIEW",
+  "status": "FROZEN_APPROVED_FOR_G0",
   "changesInvalidateEvidence": true,
   "scope": "controlled-local",
   "thresholds": {
@@ -22,9 +22,17 @@
   },
   "requiredEvidenceInvariants": {
     "requiredSkips": 0,
-    "denominatorAudited": true,
+    "denominatorAuditRequired": true,
     "independentReviewRequired": true,
     "candidateManifestRequired": true
+  },
+  "denominatorDefinition": {
+    "statusAtG0": "NOT_RUN",
+    "owner": "qa/certification",
+    "unit": "executed test inventory by web, bootstrap and PostgreSQL boundaries",
+    "requiredFields": ["executed", "skipped", "requiredSkips", "scope", "candidateId", "rawArtifactSha256"],
+    "freezeBeforeMeasurement": true,
+    "evidenceDue": "AUD20-12"
   },
   "architectureCaps": {
     "apps/api/src/server.ts": 4958,

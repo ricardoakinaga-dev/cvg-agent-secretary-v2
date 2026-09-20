@@ -26,11 +26,26 @@
     "historicalPointerCandidateId": "fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
     "historicalPointerCommit": "fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6"
   },
+  "packageCandidate": {
+    "commit": "c198343424bdc170fc8d26003ffc6965ebe26bb8",
+    "candidateId": "bea683171cc2bf5ae7b3d7254a231cc4f7716555d0d8ea000661027a23fc4767",
+    "treeHash": "c032c47c2f819fef44666ab650a26001904a2a602fdbe6394e4378719422abf9",
+    "gitTreeHash": "8259ec41eb67fe0058323cb2b2c1faf88b495bc7",
+    "fileCount": 1104,
+    "manifest": "docs/04_audit/evidence/AUD20/AUD20-01-candidate-manifest.json",
+    "manifestSha256": "3ec9e740325eccfb5c65b53bf4248769b97f6492eae037a8548bb01d740a56c2"
+  },
   "gate": {
     "id": "G0",
     "task": "AUD20-01",
-    "status": "IN_PROGRESS",
-    "buildAuthorized": false,
+    "status": "SPEC_APPROVED_CONTROLLED_BUILD",
+    "buildAuthorized": true,
+    "approvalScope": "local-controlled-only",
+    "approvalEvidence": [
+      "docs/04_audit/evidence/AUD20/AUD20-01-independent-review.md",
+      "docs/04_audit/evidence/AUD20/AUD20-01-live-candidate-receipt.json",
+      "docs/04_audit/evidence/AUD20/AUD20-01-command-receipt.json"
+    ],
     "staging": "NO_GO",
     "production": "NO_GO",
     "externalGates": "BLOCKED"
@@ -127,12 +142,13 @@
     "AUD20-N12",
     "AUD20-N13"
   ],
+  "nextTask": "AUD20-02",
   "tasks": [
     {
       "id": "AUD20-01",
       "title": "Congelar contrato, baseline, barra e matriz",
       "priority": "P0",
-      "status": "IN_PROGRESS",
+      "status": "COMPLETED",
       "dependencies": [],
       "owner": "control-plane/certification",
       "findings": ["P0-EVID-01", "P2-DOC-01"],
@@ -152,7 +168,10 @@
       "evidence": [
         "docs/04_audit/evidence/AUD20/AUD20-01-baseline.md",
         "docs/04_audit/evidence/AUD20/AUD20-requirements-matrix.json",
-        "docs/04_audit/evidence/AUD20/AUD20-01-candidate-manifest.json"
+        "docs/04_audit/evidence/AUD20/AUD20-01-candidate-manifest.json",
+        "docs/04_audit/evidence/AUD20/AUD20-01-live-candidate-receipt.json",
+        "docs/04_audit/evidence/AUD20/AUD20-01-command-receipt.json",
+        "docs/04_audit/evidence/AUD20/AUD20-01-independent-review.md"
       ],
       "rollback": "revert only the AUD20-01 documentation commit; preserve 0567 and historical evidence"
     },
@@ -160,7 +179,7 @@
       "id": "AUD20-02",
       "title": "Tornar o piso de eval irredutivel",
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "READY_FOR_NEXT_STEP",
       "dependencies": ["AUD20-01"],
       "owner": "agent-evals/certification",
       "findings": ["P1-EVAL-01"],

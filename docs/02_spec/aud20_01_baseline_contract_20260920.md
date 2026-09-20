@@ -3,7 +3,7 @@
 **Programa:** `AUD20-REM`
 **Task:** `AUD20-01`
 **Gate:** `G0 - verdade corrente`
-**Status da task:** `IN_PROGRESS` durante a preparacao documental
+**Status da task:** `COMPLETED` no escopo documental; G0 aprovado para BUILD local controlado
 **Escopo:** baseline, SPEC, matriz de rastreabilidade, negativos e registro de ownership; nenhum BUILD nesta task.
 
 ## 1. Objetivo observavel
@@ -192,5 +192,8 @@ estiverem registrados:
 - `AUD20-02` for a unica proxima task `READY_FOR_NEXT_STEP`;
 - G0 nao conceder staging real, producao ou AUD20-13..15.
 
-Enquanto esta transicao nao estiver registrada, `AUD20-02..12` permanecem
-`BLOCKED` e nenhum codigo AUD20 pode ser iniciado.
+Transicao registrada: `AUD20-01` esta `COMPLETED`, G0 e
+`SPEC_APPROVED_CONTROLLED_BUILD` somente para BUILD local controlado, e
+`AUD20-02` e a unica proxima task `READY_FOR_NEXT_STEP`. AUD20-03..12 seguem
+bloqueadas pelo DAG tecnico. Nenhum staging real, producao, AUD20-13..15 ou
+qualificacao externa e autorizado por este gate.

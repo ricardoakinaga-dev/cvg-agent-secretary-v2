@@ -1,0 +1,476 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-command-receipt",
+  "program": "AUD20-REM",
+  "task": "AUD20-01",
+  "observedAt": "2026-09-20T21:47:43.983Z",
+  "sideEffects": false,
+  "environment": {
+    "node": "v22.23.2",
+    "platform": "linux"
+  },
+  "candidateManifest": "docs/04_audit/evidence/AUD20/AUD20-01-candidate-manifest.json",
+  "commands": [
+    {
+      "command": "git diff --check",
+      "exitCode": 0,
+      "signal": null,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "summary": {}
+    },
+    {
+      "command": "npm run docs:check",
+      "exitCode": 0,
+      "signal": null,
+      "stdoutSha256": "f31f1d008fbf983704f6076d88bc33999738fcac2375670dfd51e1111cd3851a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "summary": {
+        "schemaVersion": 1,
+        "kind": "aud19-documentation-check",
+        "valid": true,
+        "links": {
+          "checked": 719,
+          "broken": []
+        },
+        "json": {
+          "checked": 561,
+          "invalid": []
+        },
+        "states": {
+          "declared": [
+            "IN_PROGRESS"
+          ],
+          "unexpected": []
+        },
+        "nextAction": {
+          "valid": true,
+          "reason": null,
+          "runtimeStateAction": "revisão independente da SPEC/barra de `AUD20-01` e registro do G0; não iniciar código, re-selo ou qualificação externa antes do gate aplicável e manter staging real e produção `NO_GO`.",
+          "currentIndexAction": "revisão independente da SPEC/barra de `AUD20-01` e registro do G0; não iniciar código, re-selo ou qualificação externa antes do gate aplicável e manter staging real e produção `NO_GO`."
+        }
+      }
+    },
+    {
+      "command": "npm exec -- vitest run tests/docs-integrity.test.js --no-file-parallelism --maxWorkers=2",
+      "exitCode": 0,
+      "signal": null,
+      "stdoutSha256": "fc5d60a29fcbcbe2e896f2faa27221c1ea3d3bcf7bacc269e1fc0eab08f51d3d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "summary": {}
+    },
+    {
+      "command": "npm run certification:verify:phase11",
+      "exitCode": 1,
+      "signal": null,
+      "stdoutSha256": "ca4c9214d8530c4d3f6d273d857048337f1c14bb9785d90accc7bae4b987aa5b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "summary": {
+        "schemaVersion": 1,
+        "kind": "phase11-verification",
+        "mode": "current",
+        "status": "FAIL",
+        "currentPointer": "certification/current.json",
+        "result": "certification/phase11/phase11-result.json",
+        "manifest": "certification/phase11/manifest.json",
+        "failures": [
+          "candidate_tree_stale:69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23:c032c47c2f819fef44666ab650a26001904a2a602fdbe6394e4378719422abf9",
+          "candidate_id_stale",
+          "candidate_file_count_changed",
+          "candidate_file_hash_changed",
+          "candidate_scope_drift:[{\"type\":\"added\",\"path\":\"docs/02_spec/aud20_01_baseline_contract_20260920.md\",\"current\":\"721c0b10469cad564427d37ce0e6bbdc2544697f4ac52bf4f5c730d823ea7213\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0300_build_engineer_master.md\",\"recorded\":\"d689fdd218e3cc8ebfb7a49431913666ea3d9065563057519e5b64c99fa2e91a\",\"current\":\"e7131379b550a7f85691d40459a350eba4d70ee796a7e438abe98fe761cdac52\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0301_roadmap.md\",\"recorded\":\"5735074c2b8abe5dfd7ef8a023576d0319f69078f9ae9bd9aebcd0dab6b9f07e\",\"current\":\"24124198b75633d39fb7ccfcaa7c623e75fef7472e13c0fec1a7b2a510d0bb7e\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0302_backlog_master.md\",\"recorded\":\"6479feb5c224b18f707679ee5de914a6227fa8ada34c758a277229a864188f0e\",\"current\":\"416057167d6af1322104ad96ceee7ef29016a4be4aa1614222abf6fec303025b\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0331_aud20260919_roadmap.md\",\"recorded\":\"6e1af3b4bc0549bf535cbcb199179ed57ce5f20615f099c6d3c3dfd8a4ed8f4f\",\"current\":\"a45437264e265be5a361db535ef7cb53d3ede68eccf935cc723d1c3d8023db5a\"}]",
+          "pointer_candidateId_mismatch",
+          "pointer_treeHash_mismatch",
+          "manifest_candidate_mismatch",
+          "manifest_tree_stale",
+          "evidence_graph_candidate_mismatch",
+          "release_candidate_mismatch",
+          "release_tree_mismatch"
+        ]
+      }
+    },
+    {
+      "command": "npm run evidence:verify:phase11",
+      "exitCode": 1,
+      "signal": null,
+      "stdoutSha256": "344d258182e80e6454341cc45c48cd36bf44661645040e15ff399e5efd89efdb",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "summary": {
+        "schemaVersion": 1,
+        "kind": "phase11-verification",
+        "mode": "evidence-only",
+        "status": "FAIL",
+        "currentPointer": "certification/current.json",
+        "result": "certification/phase11/phase11-result.json",
+        "manifest": "certification/phase11/manifest.json",
+        "failures": [
+          "candidate_tree_stale:69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23:c032c47c2f819fef44666ab650a26001904a2a602fdbe6394e4378719422abf9",
+          "candidate_id_stale",
+          "candidate_file_count_changed",
+          "candidate_file_hash_changed",
+          "candidate_scope_drift:[{\"type\":\"added\",\"path\":\"docs/02_spec/aud20_01_baseline_contract_20260920.md\",\"current\":\"721c0b10469cad564427d37ce0e6bbdc2544697f4ac52bf4f5c730d823ea7213\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0300_build_engineer_master.md\",\"recorded\":\"d689fdd218e3cc8ebfb7a49431913666ea3d9065563057519e5b64c99fa2e91a\",\"current\":\"e7131379b550a7f85691d40459a350eba4d70ee796a7e438abe98fe761cdac52\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0301_roadmap.md\",\"recorded\":\"5735074c2b8abe5dfd7ef8a023576d0319f69078f9ae9bd9aebcd0dab6b9f07e\",\"current\":\"24124198b75633d39fb7ccfcaa7c623e75fef7472e13c0fec1a7b2a510d0bb7e\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0302_backlog_master.md\",\"recorded\":\"6479feb5c224b18f707679ee5de914a6227fa8ada34c758a277229a864188f0e\",\"current\":\"416057167d6af1322104ad96ceee7ef29016a4be4aa1614222abf6fec303025b\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0331_aud20260919_roadmap.md\",\"recorded\":\"6e1af3b4bc0549bf535cbcb199179ed57ce5f20615f099c6d3c3dfd8a4ed8f4f\",\"current\":\"a45437264e265be5a361db535ef7cb53d3ede68eccf935cc723d1c3d8023db5a\"}]",
+          "pointer_candidateId_mismatch",
+          "pointer_treeHash_mismatch",
+          "manifest_candidate_mismatch",
+          "manifest_tree_stale",
+          "evidence_graph_candidate_mismatch",
+          "release_candidate_mismatch",
+          "release_tree_mismatch"
+        ]
+      }
+    },
+    {
+      "command": "node scripts/phase11-2-evidence-check.mjs --critic",
+      "exitCode": 1,
+      "signal": null,
+      "stdoutSha256": "6a8de77049c4dde3abe8d39559d17213670fd871ace01414c5e5175f88390ce0",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "summary": {
+        "schemaVersion": 1,
+        "kind": "phase11-2-evidence-check",
+        "mode": "critic",
+        "status": "FAIL",
+        "syntheticOnly": true,
+        "sideEffects": false,
+        "checks": [
+          {
+            "id": "CRITIC:environment",
+            "status": "PASS",
+            "detail": "live candidate bea683171cc2@c198343424bd"
+          },
+          {
+            "id": "CRITIC:schema",
+            "status": "PASS",
+            "detail": "phase11-critic-report schema v1"
+          },
+          {
+            "id": "CRITIC:binding",
+            "status": "FAIL",
+            "detail": "candidateId=fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89!=bea683171cc2bf5ae7b3d7254a231cc4f7716555d0d8ea000661027a23fc4767, commit=fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6!=c198343424bdc170fc8d26003ffc6965ebe26bb8, treeHash=69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23!=c032c47c2f819fef44666ab650a26001904a2a602fdbe6394e4378719422abf9"
+          },
+          {
+            "id": "CRITIC:fingerprint",
+            "status": "FAIL",
+            "detail": "worktree changed after review: reported 71ec54729c917e202438f0ae166b7217723e49fd26f865b899429e64436405a8, current b67e1ad3f8068aa5f043d163dcf183ec1b1ceae10ad4f0b38ab9d72dcee4ab14"
+          },
+          {
+            "id": "CRITIC:independence",
+            "status": "PASS",
+            "detail": "fresh-context,separate-identity,artifact-only-input,no-worktree-write,no-builder-justification"
+          },
+          {
+            "id": "CRITIC:builder_content",
+            "status": "PASS",
+            "detail": "no builder justification fields"
+          },
+          {
+            "id": "CRITIC:artifacts",
+            "status": "FAIL",
+            "detail": "digest mismatch: docs/CURRENT.md (declared 602f147fd850cc0330614be15e0097698ceb0a014199555f6a177781b96a4f0b)"
+          },
+          {
+            "id": "CRITIC:artifacts",
+            "status": "FAIL",
+            "detail": "digest mismatch: docs/03_build/0332_aud20260919_backlog.md (declared 9172d944cb6280d9ad82c9b3da2dbc315ad8d6d7c36930f774e5e607dc806081)"
+          },
+          {
+            "id": "CRITIC:artifacts",
+            "status": "FAIL",
+            "detail": "digest mismatch: docs/04_audit/evidence/AUD19/AUD19-12-final-seal-outcome.md (declared 300c1250e10d6b987b137c679bde6f2cb91a3e5b3f7b35c7130fb2b8ef1abf8e)"
+          },
+          {
+            "id": "CRITIC:check_evidence",
+            "status": "PASS",
+            "detail": "11 check(s) cite declared artifacts"
+          },
+          {
+            "id": "CRITIC:verdict",
+            "status": "PASS",
+            "detail": "PASS derived from checks"
+          }
+        ],
+        "failures": [
+          "CRITIC:binding:candidateId=fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89!=bea683171cc2bf5ae7b3d7254a231cc4f7716555d0d8ea000661027a23fc4767, commit=fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6!=c198343424bdc170fc8d26003ffc6965ebe26bb8, treeHash=69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23!=c032c47c2f819fef44666ab650a26001904a2a602fdbe6394e4378719422abf9",
+          "CRITIC:fingerprint:worktree changed after review: reported 71ec54729c917e202438f0ae166b7217723e49fd26f865b899429e64436405a8, current b67e1ad3f8068aa5f043d163dcf183ec1b1ceae10ad4f0b38ab9d72dcee4ab14",
+          "CRITIC:artifacts:digest mismatch: docs/CURRENT.md (declared 602f147fd850cc0330614be15e0097698ceb0a014199555f6a177781b96a4f0b)",
+          "CRITIC:artifacts:digest mismatch: docs/03_build/0332_aud20260919_backlog.md (declared 9172d944cb6280d9ad82c9b3da2dbc315ad8d6d7c36930f774e5e607dc806081)",
+          "CRITIC:artifacts:digest mismatch: docs/04_audit/evidence/AUD19/AUD19-12-final-seal-outcome.md (declared 300c1250e10d6b987b137c679bde6f2cb91a3e5b3f7b35c7130fb2b8ef1abf8e)"
+        ]
+      }
+    },
+    {
+      "command": "npm run promotion:check",
+      "exitCode": 1,
+      "signal": null,
+      "stdoutSha256": "1e494abf8e3d6be924080f7708bb3339b5a19fd8e344396d029b02312e0b99f5",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "summary": {
+        "schemaVersion": 1,
+        "kind": "phase11-promotion-check",
+        "eligible": false,
+        "verifier": "FAIL",
+        "currentProfile": "CONTROLLED_LOCAL",
+        "requestedProfile": "PRODUCTION",
+        "blockingGates": [],
+        "blockingFindings": [],
+        "blockingInvariants": [],
+        "externalBlockers": [
+          "external_gate_pending:modelProvider:expected_VALIDATED_REAL:actual_NOT_VALIDATED",
+          "external_gate_pending:channel:expected_VALIDATED_REAL:actual_NOT_VALIDATED",
+          "external_gate_pending:externalIdentity:expected_VALIDATED_REAL:actual_NOT_VALIDATED",
+          "external_gate_pending:institutionalRag:expected_VALIDATED_APPROVED:actual_NOT_VALIDATED",
+          "external_gate_pending:rpoRto:expected_VALIDATED:actual_NOT_VALIDATED",
+          "external_gate_pending:pilot:expected_PASS:actual_NOT_VALIDATED",
+          "external_gate_pending:rollback:expected_PASS:actual_NOT_VALIDATED",
+          "external_gate_pending:humanSignoff:expected_VALIDATED:actual_PENDING"
+        ],
+        "reason": "current_certification_invalid",
+        "noProductionEffect": true
+      }
+    },
+    {
+      "command": "npm run production:preflight",
+      "exitCode": 1,
+      "signal": null,
+      "stdoutSha256": "fbd3eed35c731571c2d94d779206b7104985072bc2a433d9dc91932c1b2ccccc",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "summary": {
+        "schemaVersion": 1,
+        "kind": "production-preflight",
+        "profile": "PRODUCTION",
+        "status": "FAIL",
+        "actualStatus": "FAIL",
+        "expected": "ACTUAL",
+        "sideEffects": false,
+        "checks": [
+          {
+            "id": "bootstrap.authority",
+            "status": "FAIL",
+            "detail": "shared bootstrap preflight blocked: bootstrap.node_env,bootstrap.persistence,bootstrap.database,bootstrap.migration_database,bootstrap.database_separation,bootstrap.rls,bootstrap.no_auto_migrate,bootstrap.kernel,bootstrap.inbound,bootstrap.identity,bootstrap.secrets,bootstrap.operator_identity,bootstrap.http_security,bootstrap.governance,bootstrap.external_attestation,bootstrap.external_attestations,bootstrap.runtime_attestation"
+          },
+          {
+            "id": "profile.production",
+            "status": "PASS",
+            "detail": "profile=PRODUCTION; production preflight is only authoritative for PRODUCTION"
+          },
+          {
+            "id": "runtime.node_env",
+            "status": "FAIL",
+            "detail": "NODE_ENV must be production"
+          },
+          {
+            "id": "runtime.persistence",
+            "status": "FAIL",
+            "detail": "API_PERSISTENCE_MODE=postgres is required; memory persistence is forbidden"
+          },
+          {
+            "id": "runtime.database",
+            "status": "FAIL",
+            "detail": "DATABASE_URL must be a non-empty PostgreSQL URL"
+          },
+          {
+            "id": "runtime.migration_database",
+            "status": "FAIL",
+            "detail": "DATABASE_MIGRATION_URL must be a separate PostgreSQL migration URL"
+          },
+          {
+            "id": "runtime.rls",
+            "status": "FAIL",
+            "detail": "POSTGRES_RLS_ENFORCEMENT=true is required"
+          },
+          {
+            "id": "runtime.no_auto_migrate",
+            "status": "FAIL",
+            "detail": "production requires explicit migrations; POSTGRES_AUTO_MIGRATE=false"
+          },
+          {
+            "id": "runtime.worker_runtime",
+            "status": "FAIL",
+            "detail": "CVG_WORKER_RUNTIME=kernel is required; legacy published-agent is forbidden"
+          },
+          {
+            "id": "runtime.durable_kernel",
+            "status": "FAIL",
+            "detail": "CVG_DURABLE_KERNEL_ORCHESTRATOR=true is required"
+          },
+          {
+            "id": "runtime.durable_queue",
+            "status": "FAIL",
+            "detail": "a PostgreSQL worker queue adapter is required"
+          },
+          {
+            "id": "runtime.durable_inbound",
+            "status": "FAIL",
+            "detail": "OUTBOX_DURABLE_INBOUND=true is required"
+          },
+          {
+            "id": "identity.inbound_tenant",
+            "status": "FAIL",
+            "detail": "trusted INBOUND_TENANT_ID is required"
+          },
+          {
+            "id": "identity.inbound_agent",
+            "status": "FAIL",
+            "detail": "trusted INBOUND_AGENT_ID is required"
+          },
+          {
+            "id": "identity.worker_tenant",
+            "status": "FAIL",
+            "detail": "trusted CVG_WORKER_TENANT_ID is required"
+          },
+          {
+            "id": "identity.worker_agent",
+            "status": "FAIL",
+            "detail": "trusted CVG_WORKER_AGENT_ID is required"
+          },
+          {
+            "id": "security.webhook_secret",
+            "status": "FAIL",
+            "detail": "WEBHOOK_SIGNING_SECRET must be a non-placeholder secret of at least 32 characters"
+          },
+          {
+            "id": "security.provider_secret",
+            "status": "FAIL",
+            "detail": "provider secret must be explicitly configured and non-placeholder"
+          },
+          {
+            "id": "security.origins",
+            "status": "FAIL",
+            "detail": "API_ALLOWED_ORIGINS must contain an HTTPS origin allowlist"
+          },
+          {
+            "id": "security.https",
+            "status": "FAIL",
+            "detail": "API_REQUIRE_HTTPS=true is required"
+          },
+          {
+            "id": "governance.policy",
+            "status": "FAIL",
+            "detail": "CVG_POLICY_MODE=deny_by_default is required"
+          },
+          {
+            "id": "governance.risk",
+            "status": "FAIL",
+            "detail": "CVG_RISK_POLICY=required is required"
+          },
+          {
+            "id": "governance.approval_store",
+            "status": "FAIL",
+            "detail": "CVG_APPROVAL_STORE=postgres is required"
+          },
+          {
+            "id": "governance.effect_journal",
+            "status": "FAIL",
+            "detail": "CVG_EFFECT_JOURNAL=postgres is required"
+          },
+          {
+            "id": "governance.migrations",
+            "status": "FAIL",
+            "detail": "CVG_MIGRATIONS_APPLIED_AT_LEAST must be >= 23; database state is not inferred"
+          },
+          {
+            "id": "governance.no_unrestricted_effects",
+            "status": "PASS",
+            "detail": "unrestricted real effects are forbidden; use governed effect adapters"
+          },
+          {
+            "id": "external.provider",
+            "status": "FAIL",
+            "detail": "provider requires APPROVED status inside the signed attestation pinned by CVG_EXTERNAL_ATTESTATION_FILE/CVG_EXTERNAL_ATTESTATION_SHA256; CVG_EXTERNAL_PROVIDER_APPROVED=true alone is not evidence"
+          },
+          {
+            "id": "external.channel",
+            "status": "FAIL",
+            "detail": "channel requires APPROVED status inside the signed attestation pinned by CVG_EXTERNAL_ATTESTATION_FILE/CVG_EXTERNAL_ATTESTATION_SHA256; CVG_EXTERNAL_CHANNEL_APPROVED=true alone is not evidence"
+          },
+          {
+            "id": "external.identity",
+            "status": "FAIL",
+            "detail": "identity requires APPROVED status inside the signed attestation pinned by CVG_EXTERNAL_ATTESTATION_FILE/CVG_EXTERNAL_ATTESTATION_SHA256; CVG_EXTERNAL_IDENTITY_APPROVED=true alone is not evidence"
+          },
+          {
+            "id": "external.rag",
+            "status": "FAIL",
+            "detail": "rag requires APPROVED status inside the signed attestation pinned by CVG_EXTERNAL_ATTESTATION_FILE/CVG_EXTERNAL_ATTESTATION_SHA256; CVG_EXTERNAL_RAG_APPROVED=true alone is not evidence"
+          },
+          {
+            "id": "external.rpo_rto",
+            "status": "FAIL",
+            "detail": "rpo_rto requires APPROVED status inside the signed attestation pinned by CVG_EXTERNAL_ATTESTATION_FILE/CVG_EXTERNAL_ATTESTATION_SHA256; CVG_RPO_RTO_MEASURED=true alone is not evidence"
+          },
+          {
+            "id": "external.pilot",
+            "status": "FAIL",
+            "detail": "pilot requires APPROVED status inside the signed attestation pinned by CVG_EXTERNAL_ATTESTATION_FILE/CVG_EXTERNAL_ATTESTATION_SHA256; CVG_SUPERVISED_PILOT_COMPLETE=true alone is not evidence"
+          },
+          {
+            "id": "external.rollback",
+            "status": "FAIL",
+            "detail": "rollback requires APPROVED status inside the signed attestation pinned by CVG_EXTERNAL_ATTESTATION_FILE/CVG_EXTERNAL_ATTESTATION_SHA256; CVG_ROLLBACK_VERIFIED=true alone is not evidence"
+          },
+          {
+            "id": "external.human_signoff",
+            "status": "FAIL",
+            "detail": "human_signoff requires APPROVED status inside the signed attestation pinned by CVG_EXTERNAL_ATTESTATION_FILE/CVG_EXTERNAL_ATTESTATION_SHA256; CVG_HUMAN_SIGNOFF=true alone is not evidence"
+          },
+          {
+            "id": "source.migrations_present",
+            "status": "PASS",
+            "detail": "required orchestrator migration sources must be present"
+          }
+        ],
+        "blocking": [
+          "bootstrap.authority",
+          "runtime.node_env",
+          "runtime.persistence",
+          "runtime.database",
+          "runtime.migration_database",
+          "runtime.rls",
+          "runtime.no_auto_migrate",
+          "runtime.worker_runtime",
+          "runtime.durable_kernel",
+          "runtime.durable_queue",
+          "runtime.durable_inbound",
+          "identity.inbound_tenant",
+          "identity.inbound_agent",
+          "identity.worker_tenant",
+          "identity.worker_agent",
+          "security.webhook_secret",
+          "security.provider_secret",
+          "security.origins",
+          "security.https",
+          "governance.policy",
+          "governance.risk",
+          "governance.approval_store",
+          "governance.effect_journal",
+          "governance.migrations",
+          "external.provider",
+          "external.channel",
+          "external.identity",
+          "external.rag",
+          "external.rpo_rto",
+          "external.pilot",
+          "external.rollback",
+          "external.human_signoff"
+        ],
+        "externalAttestation": {
+          "status": "FAIL",
+          "reason": "a digest-pinned CVG_EXTERNAL_ATTESTATION_FILE is required; boolean flags and unsupported declarations are not evidence",
+          "owner": null,
+          "expiresAt": null,
+          "signals": {
+            "provider": null,
+            "channel": null,
+            "identity": null,
+            "rag": null,
+            "rpo_rto": null,
+            "pilot": null,
+            "rollback": null,
+            "human_signoff": null
+          }
+        },
+        "note": "A PASS authorizes no deployment by itself; external gates and human release authority remain separate."
+      }
+    }
+  ]
+}
