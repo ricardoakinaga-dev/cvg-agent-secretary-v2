@@ -1,5 +1,9 @@
 # 0300 — Build Engineer Master
 
+## Programa de remediação pós-reauditoria de 20/09/2026
+
+A [reauditoria 0567](../04_audit/0567_aud19_delivery_reaudit_2026-09-20.md) supersede o claim de conclusão integral do programa AUD19. O [roadmap 0333](0333_aud20260920_roadmap.md) e o [backlog 0334](0334_aud20260920_backlog.md) governam `AUD20-REM`. Somente `AUD20-01` está `READY_FOR_NEXT_STEP` para SPEC/barra; nenhum BUILD, re-selo, staging ou produção foi autorizado.
+
 ## Programa de remediação pós-auditoria de 19/09/2026
 
 A auditoria integral [0566](../04_audit/0566_full_repository_gauntlet_audit_2026-09-19.md) é a fonte dos achados `AUD19`. O [roadmap 0331](0331_aud20260919_roadmap.md) e o [backlog 0332](0332_aud20260919_backlog.md) ordenam 15 tasks. O primeiro item é `AUD19-01`; qualquer BUILD depende de SPEC/gate próprio. Staging real e produção permanecem `NO_GO`.

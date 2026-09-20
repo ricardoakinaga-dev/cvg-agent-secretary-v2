@@ -5757,3 +5757,14 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - decision: `CONDITIONAL_GO` / `AAA_CANDIDATE`; perfil elegível `STAGING`; produção `NO_GO`; oito gates externos/humanos pendentes.
 - next_action: obter autorização, ambiente e owners externos para AUD19-13..15 (provider, canal, IdP, RAG, RPO/RTO, rollback, piloto e sign-off) e manter staging real e produção NO_GO.
 - evidence: `certification/current.json`, `certification/phase11/phase11-result.json`, `docs/04_audit/evidence/AUD19/AUD19-12-final-seal-outcome.md`.
+
+# AUD20-REM-PLAN-20260920 — reauditoria da entrega e nova rodada
+
+- timestamp: `2026-09-20T18:10:00-03:00`; pipeline `AUDIT -> BUILD`; atividade `PLAN`; task `AUD20-01`; status `READY_FOR_NEXT_STEP`.
+- authorization: inspeção da entrega, atualização documental e criação de roadmap/backlog; sem autorização de BUILD, re-selo, commit/push, deploy, publicação, egress, credenciais, dados reais ou ação sensível.
+- action: auditado `843c927..bb898f8`; publicados relatório `0567`, roadmap `0333` e backlog `0334`; `CURRENT` e masters reconciliados; AUD19 rotulado histórico/supersedido.
+- fresh_verification: Node `22.23.2`; `npm test` `282` arquivos PASS/`12` SKIP, `2.146` testes PASS/`172` SKIP; foco sem DB `21` PASS/`14` SKIP; format/docs/typecheck/lint PASS; current/evidence verifier PASS; `--critic` FAIL; preflight FAIL esperado sem side effects; promotion `eligible=false`.
+- verdict: dois P0 e oito P1 rejeitam a conclusão integral e a elegibilidade de staging. O pacote `fbca3d2b…@fa78f92` é histórico; as imagens registradas derivam de `67065a1`; produção permanece `NO_GO`.
+- post_write_verification: format/docs/teste documental PASS (`719` links, `557` JSONs, `5/5` testes); current/evidence verifier e gate de crítico FAIL esperado por drift da nova árvore documental; nenhum re-selo executado.
+- external_boundary: Opção A registrada apenas para iniciar preparação; inputs, owners, ambiente, credenciais, restore, piloto e sign-off seguem ausentes. Nenhum sistema real foi contatado.
+- next_action: preparar/revisar SPEC e barra de AUD20-01; qualquer BUILD ou re-selo exige novo gate e deverá seguir AUD20-02..12 antes de AUD20-13..15.

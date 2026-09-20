@@ -2671,3 +2671,16 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - gap_state: oito gates externos/humanos `BLOCKED` (provider, canal, identidade, RAG institucional, RPO/RTO, piloto, rollback, sign-off); dossiês AUD19-13..15 prontos com schema e checker.
 - next_action: obter autorização, ambiente e owners externos para AUD19-13..15 (provider, canal, IdP, RAG, RPO/RTO, rollback, piloto e sign-off) e manter staging real e produção NO_GO.
 - evidence: `certification/current.json`, `docs/04_audit/evidence/AUD19/AUD19-12-final-seal-outcome.md`, `docs/03_build/tracking/aud19-critical-coverage.json`.
+
+# AUD20-REM-PLAN-20260920 — estado corrente
+
+- current_engine: `AUDIT -> BUILD`; activity: `PLAN`; task: `AUD20-01`; status: `READY_FOR_NEXT_STEP`; execution: `DOCUMENTATION_ONLY`; staging: `NO_GO`; production: `NO_GO`.
+- authorization: analisar a entrega, atualizar documentação e publicar nova rodada de roadmap/backlog; nenhuma autorização de código, re-selo, push, deploy, credencial, ambiente externo, dado real ou efeito sensível foi inferida.
+- last_completed_action: publicada a reauditoria `0567`, com roadmap `0333` e backlog `0334`; controles mestres e `docs/CURRENT.md` reconciliados. A conclusão integral de `AUD19-01..12` foi rejeitada.
+- verification_state: no HEAD `bb898f8`, antes das escritas documentais, Node `22.23.2`; full unit `282` arquivos PASS/`12` SKIP e `2.146` testes PASS/`172` SKIP condicionais; format/docs/typecheck/lint PASS; verifiers gerais PASS; preflight/promotion recusaram produção; gate específico `--critic` FAIL. PostgreSQL, coverage, Docker rebuild e Playwright completos não foram reexecutados nesta auditoria.
+- decisive_findings: dois P0 — crítico obrigatório não ligado ao HEAD e imagens de `67065a1` atribuídas ao candidato `fa78f92`; P1 em downgrade de eval, lineage/concorrência, dedupe após retenção, binding da atestação/privilégios do replay, mutation gate e observabilidade não conectada.
+- decision: entrega local `PARTIAL PASS`, conclusão integral `FAIL`; selo AUD19 histórico; staging real e produção `NO_GO`. A Opção A registrada não substitui inputs, owners, ambiente ou sign-off.
+- post_write_verification: `format:check`, `docs:check` (719 links, 557 JSONs, estado e next action coerentes) e teste documental 5/5 PASS; `certification:verify`, `evidence:verify` e `--critic` FAIL fechado por candidate/tree/digest drift. Nenhum re-selo foi executado.
+- candidate_effect: estas alterações documentais pertencem ao candidate scope; o pacote anterior está stale e não pode ser re-selado sem concluir AUD20-02..12.
+- next_action: preparar e revisar a SPEC/barra de `AUD20-01`, preservando os dois P0 e os negativos P1 da auditoria 0567; não iniciar código, re-selo ou qualificação externa antes do gate aplicável e manter staging real e produção `NO_GO`.
+- evidence: `docs/04_audit/0567_aud19_delivery_reaudit_2026-09-20.md`, `docs/03_build/0333_aud20260920_roadmap.md`, `docs/03_build/0334_aud20260920_backlog.md`.

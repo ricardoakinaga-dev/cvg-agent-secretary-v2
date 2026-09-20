@@ -1826,3 +1826,17 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 - [ ] `AUD19-13..14`: `BLOCKED` até provider/canal/IdP/RAG e RPO/RTO/rollback/piloto terem ambientes e autoridades próprios; `AUD19-15` também está `BLOCKED` pelas dependências e exigirá aprovação humana ao chegar ao gate final.
 - **Estado:** `AUD19-01..12` `COMPLETED` em 2026-09-20; selo local `CONDITIONAL_GO` / `AAA_CANDIDATE` elegível `STAGING`; staging real e produção `NO_GO`; `AUD19-13..15` `BLOCKED` externamente.
 - **Próxima ação:** obter autorização, ambiente e owners externos para AUD19-13..15 (provider, canal, IdP, RAG, RPO/RTO, rollback, piloto e sign-off) e manter staging real e produção `NO_GO`.
+
+> Estado histórico: a conclusão declarada acima foi supersedida pela auditoria 0567. Não usar os checks AUD19 como autorização ou estado corrente.
+
+# AUD20-REM-20260920 — remediação pós-entrega AUD19
+
+- [x] Publicar [reauditoria 0567](04_audit/0567_aud19_delivery_reaudit_2026-09-20.md), [roadmap 0333](03_build/0333_aud20260920_roadmap.md) e [backlog 0334](03_build/0334_aud20260920_backlog.md).
+- [ ] `AUD20-01` `READY_FOR_NEXT_STEP`: congelar SPEC/barra, negativos, matriz e ownership; atividade documental/revisão, sem BUILD implícito.
+- [ ] `AUD20-02..05` `BLOCKED`: eval irredutível; lineage/concorrência E2E; dedupe durante retenção; binding da atestação e privilégios do replay.
+- [ ] `AUD20-06..08` `BLOCKED`: crítico/mutation candidate-bound; rebuild/digests do mesmo candidato; checker documental e caps arquiteturais.
+- [ ] `AUD20-09..11` `BLOCKED`: holdout integrado, observabilidade conectada e composição API+worker+DB staging-like.
+- [ ] `AUD20-12` `BLOCKED`: reauditoria e re-selo local somente após zero P0/P1.
+- [ ] `AUD20-13..15` `BLOCKED`: Opção A registrada, porém inputs, owners, ambiente e gates anteriores ausentes; sign-off humano apenas com dossiê completo.
+- **Estado:** entrega local `PARTIAL PASS`; conclusão integral e staging `FAIL / NO_GO`; produção `NO_GO`.
+- **Próxima ação:** preparar e revisar a SPEC/barra de `AUD20-01`, preservando os dois P0 e os negativos P1 da auditoria 0567; não iniciar código, re-selo ou qualificação externa antes do gate aplicável.

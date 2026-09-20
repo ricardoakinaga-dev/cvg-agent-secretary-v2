@@ -1,5 +1,9 @@
 # 0301 — Roadmap
 
+## Roadmap corrente pós-reauditoria — 2026-09-20
+
+Consultar [0333_aud20260920_roadmap.md](0333_aud20260920_roadmap.md) e [0334_aud20260920_backlog.md](0334_aud20260920_backlog.md). O programa AUD19 abaixo é histórico; staging real e produção permanecem `NO_GO`.
+
 ## Programa de remediação pós-auditoria de 19/09/2026
 
 Consultar [roadmap 0331](0331_aud20260919_roadmap.md), [backlog 0332](0332_aud20260919_backlog.md) e [auditoria 0566](../04_audit/0566_full_repository_gauntlet_audit_2026-09-19.md). Os marcos M0–M7 corrigem primeiro contrato/certificação e idempotência concorrente, depois dados, qualidade, operação, staging-like e somente então gates externos/humanos. Nenhum marco concede BUILD ou release por si só.

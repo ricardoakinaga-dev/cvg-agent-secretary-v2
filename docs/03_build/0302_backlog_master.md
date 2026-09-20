@@ -1,5 +1,9 @@
 # 0302 — Backlog Master
 
+## Backlog corrente pós-reauditoria — 2026-09-20
+
+O programa corrente é `AUD20-REM`: [roadmap 0333](0333_aud20260920_roadmap.md) e [backlog 0334](0334_aud20260920_backlog.md). `AUD20-01` está `READY_FOR_NEXT_STEP` apenas para SPEC/barra; tasks técnicas permanecem `BLOCKED`. O estado AUD19 abaixo é histórico e foi supersedido pela auditoria 0567.
+
 ## Programa de remediação pós-auditoria de 19/09/2026
 
 O [backlog 0332](0332_aud20260919_backlog.md) é a fonte operacional das 15 tasks `AUD19`, derivadas da [auditoria 0566](../04_audit/0566_full_repository_gauntlet_audit_2026-09-19.md) e ordenadas pelo [roadmap 0331](0331_aud20260919_roadmap.md). O índice canônico de estado é [docs/CURRENT.md](../CURRENT.md). `AUD19-01` está `COMPLETED`; as frentes de concorrência, dados e identidade (`AUD19-02..06`) estão `IN_PROGRESS`; `AUD19-07` é a próxima task `READY_FOR_NEXT_STEP`; `AUD19-08..15` seguem `BLOCKED` por dependências técnicas, externas ou humanas. `AUD19-15` só avançará para `WAITING_HUMAN_APPROVAL` quando o dossiê estiver apto à decisão. O veredito corrente é `FAIL / NO_GO` para o gate AAA/staging e `NO_GO` para produção.
