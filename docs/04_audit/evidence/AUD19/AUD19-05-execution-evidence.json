@@ -1,0 +1,486 @@
+{
+  "task": "AUD19-05",
+  "program": "AUD19-REM",
+  "finding": "P1-DATA-01 (privacidade e retenção declarativas)",
+  "status": "IMPLEMENTED (mecanismo manual fail-closed); ativação operacional WAITING_HUMAN_APPROVAL",
+  "generated_at": "2026-09-20T02:40:51.832Z",
+  "worktree_head": "9848ec0c5a4d29cb0b3df424a9fe85f623466b58",
+  "environment": {
+    "node": "v22.23.2",
+    "postgres": "PostgreSQL 16.15 (local, disposable)",
+    "database": "127.0.0.1:5434/cvg_test (synthetic fixtures only; no real data)"
+  },
+  "files": {
+    "created": [
+      "packages/persistence/migrations/0025_retention_ledger.sql",
+      "packages/persistence/src/retention.ts",
+      "packages/persistence/src/__tests__/retention.test.ts",
+      "packages/persistence/src/__tests__/retention-postgres.test.ts",
+      "docs/04_audit/evidence/AUD19/AUD19-05-data-retention-map.md"
+    ],
+    "modified": [
+      "packages/persistence/src/index.ts",
+      "packages/persistence/src/postgres.ts"
+    ],
+    "sha256": {
+      "packages/persistence/migrations/0025_retention_ledger.sql": "df5638bedb0176809f9cf39fe038c79ff23027236f7efbbb6689c085c15fc49d",
+      "packages/persistence/src/retention.ts": "f2ebfa7ef40b323bf6424b336fd1507336fa72c44d14aa1bb4660c68fa6e5636",
+      "packages/persistence/src/__tests__/retention.test.ts": "e3d3c5658b3b1a95e6289b5b4ff7dbd0ce0ae1df90fff52e941d1ba2c9b9218d",
+      "packages/persistence/src/__tests__/retention-postgres.test.ts": "88cb5b738bf130c5efe600e7e1aac37c23d70a295f0793cc80a7261914b7ce18",
+      "packages/persistence/src/index.ts": "f50000b26138a2f49f74af019a9d0dd7e3cb0b9f8b704a4a7b255ee34e35ed4e",
+      "packages/persistence/src/postgres.ts": "525ef71db3a7a3385fa141ba912130ead6311a19ff9af9e800c134cf8b3cd92d"
+    }
+  },
+  "commands": [
+    {
+      "command": "TEST_DATABASE_URL=\"postgres://postgres:***@127.0.0.1:5434/cvg_test\" npx vitest run packages/persistence/src/__tests__/retention.test.ts packages/persistence/src/__tests__/retention-postgres.test.ts packages/persistence/src/__tests__/postgres-migration-smoke.test.ts --no-file-parallelism --maxWorkers=2",
+      "exit": 0,
+      "result": "Test Files 3 passed (3); Tests 39 passed (39); Duration 5.26s",
+      "per_file": {
+        "packages/persistence/src/__tests__/retention.test.ts": 27,
+        "packages/persistence/src/__tests__/retention-postgres.test.ts": 3,
+        "packages/persistence/src/__tests__/postgres-migration-smoke.test.ts": 9
+      }
+    },
+    {
+      "command": "npx tsc -p tsconfig.typecheck.json --noEmit",
+      "exit": 0,
+      "result": "no diagnostics"
+    },
+    {
+      "command": "npx eslint packages/persistence/src/retention.ts packages/persistence/src/index.ts packages/persistence/src/postgres.ts packages/persistence/src/__tests__/retention.test.ts packages/persistence/src/__tests__/retention-postgres.test.ts",
+      "exit": 0,
+      "result": "no findings"
+    },
+    {
+      "command": "npx prettier --check packages/persistence/src/retention.ts packages/persistence/src/index.ts packages/persistence/src/postgres.ts packages/persistence/src/__tests__/retention.test.ts packages/persistence/src/__tests__/retention-postgres.test.ts",
+      "exit": 0,
+      "result": "All matched files use Prettier code style!"
+    }
+  ],
+  "expected_invariants": {
+    "tenant_a_first_run": {
+      "effect_journal": {
+        "status": "EXECUTED",
+        "deleted": 1,
+        "redacted": 0,
+        "preservedHold": 1
+      },
+      "orchestrator_goals": {
+        "status": "EXECUTED",
+        "deleted": 0,
+        "redacted": 1,
+        "preservedHold": 1
+      },
+      "runtime_approvals": {
+        "status": "SKIPPED_NO_POLICY",
+        "reason": "missing_approval"
+      },
+      "inbound_idempotency": {
+        "status": "SKIPPED_NO_POLICY",
+        "reason": "no_policy_configured"
+      },
+      "outbox_events": {
+        "status": "SKIPPED_NO_POLICY",
+        "reason": "no_policy_configured"
+      }
+    },
+    "tenant_a_second_run": "all approved targets report deletedCount=0 and redactedCount=0; persisted row counts unchanged",
+    "cross_tenant": "tenant B rows (incl. held) untouched; ledger not visible under tenant B context; context mismatch rejected",
+    "ledger": "metadata only (no eliminated content), batch_hash sha256 valid for every row"
+  },
+  "postgres_invariants_raw": {
+    "schema": "cvg_aud1905_inv_1789872008468_920a",
+    "tenant_a_first_run": [
+      {
+        "targetId": "inbound_idempotency",
+        "status": "SKIPPED_NO_POLICY",
+        "reason": "no_policy_configured",
+        "action": "none",
+        "deletedCount": 0,
+        "redactedCount": 0,
+        "preservedHoldCount": 0,
+        "windowStart": "2026-09-19T12:00:00.000Z",
+        "windowEnd": "2026-09-19T12:00:00.000Z",
+        "batchHash": "e719e1a185823a3abb780612544c9b6dd785b3e0e70ff6d1df388bf0ef5557e7",
+        "policyId": null,
+        "ledgerId": "erasure_4692d879-f0fa-45c7-8971-6684300a7f88"
+      },
+      {
+        "targetId": "runtime_approvals",
+        "status": "SKIPPED_NO_POLICY",
+        "reason": "no_policy_configured",
+        "action": "none",
+        "deletedCount": 0,
+        "redactedCount": 0,
+        "preservedHoldCount": 0,
+        "windowStart": "2026-09-19T12:00:00.000Z",
+        "windowEnd": "2026-09-19T12:00:00.000Z",
+        "batchHash": "0cc6d468797fe6e202aa08e935586f86e1646a694f6343d63a4988a08a78dc0e",
+        "policyId": null,
+        "ledgerId": "erasure_f034b2fd-fd38-45b2-bc7a-2bf7ac2354dc"
+      },
+      {
+        "targetId": "outbox_events",
+        "status": "SKIPPED_NO_POLICY",
+        "reason": "no_policy_configured",
+        "action": "none",
+        "deletedCount": 0,
+        "redactedCount": 0,
+        "preservedHoldCount": 0,
+        "windowStart": "2026-09-19T12:00:00.000Z",
+        "windowEnd": "2026-09-19T12:00:00.000Z",
+        "batchHash": "2e9bac3c6b1868793a962585c4f7513bd2c9f7df43d365728ac312b163a6e591",
+        "policyId": null,
+        "ledgerId": "erasure_cf20ba36-ee69-4007-a0db-433f686ad963"
+      },
+      {
+        "targetId": "effect_journal",
+        "status": "EXECUTED",
+        "reason": null,
+        "action": "delete",
+        "deletedCount": 1,
+        "redactedCount": 0,
+        "preservedHoldCount": 1,
+        "windowStart": "1970-01-01T00:00:00.000Z",
+        "windowEnd": "2026-08-20T12:00:00.000Z",
+        "batchHash": "e65a16dbffd183978c1652023b8398be7e02f026b80b907aff3e2edba2da6b5e",
+        "policyId": "POL-D05-3-JOURNAL",
+        "ledgerId": "erasure_961c10fa-d3f9-4023-9ba6-08e2c01533a1"
+      },
+      {
+        "targetId": "orchestrator_goals",
+        "status": "EXECUTED",
+        "reason": null,
+        "action": "redact",
+        "deletedCount": 0,
+        "redactedCount": 1,
+        "preservedHoldCount": 1,
+        "windowStart": "1970-01-01T00:00:00.000Z",
+        "windowEnd": "2026-08-20T12:00:00.000Z",
+        "batchHash": "35ea706fe18cf426cac5e661b58c8bc3c8db6268721cd5839b7bd68ae86da98d",
+        "policyId": "POL-AUD19-05-GOALS",
+        "ledgerId": "erasure_1c33fb08-4323-48a4-ae3e-6320a58791a7"
+      }
+    ],
+    "tenant_a_second_run": [
+      {
+        "targetId": "inbound_idempotency",
+        "status": "SKIPPED_NO_POLICY",
+        "reason": "no_policy_configured",
+        "action": "none",
+        "deletedCount": 0,
+        "redactedCount": 0,
+        "preservedHoldCount": 0,
+        "windowStart": "2026-09-19T12:00:00.000Z",
+        "windowEnd": "2026-09-19T12:00:00.000Z",
+        "batchHash": "e719e1a185823a3abb780612544c9b6dd785b3e0e70ff6d1df388bf0ef5557e7",
+        "policyId": null,
+        "ledgerId": "erasure_16decedd-f0de-40a4-b590-c8c7e266765f"
+      },
+      {
+        "targetId": "runtime_approvals",
+        "status": "SKIPPED_NO_POLICY",
+        "reason": "no_policy_configured",
+        "action": "none",
+        "deletedCount": 0,
+        "redactedCount": 0,
+        "preservedHoldCount": 0,
+        "windowStart": "2026-09-19T12:00:00.000Z",
+        "windowEnd": "2026-09-19T12:00:00.000Z",
+        "batchHash": "0cc6d468797fe6e202aa08e935586f86e1646a694f6343d63a4988a08a78dc0e",
+        "policyId": null,
+        "ledgerId": "erasure_9fd659a1-e835-462f-b553-97840ed8258b"
+      },
+      {
+        "targetId": "outbox_events",
+        "status": "SKIPPED_NO_POLICY",
+        "reason": "no_policy_configured",
+        "action": "none",
+        "deletedCount": 0,
+        "redactedCount": 0,
+        "preservedHoldCount": 0,
+        "windowStart": "2026-09-19T12:00:00.000Z",
+        "windowEnd": "2026-09-19T12:00:00.000Z",
+        "batchHash": "2e9bac3c6b1868793a962585c4f7513bd2c9f7df43d365728ac312b163a6e591",
+        "policyId": null,
+        "ledgerId": "erasure_22ad2959-a4e0-44c4-b050-301f519dec2a"
+      },
+      {
+        "targetId": "effect_journal",
+        "status": "EXECUTED",
+        "reason": null,
+        "action": "delete",
+        "deletedCount": 0,
+        "redactedCount": 0,
+        "preservedHoldCount": 1,
+        "windowStart": "1970-01-01T00:00:00.000Z",
+        "windowEnd": "2026-08-20T12:00:00.000Z",
+        "batchHash": "e65a16dbffd183978c1652023b8398be7e02f026b80b907aff3e2edba2da6b5e",
+        "policyId": "POL-D05-3-JOURNAL",
+        "ledgerId": "erasure_528aca15-9028-49d3-95d1-85df09701b4c"
+      },
+      {
+        "targetId": "orchestrator_goals",
+        "status": "EXECUTED",
+        "reason": null,
+        "action": "redact",
+        "deletedCount": 0,
+        "redactedCount": 0,
+        "preservedHoldCount": 1,
+        "windowStart": "1970-01-01T00:00:00.000Z",
+        "windowEnd": "2026-08-20T12:00:00.000Z",
+        "batchHash": "35ea706fe18cf426cac5e661b58c8bc3c8db6268721cd5839b7bd68ae86da98d",
+        "policyId": "POL-AUD19-05-GOALS",
+        "ledgerId": "erasure_95a70438-a810-4e6b-842f-a5a970352740"
+      }
+    ],
+    "effect_journal_rows": [
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "operation_key": "fx_a_old_held",
+        "state": "CONFIRMED"
+      },
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "operation_key": "fx_a_old_uncertain",
+        "state": "UNCERTAIN"
+      },
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "operation_key": "fx_a_recent_confirmed",
+        "state": "CONFIRMED"
+      },
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b2",
+        "operation_key": "fx_b_old_confirmed",
+        "state": "CONFIRMED"
+      },
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b2",
+        "operation_key": "fx_b_old_held",
+        "state": "CONFIRMED"
+      }
+    ],
+    "orchestrator_goals_rows": [
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "id": "goal_a_old_completed",
+        "status": "COMPLETED",
+        "objective": "[redacted:retention]"
+      },
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "id": "goal_a_old_held",
+        "status": "COMPLETED",
+        "objective": "KEEP-HELD-GOAL-A"
+      },
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "id": "goal_a_old_uncertain",
+        "status": "UNCERTAIN",
+        "objective": "KEEP-UNCERTAIN-A"
+      },
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b2",
+        "id": "goal_b_old_completed",
+        "status": "COMPLETED",
+        "objective": "KEEP-TENANT-B-GOAL"
+      }
+    ],
+    "runtime_approvals_rows": [
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "approval_id": "approval_a_old",
+        "status": "EXECUTED",
+        "proposal_payload": {
+          "secret": "SENSITIVE-APPROVAL-A"
+        }
+      }
+    ],
+    "retention_holds_rows": [
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "id": "hold_a_goal",
+        "target_id": "orchestrator_goals",
+        "record_id": "goal_a_old_held",
+        "approved_by": "synthetic.operator"
+      },
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "id": "hold_a_journal",
+        "target_id": "effect_journal",
+        "record_id": "fx_a_old_held",
+        "approved_by": "synthetic.operator"
+      },
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b2",
+        "id": "hold_b_journal",
+        "target_id": "effect_journal",
+        "record_id": "fx_b_old_held",
+        "approved_by": "synthetic.operator"
+      }
+    ],
+    "ledger_rows": [
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "target_id": "effect_journal",
+        "action": "delete",
+        "outcome": "EXECUTED",
+        "reason": null,
+        "policy_id": "POL-D05-3-JOURNAL",
+        "policy_approved_by": "synthetic-aud19-05",
+        "policy_approved_at": "2026-09-13T17:00:13.688Z",
+        "deleted_count": 0,
+        "redacted_count": 0,
+        "preserved_hold_count": 1,
+        "batch_hash": "e65a16dbffd183978c1652023b8398be7e02f026b80b907aff3e2edba2da6b5e"
+      },
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "target_id": "effect_journal",
+        "action": "delete",
+        "outcome": "EXECUTED",
+        "reason": null,
+        "policy_id": "POL-D05-3-JOURNAL",
+        "policy_approved_by": "synthetic-aud19-05",
+        "policy_approved_at": "2026-09-13T17:00:13.688Z",
+        "deleted_count": 1,
+        "redacted_count": 0,
+        "preserved_hold_count": 1,
+        "batch_hash": "e65a16dbffd183978c1652023b8398be7e02f026b80b907aff3e2edba2da6b5e"
+      },
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "target_id": "inbound_idempotency",
+        "action": "none",
+        "outcome": "SKIPPED_NO_POLICY",
+        "reason": "no_policy_configured",
+        "policy_id": null,
+        "policy_approved_by": null,
+        "policy_approved_at": null,
+        "deleted_count": 0,
+        "redacted_count": 0,
+        "preserved_hold_count": 0,
+        "batch_hash": "e719e1a185823a3abb780612544c9b6dd785b3e0e70ff6d1df388bf0ef5557e7"
+      },
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "target_id": "inbound_idempotency",
+        "action": "none",
+        "outcome": "SKIPPED_NO_POLICY",
+        "reason": "no_policy_configured",
+        "policy_id": null,
+        "policy_approved_by": null,
+        "policy_approved_at": null,
+        "deleted_count": 0,
+        "redacted_count": 0,
+        "preserved_hold_count": 0,
+        "batch_hash": "e719e1a185823a3abb780612544c9b6dd785b3e0e70ff6d1df388bf0ef5557e7"
+      },
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "target_id": "orchestrator_goals",
+        "action": "redact",
+        "outcome": "EXECUTED",
+        "reason": null,
+        "policy_id": "POL-AUD19-05-GOALS",
+        "policy_approved_by": "synthetic-aud19-05",
+        "policy_approved_at": "2026-09-13T17:00:13.688Z",
+        "deleted_count": 0,
+        "redacted_count": 1,
+        "preserved_hold_count": 1,
+        "batch_hash": "35ea706fe18cf426cac5e661b58c8bc3c8db6268721cd5839b7bd68ae86da98d"
+      },
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "target_id": "orchestrator_goals",
+        "action": "redact",
+        "outcome": "EXECUTED",
+        "reason": null,
+        "policy_id": "POL-AUD19-05-GOALS",
+        "policy_approved_by": "synthetic-aud19-05",
+        "policy_approved_at": "2026-09-13T17:00:13.688Z",
+        "deleted_count": 0,
+        "redacted_count": 0,
+        "preserved_hold_count": 1,
+        "batch_hash": "35ea706fe18cf426cac5e661b58c8bc3c8db6268721cd5839b7bd68ae86da98d"
+      },
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "target_id": "outbox_events",
+        "action": "none",
+        "outcome": "SKIPPED_NO_POLICY",
+        "reason": "no_policy_configured",
+        "policy_id": null,
+        "policy_approved_by": null,
+        "policy_approved_at": null,
+        "deleted_count": 0,
+        "redacted_count": 0,
+        "preserved_hold_count": 0,
+        "batch_hash": "2e9bac3c6b1868793a962585c4f7513bd2c9f7df43d365728ac312b163a6e591"
+      },
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "target_id": "outbox_events",
+        "action": "none",
+        "outcome": "SKIPPED_NO_POLICY",
+        "reason": "no_policy_configured",
+        "policy_id": null,
+        "policy_approved_by": null,
+        "policy_approved_at": null,
+        "deleted_count": 0,
+        "redacted_count": 0,
+        "preserved_hold_count": 0,
+        "batch_hash": "2e9bac3c6b1868793a962585c4f7513bd2c9f7df43d365728ac312b163a6e591"
+      },
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "target_id": "runtime_approvals",
+        "action": "none",
+        "outcome": "SKIPPED_NO_POLICY",
+        "reason": "no_policy_configured",
+        "policy_id": null,
+        "policy_approved_by": null,
+        "policy_approved_at": null,
+        "deleted_count": 0,
+        "redacted_count": 0,
+        "preserved_hold_count": 0,
+        "batch_hash": "0cc6d468797fe6e202aa08e935586f86e1646a694f6343d63a4988a08a78dc0e"
+      },
+      {
+        "tenant_id": "tenant_00000000-0000-4000-8000-0000000000b1",
+        "target_id": "runtime_approvals",
+        "action": "none",
+        "outcome": "SKIPPED_NO_POLICY",
+        "reason": "no_policy_configured",
+        "policy_id": null,
+        "policy_approved_by": null,
+        "policy_approved_at": null,
+        "deleted_count": 0,
+        "redacted_count": 0,
+        "preserved_hold_count": 0,
+        "batch_hash": "0cc6d468797fe6e202aa08e935586f86e1646a694f6343d63a4988a08a78dc0e"
+      }
+    ],
+    "ledger_batch_hash_valid": {
+      "valid": true
+    }
+  },
+  "pending_human_decisions": [
+    "Approve/reject minimization-expiration policy for orchestrator_goals and lineage (FK RESTRICT ordering).",
+    "Approve/reject outbox payload minimization and fate of attempts/effects/quarantine.",
+    "Approve/reject runtime_approvals terminal minimization fields.",
+    "Define audit evidence retention (audit_events, runtime_audit_events, audit_evidence_checkpoints).",
+    "Define messages/conversations/tool_calls/drafts retention mechanics (D02 approves 24h TTL only).",
+    "Decide channel_effect_journal composite identity target and webhook_replay_events cleaner.",
+    "Ratify D05-3/4 authority nominally and name the operator owner for holds/sweep.",
+    "Decide whether the sweep is scheduled in a future topology (AUD19-11/12)."
+  ],
+  "notes": [
+    "No automatic sweep is wired into the worker or production; only the manual runTenantRetentionSweep entry point exists and the module has no import side effects.",
+    "Migration 0025 is additive (CREATE TABLE IF NOT EXISTS only), applied through the checksum-guarded transactional runner; values were not changed in existing migrations.",
+    "Worktree is shared with concurrent AUD19 tasks and requester documentation changes; only the files listed above belong to AUD19-05.",
+    "Full-repo npm test was not run; the mandatory scoped suites (including migration smoke) and typecheck/lint/format are green."
+  ]
+}
