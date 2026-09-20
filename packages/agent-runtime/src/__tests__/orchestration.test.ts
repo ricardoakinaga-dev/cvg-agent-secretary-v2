@@ -19,6 +19,7 @@ import {
 const TENANT = 'tenant_00000000-0000-4000-8000-000000000001'
 const OTHER_TENANT = 'tenant_00000000-0000-4000-8000-000000000002'
 const CORRELATION = 'corr_00000000-0000-4000-8000-000000000001'
+const OTHER_CORRELATION = 'corr_00000000-0000-4000-8000-000000000002'
 const NOW = new Date('2026-09-15T12:00:00.000Z')
 
 function intent(action: string): PlanStepDraft['intent'] {
@@ -863,6 +864,75 @@ describe('durable Goal/Plan/Step orchestration', () => {
     })
     expect(stopped.status).toBe('LOOP_DETECTED')
     expect(stopped.budget.usage.iterations).toBe(1)
+  })
+
+  it('reuses one canonical Goal for concurrent or repeated inbound deliveries', async () => {
+    const store = new InMemoryGoalPlanStore({ clock: () => NOW })
+    const inboundMessageId = 'msg_synthetic_concurrent_delivery'
+    const input: CreateGoalInput = {
+      tenantId: TENANT,
+      inboundMessageId,
+      conversationId: 'conversation_concurrent',
+      objective: 'Synthetic concurrent first delivery',
+      successCriteria: [
+        {
+          kind: 'EVENT',
+          eventType: 'schedule.read.executed',
+          source: 'outbox',
+          correlationId: CORRELATION
+        }
+      ],
+      correlationId: CORRELATION,
+      plannerContext: { messageId: inboundMessageId, envelope: 'winner' }
+    }
+    const deliveries = await Promise.all([
+      store.getOrCreateGoal(input),
+      store.getOrCreateGoal(input),
+      store.getOrCreateGoal(input)
+    ])
+    expect(new Set(deliveries.map((goal) => goal.id)).size).toBe(1)
+
+    const redelivered = await store.getOrCreateGoal({
+      ...input,
+      objective: 'Synthetic redelivery must not overwrite the canonical Goal'
+    })
+    expect(redelivered.id).toBe(deliveries[0]!.id)
+    expect(redelivered.objective).toBe(input.objective)
+    expect(redelivered.plannerContext).toEqual({
+      messageId: inboundMessageId,
+      envelope: 'winner'
+    })
+
+    await expect(
+      store.getOrCreateGoal({ ...input, correlationId: OTHER_CORRELATION })
+    ).rejects.toMatchObject({ code: 'conflict' })
+
+    const divergentMessageId = 'msg_synthetic_divergent_context'
+    await store.createGoal({
+      ...input,
+      inboundMessageId: divergentMessageId,
+      plannerContext: {
+        messageId: 'msg_synthetic_other_context',
+        envelope: 'divergent'
+      }
+    })
+    await expect(
+      store.getOrCreateGoal({
+        ...input,
+        inboundMessageId: divergentMessageId,
+        plannerContext: { messageId: divergentMessageId }
+      })
+    ).rejects.toMatchObject({ code: 'conflict' })
+
+    const otherTenant = await store.getOrCreateGoal({
+      ...input,
+      tenantId: OTHER_TENANT
+    })
+    expect(otherTenant.id).not.toBe(deliveries[0]!.id)
+    expect(
+      await store.getGoalByInboundMessage(TENANT, inboundMessageId)
+    ).toMatchObject({ id: deliveries[0]!.id, correlationId: CORRELATION })
+    expect(await store.listGoals(OTHER_TENANT)).toHaveLength(1)
   })
 
   it('keeps tenant scope and budget across a new orchestrator instance', async () => {

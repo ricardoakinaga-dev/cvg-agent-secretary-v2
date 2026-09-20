@@ -842,47 +842,46 @@ export function createPostgresKernelRuntime(
     goalInput: DurableKernelGoalInput
   ): Promise<OrchestrationRunResult> => {
     const correlationId = CorrelationIdSchema.parse(goalInput.correlationId)
-    let goal = await goalStore.getGoalByInboundMessage(
+    // Linearizable get-or-create: concurrent or repeated first deliveries of
+    // the same inbound message converge on one canonical Goal in the store
+    // instead of racing a plain INSERT into a unique violation (23505) and a
+    // spurious retry/DLQ. Reuse validates tenant, inbound message, correlation
+    // and planner context lineage and fails closed on an incompatible Goal.
+    const goal = await goalStore.getOrCreateGoal({
       tenantId,
-      goalInput.context.message.id
-    )
-    if (goal === null) {
-      goal = await goalStore.createGoal({
-        tenantId,
-        inboundMessageId: goalInput.context.message.id,
-        ...(goalInput.context.session !== null
-          ? { sessionId: goalInput.context.session.id }
-          : {}),
-        conversationId: goalInput.context.message.conversationId,
-        objective: goalInput.envelope.task ?? goalInput.envelope.message,
-        successCriteria: [
-          {
-            kind: 'EVENT',
-            eventType: `${goalInput.envelope.capability}.executed`,
-            source: 'outbox',
-            correlationId
-          }
-        ],
-        correlationId,
-        plannerContext: {
-          messageId: goalInput.context.message.id,
-          sessionId: goalInput.context.session?.id ?? null,
-          envelope: goalInput.envelope,
-          ...(goalInput.traceContext !== undefined
-            ? { traceId: goalInput.traceContext.traceId }
-            : {})
-        },
-        executionSnapshot: {
-          agentVersion: goalInput.envelope.agentVersion,
-          promptVersion: CONTROLLED_KERNEL_PROMPT_VERSION,
-          policyVersion: `${CONTROLLED_KERNEL_POLICY_ID}@${CONTROLLED_KERNEL_POLICY_VERSION}`,
-          modelProfile: goalInput.envelope.modelProfile,
-          toolVersions: { 'controlled-kernel-tool': '1.0.0' },
-          runtimeMode: 'kernel',
-          runtimeVersion: CONTROLLED_KERNEL_RUNTIME_VERSION
+      inboundMessageId: goalInput.context.message.id,
+      ...(goalInput.context.session !== null
+        ? { sessionId: goalInput.context.session.id }
+        : {}),
+      conversationId: goalInput.context.message.conversationId,
+      objective: goalInput.envelope.task ?? goalInput.envelope.message,
+      successCriteria: [
+        {
+          kind: 'EVENT',
+          eventType: `${goalInput.envelope.capability}.executed`,
+          source: 'outbox',
+          correlationId
         }
-      })
-    }
+      ],
+      correlationId,
+      plannerContext: {
+        messageId: goalInput.context.message.id,
+        sessionId: goalInput.context.session?.id ?? null,
+        envelope: goalInput.envelope,
+        ...(goalInput.traceContext !== undefined
+          ? { traceId: goalInput.traceContext.traceId }
+          : {})
+      },
+      executionSnapshot: {
+        agentVersion: goalInput.envelope.agentVersion,
+        promptVersion: CONTROLLED_KERNEL_PROMPT_VERSION,
+        policyVersion: `${CONTROLLED_KERNEL_POLICY_ID}@${CONTROLLED_KERNEL_POLICY_VERSION}`,
+        modelProfile: goalInput.envelope.modelProfile,
+        toolVersions: { 'controlled-kernel-tool': '1.0.0' },
+        runtimeMode: 'kernel',
+        runtimeVersion: CONTROLLED_KERNEL_RUNTIME_VERSION
+      }
+    })
     assertControlledKernelSnapshot(goal.executionSnapshot, goalInput.envelope)
     if (
       !['COMPLETED', 'BLOCKED', 'FAILED', 'CANCELLED'].includes(goal.status)

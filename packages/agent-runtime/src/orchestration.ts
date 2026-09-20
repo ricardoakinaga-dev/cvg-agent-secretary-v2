@@ -573,6 +573,15 @@ export interface RecoverExpiredLeaseInput {
 
 export interface GoalPlanStore {
   createGoal(input: CreateGoalInput): Promise<Goal>
+  /**
+   * Idempotent Goal creation keyed by the tenant-scoped inbound message id.
+   * Concurrent or repeated deliveries converge on one canonical Goal; an
+   * existing Goal is reused only when its tenant, inbound message and
+   * correlation lineage match the input, otherwise this fails closed with
+   * `OrchestrationError('conflict')`. Without an inbound message id it
+   * behaves like {@link createGoal}.
+   */
+  getOrCreateGoal(input: CreateGoalInput): Promise<Goal>
   getGoal(tenantId: OrchestrationTenantId, goalId: string): Promise<Goal | null>
   getGoalByCorrelation(
     tenantId: OrchestrationTenantId,
@@ -1291,6 +1300,46 @@ export function effectiveGoalDeadline(
   )
 }
 
+function plannerContextMessageId(plannerContext: unknown): string | null {
+  if (
+    plannerContext === null ||
+    plannerContext === undefined ||
+    typeof plannerContext !== 'object'
+  ) {
+    return null
+  }
+  const messageId = (plannerContext as { messageId?: unknown }).messageId
+  return typeof messageId === 'string' ? messageId : null
+}
+
+/**
+ * Shared reuse contract: a Goal already bound to the same tenant-scoped
+ * inbound message may only be adopted when its correlation lineage and
+ * planner context agree with the incoming delivery. The error never echoes
+ * stored values, so a mismatched caller cannot read another context.
+ */
+export function assertGoalReuseCompatibility(
+  existing: Goal,
+  input: Pick<
+    CreateGoalInput,
+    'tenantId' | 'inboundMessageId' | 'correlationId'
+  >
+): void {
+  const contextMessageId = plannerContextMessageId(existing.plannerContext)
+  if (
+    existing.tenantId !== input.tenantId ||
+    existing.inboundMessageId === null ||
+    existing.inboundMessageId !== input.inboundMessageId ||
+    existing.correlationId !== input.correlationId ||
+    (contextMessageId !== null && contextMessageId !== input.inboundMessageId)
+  ) {
+    throw new OrchestrationError(
+      'conflict',
+      'Goal creation conflict: the inbound message is bound to an incompatible Goal'
+    )
+  }
+}
+
 /** In-memory durable-contract reference store used by unit tests and local controlled mode. */
 export class InMemoryGoalPlanStore implements GoalPlanStore {
   private readonly goals = new Map<string, Goal>()
@@ -1365,6 +1414,28 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
     }
     this.goals.set(this.key(tenantId, goal.id), clone(goal))
     return clone(goal)
+  }
+
+  async getOrCreateGoal(input: CreateGoalInput): Promise<Goal> {
+    const scope = validateTenant(input.tenantId)
+    CorrelationIdSchema.parse(input.correlationId)
+    const inboundMessageId = input.inboundMessageId
+    if (inboundMessageId === undefined) return this.createGoal(input)
+    if (!inboundMessageId.trim() || inboundMessageId.length > 200) {
+      throw new OrchestrationError(
+        'invalid_plan',
+        'Inbound message id is invalid'
+      )
+    }
+    const existing = [...this.goals.values()].find(
+      (goal) =>
+        goal.tenantId === scope && goal.inboundMessageId === inboundMessageId
+    )
+    if (existing) {
+      assertGoalReuseCompatibility(existing, input)
+      return clone(existing)
+    }
+    return this.createGoal(input)
   }
 
   async getGoal(

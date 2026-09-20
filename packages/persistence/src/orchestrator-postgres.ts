@@ -2,6 +2,7 @@ import { createDomainId, CorrelationIdSchema } from '@cvg/shared'
 import { TenantIdSchema } from '@cvg/platform'
 import type { QueryResultRow } from 'pg'
 import {
+  assertGoalReuseCompatibility,
   assertGoalTransition,
   assertPlanTransition,
   assertPlanStepTransition,
@@ -388,6 +389,104 @@ async function one<T extends QueryResultRow>(
   return row
 }
 
+interface PreparedGoalInsert {
+  scope: OrchestrationTenantId
+  correlationId: string
+  inboundMessageId: string | null
+  values: unknown[]
+}
+
+const INSERT_GOAL_SQL = `INSERT INTO orchestrator_goals
+  (tenant_id, id, inbound_message_id, session_id, conversation_id, objective,
+   success_criteria, status, budget, budget_usage, deadline,
+   correlation_id, execution_snapshot, planner_context,
+   replan_fingerprints,
+   version, created_at, updated_at)
+ VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, 'OBSERVING', $8::jsonb,
+         $9::jsonb, $10, $11, $12::jsonb, $13::jsonb,
+         '[]'::jsonb, 1, $14, $14)
+ RETURNING *`
+
+// Concurrency contract: concurrent first deliveries of the same inbound
+// message must converge on one canonical Goal. The partial unique index
+// raises the conflict, and DO UPDATE returns the existing row atomically.
+// DO NOTHING followed by SELECT is avoided because the same statement
+// snapshot may not observe a row committed by the concurrent winner.
+const GET_OR_CREATE_GOAL_SQL = `INSERT INTO orchestrator_goals AS goal
+  (tenant_id, id, inbound_message_id, session_id, conversation_id, objective,
+   success_criteria, status, budget, budget_usage, deadline,
+   correlation_id, execution_snapshot, planner_context,
+   replan_fingerprints,
+   version, created_at, updated_at)
+ VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, 'OBSERVING', $8::jsonb,
+         $9::jsonb, $10, $11, $12::jsonb, $13::jsonb,
+         '[]'::jsonb, 1, $14, $14)
+ ON CONFLICT (tenant_id, inbound_message_id)
+   WHERE inbound_message_id IS NOT NULL
+ DO UPDATE SET updated_at = goal.updated_at
+ RETURNING *`
+
+function prepareGoalInsert(
+  input: CreateGoalInput,
+  createdAt: Date
+): PreparedGoalInsert {
+  const scope = tenantId(input.tenantId)
+  const correlationId = CorrelationIdSchema.parse(input.correlationId)
+  if (
+    input.inboundMessageId !== undefined &&
+    (!input.inboundMessageId.trim() || input.inboundMessageId.length > 200)
+  ) {
+    throw new OrchestrationError(
+      'invalid_plan',
+      'Inbound message id is invalid'
+    )
+  }
+  const budget = createExecutionBudget(input.budget)
+  const deadline = effectiveGoalDeadline(
+    createdAt,
+    input.deadline,
+    budget.maxDurationMs
+  )
+  const id = createDomainId('goal')
+  const snapshot: Goal['executionSnapshot'] = {
+    agentVersion: input.executionSnapshot?.agentVersion ?? null,
+    promptVersion: input.executionSnapshot?.promptVersion ?? null,
+    policyVersion: input.executionSnapshot?.policyVersion ?? null,
+    modelProfile: input.executionSnapshot?.modelProfile ?? null,
+    toolVersions: { ...(input.executionSnapshot?.toolVersions ?? {}) },
+    ...(input.executionSnapshot?.runtimeMode !== undefined
+      ? { runtimeMode: input.executionSnapshot.runtimeMode }
+      : {}),
+    ...(input.executionSnapshot?.runtimeVersion !== undefined
+      ? { runtimeVersion: input.executionSnapshot.runtimeVersion }
+      : {})
+  }
+  const inboundMessageId = input.inboundMessageId ?? null
+  return {
+    scope,
+    correlationId,
+    inboundMessageId,
+    values: [
+      scope,
+      id,
+      inboundMessageId,
+      input.sessionId ?? null,
+      input.conversationId ?? null,
+      input.objective,
+      JSON.stringify(input.successCriteria),
+      JSON.stringify(budgetLimits(budget)),
+      JSON.stringify(budget.usage),
+      deadline,
+      correlationId,
+      JSON.stringify(snapshot),
+      input.plannerContext === undefined
+        ? null
+        : JSON.stringify(input.plannerContext),
+      createdAt
+    ]
+  }
+}
+
 export class PostgresGoalPlanStore implements GoalPlanStore {
   constructor(
     private readonly pool: PostgresPoolLike,
@@ -395,71 +494,38 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
   ) {}
 
   async createGoal(input: CreateGoalInput): Promise<Goal> {
-    const scope = tenantId(input.tenantId)
-    const correlationId = CorrelationIdSchema.parse(input.correlationId)
-    if (
-      input.inboundMessageId !== undefined &&
-      (!input.inboundMessageId.trim() || input.inboundMessageId.length > 200)
-    ) {
-      throw new OrchestrationError(
-        'invalid_plan',
-        'Inbound message id is invalid'
-      )
-    }
-    const createdAt = this.clock()
-    const budget = createExecutionBudget(input.budget)
-    const deadline = effectiveGoalDeadline(
-      createdAt,
-      input.deadline,
-      budget.maxDurationMs
-    )
-    const id = createDomainId('goal')
-    const snapshot: Goal['executionSnapshot'] = {
-      agentVersion: input.executionSnapshot?.agentVersion ?? null,
-      promptVersion: input.executionSnapshot?.promptVersion ?? null,
-      policyVersion: input.executionSnapshot?.policyVersion ?? null,
-      modelProfile: input.executionSnapshot?.modelProfile ?? null,
-      toolVersions: { ...(input.executionSnapshot?.toolVersions ?? {}) },
-      ...(input.executionSnapshot?.runtimeMode !== undefined
-        ? { runtimeMode: input.executionSnapshot.runtimeMode }
-        : {}),
-      ...(input.executionSnapshot?.runtimeVersion !== undefined
-        ? { runtimeVersion: input.executionSnapshot.runtimeVersion }
-        : {})
-    }
-    return withTenantTransaction(this.pool, scope, async (client) => {
+    const prepared = prepareGoalInsert(input, this.clock())
+    return withTenantTransaction(this.pool, prepared.scope, async (client) => {
+      const row = await one<GoalRow>(client, INSERT_GOAL_SQL, prepared.values)
+      return toGoal(row)
+    })
+  }
+
+  /**
+   * Linearizable get-or-create keyed by the partial unique index on
+   * (tenant_id, inbound_message_id). Concurrent first deliveries converge on
+   * the winning row; an existing row is only adopted when its tenant,
+   * inbound message, correlation and planner context match the input, so an
+   * incompatible Goal fails closed instead of leaking another context.
+   */
+  async getOrCreateGoal(input: CreateGoalInput): Promise<Goal> {
+    const prepared = prepareGoalInsert(input, this.clock())
+    const inboundMessageId = prepared.inboundMessageId
+    return withTenantTransaction(this.pool, prepared.scope, async (client) => {
       const row = await one<GoalRow>(
         client,
-        `INSERT INTO orchestrator_goals
-           (tenant_id, id, inbound_message_id, session_id, conversation_id, objective,
-            success_criteria, status, budget, budget_usage, deadline,
-            correlation_id, execution_snapshot, planner_context,
-            replan_fingerprints,
-            version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, 'OBSERVING', $8::jsonb,
-                 $9::jsonb, $10, $11, $12::jsonb, $13::jsonb,
-                 '[]'::jsonb, 1, $14, $14)
-         RETURNING *`,
-        [
-          scope,
-          id,
-          input.inboundMessageId ?? null,
-          input.sessionId ?? null,
-          input.conversationId ?? null,
-          input.objective,
-          JSON.stringify(input.successCriteria),
-          JSON.stringify(budgetLimits(budget)),
-          JSON.stringify(budget.usage),
-          deadline,
-          correlationId,
-          JSON.stringify(snapshot),
-          input.plannerContext === undefined
-            ? null
-            : JSON.stringify(input.plannerContext),
-          createdAt
-        ]
+        inboundMessageId === null ? INSERT_GOAL_SQL : GET_OR_CREATE_GOAL_SQL,
+        prepared.values
       )
-      return toGoal(row)
+      const goal = toGoal(row)
+      if (inboundMessageId !== null) {
+        assertGoalReuseCompatibility(goal, {
+          tenantId: prepared.scope,
+          inboundMessageId,
+          correlationId: prepared.correlationId
+        })
+      }
+      return goal
     })
   }
 
