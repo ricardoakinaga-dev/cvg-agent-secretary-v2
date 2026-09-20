@@ -27,6 +27,32 @@ export function loadCriticalCoverageManifest(
   }
 }
 
+export const GLOBAL_COVERAGE_FLOORS = Object.freeze({
+  statements: 90,
+  branches: 85,
+  functions: 90,
+  lines: 90
+})
+
+export function evaluateGlobalCoverage({
+  summary,
+  floors = GLOBAL_COVERAGE_FLOORS
+}) {
+  const total = summary?.total ?? {}
+  const metrics = {}
+  const blockers = []
+  for (const [metric, floor] of Object.entries(floors)) {
+    const pct = total[metric]?.pct
+    metrics[metric] = typeof pct === 'number' ? pct : null
+    if (typeof pct !== 'number' || pct < floor) {
+      blockers.push(
+        `global_coverage_below_floor:${metric}:${typeof pct === 'number' ? pct.toFixed(2) : 'missing'}`
+      )
+    }
+  }
+  return { valid: blockers.length === 0, floors, metrics, blockers }
+}
+
 export function evaluateCriticalCoverage({ summary, manifest }) {
   const floor = manifest.floorBranchesPct
   const modules = []

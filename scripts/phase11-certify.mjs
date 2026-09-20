@@ -39,6 +39,7 @@ import {
 } from './lib/skip-policy.mjs'
 import {
   evaluateCriticalCoverage,
+  evaluateGlobalCoverage,
   loadCriticalCoverageManifest
 } from './aud19-critical-coverage.mjs'
 
@@ -710,10 +711,14 @@ if (criticalCoverageManifest && coverageGate?.status === 'PASS') {
       summary: coverageSummary,
       manifest: criticalCoverageManifest
     })
-    if (!criticalReport.valid) {
+    const globalReport = evaluateGlobalCoverage({ summary: coverageSummary })
+    if (!criticalReport.valid || !globalReport.valid) {
       coverageGate.status = 'FAIL'
       coverageGate.exitCode = 1
-      coverageGate.blocker = criticalReport.blockers.join('|')
+      coverageGate.blocker = [
+        ...criticalReport.blockers,
+        ...globalReport.blockers
+      ].join('|')
     }
   }
 }

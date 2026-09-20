@@ -56,8 +56,8 @@
 
 ## Decisões correntes
 
-- Perfil de release local: candidato selado `NO_GO` em 2026-09-20 (`4374a9ef…@c0f46b9`); staging real e produção `NO_GO`.
-- P1 local aberto: piso §9.1 de branches de módulos críticos (kernel `81,08%`; `orchestration.ts` `68,38%`; `kernel-composition.ts` `63,60%`; RLS `78,13%`); não reduzir o piso.
+- Perfil de release local: selo `NO_GO` de `4374a9ef…@c0f46b9` preservado como histórico; selo final do candidato `97f6a182…@cfcf1a3` em execução nesta rodada; staging real e produção `NO_GO`.
+- P1 local de branches de módulos críticos: fechado com testes de comportamento e gate versionado (`docs/03_build/tracking/aud19-critical-coverage.json`): kernel `97,09%`, approval `98,72%`, policy `97,87%`, journal `98,15%`, canal `97,41%`, RLS `100%`; piso mantido em `>=95%`.
 - Task success de evals: `>=97%` (fonte operacional `scripts/lib/eval-contract.mjs`);
   `53/56 = 94,64%` é negativo conhecido e deve falhar.
 - Oito gates externos/humanos continuam sem validação: provider, canal,

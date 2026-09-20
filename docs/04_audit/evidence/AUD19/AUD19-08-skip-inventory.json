@@ -9,7 +9,7 @@
   "contexts": [
     {
       "gate": "postgres",
-      "command": "parsed:/tmp/opencode/pg-final2.json",
+      "command": "npm run test:postgres (30 files, JSON report)",
       "databaseAvailable": true,
       "totals": {
         "testFiles": 30,
@@ -27,7 +27,7 @@
       "required": [],
       "optional": [],
       "exitCode": 0,
-      "source": "report:/tmp/opencode/pg-final2.json"
+      "source": "report:/tmp/opencode/aud19-critic/postgres-report.json"
     },
     {
       "gate": "unit",

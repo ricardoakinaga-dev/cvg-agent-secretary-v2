@@ -1,13 +1,13 @@
 $ node scripts/phase11-2-evidence-check.mjs --critic
-# certificationId=phase11-4374a9ef6566485b-mu9hm7h7
-# candidateId=4374a9ef6566485b6ac1c240dddac1a9b5af93b78475f1559ade887937385220
-# commit=c0f46b9bd012677b07a2a198393e9e3c82396c92
-# treeHash=3e68ae4477ba45996ae0557e0a74575205a761bd0039a652b5ce2d6e96f10445
+# certificationId=phase11-97f6a182c528f069-mua1khi3
+# candidateId=97f6a182c528f06931b0ccd0037fec663dc332b8f2d1f287381b4c9e6260ee4c
+# commit=cfcf1a376e3db1e8d130fef7034cb2f71c81f427
+# treeHash=ea9ac643f7c05e5fd76908e298ef58e742f63a9a47ac260aaeb9e3dfb037fc70
 # gate=independent_critic
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=1 durationMs=324
+# exitCode=1 durationMs=291
 
 {
   "schemaVersion": 1,
@@ -20,7 +20,7 @@ $ node scripts/phase11-2-evidence-check.mjs --critic
     {
       "id": "CRITIC:environment",
       "status": "PASS",
-      "detail": "live candidate 4374a9ef6566@c0f46b9bd012"
+      "detail": "live candidate 97f6a182c528@cfcf1a376e3d"
     },
     {
       "id": "CRITIC:schema",
@@ -30,12 +30,12 @@ $ node scripts/phase11-2-evidence-check.mjs --critic
     {
       "id": "CRITIC:binding",
       "status": "PASS",
-      "detail": "4374a9ef6566"
+      "detail": "97f6a182c528"
     },
     {
       "id": "CRITIC:fingerprint",
       "status": "PASS",
-      "detail": "4aba731174ca"
+      "detail": "61b918fc42ef"
     },
     {
       "id": "CRITIC:independence",
@@ -50,28 +50,21 @@ $ node scripts/phase11-2-evidence-check.mjs --critic
     {
       "id": "CRITIC:artifacts",
       "status": "FAIL",
-      "detail": "digest mismatch: certification/agent-eval-report.json (declared 8c821610fad90bd762ebe2fbfe6d961361d5dfdebf19b2244176578f5ada2bae)"
-    },
-    {
-      "id": "CRITIC:artifacts",
-      "status": "FAIL",
-      "detail": "cited artifact missing: coverage/full/coverage-summary.json"
+      "detail": "digest mismatch: certification/agent-eval-report.json (declared ec4f4c742801ee428b666d9d5c39bb1f733591616e7d0c8856f66c02a52822f1)"
     },
     {
       "id": "CRITIC:check_evidence",
       "status": "PASS",
-      "detail": "11 check(s) cite declared artifacts"
+      "detail": "12 check(s) cite declared artifacts"
     },
     {
       "id": "CRITIC:verdict",
-      "status": "FAIL",
-      "detail": "critic verdict is FAIL"
+      "status": "PASS",
+      "detail": "PASS derived from checks"
     }
   ],
   "failures": [
-    "CRITIC:artifacts:digest mismatch: certification/agent-eval-report.json (declared 8c821610fad90bd762ebe2fbfe6d961361d5dfdebf19b2244176578f5ada2bae)",
-    "CRITIC:artifacts:cited artifact missing: coverage/full/coverage-summary.json",
-    "CRITIC:verdict:critic verdict is FAIL"
+    "CRITIC:artifacts:digest mismatch: certification/agent-eval-report.json (declared ec4f4c742801ee428b666d9d5c39bb1f733591616e7d0c8856f66c02a52822f1)"
   ]
 }
 

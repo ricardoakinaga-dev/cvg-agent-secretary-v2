@@ -8,7 +8,7 @@ Manifesto congelado: `docs/03_build/tracking/aud19-required-skips.json`.
 
 | Gate | DB disponível | Skips | Required | Optional | Origem |
 | --- | --- | ---: | ---: | ---: | --- |
-| postgres | sim | 0 | **0** | 0 | report:/tmp/opencode/pg-final2.json |
+| postgres | sim | 0 | **0** | 0 | report:/tmp/opencode/aud19-critic/postgres-report.json |
 | unit | não | 172 | **0** | 172 | report:/tmp/opencode/unit-final2.json |
 
 Status agregado: **PASS** — required=0, optional=172, total=172.
@@ -17,7 +17,7 @@ Status agregado: **PASS** — required=0, optional=172, total=172.
 
 ### Gate `postgres` (DB disponível)
 
-Comando: `parsed:/tmp/opencode/pg-final2.json`
+Comando: `npm run test:postgres (30 files, JSON report)`
 
 Totais do runner: arquivos=30, testes=319, passados=319, falhos=0, skips=0.
 

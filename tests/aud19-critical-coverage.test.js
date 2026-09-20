@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   evaluateCriticalCoverage,
+  evaluateGlobalCoverage,
   loadCriticalCoverageManifest
 } from '../scripts/aud19-critical-coverage.mjs'
 
@@ -60,6 +61,40 @@ describe('AUD19 critical coverage gate', () => {
     const report = evaluateCriticalCoverage({ manifest, summary: {} })
     expect(report.valid).toBe(false)
     expect(report.modules.every((module) => module.pass === false)).toBe(true)
+  })
+
+  it('enforces the global contract floors mechanically', () => {
+    const passing = evaluateGlobalCoverage({
+      summary: {
+        total: {
+          statements: { pct: 95.95 },
+          branches: { pct: 92.53 },
+          functions: { pct: 95.48 },
+          lines: { pct: 96.65 }
+        }
+      }
+    })
+    expect(passing.valid).toBe(true)
+    expect(passing.blockers).toEqual([])
+
+    const failing = evaluateGlobalCoverage({
+      summary: {
+        total: {
+          statements: { pct: 95.95 },
+          branches: { pct: 82.51 },
+          functions: { pct: 95.48 },
+          lines: { pct: 96.65 }
+        }
+      }
+    })
+    expect(failing.valid).toBe(false)
+    expect(failing.blockers).toContain(
+      'global_coverage_below_floor:branches:82.51'
+    )
+
+    const missing = evaluateGlobalCoverage({ summary: {} })
+    expect(missing.valid).toBe(false)
+    expect(missing.blockers).toHaveLength(4)
   })
 
   it('loads the versioned manifest from the tracking directory', () => {
