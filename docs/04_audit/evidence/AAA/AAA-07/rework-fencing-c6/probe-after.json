@@ -1,0 +1,8 @@
+{
+  "syntheticOnly": true,
+  "status": "INVALID_EVIDENCE",
+  "reason": "probe-after aborted with ERR_ASSERTION before emitting machine-readable output; the counterexample is preserved in probe-after.err.txt and the exit code in probe-after.exit",
+  "exitCode": 1,
+  "preservedFailure": true,
+  "rawSources": ["probe-after.err.txt", "probe-after.exit"]
+}

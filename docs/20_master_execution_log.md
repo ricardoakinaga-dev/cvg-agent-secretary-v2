@@ -115,7 +115,7 @@
 # PROD-20260913 — M1 implementado, corrigido e revalidado — 2026-09-13
 
 - engine: `BUILD` controlado + `AUDIT` independente; autorização: correções locais reversíveis, dados sintéticos e bancos descartáveis.
-- Entrega: PROD-01 fechou o mapa e congelou o contrato M1 ([doc](../02_spec/prod20260913_m1_corrections_contract.md), sha256 `7cff313d…`); PROD-02/03/05/06 implementados; PROD-04 bloqueado por D01; AAA-22 corrigiu D13-04 parcialmente.
+- Entrega: PROD-01 fechou o mapa e congelou o contrato M1 ([doc](02_spec/prod20260913_m1_corrections_contract.md), sha256 `7cff313d…`); PROD-02/03/05/06 implementados; PROD-04 bloqueado por D01; AAA-22 corrigiu D13-04 parcialmente.
 - Verificação: `npm run typecheck` PASS; `npm test` 234 arquivos/1625 testes PASS (83 skips condicionais, 0 em `test:postgres`); `test:postgres` 18/151 com 0 skips (inventário agora inclui continuous-worker e attendance); probes de atomicidade (PASS_ATOMIC), UI Chromium (PASS_STALE_DISCARDED) e readiness (queries=1, /ready 503, /live 200); hashes dos 6 manifests 64/64.
 - Revisão independente: primeiro verificador CONFIRMOU as alegações funcionais C1–C5 e levantou F1 P1 (typecheck) e F2–F7; builder corrigiu; segundo verificador emitiu `REVALIDATED_PASS` (F1–F6 resolvidos, R1–R7). Nenhum P0/P1 aberto no lote.
 - Estado: PROD-01/02/03/05/06 `VERIFIED`; PROD-04 `BLOCKED`; AAA-22 `REVIEW` (composição do probe de consumer pendente de AAA-21/D01). D01–D05 permanecem humanas e pendentes; produção `NO-GO`.
@@ -5699,3 +5699,25 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - certification: `npm run certify` fechou `CONDITIONAL_GO`, `AAA_CANDIDATE`, elegível até `STAGING` controlado; current/evidence verifier passaram, preflight de produção recusou corretamente e `promotion:check` manteve `eligible=false`.
 - external/human: provider, canal, identidade externa, RAG institucional, RPO/RTO físico, piloto, rollback e sign-off humano permanecem `NOT_VALIDATED`/`PENDING`; não houve integração real, deploy, publicação ou efeito clínico/financeiro/prontuário/agenda.
 - next_action: iniciar somente em ambiente autorizado as tasks `AUD17-13`, `AUD17-14` e `AUD17-15`, com donos, escopo, egress, evidência assinada e decisão humana. O estado canônico está em `certification/current.json`; nenhum push foi feito.
+
+# AUD19-REM-PLAN-20260919 — auditoria persistida e remediação planejada
+
+- timestamp: `2026-09-19T23:10:03-03:00`; pipeline `AUDIT -> BUILD`; atividade `PLAN`; task `PLAN-AUD19-REM-20260919`.
+- authorization: solicitação explícita do usuário para salvar o relatório e criar roadmap/backlog; somente documentação e controle CVG, sem código, serviços externos, dados reais, deploy, commit/push ou efeito sensível.
+- action: publicada a auditoria `0566` para o HEAD inspecionado `843c927`, com maturidade controlada `66/100`, gate AAA/staging `FAIL / NO_GO` e produção `NO_GO`; publicados roadmap `0331` e backlog `0332` com 15 tasks `AUD19`.
+- decisive_findings: `53/56 = 94,64%` foi aceito por threshold `85%` apesar do contrato `>=97%`; criação de Goal usa read-then-insert não linearizável; worker produtivo não possui vertical executável completo; oito gates externos/humanos continuam ausentes.
+- prior_fresh_evidence: antes desta persistência documental, Node `22.23.2`; full unit `255` arquivos PASS/`10` SKIP e `1.792` testes PASS/`117` SKIP; typecheck/lint/format PASS; current/evidence verifier PASS; promoção `PRODUCTION` corretamente recusada; críticos read-only e mutation sentinel PASS.
+- post_write_verification: `npm run format:check` PASS e os seis links locais dos três novos artefatos resolveram. `certification:verify:phase11` e `evidence:verify:phase11` retornaram `FAIL` esperado por `candidate_tree_stale`, dirty/untracked/file-hash/scope drift após os novos documentos; o selo anterior não foi transportado para estes bytes.
+- decision: rejeitados `AAA_CANDIDATE` e `CONDITIONAL_GO` contra o contrato soberano; required gate falho não é compensado por score. O planejamento não concede BUILD, staging ou release.
+- next_action: congelar SPEC, negativo e aceite de `AUD19-01`; manter `>=97%`; depois seguir o DAG 01→02→03/04→05..10→11/12→13/14/15.
+- blockers: `AUD19-13..15` estão `BLOCKED` por dependências técnicas/externas; `AUD19-15` exigirá `WAITING_HUMAN_APPROVAL` somente quando o dossiê estiver apto. Provider, canal, IdP, RAG institucional, RPO/RTO, piloto, rollback e sign-off permanecem `NOT_VALIDATED/PENDING`.
+
+# AUD19-M0-M1-20260920 — contrato de evals, documentação e frentes locais
+
+- timestamp: `2026-09-20T00:30:00-03:00`; pipeline `SPEC -> BUILD`; tasks `AUD19-01..06`; autorização local controlada do usuário (dados sintéticos, PostgreSQL descartável, commits locais; sem push/deploy/credenciais/dados reais).
+- action: `AUD19-01` concluída — fonte única `scripts/lib/eval-contract.mjs` com task success `>=97%`, runner/regras/verificação alinhados, negativo `53/56 = 94,64%` falha em três camadas e os cenários `EV-016`, `EV-021`, `EV-031` corrigidos sem alterar expectativas (56/56). Implementadas as frentes `AUD19-03` (get-or-create linearizável com validação de lineage), `AUD19-04` (teste PostgreSQL de duas conexões), `AUD19-05` (retenção/erasure parametrizada fail-closed, migration `0025_retention_ledger`) e `AUD19-06` (replay distribuído `0026_operator_replay_events`, atestação versionada do preflight de produção).
+- verification: Node `22.23.2`; foco de evals `36` testes PASS; `test:postgres` `27` arquivos / `224` testes PASS com as novas suítes; typecheck, lint e format PASS; preflight negativo rejeita flags booleanas isoladas e aceita somente atestação válida sintética; gate `production_preflight` continua `--expect=REJECT`.
+- reconciliation: criados `docs/CURRENT.md` (índice canônico), `scripts/docs-check.mjs`, ADR 0001 (LangGraph upstream `BLOCKED` por supply chain) e a matriz `docs/04_audit/evidence/AUD19/AUD19-requirements-matrix.json`; corrigidos os 15 links locais quebrados e o JSON vazio em `docs/04_audit/evidence/AAA/AAA-07/rework-fencing-c6/probe-after.json`, que agora registra explicitamente evidência inválida sem reescrever o histórico.
+- next_action: executar AUD19-07 (decomposição de hotspots com architecture tests) e AUD19-08 (QA adversarial comportamental), mantendo staging real e produção `NO_GO`.
+- blockers: oito gates externos/humanos; políticas de retenção restantes e SLO exigem owner humano; rate limiting por instância mantido apenas como guarda de abuso justificada; nenhum dado real ou efeito externo.
+- evidence: `docs/CURRENT.md`, `docs/02_spec/aud19_01_eval_contract_20260919.md`, `docs/02_spec/adr/0001-langgraph-frontier-decision.md`, `docs/04_audit/evidence/AUD19/`, `certification/agent-eval-report.json`.

@@ -106,15 +106,15 @@ Os manifestos candidate-bound correntes registram `CONDITIONAL_GO / AAA_CONTROLL
 
 # PROD-20260913 — rodada 4 — 2026-09-13
 
-- D02 (draft-only), D03 (alvos de laboratório), D04 (integrações reais bloqueadas), D05-3/4 (retenção/TTL aprovados) registradas; D05-SIG adiada. [Pacote](../02_spec/prod20260913_decision_packet.md).
+- D02 (draft-only), D03 (alvos de laboratório), D04 (integrações reais bloqueadas), D05-3/4 (retenção/TTL aprovados) registradas; D05-SIG adiada. [Pacote](02_spec/prod20260913_decision_packet.md).
 - **PROD-04 `VERIFIED`**: ApprovalStore durável com CAS SQL sob FOR UPDATE, migration 0015, revisão fresca PASS; gates 248 arquivos/1.775 testes/0 skips e PostgreSQL 20/174/0.
-- Próxima ação: AAA-21 (fronteira/composição HTTP→SQL→worker→kernel→efeito falso→audit), depois PROD-07/08/09. D04=A mantém AAA-37/38/39 bloqueados; produção NO-GO. [Relatório](../04_audit/0563_prod_round3_2026-09-13.md).
+- Próxima ação: AAA-21 (fronteira/composição HTTP→SQL→worker→kernel→efeito falso→audit), depois PROD-07/08/09. D04=A mantém AAA-37/38/39 bloqueados; produção NO-GO. [Relatório](04_audit/0563_prod_round3_2026-09-13.md).
 
 # PROD-20260913 — rodada 3 — 2026-09-13
 
-- M1 encerrado com crítico fresco **PASS**; D01 registrada (opção C); [contrato de composição v2](../02_spec/aaa_composition_contract.md) congelado; AAA-19/20 `VERIFIED`; WAVE3-01 P1 corrigido e verificado.
+- M1 encerrado com crítico fresco **PASS**; D01 registrada (opção C); [contrato de composição v2](02_spec/aaa_composition_contract.md) congelado; AAA-19/20 `VERIFIED`; WAVE3-01 P1 corrigido e verificado.
 - `READY`: AAA-21 (composição) e PROD-04 (ApprovalStore durável; SPEC rota A + migration 0015). Próxima execução: PROD-04 → AAA-21 → PROD-07/08/09.
-- Gates finais: 247 arquivos/1.764 testes/0 skips; PostgreSQL 19/163/0; typecheck/build/startup PASS. D02–D05 seguem PENDING; produção NO-GO. [Relatório](../04_audit/0563_prod_round3_2026-09-13.md).
+- Gates finais: 247 arquivos/1.764 testes/0 skips; PostgreSQL 19/163/0; typecheck/build/startup PASS. D02–D05 seguem PENDING; produção NO-GO. [Relatório](04_audit/0563_prod_round3_2026-09-13.md).
 
 # PROD-20260913 — reauditoria M1 round2 — 13/09/2026
 
@@ -127,8 +127,8 @@ Os manifestos candidate-bound correntes registram `CONDITIONAL_GO / AAA_CONTROLL
 
 # PROD-20260913 — execução do lote M1 — 2026-09-13
 
-- [Contrato M1](../02_spec/prod20260913_m1_corrections_contract.md) congelado `7cff313d…`; [PROD-01](04_audit/evidence/PROD-20260913/PROD-01/manifest.json) revalidou o baseline (0 fontes de produto alteradas vs auditoria) e o mapa 80/80+156/156.
-- `VERIFIED` no [delta](03_build/tracking/production_delta_backlog.json): PROD-01/02/03/05/06, com [revisão](../04_audit/evidence/PROD-20260913/independent-review/REVIEW.md), [resposta](../04_audit/evidence/PROD-20260913/independent-review/RESPONSE.md) e [revalidação](../04_audit/evidence/PROD-20260913/independent-review/revalidation.md) independentes. PROD-04 `BLOCKED` por D01/AAA-06. AAA-22 segue `REVIEW` (D13-04 verificado; composição consumer pendente).
+- [Contrato M1](02_spec/prod20260913_m1_corrections_contract.md) congelado `7cff313d…`; [PROD-01](04_audit/evidence/PROD-20260913/PROD-01/manifest.json) revalidou o baseline (0 fontes de produto alteradas vs auditoria) e o mapa 80/80+156/156.
+- `VERIFIED` no [delta](03_build/tracking/production_delta_backlog.json): PROD-01/02/03/05/06, com [revisão](04_audit/evidence/PROD-20260913/independent-review/REVIEW.md), [resposta](04_audit/evidence/PROD-20260913/independent-review/RESPONSE.md) e [revalidação](04_audit/evidence/PROD-20260913/independent-review/revalidation.md) independentes. PROD-04 `BLOCKED` por D01/AAA-06. AAA-22 segue `REVIEW` (D13-04 verificado; composição consumer pendente).
 - Próximos passos: `PROD-14` (decisões D01–D05), `PROD-04` após D01, `PROD-07/08/09` (console/jornadas) e comprovação de composição AAA-06/21. Nenhuma capacidade real ou autorização de produção foi criada.
 
 # PLAN-PROD-20260913 — plano para produção — 2026-09-13
@@ -1809,3 +1809,17 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 - [x] Implementação local de persistência/fencing corrigida com migration aditiva `0024`, budgets governados, preflight atualizado e regressões de HMAC/chaos cobertas.
 - [x] Certificação local candidate-bound reexecutada sob Node `22.23.2` e PostgreSQL descartável; pacote e verificadores correntes devem ser consultados em `certification/current.json`.
 - [ ] Próxima etapa: qualificar `AUD17-13` (integrações reais autorizadas), `AUD17-14` (RPO/RTO físico, rollback e piloto) e `AUD17-15` (revisão/signoff humano). Nenhum efeito real, deploy, publicação ou push é autorizado por este fechamento local.
+
+# AUD19-REM-20260919 — remediação derivada da auditoria integral
+
+- [x] Persistir a [auditoria 0566](04_audit/0566_full_repository_gauntlet_audit_2026-09-19.md), com notas por dimensão, métodos, limitações, findings e veredito `FAIL / NO_GO` contra o contrato AAA vigente.
+- [x] Publicar o [roadmap 0331](03_build/0331_aud20260919_roadmap.md) e o [backlog 0332](03_build/0332_aud20260919_backlog.md), com 15 tasks e gates M0–M7.
+- [x] `AUD19-01`: contrato/runner/regras/verificação alinhados a `>=97%`; negativo `53/56 = 94,64%` falha; cenários corrigidos sem relaxar expectativas (56/56).
+- [~] `AUD19-02`: índice `CURRENT`, checker documental, 15 links e JSON inválido corrigidos, matriz AUD19 e ADR LangGraph publicados.
+- [~] `AUD19-03..04`: get-or-create linearizável com validação de lineage e teste PostgreSQL de duas conexões; fechamento formal pendente de regressão final.
+- [~] `AUD19-05..06`: retenção/erasure parametrizada fail-closed (migration `0025`), replay distribuído e atestação versionada de preflight (migration `0026`).
+- [ ] `AUD19-07..10`: hotspots/QA adversarial/observabilidade/acessibilidade em execução após o gate G0.
+- [ ] `AUD19-11..12`: criar topologia API+worker staging-like, preencher digests, executar gates e re-selar somente após zero P0/P1 local.
+- [ ] `AUD19-13..14`: `BLOCKED` até provider/canal/IdP/RAG e RPO/RTO/rollback/piloto terem ambientes e autoridades próprios; `AUD19-15` também está `BLOCKED` pelas dependências e exigirá aprovação humana ao chegar ao gate final.
+- **Estado:** BUILD local iniciado em 2026-09-20 sob autorização controlada; `AUD19-01` `COMPLETED`; frentes de dados/concorrência `IN_PROGRESS`; staging real e produção `NO_GO`.
+- **Próxima ação:** executar AUD19-07 (decomposição de hotspots com architecture tests) e AUD19-08 (QA adversarial comportamental), mantendo staging real e produção `NO_GO`.
