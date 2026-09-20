@@ -117,6 +117,35 @@ describe('AAA eval contract', () => {
     ])
   })
 
+  it('fails closed for an empty corpus', async () => {
+    const report = await runEvalSuite({
+      suiteId: 'contract-negative-empty-corpus',
+      dataset: [],
+      agent: createDeterministicEvalAgent(),
+      now: () => NOW
+    })
+    expect(report.metrics.scenarios).toBe(0)
+    expect(report.verdict).toBe('FAIL')
+    expect(report.thresholdFailures).toContain('invalid_metric:scenarios')
+  })
+
+  it('fails closed when a non-rate metric is not finite', async () => {
+    const report = await runEvalSuite({
+      suiteId: 'contract-negative-invalid-latency',
+      dataset: CORE_EVAL_DATASET.slice(0, 1),
+      agent: {
+        id: 'invalid-latency-agent',
+        async run(scenario) {
+          const outcome = await createDeterministicEvalAgent().run(scenario)
+          return { ...outcome, latencyMs: Number.NaN }
+        }
+      },
+      now: () => NOW
+    })
+    expect(report.verdict).toBe('FAIL')
+    expect(report.thresholdFailures).toContain('invalid_metric:avgLatencyMs')
+  })
+
   it('regresses the three scenarios that previously failed', async () => {
     const agent = createDeterministicEvalAgent()
     for (const id of ['EV-016', 'EV-021', 'EV-031']) {

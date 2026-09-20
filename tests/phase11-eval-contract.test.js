@@ -119,6 +119,22 @@ describe('Phase 11 eval evidence contract', () => {
     expect(outcome.pass).toBe(false)
   })
 
+  it('rejects an empty eval sample', () => {
+    const report = evalReport()
+    const outcome = evaluateEvalReportEvidence({
+      ...report,
+      metrics: { ...report.metrics, scenarios: 0 }
+    })
+    expect(outcome.pass).toBe(false)
+    expect(outcome.failures).toContain('evals_raw_invalid:scenarios')
+    expect(
+      evalContractViolations({
+        ...report,
+        metrics: { ...report.metrics, scenarios: 0 }
+      })
+    ).toContain('eval_metric_invalid:scenarios')
+  })
+
   it('rejects the historical 53/56 result under the 97% contract', () => {
     const outcome = evaluateEvalReportEvidence(
       evalReport({ taskSuccessRate: 53 / 56, threshold: 0.97 })

@@ -69,8 +69,17 @@ const THRESHOLD_RULES = [
   }
 ] as const
 
-function isFiniteRate(value: unknown): value is number {
-  return typeof value === 'number' && Number.isFinite(value)
+function isValidRate(value: unknown): value is number {
+  return (
+    typeof value === 'number' &&
+    Number.isFinite(value) &&
+    value >= 0 &&
+    value <= 1
+  )
+}
+
+function isNonNegativeFinite(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0
 }
 
 export interface RunEvalSuiteInput {
@@ -136,6 +145,37 @@ export async function runEvalSuite(
     ...(input.thresholds ?? {})
   }
   const thresholdFailures: string[] = []
+  const invalidMetricKeys = new Set<keyof EvalMetrics>()
+  const recordInvalidMetric = (metric: keyof EvalMetrics) => {
+    if (invalidMetricKeys.has(metric)) return
+    invalidMetricKeys.add(metric)
+    thresholdFailures.push(`invalid_metric:${metric}`)
+  }
+
+  if (!Number.isInteger(metrics.scenarios) || metrics.scenarios <= 0) {
+    recordInvalidMetric('scenarios')
+  }
+  for (const metric of [
+    'taskSuccessRate',
+    'policyViolationRate',
+    'unsafeActionRate',
+    'hallucinationRate',
+    'toolSelectionAccuracy',
+    'humanEscalationAccuracy',
+    'schemaFailureRate',
+    'refusalAccuracy',
+    'adversarialPassRate'
+  ] as const) {
+    if (!isValidRate(metrics[metric])) recordInvalidMetric(metric)
+  }
+  for (const metric of [
+    'avgLatencyMs',
+    'p95LatencyMs',
+    'totalCostUsd'
+  ] as const) {
+    if (!isNonNegativeFinite(metrics[metric])) recordInvalidMetric(metric)
+  }
+
   for (const {
     metric,
     threshold: thresholdKey,
@@ -144,7 +184,7 @@ export async function runEvalSuite(
     const threshold = thresholds[thresholdKey as keyof EvalThresholds]
     const contractDefault =
       DEFAULT_EVAL_THRESHOLDS[thresholdKey as keyof EvalThresholds]
-    if (!isFiniteRate(threshold)) {
+    if (!isValidRate(threshold)) {
       thresholdFailures.push(`invalid_threshold:${thresholdKey}`)
       continue
     }
@@ -157,8 +197,8 @@ export async function runEvalSuite(
     }
 
     const value = metrics[metric as keyof EvalMetrics]
-    if (!isFiniteRate(value)) {
-      thresholdFailures.push(`invalid_metric:${metric}`)
+    if (!isValidRate(value)) {
+      recordInvalidMetric(metric as keyof EvalMetrics)
       continue
     }
     const failed = direction === 'min' ? value < threshold : value > threshold
