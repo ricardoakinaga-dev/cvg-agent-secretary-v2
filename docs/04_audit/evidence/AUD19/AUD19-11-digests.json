@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "kind": "aud19-11-digests",
   "task": "AUD19-11",
-  "observedAt": "2026-09-20T04:29:42.038Z",
+  "observedAt": "2026-09-20T06:05:37.811Z",
   "scope": "CONTROLLED_LOCAL",
   "production": "NO_GO",
   "toolchain": {
@@ -11,34 +11,34 @@
     "docker": "29.1.3"
   },
   "source": {
-    "head": "99dffff71c768bc7741e373a5fb19bcf08ef4702",
-    "dirtyFiles": 113,
+    "head": "67065a1b1237bec5fe4d074b8f258eb894202248",
+    "dirtyFiles": 1,
     "note": "informational only; the candidate identity is owned by AUD19-12"
   },
   "build": {
     "api": {
       "status": "PASS",
       "tag": "cvg-aud19-api:local",
-      "id": "sha256:1a910a14681e78a137c6b8bab6165d1a58e782e2c39a9751638565021bee2d1c",
-      "created": "2026-09-20T01:24:43.204816783-03:00",
+      "id": "sha256:3233809c88211d584319f6c3e3e1f73c872e0250ff613ec521016d80e2f0561a",
+      "created": "2026-09-20T03:05:25.675436761-03:00",
       "user": "cvg",
       "architecture": "amd64",
       "os": "linux",
       "repoDigests": [
-        "cvg-aud19-api@sha256:1a910a14681e78a137c6b8bab6165d1a58e782e2c39a9751638565021bee2d1c"
+        "cvg-aud19-api@sha256:3233809c88211d584319f6c3e3e1f73c872e0250ff613ec521016d80e2f0561a"
       ],
       "note": "id is the content-addressed manifest image ID (local, never pushed)"
     },
     "worker": {
       "status": "PASS",
       "tag": "cvg-aud19-worker:local",
-      "id": "sha256:292a0f9b0df66e37bf9122154149b2a4967bba72c393e0b9f9ff7739a9d9babb",
-      "created": "2026-09-20T01:24:43.204816783-03:00",
+      "id": "sha256:aeb9d4122989da8a2d4f0f22dd73cb4a567a168d70bb5eefe22d274653f1621e",
+      "created": "2026-09-20T03:05:25.675436761-03:00",
       "user": "cvg",
       "architecture": "amd64",
       "os": "linux",
       "repoDigests": [
-        "cvg-aud19-worker@sha256:292a0f9b0df66e37bf9122154149b2a4967bba72c393e0b9f9ff7739a9d9babb"
+        "cvg-aud19-worker@sha256:aeb9d4122989da8a2d4f0f22dd73cb4a567a168d70bb5eefe22d274653f1621e"
       ],
       "note": "id is the content-addressed manifest image ID (local, never pushed)"
     }
@@ -47,8 +47,8 @@
     "api": {
       "status": "PASS",
       "image": "cvg-aud19-api:local",
-      "imageId": "sha256:1a910a14681e78a137c6b8bab6165d1a58e782e2c39a9751638565021bee2d1c",
-      "configDigest": "09656e09b1456a965dd260ac3b16b786216980ddaae263bc299bbf1585448e10",
+      "imageId": "sha256:3233809c88211d584319f6c3e3e1f73c872e0250ff613ec521016d80e2f0561a",
+      "configDigest": "846392f0e6206d452d3ccd730a2c3886d07d88f9c29c6466375811d741157f5c",
       "user": "cvg",
       "cmd": [
         "./node_modules/.bin/tsx",
@@ -73,8 +73,8 @@
     "worker": {
       "status": "PASS",
       "image": "cvg-aud19-worker:local",
-      "imageId": "sha256:292a0f9b0df66e37bf9122154149b2a4967bba72c393e0b9f9ff7739a9d9babb",
-      "configDigest": "9f1ffb373ac6aa90c41a232eda5cca5a5b7c6434ca0782fabb8a4427aac7716c",
+      "imageId": "sha256:aeb9d4122989da8a2d4f0f22dd73cb4a567a168d70bb5eefe22d274653f1621e",
+      "configDigest": "747d4d2df9f1f3ebb1b4b933125bd8a40677f56970a1467f21c5fa7f7f93e898",
       "user": "cvg",
       "cmd": [
         "./node_modules/.bin/tsx",
@@ -203,9 +203,9 @@
         "event": "sbom.generated",
         "path": "certification/sbom.cyclonedx.json",
         "components": 374,
-        "sha256": "d8843096c1590ef48369a6464abdc42a6d6de8493cb0d700d704173422b249da"
+        "sha256": "734ae0511f78b17608404915ddabde8afc30ef62322c9091e143ed5058aef049"
       },
-      "summary": "{\"event\":\"sbom.generated\",\"path\":\"certification/sbom.cyclonedx.json\",\"components\":374,\"sha256\":\"d8843096c1590ef48369a6464abdc42a6d6de8493cb0d700d704173422b249da\"}"
+      "summary": "{\"event\":\"sbom.generated\",\"path\":\"certification/sbom.cyclonedx.json\",\"components\":374,\"sha256\":\"734ae0511f78b17608404915ddabde8afc30ef62322c9091e143ed5058aef049\"}"
     },
     "licenses": {
       "command": "npm run licenses:check",
@@ -230,10 +230,10 @@
   "sbom": {
     "status": "PASS",
     "path": "certification/sbom.cyclonedx.json",
-    "digest": "d8843096c1590ef48369a6464abdc42a6d6de8493cb0d700d704173422b249da",
+    "digest": "734ae0511f78b17608404915ddabde8afc30ef62322c9091e143ed5058aef049",
     "bytes": 254555,
     "componentCount": 374,
-    "generatedAt": "2026-09-20T04:29:42.709Z"
+    "generatedAt": "2026-09-20T06:05:38.544Z"
   },
   "releaseManifestMapping": {
     "buildId": "build.api.id (api image) / build.worker.id (worker image)",

@@ -1820,7 +1820,7 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 - [x] `AUD19-05..06`: retenção/erasure parametrizada fail-closed (migration `0025`), replay distribuído e atestação versionada de preflight (migration `0026`).
 - [x] `AUD19-07..10`: hotspots decompostos em fatia medida com architecture tests/ADR; QA adversarial comportamental (skips required = 0, mutantes 9/9); observabilidade com SLIs/alertas/runbooks; acessibilidade multibrowser 75/75.
 - [x] `AUD19-11`: topologia API+worker empacotável, non-root, readiness/drain, digests e smoke controlado; produção continua bloqueada.
-- [ ] `AUD19-12`: selo candidate-bound e verificação no candidato final (em execução nesta rodada).
+- [~] `AUD19-12`: `BLOCKED` — selo candidate-bound executado com 32/34 gates `PASS`; `independent_critic` falha no piso §9.1 de branches críticos (kernel/orchestration/kernel-composition/RLS); `NO_GO` local.
 - [ ] `AUD19-13..14`: `BLOCKED` até provider/canal/IdP/RAG e RPO/RTO/rollback/piloto terem ambientes e autoridades próprios; `AUD19-15` também está `BLOCKED` pelas dependências e exigirá aprovação humana ao chegar ao gate final.
-- **Estado:** BUILD local controlado executado em 2026-09-20; `AUD19-01..11` `COMPLETED` com evidência executável; `AUD19-12` em selagem; staging real e produção `NO_GO`.
-- **Próxima ação:** selar e verificar o candidato AUD19-12 com crítico fresco e negativos; manter staging real e produção `NO_GO`.
+- **Estado:** BUILD local controlado executado em 2026-09-20; `AUD19-01..11` `COMPLETED`; `AUD19-12` `BLOCKED` por P1 de cobertura de branches críticos; staging real e produção `NO_GO`.
+- **Próxima ação:** fechar o P1 de cobertura de branches dos módulos críticos sem reduzir o piso e reexecutar AUD19-12 com crítico fresco; manter staging real e produção `NO_GO`.

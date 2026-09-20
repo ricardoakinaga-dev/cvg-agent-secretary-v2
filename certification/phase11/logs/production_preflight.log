@@ -1,8 +1,8 @@
 $ node scripts/production-preflight.mjs --profile=PRODUCTION --expect=REJECT
-# certificationId=phase11-81962adcfc65cf7d-mu5kewem
-# candidateId=81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747
-# commit=9c373bf1d2fcd43632da09d60b87455da6a18a09
-# treeHash=f888b174065e305ba819c16fb588813a3b8b7d9c2d2c45625e96bd9293a60fd6
+# certificationId=phase11-4374a9ef6566485b-mu9hm7h7
+# candidateId=4374a9ef6566485b6ac1c240dddac1a9b5af93b78475f1559ade887937385220
+# commit=c0f46b9bd012677b07a2a198393e9e3c82396c92
+# treeHash=3e68ae4477ba45996ae0557e0a74575205a761bd0039a652b5ce2d6e96f10445
 # gate=production_preflight
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
@@ -21,7 +21,7 @@ $ node scripts/production-preflight.mjs --profile=PRODUCTION --expect=REJECT
     {
       "id": "bootstrap.authority",
       "status": "FAIL",
-      "detail": "shared bootstrap preflight blocked: bootstrap.node_env,bootstrap.persistence,bootstrap.database,bootstrap.migration_database,bootstrap.database_separation,bootstrap.rls,bootstrap.no_auto_migrate,bootstrap.kernel,bootstrap.inbound,bootstrap.identity,bootstrap.secrets,bootstrap.http_security,bootstrap.governance,bootstrap.external_attestations,bootstrap.runtime_attestation"
+      "detail": "shared bootstrap preflight blocked: bootstrap.node_env,bootstrap.persistence,bootstrap.database,bootstrap.migration_database,bootstrap.database_separation,bootstrap.rls,bootstrap.no_auto_migrate,bootstrap.kernel,bootstrap.inbound,bootstrap.identity,bootstrap.secrets,bootstrap.operator_identity,bootstrap.http_security,bootstrap.governance,bootstrap.external_attestation,bootstrap.external_attestations,bootstrap.runtime_attestation"
     },
     {
       "id": "profile.production",
@@ -151,42 +151,42 @@ $ node scripts/production-preflight.mjs --profile=PRODUCTION --expect=REJECT
     {
       "id": "external.provider",
       "status": "FAIL",
-      "detail": "CVG_EXTERNAL_PROVIDER_APPROVED=true is required; a declaration is not evidence of validation"
+      "detail": "provider requires APPROVED status inside the signed attestation pinned by CVG_EXTERNAL_ATTESTATION_FILE/CVG_EXTERNAL_ATTESTATION_SHA256; CVG_EXTERNAL_PROVIDER_APPROVED=true alone is not evidence"
     },
     {
       "id": "external.channel",
       "status": "FAIL",
-      "detail": "CVG_EXTERNAL_CHANNEL_APPROVED=true is required; a declaration is not evidence of validation"
+      "detail": "channel requires APPROVED status inside the signed attestation pinned by CVG_EXTERNAL_ATTESTATION_FILE/CVG_EXTERNAL_ATTESTATION_SHA256; CVG_EXTERNAL_CHANNEL_APPROVED=true alone is not evidence"
     },
     {
       "id": "external.identity",
       "status": "FAIL",
-      "detail": "CVG_EXTERNAL_IDENTITY_APPROVED=true is required; a declaration is not evidence of validation"
+      "detail": "identity requires APPROVED status inside the signed attestation pinned by CVG_EXTERNAL_ATTESTATION_FILE/CVG_EXTERNAL_ATTESTATION_SHA256; CVG_EXTERNAL_IDENTITY_APPROVED=true alone is not evidence"
     },
     {
       "id": "external.rag",
       "status": "FAIL",
-      "detail": "CVG_EXTERNAL_RAG_APPROVED=true is required; a declaration is not evidence of validation"
+      "detail": "rag requires APPROVED status inside the signed attestation pinned by CVG_EXTERNAL_ATTESTATION_FILE/CVG_EXTERNAL_ATTESTATION_SHA256; CVG_EXTERNAL_RAG_APPROVED=true alone is not evidence"
     },
     {
       "id": "external.rpo_rto",
       "status": "FAIL",
-      "detail": "CVG_RPO_RTO_MEASURED=true is required; a declaration is not evidence of validation"
+      "detail": "rpo_rto requires APPROVED status inside the signed attestation pinned by CVG_EXTERNAL_ATTESTATION_FILE/CVG_EXTERNAL_ATTESTATION_SHA256; CVG_RPO_RTO_MEASURED=true alone is not evidence"
     },
     {
       "id": "external.pilot",
       "status": "FAIL",
-      "detail": "CVG_SUPERVISED_PILOT_COMPLETE=true is required; a declaration is not evidence of validation"
+      "detail": "pilot requires APPROVED status inside the signed attestation pinned by CVG_EXTERNAL_ATTESTATION_FILE/CVG_EXTERNAL_ATTESTATION_SHA256; CVG_SUPERVISED_PILOT_COMPLETE=true alone is not evidence"
     },
     {
       "id": "external.rollback",
       "status": "FAIL",
-      "detail": "CVG_ROLLBACK_VERIFIED=true is required; a declaration is not evidence of validation"
+      "detail": "rollback requires APPROVED status inside the signed attestation pinned by CVG_EXTERNAL_ATTESTATION_FILE/CVG_EXTERNAL_ATTESTATION_SHA256; CVG_ROLLBACK_VERIFIED=true alone is not evidence"
     },
     {
       "id": "external.human_signoff",
       "status": "FAIL",
-      "detail": "CVG_HUMAN_SIGNOFF=true is required; a declaration is not evidence of validation"
+      "detail": "human_signoff requires APPROVED status inside the signed attestation pinned by CVG_EXTERNAL_ATTESTATION_FILE/CVG_EXTERNAL_ATTESTATION_SHA256; CVG_HUMAN_SIGNOFF=true alone is not evidence"
     },
     {
       "id": "source.migrations_present",
@@ -228,6 +228,22 @@ $ node scripts/production-preflight.mjs --profile=PRODUCTION --expect=REJECT
     "external.rollback",
     "external.human_signoff"
   ],
+  "externalAttestation": {
+    "status": "FAIL",
+    "reason": "a digest-pinned CVG_EXTERNAL_ATTESTATION_FILE is required; boolean flags and unsupported declarations are not evidence",
+    "owner": null,
+    "expiresAt": null,
+    "signals": {
+      "provider": null,
+      "channel": null,
+      "identity": null,
+      "rag": null,
+      "rpo_rto": null,
+      "pilot": null,
+      "rollback": null,
+      "human_signoff": null
+    }
+  },
   "note": "Negative-validation mode passes only when unsafe production configuration is rejected."
 }
 

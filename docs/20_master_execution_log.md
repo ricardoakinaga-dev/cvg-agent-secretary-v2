@@ -5731,3 +5731,12 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - next_action: selar e verificar o candidato AUD19-12 com crítico fresco e negativos; manter staging real e produção `NO_GO`.
 - blockers: oito gates externos/humanos (provider, canal, identidade, RAG institucional, RPO/RTO, piloto, rollback, sign-off); políticas de retenção restantes, owner de SLO e rate limiting distribuído exigem decisão humana; nenhum dado real, efeito externo ou publicação.
 - evidence: `docs/03_build/0332_aud20260919_backlog.md`, `docs/CURRENT.md`, `docs/04_audit/evidence/AUD19/`, `docs/02_spec/adr/`, `certification/agent-eval-report.json`.
+
+# AUD19-12-SEAL-20260920 — selo candidate-bound e verificação
+
+- timestamp: `2026-09-20T04:52:00-03:00`; pipeline `BUILD -> AUDIT`; task `AUD19-12`; execução local controlada com PostgreSQL descartável e dados sintéticos.
+- action: selo executado em Node `22.23.2` no candidato `4374a9ef…@c0f46b9` com crítico fresco (`AUD19-08-critic-report.json`) e mutation sentinel `9/9`; digests de build/container/migration/policy/SBOM preenchidos no release manifest a partir de `AUD19-11-digests.json` (imagens locais reconstruídas, nunca publicadas); enforcement de skips required e cobertura com PostgreSQL ligados ao selo.
+- verification: `32/34` gates `PASS` — unit com inventário de skips, coverage `93%`/`87,2%`/`93,7%`/`93,7%`, postgres `28/226` com 0 skips, E2E `75/75` Chromium/Firefox/WebKit, evals `56/56` (`>=0,97`), chaos/load/recovery, bypass audit, self-test, verificação histórica, preflight negativo (`exit 1`, 32 bloqueios, sem side effect) e verificadores `certification:verify`/`evidence:verify` `PASS`. Decisão mecânica `NO_GO`; perfil elegível `CONTROLLED_LOCAL`; produção `NO_GO`.
+- blocker: `independent_critic` `FAIL` pelo piso §9.1 de branches de módulos críticos (kernel `81,08%`, `orchestration.ts` `68,38%`, `kernel-composition.ts` `63,60%`, RLS `78,13%`); `PHASE11_FORMAL_CLOSURE` falha por cascata. P2: harness de eval no agente determinístico (`Q-A16-01`) e leitor de tela real ausente.
+- next_action: fechar o P1 de cobertura de branches dos módulos críticos (kernel 81,08%; orchestration 68,38%) sem reduzir o piso e reexecutar AUD19-12 com crítico fresco; manter staging real e produção NO_GO.
+- evidence: `docs/04_audit/evidence/AUD19/AUD19-12-certification-outcome.md`, `certification/current.json`, `certification/phase11/phase11-result.json` e dossiês AUD19-13..15.

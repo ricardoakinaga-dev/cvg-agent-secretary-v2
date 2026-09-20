@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud19-external-evidence-required-fields",
+  "program": "AUD19-REM",
+  "appliesTo": ["AUD19-13", "AUD19-14", "AUD19-15"],
+  "validator": "scripts/aud19-external-evidence-check.mjs",
+  "rules": [
+    "Nenhum campo abaixo pode ser preenchido por fixture; dossiê e autoridade são externos.",
+    "Fixture nunca promove gate externo; --expect=REJECT é o uso local permitido."
+  ],
+  "requiredFields": {
+    "schemaVersion": "literal 1",
+    "kind": "literal cvg-external-signals-attestation",
+    "environment": "PRODUCTION | STAGING",
+    "owner": "autoridade nominal, nao-placeholder, 3..160 chars",
+    "issuedAt": "ISO-8601 no passado (tolerancia de 5 min)",
+    "expiresAt": "ISO-8601 no futuro; janela <= 90 dias",
+    "candidateDigest": "sha256 64-hex igual ao do candidato congelado",
+    "configDigest": "sha256 64-hex da configuracao do preflight",
+    "signals": {
+      "provider": "APPROVED + evidenceRef",
+      "channel": "APPROVED + evidenceRef",
+      "identity": "APPROVED + evidenceRef",
+      "rag": "APPROVED + evidenceRef",
+      "rpo_rto": "APPROVED + evidenceRef",
+      "pilot": "APPROVED + evidenceRef",
+      "rollback": "APPROVED + evidenceRef",
+      "human_signoff": "APPROVED + evidenceRef"
+    },
+    "signature": "HMAC-SHA256 64-hex sobre o envelope canonico sem o campo signature"
+  },
+  "additionalRequiredPerGate": {
+    "modelProvider": ["egress allowlist", "budget", "revocationPlan"],
+    "channel": ["webhook signing secret", "replay policy"],
+    "externalIdentity": ["issuer/audience", "key rotation", "revocation"],
+    "institutionalRag": ["corpus version/hash", "citation policy", "revocation"],
+    "rpoRto": ["measured timestamps", "approved targets"],
+    "rollback": ["executed runbook", "artifact digests"],
+    "pilot": ["supervisor report", "interruption criteria"]
+  },
+  "evidenceRefExample": "controlled://dossier/<gate>/<id>",
+  "localDryRun": [
+    "npm run production:preflight -- --expect=REJECT",
+    "node scripts/aud19-external-evidence-check.mjs --gate=<gate> --attestation=<path> --expect=REJECT"
+  ]
+}

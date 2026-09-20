@@ -2642,3 +2642,13 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - decision: candidate local apto a avaliação de staging somente após selo/verificação verdes; staging real e produção continuam `NO_GO`.
 - next_action: selar e verificar o candidato AUD19-12 com crítico fresco e negativos; manter staging real e produção `NO_GO`.
 - evidence: `docs/CURRENT.md`, `docs/03_build/0332_aud20260919_backlog.md`, `docs/04_audit/evidence/AUD19/`, `docs/02_spec/adr/`.
+
+# AUD19-12-SEAL-20260920 — estado corrente
+
+- current_engine: `BUILD -> AUDIT`; task: `AUD19-12`; status: `BLOCKED`; execution: `CONTROLLED_LOCAL`; staging: `NO_GO`; production: `NO_GO`.
+- last_completed_action: selo candidate-bound executado no candidato `4374a9ef…@c0f46b9` com crítico fresco e mutation sentinel; `32/34` gates `PASS` e verificadores `PASS`; o release manifest recebeu digests locais de build/container/migration/policy/SBOM sem publicação.
+- verification_state: unit com inventário de skips; coverage com PostgreSQL `93/87,2/93,7/93,7`; PostgreSQL `28/226` com 0 skips; E2E `75/75` em 3 browsers; evals `56/56`; preflight de produção rejeitado (exit 1, 32 bloqueios); decisão `NO_GO` com perfil elegível `CONTROLLED_LOCAL`.
+- gap_state: `independent_critic` `FAIL` no piso §9.1 de branches de módulos críticos (kernel `81,08%`, `orchestration.ts` `68,38%`, `kernel-composition.ts` `63,60%`, RLS `78,13%`); `PHASE11_FORMAL_CLOSURE` em cascata. P2: harness de eval no agente determinístico e leitor de tela real. Oito gates externos/humanos e dossiês AUD19-13..15 permanecem `BLOCKED`.
+- decision: nenhuma elegibilidade de staging emitida; produção `NO_GO`; não reduzir o piso para fabricar PASS.
+- next_action: fechar o P1 de cobertura de branches dos módulos críticos (kernel 81,08%; orchestration 68,38%) sem reduzir o piso e reexecutar AUD19-12 com crítico fresco; manter staging real e produção NO_GO.
+- evidence: `docs/04_audit/evidence/AUD19/AUD19-12-certification-outcome.md`, `certification/current.json`, `docs/04_audit/evidence/AUD19/AUD19-13-external-qualification-dossier.md`, `AUD19-14-restore-rpo-rto-pilot-dossier.md`, `AUD19-15-final-audit-release-dossier.md`.

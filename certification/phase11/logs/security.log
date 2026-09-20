@@ -1,13 +1,13 @@
 $ npm run audit:security
-# certificationId=phase11-81962adcfc65cf7d-mu5kewem
-# candidateId=81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747
-# commit=9c373bf1d2fcd43632da09d60b87455da6a18a09
-# treeHash=f888b174065e305ba819c16fb588813a3b8b7d9c2d2c45625e96bd9293a60fd6
+# certificationId=phase11-4374a9ef6566485b-mu9hm7h7
+# candidateId=4374a9ef6566485b6ac1c240dddac1a9b5af93b78475f1559ade887937385220
+# commit=c0f46b9bd012677b07a2a198393e9e3c82396c92
+# treeHash=3e68ae4477ba45996ae0557e0a74575205a761bd0039a652b5ce2d6e96f10445
 # gate=security
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=648
+# exitCode=0 durationMs=678
 
 
 > cvg-agent-secretary-v2@1.0.0 audit:security

@@ -1,13 +1,13 @@
 $ node scripts/phase11-2-evidence-check.mjs --reports
-# certificationId=phase11-81962adcfc65cf7d-mu5kewem
-# candidateId=81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747
-# commit=9c373bf1d2fcd43632da09d60b87455da6a18a09
-# treeHash=f888b174065e305ba819c16fb588813a3b8b7d9c2d2c45625e96bd9293a60fd6
+# certificationId=phase11-4374a9ef6566485b-mu9hm7h7
+# candidateId=4374a9ef6566485b6ac1c240dddac1a9b5af93b78475f1559ade887937385220
+# commit=c0f46b9bd012677b07a2a198393e9e3c82396c92
+# treeHash=3e68ae4477ba45996ae0557e0a74575205a761bd0039a652b5ce2d6e96f10445
 # gate=evidence_reports
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=31
+# exitCode=0 durationMs=103
 
 {
   "schemaVersion": 1,
@@ -18,54 +18,59 @@ $ node scripts/phase11-2-evidence-check.mjs --reports
   "sideEffects": false,
   "checks": [
     {
-      "id": "REPORT:docs/phase11/PHASE11_2_DELTA_AUDIT.md",
+      "id": "REPORTS:schema",
       "status": "PASS",
-      "detail": "PARTIAL; synthetic scope declared"
+      "detail": "10 report(s)"
     },
     {
-      "id": "REPORT:docs/phase11/PHASE11_FORMAL_CLOSURE.md",
+      "id": "REPORTS:docs/phase11/PHASE11_2_DELTA_AUDIT.md",
       "status": "PASS",
-      "detail": "PASS; synthetic scope declared"
+      "detail": "PARTIAL; controlled-local; no production claim; 0 artifact(s) verified"
     },
     {
-      "id": "REPORT:docs/phase11/PHASE11_ORCHESTRATOR_PROOF.md",
+      "id": "REPORTS:docs/phase11/PHASE11_FORMAL_CLOSURE.md",
       "status": "PASS",
-      "detail": "PASS; synthetic scope declared"
+      "detail": "PASS; controlled-local; no production claim; 0 artifact(s) verified"
     },
     {
-      "id": "REPORT:docs/phase11/PHASE11_SECURITY_REVIEW.md",
+      "id": "REPORTS:docs/phase11/PHASE11_ORCHESTRATOR_PROOF.md",
       "status": "PASS",
-      "detail": "PASS; synthetic scope declared"
+      "detail": "PASS; controlled-local; no production claim; 0 artifact(s) verified"
     },
     {
-      "id": "REPORT:docs/phase11/PHASE11_ADVERSARIAL_REPORT.md",
+      "id": "REPORTS:docs/phase11/PHASE11_SECURITY_REVIEW.md",
       "status": "PASS",
-      "detail": "PASS; synthetic scope declared"
+      "detail": "PASS; controlled-local; no production claim; 0 artifact(s) verified"
     },
     {
-      "id": "REPORT:docs/phase11/PHASE11_RECOVERY_REPORT.md",
+      "id": "REPORTS:docs/phase11/PHASE11_ADVERSARIAL_REPORT.md",
       "status": "PASS",
-      "detail": "PASS; synthetic scope declared"
+      "detail": "PASS; controlled-local; no production claim; 0 artifact(s) verified"
     },
     {
-      "id": "REPORT:docs/phase11/PHASE11_CHAOS_REPORT.md",
+      "id": "REPORTS:docs/phase11/PHASE11_RECOVERY_REPORT.md",
       "status": "PASS",
-      "detail": "PASS; synthetic scope declared"
+      "detail": "PASS; controlled-local; no production claim; 0 artifact(s) verified"
     },
     {
-      "id": "REPORT:docs/phase11/PHASE11_LOAD_REPORT.md",
+      "id": "REPORTS:docs/phase11/PHASE11_CHAOS_REPORT.md",
       "status": "PASS",
-      "detail": "PASS; synthetic scope declared"
+      "detail": "PASS; controlled-local; no production claim; 0 artifact(s) verified"
     },
     {
-      "id": "REPORT:docs/phase11/PHASE11_INTEGRATION_REPORT.md",
+      "id": "REPORTS:docs/phase11/PHASE11_LOAD_REPORT.md",
       "status": "PASS",
-      "detail": "BLOCKED_EXTERNAL; synthetic scope declared"
+      "detail": "PASS; controlled-local; no production claim; 0 artifact(s) verified"
     },
     {
-      "id": "REPORT:docs/phase11/PHASE11_INDEPENDENT_CRITIC.md",
+      "id": "REPORTS:docs/phase11/PHASE11_INTEGRATION_REPORT.md",
       "status": "PASS",
-      "detail": "PASS; synthetic scope declared"
+      "detail": "BLOCKED_EXTERNAL; controlled-local; no production claim; 0 artifact(s) verified"
+    },
+    {
+      "id": "REPORTS:docs/phase11/PHASE11_INDEPENDENT_CRITIC.md",
+      "status": "PASS",
+      "detail": "PASS; controlled-local; no production claim; 0 artifact(s) verified"
     }
   ]
 }

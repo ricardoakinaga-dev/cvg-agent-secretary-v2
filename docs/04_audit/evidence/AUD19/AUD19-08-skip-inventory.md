@@ -2,33 +2,24 @@
 
 Gerado em `2026-09-20T03:20:00.430Z` (Node `22.23.2`) pelo script `scripts/skip-inventory.mjs`.
 
-Manifesto congelado: `docs/04_audit/evidence/AUD19/AUD19-08-required-skips.json`.
+Manifesto congelado: `docs/03_build/tracking/aud19-required-skips.json`.
 
 ## Resumo
 
 | Gate | DB disponível | Skips | Required | Optional | Origem |
 | --- | --- | ---: | ---: | ---: | --- |
-| postgres | não | 0 | **0** | 0 | report:/tmp/opencode/pg-final.json |
-| postgres | sim | 0 | **0** | 0 | fresh vitest run |
+| postgres | sim | 0 | **0** | 0 | report:/tmp/opencode/aud19/postgres-report.json |
 | unit | não | 131 | **0** | 131 | report:/tmp/opencode/unit-final.json |
 
 Status agregado: **PASS** — required=0, optional=131, total=131.
 
 ## Contextos
 
-### Gate `postgres` (DB ausente)
-
-Comando: `parsed:/tmp/opencode/pg-final.json`
-
-Totais do runner: arquivos=28, testes=226, passados=226, falhos=0, skips=0.
-
-Nenhum skip observado neste contexto.
-
 ### Gate `postgres` (DB disponível)
 
-Comando: `npx vitest run packages/persistence/src/__tests__/postgres-migration-smoke.test.ts packages/persistence/src/__tests__/orchestrator-postgres.test.ts packages/persistence/src/__tests__/tenant-isolation.test.ts packages/persistence/src/__tests__/platform-postgres-smoke.test.ts packages/persistence/src/__tests__/platform-approval-postgres.test.ts packages/persistence/src/__tests__/audit-evidence-checkpoint-postgres.test.ts packages/persistence/src/__tests__/session-version-pinning-postgres.test.ts packages/persistence/src/__tests__/outbox-durability.test.ts packages/persistence/src/__tests__/effect-journal-postgres.test.ts packages/persistence/src/__tests__/channel-effect-journal-postgres.test.ts apps/api/src/__tests__/postgres-persistence-mode.test.ts apps/api/src/__tests__/webhook-security.test.ts apps/api/src/__tests__/journeys-api-postgres.test.ts apps/worker/src/__tests__/postgres-outbox-bridge.integration.test.ts packages/chaos/src/__tests__/chaos-postgres.test.ts packages/persistence/src/__tests__/journeys-postgres.test.ts apps/worker/src/__tests__/continuous-worker-postgres.integration.test.ts apps/worker/src/__tests__/postgres-role-preflight.test.ts packages/persistence/src/__tests__/attendance-approval-postgres.test.ts packages/persistence/src/__tests__/journey-task-atomicity.test.ts packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts packages/persistence/src/__tests__/retention-postgres.test.ts apps/api/src/__tests__/operator-replay-store.test.ts apps/api/src/__tests__/operator-replay-guard.test.ts --no-file-parallelism --maxWorkers=2 --reporter=json --outputFile=/tmp/aud19-skip-inventory-06IVq7/vitest-report.json`
+Comando: `npm run test:postgres -- --reporter=json --outputFile=/tmp/opencode/aud19/postgres-report.json`
 
-Totais do runner: arquivos=27, testes=224, passados=224, falhos=0, skips=0.
+Totais do runner: arquivos=28, testes=226, passados=226, falhos=0, skips=0.
 
 Nenhum skip observado neste contexto.
 

@@ -1,13 +1,13 @@
 $ npm run build
-# certificationId=phase11-81962adcfc65cf7d-mu5kewem
-# candidateId=81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747
-# commit=9c373bf1d2fcd43632da09d60b87455da6a18a09
-# treeHash=f888b174065e305ba819c16fb588813a3b8b7d9c2d2c45625e96bd9293a60fd6
+# certificationId=phase11-4374a9ef6566485b-mu9hm7h7
+# candidateId=4374a9ef6566485b6ac1c240dddac1a9b5af93b78475f1559ade887937385220
+# commit=c0f46b9bd012677b07a2a198393e9e3c82396c92
+# treeHash=3e68ae4477ba45996ae0557e0a74575205a761bd0039a652b5ce2d6e96f10445
 # gate=build
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=10145
+# exitCode=0 durationMs=12648
 
 
 > cvg-agent-secretary-v2@1.0.0 build
@@ -21,15 +21,15 @@ $ npm run build
 > cvg-agent-secretary-v2@1.0.0 build:web
 > vite --config vite.config.mts build apps/web
 
-vite v8.2.2 building client environment for production...
+[36mvite v8.2.2 [32mbuilding client environment for production...[36m[39m
 transforming...
 ✓ 166 modules transformed.
 rendering chunks...
 computing gzip size...
 apps/web/dist/index.html                   0.40 kB │ gzip:   0.27 kB
-apps/web/dist/assets/index-uptfVMPh.css   29.83 kB │ gzip:   6.17 kB
-apps/web/dist/assets/index-D8tu-Ug2.js   404.79 kB │ gzip: 114.62 kB
+apps/web/dist/assets/index-D6AUeih4.css   30.57 kB │ gzip:   6.28 kB
+apps/web/dist/assets/index-CbeaRV6b.js   404.79 kB │ gzip: 114.62 kB
 
-✓ built in 175ms
+[32m✓ built in 185ms[39m
 
 

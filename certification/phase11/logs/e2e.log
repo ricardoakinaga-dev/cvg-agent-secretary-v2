@@ -1,47 +1,96 @@
 $ npm run test:e2e
-# certificationId=phase11-81962adcfc65cf7d-mu5kewem
-# candidateId=81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747
-# commit=9c373bf1d2fcd43632da09d60b87455da6a18a09
-# treeHash=f888b174065e305ba819c16fb588813a3b8b7d9c2d2c45625e96bd9293a60fd6
+# certificationId=phase11-4374a9ef6566485b-mu9hm7h7
+# candidateId=4374a9ef6566485b6ac1c240dddac1a9b5af93b78475f1559ade887937385220
+# commit=c0f46b9bd012677b07a2a198393e9e3c82396c92
+# treeHash=3e68ae4477ba45996ae0557e0a74575205a761bd0039a652b5ce2d6e96f10445
 # gate=e2e
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=28682
+# exitCode=0 durationMs=230841
 
 
 > cvg-agent-secretary-v2@1.0.0 test:e2e
 > playwright test
 
 
+Running 75 tests using 1 worker
 
+[1A[2K[1/75] [chromium] › tests/e2e/accessibility.spec.ts:278:7 › A11Y-01 axe scan on main operator screens › operations console (Supervisor, synthetic fixtures)
+[1A[2K[2/75] [chromium] › tests/e2e/accessibility.spec.ts:290:7 › A11Y-01 axe scan on main operator screens › admin control center (Admin, synthetic fixtures)
+[1A[2K[3/75] [chromium] › tests/e2e/accessibility.spec.ts:299:7 › A11Y-01 axe scan on main operator screens › unchanged read-only states: empty and error
+[1A[2K[4/75] [chromium] › tests/e2e/accessibility.spec.ts:322:7 › A11Y-02 WCAG AA contrast for operational text › no color-contrast violation on console or admin screens
+[1A[2K[5/75] [chromium] › tests/e2e/accessibility.spec.ts:374:7 › A11Y-03 keyboard navigation and focus order › skip link, complete tab order, visible focus and activation
+[1A[2K[6/75] [chromium] › tests/e2e/accessibility.spec.ts:483:7 › A11Y-03 keyboard navigation and focus order › approval decision is keyboard operable and preserves state
+[1A[2K[7/75] [chromium] › tests/e2e/accessibility.spec.ts:505:7 › A11Y-04 preserved operational states › loading state remains readable and scannable
+[1A[2K[8/75] [chromium] › tests/e2e/accessibility.spec.ts:521:7 › A11Y-04 preserved operational states › error state exposes retry and recovers without data loss
+[1A[2K[9/75] [chromium] › tests/e2e/accessibility.spec.ts:568:7 › A11Y-04 preserved operational states › handoff and UNCERTAIN remain read-only and clearly announced
+[1A[2K[10/75] [chromium] › tests/e2e/accessibility.spec.ts:608:9 › A11Y-05 zoom and reflow (320 CSS px, 200% and 400%) › 320csspx: no horizontal scroll and no content loss
+[1A[2K[11/75] [chromium] › tests/e2e/accessibility.spec.ts:608:9 › A11Y-05 zoom and reflow (320 CSS px, 200% and 400%) › zoom-200: no horizontal scroll and no content loss
+[1A[2K[12/75] [chromium] › tests/e2e/accessibility.spec.ts:608:9 › A11Y-05 zoom and reflow (320 CSS px, 200% and 400%) › zoom-400: no horizontal scroll and no content loss
+[1A[2K[13/75] [chromium] › tests/e2e/accessibility.spec.ts:675:7 › A11Y-06 forced colors › content, actions and focus survive forced-colors emulation
+[1A[2K[14/75] [chromium] › tests/e2e/accessibility.spec.ts:782:7 › A11Y-07 touch targets and operational typography › interactive controls are >= 44x44 CSS px
+[1A[2K[15/75] [chromium] › tests/e2e/accessibility.spec.ts:816:7 › A11Y-07 touch targets and operational typography › operational typography is >= 12px with >= 1.4 line-height
+[1A[2K[16/75] [chromium] › tests/e2e/accessibility.spec.ts:883:7 › A11Y-08 UNCERTAIN read model detail › synthetic UNCERTAIN detail exposes no unsafe automatic retry action
+[1A[2K[17/75] [chromium] › tests/e2e/audit-evidence-checkpoint.spec.ts:3:5 › seals and archives an audit evidence checkpoint without payload export
+[1A[2K[18/75] [chromium] › tests/e2e/http-security.spec.ts:6:5 › API HTTP security boundary enforces origin and preflight policy
+[1A[2K[19/75] [chromium] › tests/e2e/platform-control-center.spec.ts:4:5 › configures, publishes and dry-runs an agent through the real web/API boundary
+[1A[2K[20/75] [chromium] › tests/e2e/session-version-pinning.spec.ts:44:5 › keeps a browser/API conversation on its first published snapshot
+[1A[2K[21/75] [chromium] › tests/e2e/visual-shell.spec.ts:10:5 › console shell preserves layout, focus and control sizing across viewports
+[1A[2K[22/75] [chromium] › tests/e2e/visual-shell.spec.ts:77:5 › admin control center remains navigable on a narrow viewport
+[1A[2K[23/75] [chromium] › tests/e2e/visual-shell.spec.ts:100:5 › dead-letter diagnostics wrap long errors and remain tenant scoped
+[1A[2K[24/75] [chromium] › tests/e2e/visual-shell.spec.ts:163:5 › tenantless privileged sessions do not render or request the dead-letter queue
+[1A[2K[25/75] [chromium] › tests/e2e/visual-shell.spec.ts:181:5 › orchestration console exposes the synthetic state matrix read-only
+[1A[2K[26/75] [firefox] › tests/e2e/accessibility.spec.ts:278:7 › A11Y-01 axe scan on main operator screens › operations console (Supervisor, synthetic fixtures)
+[1A[2K[27/75] [firefox] › tests/e2e/accessibility.spec.ts:290:7 › A11Y-01 axe scan on main operator screens › admin control center (Admin, synthetic fixtures)
+[1A[2K[28/75] [firefox] › tests/e2e/accessibility.spec.ts:299:7 › A11Y-01 axe scan on main operator screens › unchanged read-only states: empty and error
+[1A[2K[29/75] [firefox] › tests/e2e/accessibility.spec.ts:322:7 › A11Y-02 WCAG AA contrast for operational text › no color-contrast violation on console or admin screens
+[1A[2K[30/75] [firefox] › tests/e2e/accessibility.spec.ts:374:7 › A11Y-03 keyboard navigation and focus order › skip link, complete tab order, visible focus and activation
+[1A[2K[31/75] [firefox] › tests/e2e/accessibility.spec.ts:483:7 › A11Y-03 keyboard navigation and focus order › approval decision is keyboard operable and preserves state
+[1A[2K[32/75] [firefox] › tests/e2e/accessibility.spec.ts:505:7 › A11Y-04 preserved operational states › loading state remains readable and scannable
+[1A[2K[33/75] [firefox] › tests/e2e/accessibility.spec.ts:521:7 › A11Y-04 preserved operational states › error state exposes retry and recovers without data loss
+[1A[2K[34/75] [firefox] › tests/e2e/accessibility.spec.ts:568:7 › A11Y-04 preserved operational states › handoff and UNCERTAIN remain read-only and clearly announced
+[1A[2K[35/75] [firefox] › tests/e2e/accessibility.spec.ts:608:9 › A11Y-05 zoom and reflow (320 CSS px, 200% and 400%) › 320csspx: no horizontal scroll and no content loss
+[1A[2K[36/75] [firefox] › tests/e2e/accessibility.spec.ts:608:9 › A11Y-05 zoom and reflow (320 CSS px, 200% and 400%) › zoom-200: no horizontal scroll and no content loss
+[1A[2K[37/75] [firefox] › tests/e2e/accessibility.spec.ts:608:9 › A11Y-05 zoom and reflow (320 CSS px, 200% and 400%) › zoom-400: no horizontal scroll and no content loss
+[1A[2K[38/75] [firefox] › tests/e2e/accessibility.spec.ts:675:7 › A11Y-06 forced colors › content, actions and focus survive forced-colors emulation
+[1A[2K[39/75] [firefox] › tests/e2e/accessibility.spec.ts:782:7 › A11Y-07 touch targets and operational typography › interactive controls are >= 44x44 CSS px
+[1A[2K[40/75] [firefox] › tests/e2e/accessibility.spec.ts:816:7 › A11Y-07 touch targets and operational typography › operational typography is >= 12px with >= 1.4 line-height
+[1A[2K[41/75] [firefox] › tests/e2e/accessibility.spec.ts:883:7 › A11Y-08 UNCERTAIN read model detail › synthetic UNCERTAIN detail exposes no unsafe automatic retry action
+[1A[2K[42/75] [firefox] › tests/e2e/audit-evidence-checkpoint.spec.ts:3:5 › seals and archives an audit evidence checkpoint without payload export
+[1A[2K[43/75] [firefox] › tests/e2e/http-security.spec.ts:6:5 › API HTTP security boundary enforces origin and preflight policy
+[1A[2K[44/75] [firefox] › tests/e2e/platform-control-center.spec.ts:4:5 › configures, publishes and dry-runs an agent through the real web/API boundary
+[1A[2K[45/75] [firefox] › tests/e2e/session-version-pinning.spec.ts:44:5 › keeps a browser/API conversation on its first published snapshot
+[1A[2K[46/75] [firefox] › tests/e2e/visual-shell.spec.ts:10:5 › console shell preserves layout, focus and control sizing across viewports
+[1A[2K[47/75] [firefox] › tests/e2e/visual-shell.spec.ts:77:5 › admin control center remains navigable on a narrow viewport
+[1A[2K[48/75] [firefox] › tests/e2e/visual-shell.spec.ts:100:5 › dead-letter diagnostics wrap long errors and remain tenant scoped
+[1A[2K[49/75] [firefox] › tests/e2e/visual-shell.spec.ts:163:5 › tenantless privileged sessions do not render or request the dead-letter queue
+[1A[2K[50/75] [firefox] › tests/e2e/visual-shell.spec.ts:181:5 › orchestration console exposes the synthetic state matrix read-only
+[1A[2K[51/75] [webkit] › tests/e2e/accessibility.spec.ts:278:7 › A11Y-01 axe scan on main operator screens › operations console (Supervisor, synthetic fixtures)
+[1A[2K[52/75] [webkit] › tests/e2e/accessibility.spec.ts:290:7 › A11Y-01 axe scan on main operator screens › admin control center (Admin, synthetic fixtures)
+[1A[2K[53/75] [webkit] › tests/e2e/accessibility.spec.ts:299:7 › A11Y-01 axe scan on main operator screens › unchanged read-only states: empty and error
+[1A[2K[54/75] [webkit] › tests/e2e/accessibility.spec.ts:322:7 › A11Y-02 WCAG AA contrast for operational text › no color-contrast violation on console or admin screens
+[1A[2K[55/75] [webkit] › tests/e2e/accessibility.spec.ts:374:7 › A11Y-03 keyboard navigation and focus order › skip link, complete tab order, visible focus and activation
+[1A[2K[56/75] [webkit] › tests/e2e/accessibility.spec.ts:483:7 › A11Y-03 keyboard navigation and focus order › approval decision is keyboard operable and preserves state
+[1A[2K[57/75] [webkit] › tests/e2e/accessibility.spec.ts:505:7 › A11Y-04 preserved operational states › loading state remains readable and scannable
+[1A[2K[58/75] [webkit] › tests/e2e/accessibility.spec.ts:521:7 › A11Y-04 preserved operational states › error state exposes retry and recovers without data loss
+[1A[2K[59/75] [webkit] › tests/e2e/accessibility.spec.ts:568:7 › A11Y-04 preserved operational states › handoff and UNCERTAIN remain read-only and clearly announced
+[1A[2K[60/75] [webkit] › tests/e2e/accessibility.spec.ts:608:9 › A11Y-05 zoom and reflow (320 CSS px, 200% and 400%) › 320csspx: no horizontal scroll and no content loss
+[1A[2K[61/75] [webkit] › tests/e2e/accessibility.spec.ts:608:9 › A11Y-05 zoom and reflow (320 CSS px, 200% and 400%) › zoom-200: no horizontal scroll and no content loss
+[1A[2K[62/75] [webkit] › tests/e2e/accessibility.spec.ts:608:9 › A11Y-05 zoom and reflow (320 CSS px, 200% and 400%) › zoom-400: no horizontal scroll and no content loss
+[1A[2K[63/75] [webkit] › tests/e2e/accessibility.spec.ts:675:7 › A11Y-06 forced colors › content, actions and focus survive forced-colors emulation
+[1A[2K[64/75] [webkit] › tests/e2e/accessibility.spec.ts:782:7 › A11Y-07 touch targets and operational typography › interactive controls are >= 44x44 CSS px
+[1A[2K[65/75] [webkit] › tests/e2e/accessibility.spec.ts:816:7 › A11Y-07 touch targets and operational typography › operational typography is >= 12px with >= 1.4 line-height
+[1A[2K[66/75] [webkit] › tests/e2e/accessibility.spec.ts:883:7 › A11Y-08 UNCERTAIN read model detail › synthetic UNCERTAIN detail exposes no unsafe automatic retry action
+[1A[2K[67/75] [webkit] › tests/e2e/audit-evidence-checkpoint.spec.ts:3:5 › seals and archives an audit evidence checkpoint without payload export
+[1A[2K[68/75] [webkit] › tests/e2e/http-security.spec.ts:6:5 › API HTTP security boundary enforces origin and preflight policy
+[1A[2K[69/75] [webkit] › tests/e2e/platform-control-center.spec.ts:4:5 › configures, publishes and dry-runs an agent through the real web/API boundary
+[1A[2K[70/75] [webkit] › tests/e2e/session-version-pinning.spec.ts:44:5 › keeps a browser/API conversation on its first published snapshot
+[1A[2K[71/75] [webkit] › tests/e2e/visual-shell.spec.ts:10:5 › console shell preserves layout, focus and control sizing across viewports
+[1A[2K[72/75] [webkit] › tests/e2e/visual-shell.spec.ts:77:5 › admin control center remains navigable on a narrow viewport
+[1A[2K[73/75] [webkit] › tests/e2e/visual-shell.spec.ts:100:5 › dead-letter diagnostics wrap long errors and remain tenant scoped
+[1A[2K[74/75] [webkit] › tests/e2e/visual-shell.spec.ts:163:5 › tenantless privileged sessions do not render or request the dead-letter queue
+[1A[2K[75/75] [webkit] › tests/e2e/visual-shell.spec.ts:181:5 › orchestration console exposes the synthetic state matrix read-only
+[1A[2K  75 passed (3.8m)
 
-
-Running 9 tests using 1 worker
-
-
-
-
-
-[1A[2K[1/9] [chromium] › tests/e2e/audit-evidence-checkpoint.spec.ts:3:5 › seals and archives an audit evidence checkpoint without payload export
-[1A[2K[2/9] [chromium] › tests/e2e/http-security.spec.ts:6:5 › API HTTP security boundary enforces origin and preflight policy
-[1A[2K[3/9] [chromium] › tests/e2e/platform-control-center.spec.ts:4:5 › configures, publishes and dry-runs an agent through the real web/API boundary
-[1A[2K[4/9] [chromium] › tests/e2e/session-version-pinning.spec.ts:44:5 › keeps a browser/API conversation on its first published snapshot
-[1A[2K[5/9] [chromium] › tests/e2e/visual-shell.spec.ts:10:5 › console shell preserves layout, focus and control sizing across viewports
-[1A[2K[6/9] [chromium] › tests/e2e/visual-shell.spec.ts:76:5 › admin control center remains navigable on a narrow viewport
-[1A[2K[7/9] [chromium] › tests/e2e/visual-shell.spec.ts:99:5 › dead-letter diagnostics wrap long errors and remain tenant scoped
-[1A[2K[8/9] [chromium] › tests/e2e/visual-shell.spec.ts:162:5 › tenantless privileged sessions do not render or request the dead-letter queue
-[1A[2K[9/9] [chromium] › tests/e2e/visual-shell.spec.ts:180:5 › orchestration console exposes the synthetic state matrix read-only
-[1A[2K  9 passed (28.0s)
-
-[1A[2K[WebServer] (node:1086936) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
-[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[1A[2K[WebServer] (node:1086947) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
-[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[1A[2K[WebServer] (node:1086985) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
-[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[1A[2K(node:1087035) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
-(Use `node --trace-warnings ...` to show where the warning was created)
-[1A[2K(node:1087035) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
-(Use `node --trace-warnings ...` to show where the warning was created)
 

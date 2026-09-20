@@ -76,25 +76,28 @@ substitui; a ausência fica registrada como gap.
   `postgres-role-preflight.ts`) no relatório bruto. Nenhum piso é aplicado a
   eles até `AUD19-12` decidir o denominador acordado (§9.1: “web, bootstrap e
   PostgreSQL reportados separadamente, sem exclusão para inflar”).
-- **Gap de seleção detectado nesta task:** o inventário de skips mostra que
+- **Gap de seleção fechado na integração de AUD19-12:**
   `apps/worker/src/__tests__/continuous-worker-entrypoint.integration.test.ts`
-  depende de `TEST_DATABASE_URL` mas **não** está na lista de
-  `scripts.test:postgres`. Com o banco ausente ele aparece como skip; sem banco
-  ele nunca executa. Enquanto não for selecionado por um gate (ou tiver o skip
-  removido), os skips desse arquivo são classificados como `required` e
-  bloqueiam a certificação — ver
-  `AUD19-08-skip-inventory.json`/`.md`.
+  foi adicionado a `scripts.test:postgres`; o gate PostgreSQL agora seleciona
+  **28 arquivos / 226 testes com 0 skips**, e o inventário classifica os skips
+  condicionais do unit como opcionais com justificativa congelada. Evidência:
+  `AUD19-08-skip-inventory.json` (contexto `postgres`, `databaseAvailable:
+  true`).
 
 ## 5. Gaps explícitos (sem inflar)
 
 1. Pisos 80/80/80/80 vs contrato 90/90/90/85 (+95 críticos): débito de
    `AUD19-12`; nenhum ajuste cosmético foi feito.
 2. Cobertura de branches por módulo crítico não é calculada no relatório atual.
-3. E2E Chromium-only (Firefox/WebKit sem cobertura) — `AUD19-10`.
-4. `continuous-worker-entrypoint.integration.test.ts` sem gate PostgreSQL.
-5. Percentuais do escopo auxiliar (frontend/PostgreSQL) só existem quando o
-   comando auxiliar é executado; ele não está no gate de certificação e não
-   deve ser citado como aprovação de cobertura.
+3. E2E Chromium-only foi resolvido em `AUD19-10` (3 projetos/browsers).
+4. `continuous-worker-entrypoint.integration.test.ts` foi incluído no gate
+   PostgreSQL (28 arquivos / 226 testes / 0 skips).
+5. Medição de qualificação com PostgreSQL descartável (suite completa):
+   statements `93%`, branches `87,2%`, functions `93,7%`, lines `93,7%`,
+   acima dos pisos globais de §9.1; branches de módulos críticos (>=95%) ainda
+   não são calculados por módulo — débito explícito de `AUD19-12`.
+6. Percentuais do escopo auxiliar (frontend/PostgreSQL via
+   `vitest.coverage-all.config.mts`) são report-only e não substituem os pisos.
 
 ## 6. Evidência
 

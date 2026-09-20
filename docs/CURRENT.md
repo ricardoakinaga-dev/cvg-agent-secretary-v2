@@ -36,27 +36,28 @@
 
 ## Tasks correntes (estados oficiais)
 
-| Task     | Estado        | Evidência corrente                                                                     |
-| -------- | ------------- | -------------------------------------------------------------------------------------- |
-| AUD19-01 | `COMPLETED`   | [SPEC](02_spec/aud19_01_eval_contract_20260919.md), relatório de eval e testes         |
-| AUD19-02 | `COMPLETED`   | Este índice, checker documental, matriz AUD19 e ADR LangGraph                          |
-| AUD19-03 | `COMPLETED`   | Get-or-create linearizável com validação de lineage                                    |
-| AUD19-04 | `COMPLETED`   | Teste PostgreSQL de duas conexões, fencing e ausência de DLQ espúria                   |
-| AUD19-05 | `COMPLETED`   | Retenção/erasure fail-closed, migration 0025 e mapa de dados                           |
-| AUD19-06 | `COMPLETED`   | Replay distribuído, atestação de preflight e negativos                                 |
-| AUD19-07 | `COMPLETED`   | [ADR 0002](02_spec/adr/0002-hotspot-decomposition-bounded-slice.md) e fatia medida     |
-| AUD19-08 | `COMPLETED`   | Inventário de skips (0 required), mutantes 9/9 e critic/evidence comportamentais       |
-| AUD19-09 | `COMPLETED`   | SLIs, alertas→runbooks e exercício sintético; SLOs pendentes de owner                  |
-| AUD19-10 | `COMPLETED`   | axe/contraste, teclado, zoom, forced-colors e 3 browsers                               |
-| AUD19-11 | `COMPLETED`   | Topologia API+worker, non-root, readiness/drain, digests e smoke                       |
-| AUD19-12 | `IN_PROGRESS` | Selo candidate-bound e verificação no candidato final                                  |
-| AUD19-13 | `BLOCKED`     | Ambiente e autoridade externos                                                         |
-| AUD19-14 | `BLOCKED`     | Ambiente e autoridade externos                                                         |
-| AUD19-15 | `BLOCKED`     | Depende de AUD19-12..14; exigirá `WAITING_HUMAN_APPROVAL` quando o dossiê estiver apto |
+| Task     | Estado      | Evidência corrente                                                                                      |
+| -------- | ----------- | ------------------------------------------------------------------------------------------------------- |
+| AUD19-01 | `COMPLETED` | [SPEC](02_spec/aud19_01_eval_contract_20260919.md), relatório de eval e testes                          |
+| AUD19-02 | `COMPLETED` | Este índice, checker documental, matriz AUD19 e ADR LangGraph                                           |
+| AUD19-03 | `COMPLETED` | Get-or-create linearizável com validação de lineage                                                     |
+| AUD19-04 | `COMPLETED` | Teste PostgreSQL de duas conexões, fencing e ausência de DLQ espúria                                    |
+| AUD19-05 | `COMPLETED` | Retenção/erasure fail-closed, migration 0025 e mapa de dados                                            |
+| AUD19-06 | `COMPLETED` | Replay distribuído, atestação de preflight e negativos                                                  |
+| AUD19-07 | `COMPLETED` | [ADR 0002](02_spec/adr/0002-hotspot-decomposition-bounded-slice.md) e fatia medida                      |
+| AUD19-08 | `COMPLETED` | Inventário de skips (0 required), mutantes 9/9 e critic/evidence comportamentais                        |
+| AUD19-09 | `COMPLETED` | SLIs, alertas→runbooks e exercício sintético; SLOs pendentes de owner                                   |
+| AUD19-10 | `COMPLETED` | axe/contraste, teclado, zoom, forced-colors e 3 browsers                                                |
+| AUD19-11 | `COMPLETED` | Topologia API+worker, non-root, readiness/drain, digests e smoke                                        |
+| AUD19-12 | `BLOCKED`   | `NO_GO` candidate-bound: 32/34 gates PASS; `independent_critic` falha no piso §9.1 de branches críticos |
+| AUD19-13 | `BLOCKED`   | Ambiente e autoridade externos                                                                          |
+| AUD19-14 | `BLOCKED`   | Ambiente e autoridade externos                                                                          |
+| AUD19-15 | `BLOCKED`   | Depende de AUD19-12..14; exigirá `WAITING_HUMAN_APPROVAL` quando o dossiê estiver apto                  |
 
 ## Decisões correntes
 
-- Perfil de release local: candidato controlado; staging real e produção `NO_GO`.
+- Perfil de release local: candidato selado `NO_GO` em 2026-09-20 (`4374a9ef…@c0f46b9`); staging real e produção `NO_GO`.
+- P1 local aberto: piso §9.1 de branches de módulos críticos (kernel `81,08%`; `orchestration.ts` `68,38%`; `kernel-composition.ts` `63,60%`; RLS `78,13%`); não reduzir o piso.
 - Task success de evals: `>=97%` (fonte operacional `scripts/lib/eval-contract.mjs`);
   `53/56 = 94,64%` é negativo conhecido e deve falhar.
 - Oito gates externos/humanos continuam sem validação: provider, canal,
@@ -64,4 +65,4 @@
 
 ## Próxima ação
 
-- Próxima ação: selar e verificar o candidato AUD19-12 com crítico fresco e negativos; manter staging real e produção `NO_GO`.
+- Próxima ação: fechar o P1 de cobertura de branches dos módulos críticos (kernel 81,08%; orchestration 68,38%) sem reduzir o piso e reexecutar AUD19-12 com crítico fresco; manter staging real e produção NO_GO.

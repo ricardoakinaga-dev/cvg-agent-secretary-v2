@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "kind": "phase11-recovery-report",
-  "certificationId": "phase11-81962adcfc65cf7d-mu5kewem",
-  "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
-  "generatedAt": "2026-09-17T13:48:35.017Z",
+  "certificationId": "phase11-4374a9ef6566485b-mu9hm7h7",
+  "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92",
+  "generatedAt": "2026-09-20T07:50:00.786Z",
   "gateId": "recovery",
   "status": "PASS",
   "command": "npm test -- --run packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts apps/worker/src/__tests__/outbox-recovery.test.ts apps/worker/src/__tests__/worker-sweeps.test.ts",

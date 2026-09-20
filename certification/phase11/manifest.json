@@ -2,595 +2,611 @@
   "schemaVersion": 2,
   "phase": "11",
   "kind": "phase11-manifest",
-  "certificationId": "phase11-81962adcfc65cf7d-mu5kewem",
-  "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
-  "candidateId": "81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
-  "treeHash": "f888b174065e305ba819c16fb588813a3b8b7d9c2d2c45625e96bd9293a60fd6",
-  "timestamp": "2026-09-17T13:48:35.225Z",
+  "certificationId": "phase11-4374a9ef6566485b-mu9hm7h7",
+  "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92",
+  "candidateId": "4374a9ef6566485b6ac1c240dddac1a9b5af93b78475f1559ade887937385220",
+  "treeHash": "3e68ae4477ba45996ae0557e0a74575205a761bd0039a652b5ce2d6e96f10445",
+  "timestamp": "2026-09-20T07:50:01.012Z",
   "result": {
     "path": "certification/phase11/phase11-result.json",
-    "sha256": "044f7d8c4a9c66dff8c6e52575f042303767f0a89cb088a6d658bd33188757d0",
-    "size": 297968,
+    "sha256": "74a784dfb1a53bf325c52fd148a04faebd58b77de1fff530828365254c79ee9d",
+    "size": 316541,
     "producer": "scripts/phase11-certify.mjs",
-    "timestamp": "2026-09-17T13:48:35.225Z",
-    "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+    "timestamp": "2026-09-20T07:50:01.012Z",
+    "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
   },
   "artifacts": [
     {
       "path": "certification/phase11/gates.json",
-      "sha256": "91c7ec07f58f04c574e38b75a3b62eeb439fd602ddf97b42e8cb09d1bab77d73",
-      "size": 10984,
+      "sha256": "c0dfd03ac7ad3d6f97835e9ebcd6f9403bea0f935dab8c2717d9ca5c6bf8f40a",
+      "size": 11185,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/invariants.json",
-      "sha256": "f8d8c6cdb01a692fa82f3de2d3abab09a1e13cd19c8fe7813954d26daa67cd19",
+      "sha256": "b9f03c14d9d02a6f581a514337f7daa227161a48eb69958ffff6073430aec779",
       "size": 14155,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/evidence-graph.json",
-      "sha256": "b99630baec4620841bd0da3a5d24824e0c6c86c7eb6ecb367209d46e4b868fd9",
-      "size": 166377,
+      "sha256": "ae018781aa09d15771c0fefddc56071b3a7587241e1ba3a79549d1b8fda734fb",
+      "size": 166380,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/release-manifest.json",
-      "sha256": "cffc57311e8b88981f3ab42a06fe8d52620f5dfeaeadc6a4171adc0912f7ca09",
-      "size": 2164,
+      "sha256": "1f6aa1f44479acb75aac5693888c7db39ecc3d8208a405eb3e37ac377302c14c",
+      "size": 2578,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/findings.json",
-      "sha256": "9e478f18dc118e365e098a1fd4cf0e41b488f09fe8ad587feb401e0392fc1cea",
+      "sha256": "be2b02fef28a5494badf055ee28406f9545d4ddaab5cc76eeb25527266705547",
       "size": 8908,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/negative-validation.json",
-      "sha256": "f14cb199e9ced92a5c36fd5469d9e7461b614df43cac4ee80213189942195641",
+      "sha256": "6705707e0a07d0989a6451d292173695a09653609128dc166cd179e439433652",
       "size": 1091,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/eval-report.json",
-      "sha256": "000594534d61841e942c12ec50a8dd92a426e1f8fb47a7e18d442dc8abec8d31",
-      "size": 1856,
+      "sha256": "dd8d157c9e6616e9990b3a0630e7fd721510f74cb19fe522e60f3a07b9196e81",
+      "size": 1335,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/chaos-report.json",
-      "sha256": "8b126b744405283389984de97abbe7081e0261762f5ab790ca801c6962b16998",
-      "size": 11458,
+      "sha256": "9930a4082f20f2d9c4570d1463540d61bd2e459fe25b6264215b15976e76045c",
+      "size": 11461,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/load-report.json",
-      "sha256": "a84d5864553089ed34724d6df1c50016c7a6ab2dc558a669d58ef9e68a49cd49",
+      "sha256": "c9c0c5b6313b2b64ab002ee776681dc5ad8dc218b89585bea2ba240484d5e3d1",
       "size": 972,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/recovery-report.json",
-      "sha256": "d6f2f95dcfab4ddf2cc64b40177386aa46dbff71ee051b292e9f174e186972ed",
+      "sha256": "40c5228fac5108fee6b4123bb23c902e311a0e212405e83839695453a73335f7",
       "size": 646,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/postgres-report.json",
-      "sha256": "8dd36298c9430681203a82a55d1df7bc05eff33ed36e9f01291695ca556a1365",
-      "size": 511,
+      "sha256": "4bf31cf2594824f732db863df84e3a50470b3cdb17a3596aae00c4d063ff19c5",
+      "size": 610,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/integration-report.json",
-      "sha256": "57fbde8f5aa37dac1b74c417d64c394688e459f3930962cb46de5b786d1fce2f",
+      "sha256": "49b4d1e605b090bbe6e13e363859368ccc6a9419c1feea917b7289cd9b3abd6f",
       "size": 1859,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/integrations/status.json",
-      "sha256": "57fbde8f5aa37dac1b74c417d64c394688e459f3930962cb46de5b786d1fce2f",
+      "sha256": "49b4d1e605b090bbe6e13e363859368ccc6a9419c1feea917b7289cd9b3abd6f",
       "size": 1859,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/prompt-integrity.json",
-      "sha256": "76796fbc94a42a49209952d08f05ecbf1803ac9dcf5e9c1e26a858e765e75495",
+      "sha256": "8d4f3bfbbf5384a9d59249358ded92d0f0a1d91dfd24a6a43e33aa82a687aa20",
       "size": 2119,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/supply-report.json",
-      "sha256": "73de5fc4e0ff393f54547cdaab403d7b32398fb679b082709d05a2199062cf76",
+      "sha256": "ed6a23b8e8e99809f981223799f5dfd24fdad651fff9641d9b65a6b9c9ff447a",
       "size": 759,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/preflight-report.json",
-      "sha256": "e3f41cf719667d45df787157206d18a70d3a57ab066c838fb0e8b14dccf1f542",
-      "size": 7775,
+      "sha256": "b8f5fd197062ed7c904e68881e10aa131b317821bf36dd8135cde9584605d833",
+      "size": 9118,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/redteam-report.json",
-      "sha256": "6bd669f2da3c78e15a4aa12270c96f192160c4fb53d4e277355787a4cebc6311",
+      "sha256": "f02ccfcb58207bc9e7674374d0df99ac5f0a9505afd45d9be041c16d2e3f8a5d",
       "size": 630,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/trace-report.json",
-      "sha256": "9ebf43496066ae94f06a1fcb1436952483a8f75745b05900b4fd42b425023bbb",
+      "sha256": "998e160c1b0abfef83e67cd79ae15907d4667bc81b379a25bf42612a4522dda6",
       "size": 609,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/adversarial-report.json",
-      "sha256": "17995c201ad3872575d69dd1582e738e9f80322a4de9bc53ba1e48d6d4e35cb7",
-      "size": 1909,
+      "sha256": "9a78a990b87ec9f6940f53b0d54dbc6fd1b4658768a87eb24f7d045977925545",
+      "size": 2186,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-1.txt",
       "sha256": "ba522e3f9daf37af0a4c754f85eaeb2b78e8376d3bfca6405ac7e414d00f7a70",
       "size": 13800,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-2.txt",
       "sha256": "98e1a22274dee5d206797917b3d8c6b25a7beed6e1651d96e9a54fa3fe1a5371",
       "size": 13710,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-3.txt",
       "sha256": "af86835e3773c21268d397be55df1abbab0d8b02b660a2fb546f896ae649a3db",
       "size": 14046,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-4.txt",
       "sha256": "d15c7ad503e8faacf793298867d450672c5aae23b2e194923aeaec7bec8cda0e",
       "size": 13332,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-5.txt",
       "sha256": "47ad18efd05aa5802d0cda4a4160bded5db02c8860e07a2bdfaca394f98e95c9",
       "size": 14914,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-6.txt",
       "sha256": "e12e76dcb447278d3a03fde39df877722265a39f0a2c82fa9b1928f023571cc9",
       "size": 14600,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/11_phase11/prompt-master/20260916-triple-aaa/README.md",
       "sha256": "287f8b54b31dd0bdb743c32e7442abeab18a786cb23e2325ce22f2cfeabd488d",
       "size": 1445,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/04_audit/evidence/AAA/AAA-21/quality-bar-phase11-2-v1.json",
       "sha256": "1d477beef8340674c009032168fa7d0c4b99b9af8697af0472903ebb2b9735a6",
       "size": 4436,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/phase11/PHASE11_INDEPENDENT_CRITIC.md",
       "sha256": "8382ea5545293175dd26a072c9757ccecdd46aac96cde5b56af09ab79841c34a",
       "size": 2574,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/01_prd/phase11_2_state_of_art_triple_aaa_20260916.md",
       "sha256": "e0c24ff1b9f9c218512dc03ee6c404bfec116519dd0b10bef2a660fa3fc1c93f",
       "size": 1669,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/02_spec/phase11_2_state_of_art_triple_aaa_20260916.md",
       "sha256": "c8dc14dcbc524fcab18aa3386ae1135cb663ed7a23a6364bc3f048668e467007",
       "size": 4138,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/phase11/PHASE11_2_DELTA_AUDIT.md",
       "sha256": "3f8ef43107d2373fcee02caab7c04f328bb32f3df6137180d4e99a5551a7b7b1",
       "size": 5137,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/phase11/PHASE11_FORMAL_CLOSURE.md",
       "sha256": "7779269a1ba7b9a4f80845b07563e35fbcc2fdaa59a5d0407b016ffc1e1f51cf",
       "size": 1392,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/phase11/PHASE11_ORCHESTRATOR_PROOF.md",
       "sha256": "bd5c7cbffd9be86d40cd93f808dcb85621f40d4a2fbe885cecb520e8b7cd8f33",
       "size": 1164,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/phase11/PHASE11_SECURITY_REVIEW.md",
       "sha256": "57cafa88ffc458aba2cd8af31e6b1cc80ea2068c19a4dc5c87ae87497095dee8",
       "size": 995,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/phase11/PHASE11_ADVERSARIAL_REPORT.md",
       "sha256": "e7295341183f7770ae2208a332aaaf65f8c7dd6e56360993131add3350046d9f",
       "size": 1055,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/phase11/PHASE11_RECOVERY_REPORT.md",
       "sha256": "6855169f65366f15ca729805c070af2801a5db1ab9dbcaced5ce8a9148bb0530",
       "size": 1144,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/phase11/PHASE11_CHAOS_REPORT.md",
       "sha256": "342b4b2b478e1f9a43391de8a627984ab828a256ddf6e66030e2f0fd4187e4e2",
       "size": 737,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/phase11/PHASE11_LOAD_REPORT.md",
       "sha256": "2b0b09a3a35c9ac0815a6742b569942222cf74af093a74262ac1198c8e8df2e6",
       "size": 623,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "docs/phase11/PHASE11_INTEGRATION_REPORT.md",
       "sha256": "ad58e4c8072e43ef304ce18364757ed0a72f7eead280434276825e43229a9fdb",
       "size": 869,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/external-gates.json",
       "sha256": "ccaecccf62b52cb02ce278ec84dd15cf3a0f13ca2d691f7ca20f9b86fed60ca9",
       "size": 361,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/historical/phase10/README.md",
       "sha256": "ca471492c562d1edd105090ae7e9ef6285ba0fe2e54c5844eb820f2b79bc8edb",
       "size": 427,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/sbom.cyclonedx.json",
-      "sha256": "ae2837829f8a931be4be320a76354b2c9c4b1c3c3081bd39f2dea56f53024a18",
-      "size": 253169,
+      "sha256": "5765c6896fba7066b6cccdefba3c50304d51116a57ed17515e001629426292e5",
+      "size": 254555,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/license-report.json",
-      "sha256": "55787d37f7d42d1e0348c2d0df9db269838c7175a31f5bdec70473bb17f0dda9",
+      "sha256": "693b188f22e0680cfb8193cef307fe38a85fb563c3c7d35434e80877da3550fb",
       "size": 258,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
+    },
+    {
+      "path": "certification/phase11/logs/unit-report.json",
+      "sha256": "e7582f0b8775b74183123f58a8d18ef4ac8279fa90055cb65f876ef3857b7675",
+      "size": 732367,
+      "producer": "scripts/phase11-certify.mjs",
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
+    },
+    {
+      "path": "certification/phase11/logs/postgres-report.json",
+      "sha256": "1d21a01923011e62e9a1cc64945c6f32b2082df6696ac15ae62b197055f76c90",
+      "size": 85132,
+      "producer": "scripts/phase11-certify.mjs",
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/adversarial_proof.log",
-      "sha256": "a3e0439290b1c452085a1f4657376fc82de5499fcf77b5a685f27159acf242fb",
-      "size": 1742,
+      "sha256": "b95a56ba57403c19938d29519d4d3ec84f7263d3f8528b4d46d77161b8d972a3",
+      "size": 1996,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/build.log",
-      "sha256": "a83cfbcd94f401d5132633dd238091caa886b1110f115c7d9cc7e77e41081f58",
-      "size": 1030,
+      "sha256": "19994c71256c1d736c1137493936dbace99af03bce4f61a5fad9be2f7261f65f",
+      "size": 1060,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/bypass_audit.log",
-      "sha256": "3a8cce082a6a99311ad6581d03fb9676c853a3ff399755d6fab07344d6b0df62",
-      "size": 848,
+      "sha256": "11e902320bfc20e3af81fb9ffc02fe18992bfe3b6fda5011675471e0dc193ac0",
+      "size": 1344,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/certification_redteam.log",
-      "sha256": "37473f028293d91b40bb3e8377859820d16220c845f6aac2f22819617c2a40e9",
-      "size": 1510,
+      "sha256": "b92237c382e1deecab8f267c1315b4b3f67fd04a5f5b2dc0e3686d32333d2970",
+      "size": 1763,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/certification_self_test.log",
-      "sha256": "e76363bc125303d858c5f0b7eb4403897b8fd5600036d8334ba75458ff3811df",
-      "size": 1215,
+      "sha256": "c185b8c0f4009e59991536b70bd1bb35a812f51c8192dbbcabc9a4cfe886428f",
+      "size": 1216,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/chaos.log",
-      "sha256": "f11e39caa1d4ed9259ff8cb548eee64f892b8f4e0d5f725ee6e3f7127fa5c14b",
+      "sha256": "877a818b86fe33b9e62e754f9a0fd9e17dc9b8e7f2859d9883d61ec56bb218cb",
       "size": 726,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/clone_verify.log",
-      "sha256": "63b640c9ac6d1b797619fcd2327b57e6654e864da19bf15790a5e8a01e5f2ba0",
-      "size": 729,
+      "sha256": "4b0fb84bdf4094b34df9577f3e09e54975759afcc9bc2d8bfb85e0262a522fd4",
+      "size": 730,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/coverage.log",
-      "sha256": "af419658142725475f332a48b1a5648716ce37b4f93b126d432df64f5626ea89",
-      "size": 38835,
+      "sha256": "a9914b52df23b18903e0e7c73e308612e99f9743fedff57737da7bf93de54a9a",
+      "size": 50390,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/e2e.log",
-      "sha256": "a974b81308b57c7f3fa586b7a03ad9d36cf0e72eb22f18c30132be1ba65ca2f9",
-      "size": 2745,
+      "sha256": "55ec7bad4333fe046ee7f25345a10b976b3158b0da5b9d9e157fe629288c37ff",
+      "size": 12660,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/evals.log",
-      "sha256": "644dacc07450a3b5ba4de5c8aa29257f7fb1e99bbd7c8e422a25c831d34cb610",
-      "size": 945,
+      "sha256": "07b6e9942eae1588312f935f4488967f3de02b3460cbd4201050be8baad9b8f9",
+      "size": 930,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/evidence_reports.log",
-      "sha256": "a8e06003597848a32eba8301111f9525b21eaeb1c70600c8d7ed6090fadbea9c",
-      "size": 2110,
+      "sha256": "7257a224743b31aedae6d4961421eeb26d95113ae629c13622235713e0d38d78",
+      "size": 2589,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/format.log",
-      "sha256": "9f82753a84303a7b81ee0019bdc410bcb24b73fdb0fa6c0ce7105064fe8a7382",
+      "sha256": "7c52f51673db2faffd857d7436a9833aae2d4f4c0103d41360125683498e6faf",
       "size": 537,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/governance_redteam.log",
-      "sha256": "56cc8840a52fa447fcb747a2ead9fcff9b9b02af819dde7cbf8d7166e307f712",
+      "sha256": "40261abdaba6fc0d9f8e0ee5ac0c8c06f81138c82f305ef7c2f2675fc8fd2ddb",
       "size": 1165,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/independent_critic.log",
-      "sha256": "3b5d6174c4dedb98cf831de5433690aeed0ff99a8cea0071d1be611bc229bbce",
-      "size": 1077,
+      "sha256": "dafb029d29b6204bc7e627f4d326c0c5814b809872705504e2e886432e00def1",
+      "size": 2273,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/lint.log",
-      "sha256": "e1f7f77d867c0a611b5c36a1275e644e1aaa3cdfcd20ba732b642fd75008121b",
+      "sha256": "b91da22d81306db399625737f3d629bb10056b98dee7a4b5b0168449bb724c4b",
       "size": 442,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/load.log",
-      "sha256": "1126faa1e780dbd30c3ead0d116f0682cc2cbc8a26a45faef9275698cf873ba9",
+      "sha256": "1ab358ef79fa3670306484a214bff871a3c80e428fd3982666d6531c44bb15bc",
       "size": 818,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/outbox_replay.log",
-      "sha256": "242af45dc4944ddf26fdd2e984d261b3908538b948c491806ce3634e405c920e",
+      "sha256": "55634e5497ac7a8066bde17282c0412f9110fa1e6f94f708bd13360437e9134f",
       "size": 958,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/phase10_historical_verification.log",
-      "sha256": "931f6d830164960d5faaef4f59a34825997d0441c05d28d3ee85976f4d7ea9c1",
+      "sha256": "08a885e3ca8e5bd33f6c6dae28ca814750f6fbc0d3eb86f6158606cdbba787a6",
       "size": 943,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/postgres.log",
-      "sha256": "fc0caa9342eef82ce41bb440765da8c103f0ba1a9707b0be5153757f9f98614e",
-      "size": 13102,
+      "sha256": "37070ff0bdc7dd679f20fcf32ece5cc06d021ba00840b64b4699e4d81affb5de",
+      "size": 19373,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/production_preflight.log",
-      "sha256": "478fe275d4afdf72697aced5f264300c342f2bff80c4ef00c01dee45f1838eea",
-      "size": 7298,
+      "sha256": "58efd9a8f3e4a9722f02c1dd2fd0386880365d3c0c487259a8049a85227be450",
+      "size": 8609,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/recovery.log",
-      "sha256": "4f6d2f2568905d88048c62a93791fa6301bdf8ddbd20a1c1a4e9bab128506693",
+      "sha256": "59452b2625dcecff25a48016686a7f6b715834e9cc4bd9274ddf06d866ce2a9b",
       "size": 5762,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/security.log",
-      "sha256": "959a541ab054e5226bc7cc70a89711047483fa41115b5c4936fbcc846fb9cbfa",
+      "sha256": "12d71e09c984ef93d5ff425b4d12adab63f19a7e4122bff7e41198368fc8a38c",
       "size": 509,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/supply_chain.log",
-      "sha256": "9c5bcc736717980ff5c1cae1523fcfa8ee1784596d3dd4edd4322890cdc52a77",
+      "sha256": "aa3ae10e22e6a60ea26f2e003cc76e0dc01e31eb4e1f111dbf5fda01c8e3694c",
       "size": 847,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/tenant_redteam.log",
-      "sha256": "03c01d3654e788f2753d97393673ab3b2e62a19c5ef70113e41c9411975296da",
+      "sha256": "ee495e45e1b658843d8e8de1e19e89f05e7ab4bef242e09ee0e66e4f9adaa018",
       "size": 971,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/trace_lineage.log",
-      "sha256": "61196bba80d0dc53837fefbd92b59627e69cf80902b5e79e57e9b2edbb906881",
+      "sha256": "a039100e0df939c9051e8497c470fa3d2f818572d3445ff42ea0d19331eeb957",
       "size": 962,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/typecheck.log",
-      "sha256": "e50bdcd9fadaaa6c9991aabb2e74bf48be76b0f39643b28a569500d6cd638400",
-      "size": 488,
+      "sha256": "9ddb7df073c10f5be132f9aa3220bb40cb2456658240a48c95773c4643361fae",
+      "size": 489,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/unit.log",
-      "sha256": "892a8f8b66ee5b3cfd8e2a095ab8e305ce6de504958468294300fc55da563edd",
-      "size": 28791,
+      "sha256": "50a14da00e521c67c8c35c0bd1e7e051d4de21bf7621763939cc7c582f014beb",
+      "size": 53479,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/verify.log",
-      "sha256": "23f893dc779ef052d9595bce23fe52b940884ef6adb993357064e10cb2eae927",
-      "size": 68260,
+      "sha256": "dfd82eda80fc6dbedc55a0277f1bb0f3a28ce267e06a22504df5843349d80e54",
+      "size": 70015,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     },
     {
       "path": "certification/phase11/logs/worker_startup.log",
-      "sha256": "af72b99f73e89efad1d1d18521be3234b2127b744a5ab77b5449f50b637e1eb3",
+      "sha256": "b5cc6c53c5d4786ab92abeffb9c7b0341a414c678864080eb729afe74930b08c",
       "size": 715,
       "producer": "scripts/phase11-certify.mjs",
-      "timestamp": "2026-09-17T13:48:35.225Z",
-      "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09"
+      "timestamp": "2026-09-20T07:50:01.012Z",
+      "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92"
     }
   ],
   "evidenceGraph": "certification/phase11/evidence-graph.json",

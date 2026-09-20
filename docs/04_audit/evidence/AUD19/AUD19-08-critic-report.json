@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 1,
+  "kind": "phase11-critic-report",
+  "critic": {
+    "identity": "critic.agent.aud19-exec-20260920T0719Z",
+    "freshContext": true,
+    "builderIdentity": "builder.agent.aud19-main",
+    "independence": {
+      "criteria": [
+        "fresh-context",
+        "separate-identity",
+        "artifact-only-input",
+        "no-worktree-write",
+        "no-builder-justification"
+      ],
+      "builderJustificationIncluded": false,
+      "builderConclusionReused": false,
+      "writeAccessToWorktree": false
+    }
+  },
+  "binding": {
+    "candidateId": "4374a9ef6566485b6ac1c240dddac1a9b5af93b78475f1559ade887937385220",
+    "commit": "c0f46b9bd012677b07a2a198393e9e3c82396c92",
+    "treeHash": "3e68ae4477ba45996ae0557e0a74575205a761bd0039a652b5ce2d6e96f10445"
+  },
+  "fingerprint": {
+    "algorithm": "sha256-candidate-v1",
+    "before": "4aba731174ca40461252499631b8a9bf5024cdbca90494776769ddddd9e673b9",
+    "after": "4aba731174ca40461252499631b8a9bf5024cdbca90494776769ddddd9e673b9"
+  },
+  "verdict": {
+    "status": "FAIL",
+    "summary": "Fresh-context, artifact-only adversarial review of frozen candidate 4374a9ef@c0f46b9 (treeHash 3e68ae44). Fingerprint sha256-candidate-v1 identical before/after (4aba7311...), candidate-scope working tree clean (dirty=false, no untracked candidate files). Ten of eleven executable checks pass on the real artifacts: eval contract 56/56 with the 53/56 negative defeating the implementation (3 files/19 tests PASS); Goal get-or-create linearizable via the partial unique index uq_orchestrator_goals_inbound_message + ON CONFLICT DO UPDATE with assertGoalReuseCompatibility lineage (2 files/11 tests PASS); goal-concurrency/redelivery/fencing/DLQ PostgreSQL; mutation sentinel 9/9 detected; PostgreSQL gate 28 files/226 tests/0 skipped and skip inventory required=0 (fresh unit 718 suites/2059 tests/131 pending, reclassified 0 required, all 27 skip files covered by scripts.test:postgres); production preflight rejects unsafe PRODUCTION config with sideEffects=false; docs-check valid:true (693 links/552 JSON, 0 broken); accessibility 48/48 across chromium/firefox/webkit (16 each); global coverage floors met (statements 93.0, branches 87.2, functions 93.7, lines 93.7). FAIL is driven by the one mandatory floor that does not hold: aaa_quality_contract.md 9.1 requires >=95% branches in critical modules, but fresh PG-enabled coverage measures kernel/runtime 81.08% (1286/1586; orchestration.ts 68.38%, runtime.ts 89.66%, composition.ts 84.74%), apps/worker kernel-composition.ts 63.60% (318/500) and, in the report-only auxiliary scope where SQL adapters are visible, RLS tenant-scoped-postgres.ts 78.13% (25/32). approval (99.72), policy (97.84), journal (97.65) and canal (96.24) meet the floor. This is not a new discovery: AUD19-08-coverage-model.md declares critical-branch coverage unmeasured and AUD19-08-evidence.md admits floors below contract 9.1; the coverage model itself defers alignment to AUD19-12. Under contract I1 and the review instruction, a failed mandatory floor forbids PASS and the AUD19-12 seal cannot be granted for this candidate (local qualification debt remains open). P1=1 for that floor; P2=2 for (a) the certification eval harness executing deterministic-eval-agent-v1 rather than the integrated runtime (Q-A16-01 partial) and (b) accessibility evidence limitations (no screen-reader runtime or independent human WCAG audit, single OS). Limits: synthetic data only; no network; no candidate file was modified (measurement side effects were confined to candidate-excluded coverage/ and docs/04_audit/evidence/ outputs); staging and production remain NO_GO and the eight external/human gates remain unvalidated (preflight rejects them)."
+  },
+  "findings": {
+    "P0": 0,
+    "P1": 1,
+    "P2": 2
+  },
+  "checks": [
+    {
+      "id": "fingerprint.stability",
+      "status": "PASS",
+      "method": "node --input-type=module -e \"buildPhase11Candidate + candidateFingerprint excluding CRITIC_REPORT_PATH\" run before and after all checks. before === after === 4aba731174ca40461252499631b8a9bf5024cdbca90494776769ddddd9e673b9; dirty=false; untrackedFiles=[].",
+      "evidence": [
+        "docs/04_audit/evidence/AUD19/AUD19-08-evidence.md",
+        "docs/99_runtime_state.md"
+      ]
+    },
+    {
+      "id": "evals.contract",
+      "status": "PASS",
+      "method": "npx vitest run tests/phase11-eval-contract.test.js packages/agent-evals --no-file-parallelism --maxWorkers=2 -> 3 files / 19 tests PASS. certification/agent-eval-report.json: scenarios=56, taskSuccessRate=1.0, thresholds.taskSuccessRate=0.97, verdict PASS, failures empty. Negative 53/56 defeated at both layers: evaluateEvalReportEvidence reports eval_contract:eval_task_success_below_contract + eval_verdict_not_pass, and runEvalSuite(degradedAgent(3)) yields taskSuccessRate 53/56 with verdict FAIL.",
+      "evidence": [
+        "certification/agent-eval-report.json",
+        "docs/04_audit/evidence/AUD19/AUD19-08-evidence.md"
+      ]
+    },
+    {
+      "id": "goal.concurrency.postgres",
+      "status": "PASS",
+      "method": "TEST_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5434/cvg_test npx vitest run packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts packages/persistence/src/__tests__/orchestrator-postgres.test.ts --no-file-parallelism --maxWorkers=2 -> 2 files / 11 tests PASS. Inspected migration 0019 partial unique index uq_orchestrator_goals_inbound_message ON (tenant_id, inbound_message_id) WHERE inbound_message_id IS NOT NULL; INSERT ... ON CONFLICT (tenant_id, inbound_message_id) WHERE inbound_message_id IS NOT NULL DO UPDATE SET updated_at = goal.updated_at RETURNING *; assertGoalReuseCompatibility validates tenant, inbound message, correlation and plannerContext lineage fail-closed.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD19/AUD19-08-evidence.md",
+        "docs/03_build/0332_aud20260919_backlog.md"
+      ]
+    },
+    {
+      "id": "mutation.sentinel",
+      "status": "PASS",
+      "method": "node scripts/mutation-sentinel.mjs -> status=PASS detected=9/9 notDetected=0 notApplicable=0 across authority (policy-engine), tenant (server), fencing/approval (approval-engine), journal (effect-journal), eval contract and certification rules.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD19/AUD19-08-mutation-sentinel-report.json"
+      ]
+    },
+    {
+      "id": "skips.inventory",
+      "status": "PASS",
+      "method": "npm run test:postgres (28 files) with --reporter=json -> 28 files / 226 tests / 226 passed / 0 failed / 0 skipped, success=true; TEST_DATABASE_URL=... node scripts/skip-inventory.mjs --gate=postgres --report=... --merge -> counts.total=0, required=0, optional=0, status PASS. Fresh npm test -> 718 suites / 2059 tests (1928 passed, 131 pending), independent reclassification -> required=0 optional=131, and every one of the 27 skip files is selected by scripts.test:postgres, so the frozen optional rule promise holds.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD19/AUD19-08-skip-inventory.json",
+        "docs/03_build/tracking/aud19-required-skips.json"
+      ]
+    },
+    {
+      "id": "production.preflight",
+      "status": "PASS",
+      "method": "node scripts/production-preflight.mjs --profile=PRODUCTION --expect=REJECT -> status=PASS (actualStatus=FAIL, 33 checks, 30 blocking), sideEffects=false; only profile.production, governance.no_unrestricted_effects and source.migrations_present pass. Inspected production-preflight-core.mjs: external/human readiness requires a digest-pinned, HMAC-signed, candidate/config-digest-bound attestation inside its validity window; boolean flags alone are rejected.",
+      "evidence": [
+        "docs/99_runtime_state.md",
+        "docs/03_build/0332_aud20260919_backlog.md"
+      ]
+    },
+    {
+      "id": "docs.integrity",
+      "status": "PASS",
+      "method": "node scripts/docs-check.mjs -> valid=true; links checked=693 broken=[]; json checked=552 invalid=[]; states declared=[] unexpected=[]; nextAction valid with runtime/CURRENT agreement on sealing AUD19-12 and keeping staging/production NO_GO.",
+      "evidence": [
+        "docs/99_runtime_state.md",
+        "docs/02_spec/aaa_quality_contract.md"
+      ]
+    },
+    {
+      "id": "a11y.e2e.browsers",
+      "status": "PASS",
+      "method": "npx playwright test tests/e2e/accessibility.spec.ts --workers=1 -> 48 passed in 2.3m: 16 chromium, 16 firefox, 16 webkit (axe screens, WCAG-AA contrast, keyboard/focus order, zoom/reflow 320/200%/400%, forced-colors, 44x44 targets and 12px typography, UNCERTAIN read-only). AUD19-10-a11y-results.json records blockingTotal=0 for every browser and an empty frozen exception list.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD19/AUD19-10-a11y-results.json"
+      ]
+    },
+    {
+      "id": "coverage.global.floors",
+      "status": "PASS",
+      "method": "TEST_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5434/cvg_test npm run test:coverage -> fresh coverage/coverage-summary.json: statements 93.0% (11423/12282), branches 87.2% (8628/9894), functions 93.7% (2159/2304), lines 93.7% (10864/11594); contract 9.1 floors 90/85/90/90 are met.",
+      "evidence": [
+        "coverage/coverage-summary.json",
+        "docs/02_spec/aaa_quality_contract.md"
+      ]
+    },
+    {
+      "id": "coverage.critical.branches",
+      "status": "FAIL",
+      "method": "Post-processing of the fresh primary run (vitest.config.mts denominator) mapped per AUD19-08-coverage-model.md section 2: kernel/runtime (packages/agent-runtime/src/**) branches 81.08% (1286/1586) - orchestration.ts 68.38% (478/699), runtime.ts 89.66% (564/629), composition.ts 84.74% (50/59); apps/worker/src/kernel-composition.ts 63.60% (318/500). Report-only auxiliary scope (vitest.coverage-all.config.mts) where SQL adapters are visible: RLS packages/persistence/src/tenant-scoped-postgres.ts 78.13% (25/32). Modules meeting >=95%: approval 99.72% (350/351), policy 97.84% (136/139), journal 97.65% (166/170), canal 96.24% (409/425). Contract 9.1 mandatory floor >=95% critical branches is violated by kernel/runtime and RLS; RLS has no adjudicated measurement in the primary threshold denominator.",
+      "evidence": [
+        "coverage/coverage-summary.json",
+        "coverage/full/coverage-summary.json",
+        "docs/04_audit/evidence/AUD19/AUD19-08-coverage-model.md",
+        "docs/02_spec/aaa_quality_contract.md"
+      ]
+    },
+    {
+      "id": "artifact.integrity",
+      "status": "PASS",
+      "method": "git status --porcelain=v1 --untracked-files=all -> 62 entries, all inside candidate-excluded prefixes (certification/**, docs/04_audit/evidence/**), zero non-excluded entries; buildPhase11Candidate.dirty=false with untrackedFiles=[]. sha256+size recomputed on disk for 13 cited artifacts (>=5 required) and recorded in artifacts[].",
+      "evidence": [
+        "docs/02_spec/aaa_quality_contract.md",
+        "coverage/coverage-summary.json"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/02_spec/aaa_quality_contract.md",
+      "sha256": "aec324018513c43a3e949663e41769f2d59180c6812d7430bd5980fb4a357097",
+      "size": 31985
+    },
+    {
+      "path": "docs/03_build/0332_aud20260919_backlog.md",
+      "sha256": "82651c0de20a70c9a047767bc16e186ffb0e18cd1a0b8c950eb6996b87829088",
+      "size": 16142
+    },
+    {
+      "path": "docs/03_build/tracking/aud19-required-skips.json",
+      "sha256": "d3ce7d3318489f8b122f6f1b0158b91217bc42768bcb193f027c99d738dadcdf",
+      "size": 1718
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD19/AUD19-08-coverage-model.md",
+      "sha256": "eff3a11c85cdb445e4ca5ade3cff9255612f1908bba2ebd911e509198e291d15",
+      "size": 6333
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD19/AUD19-08-evidence.md",
+      "sha256": "3c84baa3edea2f169fcdaaf5a679b9a652c14642582ae2e2018515e5234302b0",
+      "size": 10991
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD19/AUD19-08-skip-inventory.json",
+      "sha256": "cc6558ecbdba2c818fb37e873a386b59b3e05e44a8423f1ed6ac3a910bed380c",
+      "size": 171115
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD19/AUD19-08-mutation-sentinel-report.json",
+      "sha256": "9052490477546072248063891cd1fdf9983176af00924922e32e7647e165f1a1",
+      "size": 6161
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD19/AUD19-10-a11y-results.json",
+      "sha256": "d7c8db8ebc2068d137e1c8a1518b6eed17b2c3c6da81c37b3e6b965a8afc7b23",
+      "size": 21960
+    },
+    {
+      "path": "certification/agent-eval-report.json",
+      "sha256": "8c821610fad90bd762ebe2fbfe6d961361d5dfdebf19b2244176578f5ada2bae",
+      "size": 794
+    },
+    {
+      "path": "certification/phase11/phase11-result.json",
+      "sha256": "fec8b96576efe4158b11f9232efea576ec3668003a74d136eb9919caa5568fd5",
+      "size": 316987
+    },
+    {
+      "path": "coverage/coverage-summary.json",
+      "sha256": "1e87dd728931ad95a2de4b33f2729a7d27a08ed0990abadb604025e8f9bb7d99",
+      "size": 65469
+    },
+    {
+      "path": "coverage/full/coverage-summary.json",
+      "sha256": "6a62e0aed65fd927cd95bea21a2ca721804413ddb0c677516e1f2f4d8a2acaf0",
+      "size": 73739
+    },
+    {
+      "path": "docs/99_runtime_state.md",
+      "sha256": "e632448b9490ebcd8806fbc69eaacb79f93c6013ae7401c60ce01d4728cb0b19",
+      "size": 201841
+    }
+  ],
+  "disclaimers": {
+    "syntheticOnly": true,
+    "productionBlocked": true
+  }
+}

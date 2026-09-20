@@ -2,25 +2,25 @@
   "schemaVersion": 2,
   "phase": "11",
   "kind": "phase11-result",
-  "certificationId": "phase11-81962adcfc65cf7d-mu5kewem",
-  "commit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
-  "timestamp": "2026-09-17T13:48:35.218Z",
+  "certificationId": "phase11-4374a9ef6566485b-mu9hm7h7",
+  "commit": "c0f46b9bd012677b07a2a198393e9e3c82396c92",
+  "timestamp": "2026-09-20T07:50:01.006Z",
   "candidate": {
     "schemaVersion": "phase11-candidate-v2",
-    "candidateId": "81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747",
-    "commit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
-    "treeHash": "f888b174065e305ba819c16fb588813a3b8b7d9c2d2c45625e96bd9293a60fd6",
-    "gitTreeHash": "515cd5220f3b64859d569535023e058413ef7829",
+    "candidateId": "4374a9ef6566485b6ac1c240dddac1a9b5af93b78475f1559ade887937385220",
+    "commit": "c0f46b9bd012677b07a2a198393e9e3c82396c92",
+    "treeHash": "3e68ae4477ba45996ae0557e0a74575205a761bd0039a652b5ce2d6e96f10445",
+    "gitTreeHash": "67e1b7f2417fd052d1f0ce7ec51cf9b5e45d272b",
     "branch": "main",
     "dirty": false,
     "untrackedFiles": [],
-    "createdAt": "2026-09-17T13:28:18.478Z",
-    "fileCount": 999,
+    "createdAt": "2026-09-20T07:21:05.255Z",
+    "fileCount": 1086,
     "files": [
       {
         "path": ".dockerignore",
-        "sha256": "b95d39dec872f0b513ab38ac83ad3bf846b159aa3e66ea1e1bf04c7f70453c8f",
-        "size": 205,
+        "sha256": "67cb3bee1bcadc73e2e92707105889514c610d342f3ca8543c403745309d2683",
+        "size": 568,
         "tracked": true
       },
       {
@@ -37,8 +37,8 @@
       },
       {
         "path": ".github/workflows/verify.yml",
-        "sha256": "ee44186bd9611fafeb9941301c509b1760d93dd2dd6c83af471e257fe34f5331",
-        "size": 2015,
+        "sha256": "ca4525c844c2a25e25d860150904c766fe75de50a7168ffb5dd289d1896e0752",
+        "size": 2030,
         "tracked": true
       },
       {
@@ -163,8 +163,8 @@
       },
       {
         "path": "Dockerfile",
-        "sha256": "5b637f8ae72f44c64038b7838e15da4333f85a2ec06cef595818c34a9f61d33a",
-        "size": 1668,
+        "sha256": "0f581e1ac0c3bdbde0453bfe310f973d8334e3b07197d76d8a560277f4118a3c",
+        "size": 2930,
         "tracked": true
       },
       {
@@ -324,6 +324,18 @@
         "tracked": true
       },
       {
+        "path": "apps/api/src/__tests__/operator-replay-guard.test.ts",
+        "sha256": "d7b31ce4a1187fb2049ca9c97f5d51a3d4822f697a1179aa74e6afa7e3551855",
+        "size": 8306,
+        "tracked": true
+      },
+      {
+        "path": "apps/api/src/__tests__/operator-replay-store.test.ts",
+        "sha256": "8fa6e3c5806b531e2b7d76d4a8e44e3611833a1c75ec5b5974b5ea1d4c6a2419",
+        "size": 8463,
+        "tracked": true
+      },
+      {
         "path": "apps/api/src/__tests__/orchestration-observability.test.ts",
         "sha256": "787e7a8d74a386cfe8e1465179b122fc6b7b45078f3b90e49f109c6aa8b39cac",
         "size": 6817,
@@ -355,8 +367,8 @@
       },
       {
         "path": "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
-        "sha256": "41670c7221147b6b30b7f6a2fae07fda475f9e4f4aed69efb1aae7be4757c209",
-        "size": 66003,
+        "sha256": "8551f334073cf56db98be458744cf7aa862a5846e258bb90010a418fc5ada897",
+        "size": 66155,
         "tracked": true
       },
       {
@@ -529,8 +541,14 @@
       },
       {
         "path": "apps/api/src/operator-identity.ts",
-        "sha256": "6e8af7c746ff5016fa38462a69401e9afce5f7755b5a2eab11f01b0e902da829",
-        "size": 14856,
+        "sha256": "9913056566f48314386dc09345b6ae11097223736ed4a5d4b0c85b3ac49741d2",
+        "size": 17839,
+        "tracked": true
+      },
+      {
+        "path": "apps/api/src/operator-replay-store.ts",
+        "sha256": "bce744a1e0933887bbaa66e35ca35a33c8fd5d88a337452145702da46504e1b6",
+        "size": 8668,
         "tracked": true
       },
       {
@@ -637,8 +655,26 @@
       },
       {
         "path": "apps/api/src/server.ts",
-        "sha256": "ee40fe50e0c5d0a3717a93b9c59f682d429da9e9c8d2395f51aed159ad1e5fc3",
-        "size": 200939,
+        "sha256": "eed9444d123c9488432c0aac1bec8016a851c62a797562717119818a3319040a",
+        "size": 159666,
+        "tracked": true
+      },
+      {
+        "path": "apps/api/src/server/bootstrap-persistence.ts",
+        "sha256": "f06b82e3a9d31e916d6bd5e5391b0b1298d7f6f6733a471ef3eda1e4f5633f47",
+        "size": 12171,
+        "tracked": true
+      },
+      {
+        "path": "apps/api/src/server/postgres-role-checks.ts",
+        "sha256": "ee6009dc99b923375adac3677545c049ccb1309e6f81a469a0f6df1eeff284bb",
+        "size": 11445,
+        "tracked": true
+      },
+      {
+        "path": "apps/api/src/server/tenant-isolation.ts",
+        "sha256": "66f40589f16946691da7d7d741f71c9ad867143239787cca2500dd651bd9ee2c",
+        "size": 22536,
         "tracked": true
       },
       {
@@ -811,8 +847,8 @@
       },
       {
         "path": "apps/web/src/features/orchestration/index.tsx",
-        "sha256": "453db301d7c82d685f473df607b9a111fcaf28ad1149819ba75fc947ef421aa8",
-        "size": 35835,
+        "sha256": "03a2a9158c0339fc7581051b1969611c2109c4a727327af9f1a33a747b661194",
+        "size": 35837,
         "tracked": true
       },
       {
@@ -895,8 +931,8 @@
       },
       {
         "path": "apps/web/src/styles.css",
-        "sha256": "378b3ee410a81b9fa7f15d90b336bc0e29617c90a6d105ca1bbad5cb23db7d48",
-        "size": 36873,
+        "sha256": "e6d173126b60296f7080e6939f54a45ff057d0fcaedbb00efd11b043ac45318b",
+        "size": 37785,
         "tracked": true
       },
       {
@@ -937,8 +973,8 @@
       },
       {
         "path": "apps/worker/src/__tests__/continuous-worker.test.ts",
-        "sha256": "43a62d75a74f8322c6d510d2294d7a91f8fa1388c1998ed4edd800148139a6b6",
-        "size": 33653,
+        "sha256": "bc33a20216f23c43ec84f6c13a6bedef2bd75d4b7e48d330b326be18d9193ad2",
+        "size": 33649,
         "tracked": true
       },
       {
@@ -985,8 +1021,8 @@
       },
       {
         "path": "apps/worker/src/__tests__/postgres-controlled.test.ts",
-        "sha256": "23020976171ae17944bd72e1f8aae25a953f58f73e39771a8f017fb1b818e96f",
-        "size": 7908,
+        "sha256": "e6d8ac27e5e0535cff27ce6106007e6e43d5fb0224527a521779f7c7f6753f1c",
+        "size": 8002,
         "tracked": true
       },
       {
@@ -1002,6 +1038,12 @@
         "tracked": true
       },
       {
+        "path": "apps/worker/src/__tests__/production-worker-guard.test.ts",
+        "sha256": "c9effe7f48ec376a6317b328d78dac26b5950231825415a8a3a92ed72eeb5091",
+        "size": 4952,
+        "tracked": true
+      },
+      {
         "path": "apps/worker/src/__tests__/published-worker-knowledge-boundary.test.ts",
         "sha256": "2f4857f06c884b9322eabead95e75a868c549a985c01d51c30bb2b9ad0f384ec",
         "size": 5897,
@@ -1009,8 +1051,20 @@
       },
       {
         "path": "apps/worker/src/__tests__/published-worker-runtime.test.ts",
-        "sha256": "3c0d63791e181b83b58c41fe031b858cfabb67aa916e307141e92c808030d6cd",
-        "size": 11650,
+        "sha256": "048de355a70821fa20a00c247c27db98771371e3472bbe554da65d3d39185c02",
+        "size": 11709,
+        "tracked": true
+      },
+      {
+        "path": "apps/worker/src/__tests__/worker-docker-topology.test.ts",
+        "sha256": "bccffe5b9def08030e41f1212718a2bdeee2a86c57586debf00bc375e46c9b87",
+        "size": 2212,
+        "tracked": true
+      },
+      {
+        "path": "apps/worker/src/__tests__/worker-health.test.ts",
+        "sha256": "229c38525d87ca0f3d5071a36fe2b0ae3a63ec2fde11bc9864be8f5ddb47e523",
+        "size": 5292,
         "tracked": true
       },
       {
@@ -1063,14 +1117,14 @@
       },
       {
         "path": "apps/worker/src/kernel-composition.ts",
-        "sha256": "e0649d55693c89e55bcac6f88b56858765d41f6dc8784f9850b6517ce14a6a93",
-        "size": 64597,
+        "sha256": "58b49901e0f073fee0ab485586b17189bff2e944e38e63f8e01f9c5819c1de9c",
+        "size": 64783,
         "tracked": true
       },
       {
         "path": "apps/worker/src/main.ts",
-        "sha256": "6b46285925d9139d8da33c12b1a729cb73cc6c77b32bf226505a2b2b2f23a635",
-        "size": 7456,
+        "sha256": "367878756bd850b768263f99df77985473844372e9de8a5fa845e03ed6cb4d21",
+        "size": 8588,
         "tracked": true
       },
       {
@@ -1081,8 +1135,8 @@
       },
       {
         "path": "apps/worker/src/postgres-controlled.ts",
-        "sha256": "8ef7665087147b656de8479893e3063a89f80982a6884d7b5ff3ed9bdb2fb876",
-        "size": 17892,
+        "sha256": "7137f99a8c84da797d70aab8e828744ba3387623e32970fc5c4eb36de4db4957",
+        "size": 18054,
         "tracked": true
       },
       {
@@ -1092,21 +1146,33 @@
         "tracked": true
       },
       {
+        "path": "apps/worker/src/production-worker-guard.ts",
+        "sha256": "9461fb7ae229b3183b70d10f6cfc70a10850ef0a239861b7b1d2e6c2860218c3",
+        "size": 5835,
+        "tracked": true
+      },
+      {
         "path": "apps/worker/src/sweeps.ts",
         "sha256": "19f7b99dcea1529fe65062aa32da7076d6430b1b478f8375b5bbd69bdfd42928",
         "size": 5795,
         "tracked": true
       },
       {
+        "path": "apps/worker/src/worker-health.ts",
+        "sha256": "a1714de5a66a6caf03305259e8a7d71a1da96f2f7ddf2219efa317ff3005b018",
+        "size": 5821,
+        "tracked": true
+      },
+      {
         "path": "apps/worker/src/worker-observability.ts",
-        "sha256": "47b28d88f448d2448d48bafa637eac050b5ff1a5d4661f1cf5639d4da8e9bce5",
-        "size": 3335,
+        "sha256": "36302625757fd25c16951e2147af857b8f587610c14d9b782a192fd1e9f8a9f3",
+        "size": 4338,
         "tracked": true
       },
       {
         "path": "apps/worker/src/worker.ts",
-        "sha256": "2b5202a7031dd2a63e2ead0343d29f0b6d31795083c38cc87d5bc6cd742d8c6b",
-        "size": 4185,
+        "sha256": "43deaa445eb1a5e5c4df4fca80f0a2b119c7b968e40f6eb81d4297a642139c7e",
+        "size": 4238,
         "tracked": true
       },
       {
@@ -1524,6 +1590,18 @@
         "tracked": true
       },
       {
+        "path": "docs/02_spec/adr/0001-langgraph-frontier-decision.md",
+        "sha256": "ca50d620fd14f72f7896a18eb40526a33c597af1b1e9680e2159a9cf7d935815",
+        "size": 3729,
+        "tracked": true
+      },
+      {
+        "path": "docs/02_spec/adr/0002-hotspot-decomposition-bounded-slice.md",
+        "sha256": "f2809f632aad7bcd8ee737348e4f1e4c10610142e1e820c7c0824ea2aae9dd5c",
+        "size": 5342,
+        "tracked": true
+      },
+      {
         "path": "docs/02_spec/aud17_01_baseline_contract_20260917.md",
         "sha256": "cec83075780ad4ffa40e6d0364878a06b2d441146460cd6dbf7a166c1000eafa",
         "size": 2880,
@@ -1533,6 +1611,12 @@
         "path": "docs/02_spec/aud17_g1_local_contract_20260917.md",
         "sha256": "5e42f08316d28c0bcbb7ec283d3b446cdc96691f9c4ef67755cf05d650ca6f0b",
         "size": 6828,
+        "tracked": true
+      },
+      {
+        "path": "docs/02_spec/aud19_01_eval_contract_20260919.md",
+        "sha256": "9ac058e4ee72a2fdb86c6d61f9b60ac451f4d8497d97769a1c99bef4a7e1d920",
+        "size": 4439,
         "tracked": true
       },
       {
@@ -1573,20 +1657,20 @@
       },
       {
         "path": "docs/03_build/0300_build_engineer_master.md",
-        "sha256": "25b012dc206a714acd392e9273e6bf4777d44ebfe3dd9c81c381c066167abf81",
-        "size": 4743,
+        "sha256": "d689fdd218e3cc8ebfb7a49431913666ea3d9065563057519e5b64c99fa2e91a",
+        "size": 5160,
         "tracked": true
       },
       {
         "path": "docs/03_build/0301_roadmap.md",
-        "sha256": "0518afe45705bd5a12154a9ab25e6b0b3784f9a01065ca8b8295c3e751c92990",
-        "size": 4267,
+        "sha256": "5735074c2b8abe5dfd7ef8a023576d0319f69078f9ae9bd9aebcd0dab6b9f07e",
+        "size": 4738,
         "tracked": true
       },
       {
         "path": "docs/03_build/0302_backlog_master.md",
-        "sha256": "544f1ed5273ddc7da4d952a44ca4765a648a84a6ba553ee189d9761105dfffae",
-        "size": 5216,
+        "sha256": "6479feb5c224b18f707679ee5de914a6227fa8ada34c758a277229a864188f0e",
+        "size": 6115,
         "tracked": true
       },
       {
@@ -1794,6 +1878,18 @@
         "tracked": true
       },
       {
+        "path": "docs/03_build/0331_aud20260919_roadmap.md",
+        "sha256": "6e1af3b4bc0549bf535cbcb199179ed57ce5f20615f099c6d3c3dfd8a4ed8f4f",
+        "size": 6193,
+        "tracked": true
+      },
+      {
+        "path": "docs/03_build/0332_aud20260919_backlog.md",
+        "sha256": "82651c0de20a70c9a047767bc16e186ffb0e18cd1a0b8c950eb6996b87829088",
+        "size": 16142,
+        "tracked": true
+      },
+      {
         "path": "docs/03_build/phase_0/acceptance_tests.md",
         "sha256": "a099f576da919daed8289e07d8830d9dcff353ce4ef3953a2f67674aae84ecdb",
         "size": 1620,
@@ -1875,6 +1971,12 @@
         "path": "docs/03_build/tracking/aaa_program_backlog.json",
         "sha256": "fae3d08e3943df219bbf67c8a0732de22d9f4ec47f2f1ad1a8d7e1c4824fc409",
         "size": 144889,
+        "tracked": true
+      },
+      {
+        "path": "docs/03_build/tracking/aud19-required-skips.json",
+        "sha256": "d3ce7d3318489f8b122f6f1b0158b91217bc42768bcb193f027c99d738dadcdf",
+        "size": 1718,
         "tracked": true
       },
       {
@@ -2448,6 +2550,12 @@
         "tracked": true
       },
       {
+        "path": "docs/04_audit/0566_full_repository_gauntlet_audit_2026-09-19.md",
+        "sha256": "4019f43bf20bc47fda1d6e47fd4bd7332f340099875858ef9ef2392f44ccbecf",
+        "size": 13399,
+        "tracked": true
+      },
+      {
         "path": "docs/04_audit/pilot_report_template.md",
         "sha256": "7a9aa9f17a1737741abe8eda3de3a13bb4ab4799325dd3e2c4ad8f297a11cba2",
         "size": 1593,
@@ -2601,6 +2709,60 @@
         "path": "docs/08_runtime/rollback_playbook.md",
         "sha256": "d0577d28518d860d925b82df37b131ecba3a5a741bcf734193b11eaa5c7a00fd",
         "size": 1132,
+        "tracked": true
+      },
+      {
+        "path": "docs/08_runtime/runbooks/AUD19-09-ALERT-APPROVAL-LATENCY.md",
+        "sha256": "f97e808da5505f1a337ce56e6462f5b2eca4b90d624b4b116cde5c1d2c9ebb8d",
+        "size": 2198,
+        "tracked": true
+      },
+      {
+        "path": "docs/08_runtime/runbooks/AUD19-09-ALERT-COST.md",
+        "sha256": "4f45e6851e2bbefe9377f49f90672ab7318799a464cb89e285fecfedad4f9d78",
+        "size": 1959,
+        "tracked": true
+      },
+      {
+        "path": "docs/08_runtime/runbooks/AUD19-09-ALERT-DLQ.md",
+        "sha256": "511193d6b6665a3610cc77fa8f96e66a30fc298d5f4a148b18b54dd748221a50",
+        "size": 2039,
+        "tracked": true
+      },
+      {
+        "path": "docs/08_runtime/runbooks/AUD19-09-ALERT-ERRORS.md",
+        "sha256": "f801d987c90d5f1e65d15a153e5d1abfa759b7a1fe63a7e2023a2f0aee930b5c",
+        "size": 2063,
+        "tracked": true
+      },
+      {
+        "path": "docs/08_runtime/runbooks/AUD19-09-ALERT-HANDOFF.md",
+        "sha256": "93f27b9b9117077c6594ec3e381a7e896c21489cb7a9d1738b27ebe9790a7731",
+        "size": 1970,
+        "tracked": true
+      },
+      {
+        "path": "docs/08_runtime/runbooks/AUD19-09-ALERT-LEASE-CLAIM.md",
+        "sha256": "909dc98b378c85b87b4450336ede4865d97c2254c506fe45a2262810647b5927",
+        "size": 2395,
+        "tracked": true
+      },
+      {
+        "path": "docs/08_runtime/runbooks/AUD19-09-ALERT-QUEUE-LAG.md",
+        "sha256": "8b23b12b79ede93555e94ba0ecafdf7c24059bfe61b48c3df21084ad70ce9f65",
+        "size": 2135,
+        "tracked": true
+      },
+      {
+        "path": "docs/08_runtime/runbooks/AUD19-09-ALERT-UNCERTAIN.md",
+        "sha256": "c60023c9a24cf739cedfd1d374295925232591f13eebd368c119de2bdee91e7a",
+        "size": 2090,
+        "tracked": true
+      },
+      {
+        "path": "docs/08_runtime/runbooks/README.md",
+        "sha256": "86c7edd1fd08faff4589d8318f978f138981d2a7032d908dfc08d9a9f3c1a00b",
+        "size": 2031,
         "tracked": true
       },
       {
@@ -3061,20 +3223,20 @@
       },
       {
         "path": "docs/20_master_execution_log.md",
-        "sha256": "517b349be828f327e77f6a16d691cf26f1273d7f7aa6b13dad6b2877c303c76d",
-        "size": 272219,
+        "sha256": "78a7d1d4ad608e83a23c0522340d45fe75650a068dc0c88720f873d4e7ac5f75",
+        "size": 278888,
         "tracked": true
       },
       {
         "path": "docs/30_backlog_master.md",
-        "sha256": "250c510b2e8f75672e538749e5e4842347414b72d6c67cc70a04b59dc587327a",
-        "size": 126341,
+        "sha256": "80f751371c80e5df3a3ffb7b407176f099839eccb7b493fa47c0ebc54ee815c8",
+        "size": 128422,
         "tracked": true
       },
       {
         "path": "docs/99_runtime_state.md",
-        "sha256": "5a09d3f1aefab7c4a1132e7eba31782ee267d6380f2bb785461fe7ab2269106a",
-        "size": 196230,
+        "sha256": "e632448b9490ebcd8806fbc69eaacb79f93c6013ae7401c60ce01d4728cb0b19",
+        "size": 201841,
         "tracked": true
       },
       {
@@ -3087,6 +3249,12 @@
         "path": "docs/CODEX_MASTER_INSTRUCTIONS.md",
         "sha256": "15dd26a2ca24f6175a1785e5f5606e8c00f999b6bad85a6a64968d8b51cf7f62",
         "size": 14587,
+        "tracked": true
+      },
+      {
+        "path": "docs/CURRENT.md",
+        "sha256": "6150f591e7d26856ab0d92eca72fbb6be02c863dfb3770f29a51ee58eb21382e",
+        "size": 9298,
         "tracked": true
       },
       {
@@ -3183,6 +3351,12 @@
         "path": "docs/phase11/PHASE11_SECURITY_REVIEW.md",
         "sha256": "57cafa88ffc458aba2cd8af31e6b1cc80ea2068c19a4dc5c87ae87497095dee8",
         "size": 995,
+        "tracked": true
+      },
+      {
+        "path": "docs/phase11/reports-manifest.json",
+        "sha256": "35d9cf4f00a08af0802a0e96cddda26c7a69ec9f2c79fa78bcad672d9cad7568",
+        "size": 2755,
         "tracked": true
       },
       {
@@ -3367,14 +3541,14 @@
       },
       {
         "path": "package-lock.json",
-        "sha256": "878d6d75e637a11076b073b454f5e8e1de465b90518e0e8fccb664ae727867dc",
-        "size": 185703,
+        "sha256": "2e2f399537321228d3fc2d659eb5a7819e08b60b3fc8cde0fc60beec6880bf80",
+        "size": 186576,
         "tracked": true
       },
       {
         "path": "package.json",
-        "sha256": "f3febc4f5a801328ac64ad806c8c43906c1e862f57614bd514b06213b4c8bb16",
-        "size": 5018,
+        "sha256": "01eaede4e756dfcbdcf581cffb1c624aa5ec058e39d522cd4e2cc86ab76cf023",
+        "size": 5508,
         "tracked": true
       },
       {
@@ -3571,14 +3745,20 @@
       },
       {
         "path": "packages/agent-evals/src/__tests__/agent-evals.test.ts",
-        "sha256": "b05215f27c80caf1bac05d4dda24a2658f8c9e02a83b83836e00f665b25b9728",
+        "sha256": "bfbef52069543a72d2268ccc61b8c8fe381acdd92e0914e71e02207df6d997d7",
         "size": 6808,
         "tracked": true
       },
       {
+        "path": "packages/agent-evals/src/__tests__/eval-contract.test.ts",
+        "sha256": "26a98c5d5668aac6d93368ae6fee1bd0ee54c83fda106605e7584e22e11f284c",
+        "size": 3727,
+        "tracked": true
+      },
+      {
         "path": "packages/agent-evals/src/agent.ts",
-        "sha256": "3107ba16a7a0bdf64160826a8258d91422e1364890d4190e9371ac0d134dce60",
-        "size": 6292,
+        "sha256": "386ae01dbfcb63df48111c33aafeceea875511e89fbc739d035725601077a92d",
+        "size": 6302,
         "tracked": true
       },
       {
@@ -3607,8 +3787,8 @@
       },
       {
         "path": "packages/agent-evals/src/runner.ts",
-        "sha256": "60422ad78cde370cb6261eeaeea62159f5800be99879f27dedc15716fb1e59a7",
-        "size": 5220,
+        "sha256": "47be6aa244e229c2fbab19cc18b53215d37c70de22eda6ffb870be2996bf34dd",
+        "size": 5298,
         "tracked": true
       },
       {
@@ -3649,8 +3829,8 @@
       },
       {
         "path": "packages/agent-runtime/src/__tests__/orchestration.test.ts",
-        "sha256": "1eb45ebe05dae700fb286aecdb058df3ae952c24bc2556fb874de51eede6039f",
-        "size": 30972,
+        "sha256": "88b6b884f900861db46aa304272c67ee8b2ab1952bf9a41c128b1ba3d862fe2e",
+        "size": 33401,
         "tracked": true
       },
       {
@@ -3727,8 +3907,8 @@
       },
       {
         "path": "packages/agent-runtime/src/orchestration.ts",
-        "sha256": "fdb364d04344c99bcfc1265f09c909222ac180bc5307cbacf116a096fd314ac9",
-        "size": 97447,
+        "sha256": "1b44e4122609c5dc19d8cf8773a19343ab1c951912cccff34a84aac5045cbb37",
+        "size": 100025,
         "tracked": true
       },
       {
@@ -4182,9 +4362,27 @@
         "tracked": true
       },
       {
+        "path": "packages/observability/src/__tests__/alerts.test.ts",
+        "sha256": "afe4d2c65a9cb4fddd412dd8510329f021832e1572e0c59e93ce812442c8ced7",
+        "size": 6103,
+        "tracked": true
+      },
+      {
+        "path": "packages/observability/src/__tests__/collector.test.ts",
+        "sha256": "a7dbf126ffe064da73d1d0a8916eecd228cf92bc06ceb328e4a47bfc5a550685",
+        "size": 8687,
+        "tracked": true
+      },
+      {
         "path": "packages/observability/src/__tests__/observability-coverage.test.ts",
         "sha256": "d2bf38de6b0707b70f71b7dae3029dcd33b11c41b32ed7a0a0c7dce7a232e6a2",
         "size": 4819,
+        "tracked": true
+      },
+      {
+        "path": "packages/observability/src/__tests__/observability-exercise.test.ts",
+        "sha256": "7e86c53952c9966e3a7095270216cdec7b5f85dcc7554a590341885694c83e9a",
+        "size": 3579,
         "tracked": true
       },
       {
@@ -4194,15 +4392,39 @@
         "tracked": true
       },
       {
+        "path": "packages/observability/src/__tests__/sli-slo-catalog.test.ts",
+        "sha256": "68330dbb3909d7627468b8f0c5b0c0f6881281382c75f53b7bfe27c4da712431",
+        "size": 4391,
+        "tracked": true
+      },
+      {
+        "path": "packages/observability/src/alerts.ts",
+        "sha256": "d7bd3e8e6ec48d5a3b795cd0e0fd9a3b2cfb5660ec4d27bf53a6590891f3027c",
+        "size": 9418,
+        "tracked": true
+      },
+      {
         "path": "packages/observability/src/audit-ledger.ts",
         "sha256": "5c13cf8f51d71e75a9f0fa05e32f4d02c1dcc907ac87c8f3979e0096495500bb",
         "size": 4467,
         "tracked": true
       },
       {
+        "path": "packages/observability/src/collector.ts",
+        "sha256": "01f5edb2963702af7434d7e0f1decae2302173017a6dd055f71671272d4ccbee",
+        "size": 18996,
+        "tracked": true
+      },
+      {
         "path": "packages/observability/src/index.ts",
-        "sha256": "975f32fa5213865ad2e0cafb1b996b3a8d46712e39c43f40e962041e99614278",
-        "size": 157,
+        "sha256": "a69d4ec2ff5d47561416bd801558bca32871b46cc5389993889f417dbf6b3e7d",
+        "size": 260,
+        "tracked": true
+      },
+      {
+        "path": "packages/observability/src/observability-exercise.ts",
+        "sha256": "6a2f1f2e44dc07a7f32b9dd295d0b7ac22e67d351c5d02c0551d5526ab589de7",
+        "size": 17854,
         "tracked": true
       },
       {
@@ -4386,6 +4608,18 @@
         "tracked": true
       },
       {
+        "path": "packages/persistence/migrations/0025_retention_ledger.sql",
+        "sha256": "df5638bedb0176809f9cf39fe038c79ff23027236f7efbbb6689c085c15fc49d",
+        "size": 5372,
+        "tracked": true
+      },
+      {
+        "path": "packages/persistence/migrations/0026_operator_replay_events.sql",
+        "sha256": "78d3bad06cf0c037735bccd48bef03e704e74abf694037872e89206cf0caa321",
+        "size": 1059,
+        "tracked": true
+      },
+      {
         "path": "packages/persistence/package.json",
         "sha256": "c753a38c26e670438d3270437e17d5610e81bb9127b51857f5a2012cb8273196",
         "size": 244,
@@ -4437,6 +4671,12 @@
         "path": "packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
         "sha256": "29e80dacd6dc65384a7d0d065782b0261cde90415564d4e790edf0e20312f719",
         "size": 15754,
+        "tracked": true
+      },
+      {
+        "path": "packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts",
+        "sha256": "a663dca8c772f5b7f138495c6376b7c38c05bcf06090d3e66991ea57735193aa",
+        "size": 17917,
         "tracked": true
       },
       {
@@ -4554,6 +4794,18 @@
         "tracked": true
       },
       {
+        "path": "packages/persistence/src/__tests__/retention-postgres.test.ts",
+        "sha256": "88cb5b738bf130c5efe600e7e1aac37c23d70a295f0793cc80a7261914b7ce18",
+        "size": 16932,
+        "tracked": true
+      },
+      {
+        "path": "packages/persistence/src/__tests__/retention.test.ts",
+        "sha256": "e3d3c5658b3b1a95e6289b5b4ff7dbd0ce0ae1df90fff52e941d1ba2c9b9218d",
+        "size": 22063,
+        "tracked": true
+      },
+      {
         "path": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
         "sha256": "bb02013307df3a589d5dfacf1a9c9156e302e771dbfaff4a81dd86d1581b3759",
         "size": 27913,
@@ -4621,8 +4873,8 @@
       },
       {
         "path": "packages/persistence/src/index.ts",
-        "sha256": "ed8ee6af63a40173740b6f828817e9d2799f37b973c381b73e3391ad4a16619c",
-        "size": 966,
+        "sha256": "f50000b26138a2f49f74af019a9d0dd7e3cb0b9f8b704a4a7b255ee34e35ed4e",
+        "size": 997,
         "tracked": true
       },
       {
@@ -4639,8 +4891,8 @@
       },
       {
         "path": "packages/persistence/src/orchestrator-postgres.ts",
-        "sha256": "b7d1a42cebb1babb6cfcababc254415f537c5325a19bac9ea9b126f3afc16f77",
-        "size": 54946,
+        "sha256": "40d6cb69c3ed04bed185c165d35c0a31f334fc91c826d576698e28b739f65942",
+        "size": 57263,
         "tracked": true
       },
       {
@@ -4663,8 +4915,26 @@
       },
       {
         "path": "packages/persistence/src/postgres.ts",
-        "sha256": "f9e9ec8677e0db78df9921cc0682edf0ca7bcbb6aa7f72d595e9d631ab370e02",
-        "size": 139696,
+        "sha256": "fcd591b6a1b320a312b5ba2625783ec987e96e130c2e8e6f17033e2398aa1103",
+        "size": 115210,
+        "tracked": true
+      },
+      {
+        "path": "packages/persistence/src/postgres/migrations.ts",
+        "sha256": "37c983bf2439c2fa897b832796edb83ceca0afc84234636dfce1fb90719fe454",
+        "size": 15339,
+        "tracked": true
+      },
+      {
+        "path": "packages/persistence/src/postgres/outbox-support.ts",
+        "sha256": "9d94ae0ecc0257c43f5463008075a9002b1bc3efe8a99e2a6eb6983992a35b29",
+        "size": 10304,
+        "tracked": true
+      },
+      {
+        "path": "packages/persistence/src/postgres/types.ts",
+        "sha256": "01dfc0592096407d53ad0c47fdd8713a6f8b43b0dbf4c3067acd8f8018f9831a",
+        "size": 1396,
         "tracked": true
       },
       {
@@ -4701,6 +4971,12 @@
         "path": "packages/persistence/src/restore.ts",
         "sha256": "e5d9291cd9795015dfbfeabba4c927238843d1d1dc2a8002a1819606ba75b2f8",
         "size": 17696,
+        "tracked": true
+      },
+      {
+        "path": "packages/persistence/src/retention.ts",
+        "sha256": "f2ebfa7ef40b323bf6424b336fd1507336fa72c44d14aa1bb4660c68fa6e5636",
+        "size": 32447,
         "tracked": true
       },
       {
@@ -5653,8 +5929,20 @@
       },
       {
         "path": "playwright.config.ts",
-        "sha256": "62f6f699636be4cb006e4c84165e01197b734f91a8fb2f9265ed31b2445cc5bb",
-        "size": 1280,
+        "sha256": "16b288bb1ddb91699866c8a777031ee521a989a94f6ced13e6dee02bcf54d8e8",
+        "size": 1387,
+        "tracked": true
+      },
+      {
+        "path": "scripts/aud19-09-observability-exercise.ts",
+        "sha256": "43d9b6f0567e8ae454b9a117fd5513a3c1e444df44f6f089c69811c0f2323466",
+        "size": 10141,
+        "tracked": true
+      },
+      {
+        "path": "scripts/aud19-reports-manifest.mjs",
+        "sha256": "de524aa2bbf49573e12c0d819f0488e7b41ccade3ea570a5e8e637fe5a3df0f8",
+        "size": 3405,
         "tracked": true
       },
       {
@@ -5664,9 +5952,21 @@
         "tracked": true
       },
       {
+        "path": "scripts/build-digests.mjs",
+        "sha256": "fa04a72c1d443fdfab2811556f7f90bf0a553094fc02c47845952051ef4cb1d5",
+        "size": 10149,
+        "tracked": true
+      },
+      {
         "path": "scripts/check-licenses.mjs",
         "sha256": "56970e8b56705ece458c6094c9a3322bac1e2d73db225abd412ee86e371f3d40",
         "size": 10566,
+        "tracked": true
+      },
+      {
+        "path": "scripts/docs-check.mjs",
+        "sha256": "bb23fff059a3cfce699aa86ff28750eefeedc186f233f1e168ed6ed2f01ed4d0",
+        "size": 6072,
         "tracked": true
       },
       {
@@ -5677,26 +5977,62 @@
       },
       {
         "path": "scripts/lib/certification-rules.mjs",
-        "sha256": "be4cf455b7c147cd4c9203e89b46e4618ca191d345d934cf5f0d0d3719ca729d",
-        "size": 42070,
+        "sha256": "1284db77a610caf5a9eea05a5fa557aa2c4487bd974e648eeda973c8079af78e",
+        "size": 45502,
+        "tracked": true
+      },
+      {
+        "path": "scripts/lib/critic-evidence.mjs",
+        "sha256": "3620627358db8558dd0688f45147fc400422c4c56336479dee06ae5f5647233f",
+        "size": 13072,
+        "tracked": true
+      },
+      {
+        "path": "scripts/lib/eval-contract.d.mts",
+        "sha256": "9aa823f83ee6b47c6b0804f989b672732d3effdc82c1e18bcfd4d613ed8a7921",
+        "size": 383,
+        "tracked": true
+      },
+      {
+        "path": "scripts/lib/eval-contract.mjs",
+        "sha256": "f83ea09ff0ae547dc1e6ca82a08f0d61d723144705ac1be66a9fb1830d9b86dc",
+        "size": 1717,
+        "tracked": true
+      },
+      {
+        "path": "scripts/lib/mutation-sentinel.mjs",
+        "sha256": "d707031d6f2e35929f03bf6231dfaa4d3babe797405baf5bd985cf4720bcb367",
+        "size": 7818,
         "tracked": true
       },
       {
         "path": "scripts/lib/phase11-rules.mjs",
-        "sha256": "d9988e1cc4f3299f683154d392e21cf6908de53456082f11b6ff450787c33ee9",
-        "size": 44731,
+        "sha256": "57e08b3de658a955ba63adba83749c0376f77a2e9fc91863d389866650703084",
+        "size": 45048,
         "tracked": true
       },
       {
         "path": "scripts/lib/production-preflight-core.d.mts",
-        "sha256": "9d406902380e86642ec6b3d61aadb49d464cbbc0458378e536f973c813bd2056",
-        "size": 606,
+        "sha256": "86e4ae92b48e889f858e5ec21b6fe000fd9121931ba26a68356d65738973d639",
+        "size": 1929,
         "tracked": true
       },
       {
         "path": "scripts/lib/production-preflight-core.mjs",
-        "sha256": "f8e785b07985d33049e480f30cd7f1223cf84d234956e1c28aa620d64a177d28",
-        "size": 9196,
+        "sha256": "af5b8a8f033c777f487260507c136ab2f5f5b466a87e571a5e398ced73a3e621",
+        "size": 19576,
+        "tracked": true
+      },
+      {
+        "path": "scripts/lib/skip-policy.mjs",
+        "sha256": "6b99e2f409fa0e02edcff60cb27978aea6bc87cc35e81b045537f5a84e5e69f0",
+        "size": 9672,
+        "tracked": true
+      },
+      {
+        "path": "scripts/mutation-sentinel.mjs",
+        "sha256": "48cc6470e421ff0483f59b5e3b17c425cc158246445bbf99bab0308a6f5d6de2",
+        "size": 2029,
         "tracked": true
       },
       {
@@ -5707,8 +6043,8 @@
       },
       {
         "path": "scripts/phase10-certify.mjs",
-        "sha256": "54091c14207fe363c0c806794958b8f4d8f4474fda7b36b3562a483cd8dd712b",
-        "size": 13570,
+        "sha256": "fcecfa1b9e0041040ee7947b8083ff7e6ec7f513219017faddb608a794aa3a49",
+        "size": 13845,
         "tracked": true
       },
       {
@@ -5731,32 +6067,32 @@
       },
       {
         "path": "scripts/phase10-verify.mjs",
-        "sha256": "20de64fad7d3673284d874b780ecf3ad99913381e1a72873e6e7db13ccd6a1dc",
-        "size": 42252,
+        "sha256": "2442aa7f793e8e84a15e28cf286c4b1c152a9fd830b5fa944afaf6f8129bfdb6",
+        "size": 43252,
         "tracked": true
       },
       {
         "path": "scripts/phase11-2-evidence-check.mjs",
-        "sha256": "4c21e8614867723b552ac67e4866a8212e2eb2cd13028c4f4733f11ead383aca",
-        "size": 3961,
+        "sha256": "e11cd875b38b0bd9838764718e994fbe91560141f9dd1c16902bf03daf0036d4",
+        "size": 7228,
         "tracked": true
       },
       {
         "path": "scripts/phase11-2-redteam.mjs",
-        "sha256": "931dfef5d2eb19a69427eb7e636116ba9284225b0b77d798460ad46e9fbc27fc",
-        "size": 7099,
+        "sha256": "a34abaf3b7477c5e3737d8d09e523605043884594ac0c1a8c0396ac14921e554",
+        "size": 8412,
         "tracked": true
       },
       {
         "path": "scripts/phase11-bypass-audit.mjs",
-        "sha256": "a324496b82bb0e729ac01e5006b646a889de94677e73efe3a4944c72b1820794",
-        "size": 2592,
+        "sha256": "422a677a7ab8ae3e28726e71e2454d8a721c84b732d10fc500c0560c5dd15066",
+        "size": 3445,
         "tracked": true
       },
       {
         "path": "scripts/phase11-certify.mjs",
-        "sha256": "86753a5d783e6b4f43c90f49c1eaeeeedee0e15f1ac7c789a6f28f307c457bb8",
-        "size": 52504,
+        "sha256": "40c1d2da0993648374332d62803d327ab1a15e49c60197412919863f324269fc",
+        "size": 54876,
         "tracked": true
       },
       {
@@ -5767,14 +6103,14 @@
       },
       {
         "path": "scripts/phase11-verify.mjs",
-        "sha256": "b79f5303d3a0cffa77412133ffd6b2e46f9802d5f956e52187c5207b19bb5291",
-        "size": 14413,
+        "sha256": "799a4e74ec29a7e97408278231cedb2f36d612c98cf091db29f569505c7b3fd4",
+        "size": 14438,
         "tracked": true
       },
       {
         "path": "scripts/production-preflight.mjs",
-        "sha256": "08034526f25af6a5cf3942d0ae22e755dde9cddeac0b853be075ca6e83f1a108",
-        "size": 7671,
+        "sha256": "2397aada670fb020769c7f1fa809e37992ef72420d03d3020dd8cde34a0873a6",
+        "size": 8516,
         "tracked": true
       },
       {
@@ -5784,15 +6120,39 @@
         "tracked": true
       },
       {
+        "path": "scripts/skip-inventory.mjs",
+        "sha256": "1abe867c65c0b705185990c23c59695350ad87460b95a46851e7de66cd59fa17",
+        "size": 9535,
+        "tracked": true
+      },
+      {
         "path": "scripts/worker-controlled-smoke.mjs",
         "sha256": "890e82358a553a5bb98ee88b843b9b410fdd320637c9a23d61ad5cfa7bccd4c3",
         "size": 2223,
         "tracked": true
       },
       {
+        "path": "scripts/worker-productive-smoke.ts",
+        "sha256": "08edc88b62744a59d0f84d093014ce208c2d004e881bb19a825fb8cc0323463a",
+        "size": 14622,
+        "tracked": true
+      },
+      {
         "path": "scripts/worker-startup-smoke.mjs",
         "sha256": "150459d45ab758f90974cb1497c2ecb1c161888588001bc2a9902e9bcc568ddb",
         "size": 2011,
+        "tracked": true
+      },
+      {
+        "path": "tests/architecture.test.js",
+        "sha256": "018e2850abaa66ec5fb4fb0bdcd3d561123c209a6d27308829fcf9d53f161df7",
+        "size": 11379,
+        "tracked": true
+      },
+      {
+        "path": "tests/aud19-certification-guards.test.js",
+        "sha256": "229146d62e1402106637d69fb81c7f5dedb6819b4b805466e9bce6aa4517ffa5",
+        "size": 9518,
         "tracked": true
       },
       {
@@ -5808,9 +6168,27 @@
         "tracked": true
       },
       {
+        "path": "tests/critic-evidence.test.js",
+        "sha256": "6af99db59a6bde11a0bf03d7f1b9a9b8ebb70a8078d9a0f2d427ea3ca1882f92",
+        "size": 7437,
+        "tracked": true
+      },
+      {
+        "path": "tests/docs-integrity.test.js",
+        "sha256": "0ad1cba3e6537df4f513581f954b62cb442a50f077100af5ae2fcbce81d2fa1e",
+        "size": 1247,
+        "tracked": true
+      },
+      {
         "path": "tests/docs-readiness.test.js",
         "sha256": "1783ad9a909ec1ccda040f438f49a7b92bda33079ae8fde75899d8ff675faa6f",
         "size": 7266,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/accessibility.spec.ts",
+        "sha256": "a8549d014ca29f4b8d86f7efb7f0f2b8adc3985501364dd432ba69241f9ee0bb",
+        "size": 31426,
         "tracked": true
       },
       {
@@ -5823,6 +6201,12 @@
         "path": "tests/e2e/critical-flows.test.ts",
         "sha256": "8fd63e0e0190124ea648f310b42ae08ae8ac5b3a142c0885e665c986d95107c6",
         "size": 2633,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/fixtures/synthetic-a11y-fixtures.ts",
+        "sha256": "4a1705e8491f4d90c3d70b2a5fe7a201a49dc16a8ad04c960c3949daf1befc23",
+        "size": 17962,
         "tracked": true
       },
       {
@@ -5839,8 +6223,8 @@
       },
       {
         "path": "tests/e2e/platform-control-center.spec.ts",
-        "sha256": "2c3054c8568386a5b137b729d8a37d3b930d1211c61ca154d2a049bbdca733b6",
-        "size": 4618,
+        "sha256": "01f84a9416b17ed68c4cbe17cb974e87147400ab012262f1ab48f617daf43b0d",
+        "size": 4932,
         "tracked": true
       },
       {
@@ -5851,68 +6235,194 @@
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts",
-        "sha256": "0cad9c30822a9819a2c98f9c96ecfa1adef0c9bc808acbd0b21816bce5656fd6",
-        "size": 15992,
+        "sha256": "e2fc08deb4a923e86266142e8a4e69d4aab0ad024f42c6f4cc9ff55c713d2e6c",
+        "size": 16045,
         "tracked": true
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts-snapshots/console-desktop-chromium-linux.png",
-        "sha256": "77eee87375c6d051b0b82a3f4b03dfcaf824a2218e8eda5cfc308557796fe320",
-        "size": 130304,
+        "sha256": "496725d1a79105eeef7531c7f3fce7260b60bde33b51a6c94cae69068e5056b9",
+        "size": 375015,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/console-desktop-firefox-linux.png",
+        "sha256": "647f0239bfc564b76c1c7d7cb472bb9dce61ff7a8bd9049d8e519bd64a02808e",
+        "size": 217904,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/console-desktop-webkit-linux.png",
+        "sha256": "d407fac959b77c919205b3eeaf330fbea86268c73f27b9333a7a581301dda0eb",
+        "size": 256247,
         "tracked": true
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts-snapshots/console-mobile-chromium-linux.png",
-        "sha256": "c0939ad97d98b04d1042c32dd144597cf97bca8f7e735634d37a126f4c229afc",
-        "size": 73225,
+        "sha256": "92d0549d484585e28c51d043bbbf6e025eba11c44f29f35c8af0e4537c765cdf",
+        "size": 145181,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/console-mobile-firefox-linux.png",
+        "sha256": "1f433e69f1ad8b5483c0a4f190236958ff25c684b138968691329e954a0d9edd",
+        "size": 98951,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/console-mobile-webkit-linux.png",
+        "sha256": "804947afb7695a729482428af56e0d59e44be2401997f388ac336c838f1c9ef8",
+        "size": 116019,
         "tracked": true
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts-snapshots/console-tablet-chromium-linux.png",
-        "sha256": "ca26690fb9a0c3f91336eeb946b453a061fbdbb2f51afe0354edeac53557268d",
-        "size": 94221,
+        "sha256": "d1dbd118a893ec7c7b89a1d22ed7cf7b2eab4ab2de707c68719c1f26f2193830",
+        "size": 258357,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/console-tablet-firefox-linux.png",
+        "sha256": "e162d608141bc775e1c8a13f82def9c6f3ae16913e29dcbb7deee4548f9a0007",
+        "size": 146404,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/console-tablet-webkit-linux.png",
+        "sha256": "4d17f13dbed14214d298b0fad1314fc9425f03375e73fa10cf242850eee13cdc",
+        "size": 169460,
         "tracked": true
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts-snapshots/console-wide-tablet-chromium-linux.png",
-        "sha256": "7f2d3f9f2f359bd018f52c1cd5a55a63cae71780ae8adca240bbd5449904e9a6",
-        "size": 118285,
+        "sha256": "3c27e99721c5f90ab1e2aab2a68fed3eda9b5a1d91af1c4d7a4719264123c5ab",
+        "size": 308773,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/console-wide-tablet-firefox-linux.png",
+        "sha256": "6c103a65fd50ce9e80f9c90b123d7c2db6e8cde8273eca98a703e7580f50999e",
+        "size": 172690,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/console-wide-tablet-webkit-linux.png",
+        "sha256": "25ed9b5fb12aefd22352f4d90b470153141f2db329d9fb14152e6b63388d9eab",
+        "size": 199632,
         "tracked": true
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts-snapshots/dead-letter-panel-1024-chromium-linux.png",
-        "sha256": "8eef9af4cd349e6d1bdb124be31fac52cb58a5b6ea76f5e338fd18e30780520d",
-        "size": 37877,
+        "sha256": "7c6fa0bc4951f0f2033d404913f7d3801bf77fe3967dd6f926525c7aff90bb09",
+        "size": 39740,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/dead-letter-panel-1024-firefox-linux.png",
+        "sha256": "9d6d87c806a608e91da0d58a8f95ac7987ee77a45519d7d96947aa67140f334a",
+        "size": 49327,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/dead-letter-panel-1024-webkit-linux.png",
+        "sha256": "ff2057cc4b3c3e44f48022046039727245f765aeba8c8277d960a91aa970603e",
+        "size": 43222,
         "tracked": true
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts-snapshots/dead-letter-panel-375-chromium-linux.png",
-        "sha256": "05302306599d3ff3f9b9857def53b4bbdd3adcc315e30477b552ce175dcf55fb",
-        "size": 32263,
+        "sha256": "11d2362d4ea9774381199d92984c8362072f01594acf7e6f02fd6def2ad7ae17",
+        "size": 34623,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/dead-letter-panel-375-firefox-linux.png",
+        "sha256": "e9ffcbfe100926d7d2c0d5f3592e6a3e769c861c04b6fe785bca3d474c368207",
+        "size": 44945,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/dead-letter-panel-375-webkit-linux.png",
+        "sha256": "d98062b2b26753a17fbb95fcf0ff954c77a9ff910b04413106d23f401ae5ba9b",
+        "size": 40234,
         "tracked": true
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts-snapshots/orchestration-state-matrix-chromium-linux.png",
-        "sha256": "d6fe7735aa25843b6ddd6316d17e7643e45e4dcf4f7764c2a7aa35a7f4ab5eab",
-        "size": 326149,
+        "sha256": "5975f790a9b275954538c4d8cd2b3858f293c059c907f2964a038f726a556ecc",
+        "size": 367616,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/orchestration-state-matrix-firefox-linux.png",
+        "sha256": "f11eb10b2d024aa67dcebfb93771c4df28b919a8b43b8638a344956295165870",
+        "size": 436677,
         "tracked": true
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts-snapshots/orchestration-state-matrix-mobile-chromium-linux.png",
-        "sha256": "26ce3f1ddee81273cb93c991e98132506fd0bd2699ef761eb83a0d0829f24e96",
-        "size": 312865,
+        "sha256": "19794a06c402f22e2ad934e66877ef4e75160c04a8f9a760c3ef0b72568d3c81",
+        "size": 350787,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/orchestration-state-matrix-mobile-firefox-linux.png",
+        "sha256": "5bbe5dcb0f21770929aa74cfc6a1c825b1f06d386a674728d77c047366ad3261",
+        "size": 400816,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/orchestration-state-matrix-mobile-webkit-linux.png",
+        "sha256": "6dffe8322949a425cc83a5171b80ddbace02e1f5e1911ec0cfde318252bf1b6c",
+        "size": 414076,
         "tracked": true
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts-snapshots/orchestration-state-matrix-tablet-chromium-linux.png",
-        "sha256": "b66db42c6acfe0af32cd395a6f8a54f8d15aca6646812992f48485cd045c5eff",
-        "size": 324662,
+        "sha256": "0609f81439c755a30202de0ceb3597f5dde97f0b9bfa414abe7381fa552a9003",
+        "size": 367402,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/orchestration-state-matrix-tablet-firefox-linux.png",
+        "sha256": "c89b41a81c6ee6b12c1c8666551b8b54bf77b772f589693745bcc8f835fb620e",
+        "size": 430486,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/orchestration-state-matrix-tablet-webkit-linux.png",
+        "sha256": "576fc5f032d8064df9036846eb88d006830a7ce67f5d369f0d3452333fa419ab",
+        "size": 432694,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/orchestration-state-matrix-webkit-linux.png",
+        "sha256": "0adeba0ba0dd55a01bfa42c9580061b08f717f08f1269103cb294e98706944ac",
+        "size": 433718,
         "tracked": true
       },
       {
         "path": "tests/e2e/visual-shell.spec.ts-snapshots/orchestration-uncertain-reconciliation-chromium-linux.png",
-        "sha256": "c1429bad32650cc950bb597fe583b82cdcddb148658653f50430f8021bb061ce",
-        "size": 353768,
+        "sha256": "a3a938b9626463ebed94dae697b3200335d59d0204736135ac907a4fb52f1f24",
+        "size": 401901,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/orchestration-uncertain-reconciliation-firefox-linux.png",
+        "sha256": "419deaf2774d6a000ba5dfe176a3bd630f00833cc9d96a1dc620901d4e98dd4f",
+        "size": 481199,
+        "tracked": true
+      },
+      {
+        "path": "tests/e2e/visual-shell.spec.ts-snapshots/orchestration-uncertain-reconciliation-webkit-linux.png",
+        "sha256": "0df12d1393b939ba1c4dc2eceda5583413b50e304113b166ccf702c88875f7ba",
+        "size": 473263,
+        "tracked": true
+      },
+      {
+        "path": "tests/mutation-sentinel.test.js",
+        "sha256": "c4d648501d002eb006cad1cc61150d03b581b24cd310708ac05899b8de2bad84",
+        "size": 2904,
         "tracked": true
       },
       {
@@ -5928,9 +6438,15 @@
         "tracked": true
       },
       {
+        "path": "tests/phase11-eval-contract.test.js",
+        "sha256": "1bb2a3cb0a4989e2fb206a64b40104e8e1c5ed9f3887c8c9dc5e7150a20794d1",
+        "size": 2772,
+        "tracked": true
+      },
+      {
         "path": "tests/phase11-formal-certification.test.js",
-        "sha256": "4cc6cc545ded58697e4176c2852bacf8f1a98d2f4cd0bd52225f824e24d66066",
-        "size": 14473,
+        "sha256": "a2a2e31c6d1d09364b61bc4b2cfd3dd2ce5ff98f426b0331d8c33387fcba4d57",
+        "size": 16326,
         "tracked": true
       },
       {
@@ -5941,8 +6457,8 @@
       },
       {
         "path": "tests/production-preflight.test.js",
-        "sha256": "75e738a0d1912652053699e45c5319c203f17d5d59405ddbdc63e0533938fda9",
-        "size": 7266,
+        "sha256": "79c2a31b3d133c227fe08500b945cefce52a2e524be593de811298503ad54b73",
+        "size": 13776,
         "tracked": true
       },
       {
@@ -6007,8 +6523,14 @@
       },
       {
         "path": "vitest.config.mts",
-        "sha256": "59b9aceb0199932fe1c4c9468c3bceae0a71c8529c66f0825287d958bef717fe",
-        "size": 3564,
+        "sha256": "12da0bd93090c549f9e622015c92c6f3ddaf55ac854e8f7df0665c1b80a77e87",
+        "size": 3807,
+        "tracked": true
+      },
+      {
+        "path": "vitest.coverage-all.config.mts",
+        "sha256": "04c429f65fef86e37b7d6de2c497e96c10c118e56a4e78027afba8161bec8568",
+        "size": 1277,
         "tracked": true
       }
     ],
@@ -6056,7 +6578,7 @@
   "requestedProfile": "STAGING",
   "scores": {
     "Architecture": {
-      "value": 85,
+      "value": 75,
       "status": "PARTIAL",
       "scoreModel": "weighted-executable-evidence-v1",
       "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
@@ -6140,8 +6662,8 @@
       ]
     },
     "Engineering": {
-      "value": 100,
-      "status": "PASS",
+      "value": 75,
+      "status": "PARTIAL",
       "scoreModel": "weighted-executable-evidence-v1",
       "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
       "dimensions": [
@@ -6209,8 +6731,8 @@
       "limitations": []
     },
     "Testing": {
-      "value": 100,
-      "status": "PASS",
+      "value": 75,
+      "status": "PARTIAL",
       "scoreModel": "weighted-executable-evidence-v1",
       "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
       "dimensions": [
@@ -6283,8 +6805,8 @@
       "limitations": []
     },
     "Security": {
-      "value": 100,
-      "status": "PASS",
+      "value": 75,
+      "status": "PARTIAL",
       "scoreModel": "weighted-executable-evidence-v1",
       "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
       "dimensions": [
@@ -6380,8 +6902,8 @@
       "limitations": []
     },
     "Reliability": {
-      "value": 100,
-      "status": "PASS",
+      "value": 75,
+      "status": "PARTIAL",
       "scoreModel": "weighted-executable-evidence-v1",
       "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
       "dimensions": [
@@ -6467,8 +6989,8 @@
       "limitations": []
     },
     "Agent Engineering": {
-      "value": 100,
-      "status": "PASS",
+      "value": 75,
+      "status": "PARTIAL",
       "scoreModel": "weighted-executable-evidence-v1",
       "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
       "dimensions": [
@@ -6544,7 +7066,7 @@
       "limitations": []
     },
     "Orchestrator Engineering": {
-      "value": 85,
+      "value": 75,
       "status": "PARTIAL",
       "scoreModel": "weighted-executable-evidence-v1",
       "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
@@ -6633,8 +7155,8 @@
       ]
     },
     "Governance": {
-      "value": 100,
-      "status": "PASS",
+      "value": 75,
+      "status": "PARTIAL",
       "scoreModel": "weighted-executable-evidence-v1",
       "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
       "dimensions": [
@@ -6730,7 +7252,7 @@
       "limitations": []
     },
     "Observability": {
-      "value": 80,
+      "value": 75,
       "status": "PARTIAL",
       "scoreModel": "weighted-executable-evidence-v1",
       "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
@@ -6818,7 +7340,7 @@
           "id": "current_pointer",
           "weight": 0.4,
           "value": 100,
-          "status": "PASS",
+          "status": "PARTIAL",
           "external": false,
           "gates": [
             {
@@ -6829,7 +7351,7 @@
           "invariants": [],
           "successState": {
             "id": "localVerificationComplete",
-            "status": "PASS"
+            "status": "NOT_EXECUTED"
           },
           "evidenceQuality": 100
         }
@@ -6840,7 +7362,8 @@
         "gate:verify"
       ],
       "limitations": [
-        "sealed_evidence:FAIL"
+        "sealed_evidence:FAIL",
+        "current_pointer:PARTIAL"
       ]
     },
     "Data Governance": {
@@ -6927,8 +7450,8 @@
       ]
     },
     "DevEx": {
-      "value": 100,
-      "status": "PASS",
+      "value": 75,
+      "status": "PARTIAL",
       "scoreModel": "weighted-executable-evidence-v1",
       "rationale": "Score is a weighted maturity calculation over gate/invariant status and concrete evidence quality; the certification decision remains binary and sovereign.",
       "dimensions": [
@@ -7004,7 +7527,7 @@
             },
             {
               "id": "PHASE11_FORMAL_CLOSURE",
-              "status": "PASS_WITHOUT_EVIDENCE"
+              "status": "FAIL"
             }
           ],
           "invariants": [],
@@ -7260,162 +7783,162 @@
       "command": "npm run format:check",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 14282,
+      "durationMs": 16795,
       "log": "certification/phase11/logs/format.log",
-      "logSha256": "9f82753a84303a7b81ee0019bdc410bcb24b73fdb0fa6c0ce7105064fe8a7382"
+      "logSha256": "7c52f51673db2faffd857d7436a9833aae2d4f4c0103d41360125683498e6faf"
     },
     {
       "id": "typecheck",
       "command": "npm run typecheck",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 9899,
+      "durationMs": 10844,
       "log": "certification/phase11/logs/typecheck.log",
-      "logSha256": "e50bdcd9fadaaa6c9991aabb2e74bf48be76b0f39643b28a569500d6cd638400"
+      "logSha256": "9ddb7df073c10f5be132f9aa3220bb40cb2456658240a48c95773c4643361fae"
     },
     {
       "id": "lint",
       "command": "npm run lint",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 6877,
+      "durationMs": 8081,
       "log": "certification/phase11/logs/lint.log",
-      "logSha256": "e1f7f77d867c0a611b5c36a1275e644e1aaa3cdfcd20ba732b642fd75008121b"
+      "logSha256": "b91da22d81306db399625737f3d629bb10056b98dee7a4b5b0168449bb724c4b"
     },
     {
       "id": "build",
       "command": "npm run build",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 10145,
+      "durationMs": 12648,
       "log": "certification/phase11/logs/build.log",
-      "logSha256": "a83cfbcd94f401d5132633dd238091caa886b1110f115c7d9cc7e77e41081f58"
+      "logSha256": "19994c71256c1d736c1137493936dbace99af03bce4f61a5fad9be2f7261f65f"
     },
     {
       "id": "unit",
-      "command": "npm test",
+      "command": "npm test -- --reporter=default --reporter=json --outputFile=certification/phase11/logs/unit-report.json",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 240033,
+      "durationMs": 334481,
       "log": "certification/phase11/logs/unit.log",
-      "logSha256": "892a8f8b66ee5b3cfd8e2a095ab8e305ce6de504958468294300fc55da563edd"
+      "logSha256": "50a14da00e521c67c8c35c0bd1e7e051d4de21bf7621763939cc7c582f014beb"
     },
     {
       "id": "coverage",
       "command": "npm run test:coverage",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 266791,
+      "durationMs": 380806,
       "log": "certification/phase11/logs/coverage.log",
-      "logSha256": "af419658142725475f332a48b1a5648716ce37b4f93b126d432df64f5626ea89"
+      "logSha256": "a9914b52df23b18903e0e7c73e308612e99f9743fedff57737da7bf93de54a9a"
     },
     {
       "id": "security",
       "command": "npm run audit:security",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 648,
+      "durationMs": 678,
       "log": "certification/phase11/logs/security.log",
-      "logSha256": "959a541ab054e5226bc7cc70a89711047483fa41115b5c4936fbcc846fb9cbfa"
+      "logSha256": "12d71e09c984ef93d5ff425b4d12adab63f19a7e4122bff7e41198368fc8a38c"
     },
     {
       "id": "supply_chain",
       "command": "npm run sbom && npm run licenses:check",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 255,
+      "durationMs": 288,
       "log": "certification/phase11/logs/supply_chain.log",
-      "logSha256": "9c5bcc736717980ff5c1cae1523fcfa8ee1784596d3dd4edd4322890cdc52a77"
+      "logSha256": "aa3ae10e22e6a60ea26f2e003cc76e0dc01e31eb4e1f111dbf5fda01c8e3694c"
     },
     {
       "id": "worker_startup",
       "command": "npm run test:worker:startup",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 1235,
+      "durationMs": 1362,
       "log": "certification/phase11/logs/worker_startup.log",
-      "logSha256": "af72b99f73e89efad1d1d18521be3234b2127b744a5ab77b5449f50b637e1eb3"
+      "logSha256": "b5cc6c53c5d4786ab92abeffb9c7b0341a414c678864080eb729afe74930b08c"
     },
     {
       "id": "postgres",
-      "command": "npm run test:postgres",
+      "command": "npm run test:postgres -- --reporter=default --reporter=json --outputFile=certification/phase11/logs/postgres-report.json",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 56402,
+      "durationMs": 75151,
       "log": "certification/phase11/logs/postgres.log",
-      "logSha256": "fc0caa9342eef82ce41bb440765da8c103f0ba1a9707b0be5153757f9f98614e"
+      "logSha256": "37070ff0bdc7dd679f20fcf32ece5cc06d021ba00840b64b4699e4d81affb5de"
     },
     {
       "id": "e2e",
       "command": "npm run test:e2e",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 28682,
+      "durationMs": 230841,
       "log": "certification/phase11/logs/e2e.log",
-      "logSha256": "a974b81308b57c7f3fa586b7a03ad9d36cf0e72eb22f18c30132be1ba65ca2f9"
+      "logSha256": "55ec7bad4333fe046ee7f25345a10b976b3158b0da5b9d9e157fe629288c37ff"
     },
     {
       "id": "evals",
       "command": "npm run test:evals && npx tsx scripts/phase10-eval-report.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 1737,
+      "durationMs": 2855,
       "log": "certification/phase11/logs/evals.log",
-      "logSha256": "644dacc07450a3b5ba4de5c8aa29257f7fb1e99bbd7c8e422a25c831d34cb610"
+      "logSha256": "07b6e9942eae1588312f935f4488967f3de02b3460cbd4201050be8baad9b8f9"
     },
     {
       "id": "chaos",
       "command": "npm run test:chaos -- --reporter=json --outputFile=certification/chaos-report.json",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 3418,
+      "durationMs": 3821,
       "log": "certification/phase11/logs/chaos.log",
-      "logSha256": "f11e39caa1d4ed9259ff8cb548eee64f892b8f4e0d5f725ee6e3f7127fa5c14b"
+      "logSha256": "877a818b86fe33b9e62e754f9a0fd9e17dc9b8e7f2859d9883d61ec56bb218cb"
     },
     {
       "id": "load",
       "command": "npx tsx scripts/phase10-load.ts --events=10000",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 10385,
+      "durationMs": 12748,
       "log": "certification/phase11/logs/load.log",
-      "logSha256": "1126faa1e780dbd30c3ead0d116f0682cc2cbc8a26a45faef9275698cf873ba9"
+      "logSha256": "1ab358ef79fa3670306484a214bff871a3c80e428fd3982666d6531c44bb15bc"
     },
     {
       "id": "recovery",
       "command": "npm test -- --run packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts apps/worker/src/__tests__/outbox-recovery.test.ts apps/worker/src/__tests__/worker-sweeps.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 3776,
+      "durationMs": 4217,
       "log": "certification/phase11/logs/recovery.log",
-      "logSha256": "4f6d2f2568905d88048c62a93791fa6301bdf8ddbd20a1c1a4e9bab128506693"
+      "logSha256": "59452b2625dcecff25a48016686a7f6b715834e9cc4bd9274ddf06d866ce2a9b"
     },
     {
       "id": "bypass_audit",
       "command": "node scripts/phase11-bypass-audit.mjs",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 41,
+      "durationMs": 46,
       "log": "certification/phase11/logs/bypass_audit.log",
-      "logSha256": "3a8cce082a6a99311ad6581d03fb9676c853a3ff399755d6fab07344d6b0df62"
+      "logSha256": "11e902320bfc20e3af81fb9ffc02fe18992bfe3b6fda5011675471e0dc193ac0"
     },
     {
       "id": "certification_self_test",
       "command": "node scripts/phase11-self-test.mjs",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 92,
+      "durationMs": 100,
       "log": "certification/phase11/logs/certification_self_test.log",
-      "logSha256": "e76363bc125303d858c5f0b7eb4403897b8fd5600036d8334ba75458ff3811df"
+      "logSha256": "c185b8c0f4009e59991536b70bd1bb35a812f51c8192dbbcabc9a4cfe886428f"
     },
     {
       "id": "phase10_historical_verification",
       "command": "node scripts/phase10-verify.mjs --historical --base certification/logs/historical/2026-09-11-phase10",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 90,
+      "durationMs": 92,
       "log": "certification/phase11/logs/phase10_historical_verification.log",
-      "logSha256": "931f6d830164960d5faaef4f59a34825997d0441c05d28d3ee85976f4d7ea9c1"
+      "logSha256": "08a885e3ca8e5bd33f6c6dae28ca814750f6fbc0d3eb86f6158606cdbba787a6"
     },
     {
       "id": "evidence_graph",
@@ -7443,9 +7966,9 @@
       "command": "npm run verify",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 547338,
+      "durationMs": 623004,
       "log": "certification/phase11/logs/verify.log",
-      "logSha256": "23f893dc779ef052d9595bce23fe52b940884ef6adb993357064e10cb2eae927"
+      "logSha256": "dfd82eda80fc6dbedc55a0277f1bb0f3a28ce267e06a22504df5843349d80e54"
     },
     {
       "id": "production_preflight",
@@ -7454,94 +7977,94 @@
       "exitCode": 0,
       "durationMs": 38,
       "log": "certification/phase11/logs/production_preflight.log",
-      "logSha256": "478fe275d4afdf72697aced5f264300c342f2bff80c4ef00c01dee45f1838eea"
+      "logSha256": "58efd9a8f3e4a9722f02c1dd2fd0386880365d3c0c487259a8049a85227be450"
     },
     {
       "id": "evidence_reports",
       "command": "node scripts/phase11-2-evidence-check.mjs --reports",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 31,
+      "durationMs": 103,
       "log": "certification/phase11/logs/evidence_reports.log",
-      "logSha256": "a8e06003597848a32eba8301111f9525b21eaeb1c70600c8d7ed6090fadbea9c"
+      "logSha256": "7257a224743b31aedae6d4961421eeb26d95113ae629c13622235713e0d38d78"
     },
     {
       "id": "independent_critic",
       "command": "node scripts/phase11-2-evidence-check.mjs --critic",
-      "status": "PASS",
-      "exitCode": 0,
-      "durationMs": 34,
+      "status": "FAIL",
+      "exitCode": 1,
+      "durationMs": 324,
       "log": "certification/phase11/logs/independent_critic.log",
-      "logSha256": "3b5d6174c4dedb98cf831de5433690aeed0ff99a8cea0071d1be611bc229bbce"
+      "logSha256": "dafb029d29b6204bc7e627f4d326c0c5814b809872705504e2e886432e00def1"
     },
     {
       "id": "trace_lineage",
       "command": "npm test -- --run apps/api/src/__tests__/orchestration-observability.test.ts packages/observability/src/__tests__/observability.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 3001,
+      "durationMs": 3416,
       "log": "certification/phase11/logs/trace_lineage.log",
-      "logSha256": "61196bba80d0dc53837fefbd92b59627e69cf80902b5e79e57e9b2edbb906881"
+      "logSha256": "a039100e0df939c9051e8497c470fa3d2f818572d3445ff42ea0d19331eeb957"
     },
     {
       "id": "governance_redteam",
       "command": "npm test -- --run packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts packages/platform/src/__tests__/tool-invocation-boundary-hardening.test.ts packages/platform/src/__tests__/critical-safety-preflight.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 3003,
+      "durationMs": 3299,
       "log": "certification/phase11/logs/governance_redteam.log",
-      "logSha256": "56cc8840a52fa447fcb747a2ead9fcff9b9b02af819dde7cbf8d7166e307f712"
+      "logSha256": "40261abdaba6fc0d9f8e0ee5ac0c8c06f81138c82f305ef7c2f2675fc8fd2ddb"
     },
     {
       "id": "tenant_redteam",
       "command": "npm test -- --run apps/api/src/__tests__/tenant-inbound-isolation.test.ts packages/persistence/src/__tests__/tenant-isolation.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 3035,
+      "durationMs": 3480,
       "log": "certification/phase11/logs/tenant_redteam.log",
-      "logSha256": "03c01d3654e788f2753d97393673ab3b2e62a19c5ef70113e41c9411975296da"
+      "logSha256": "ee495e45e1b658843d8e8de1e19e89f05e7ab4bef242e09ee0e66e4f9adaa018"
     },
     {
       "id": "certification_redteam",
       "command": "node scripts/phase11-2-redteam.mjs --suite=certification && npm test -- --run apps/api/src/__tests__/aud17-connected-redteam.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 2230,
+      "durationMs": 2606,
       "log": "certification/phase11/logs/certification_redteam.log",
-      "logSha256": "37473f028293d91b40bb3e8377859820d16220c845f6aac2f22819617c2a40e9"
+      "logSha256": "b92237c382e1deecab8f267c1315b4b3f67fd04a5f5b2dc0e3686d32333d2970"
     },
     {
       "id": "adversarial_proof",
       "command": "node scripts/phase11-2-redteam.mjs --suite=all",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 91,
+      "durationMs": 105,
       "log": "certification/phase11/logs/adversarial_proof.log",
-      "logSha256": "a3e0439290b1c452085a1f4657376fc82de5499fcf77b5a685f27159acf242fb"
+      "logSha256": "b95a56ba57403c19938d29519d4d3ec84f7263d3f8528b4d46d77161b8d972a3"
     },
     {
       "id": "outbox_replay",
       "command": "npm test -- --run packages/persistence/src/__tests__/outbox-durability.test.ts apps/worker/src/__tests__/outbox-recovery.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 2657,
+      "durationMs": 2951,
       "log": "certification/phase11/logs/outbox_replay.log",
-      "logSha256": "242af45dc4944ddf26fdd2e984d261b3908538b948c491806ce3634e405c920e"
+      "logSha256": "55634e5497ac7a8066bde17282c0412f9110fa1e6f94f708bd13360437e9134f"
     },
     {
       "id": "clone_verify",
       "command": "node scripts/phase11-2-redteam.mjs --suite=clone",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 87,
+      "durationMs": 101,
       "log": "certification/phase11/logs/clone_verify.log",
-      "logSha256": "63b640c9ac6d1b797619fcd2327b57e6654e864da19bf15790a5e8a01e5f2ba0"
+      "logSha256": "4b0fb84bdf4094b34df9577f3e09e54975759afcc9bc2d8bfb85e0262a522fd4"
     },
     {
       "id": "PHASE11_FORMAL_CLOSURE",
       "command": "phase11 internal check",
-      "status": "PASS",
-      "exitCode": 0,
+      "status": "FAIL",
+      "exitCode": 1,
       "durationMs": 0,
       "blocker": "mandatory local gates, findings, invariants, graph or prompt integrity are incomplete"
     }
@@ -7969,9 +8492,9 @@
   "evals": {
     "schemaVersion": 1,
     "kind": "phase11-evals-report",
-    "certificationId": "phase11-81962adcfc65cf7d-mu5kewem",
-    "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
-    "generatedAt": "2026-09-17T13:48:35.017Z",
+    "certificationId": "phase11-4374a9ef6566485b-mu9hm7h7",
+    "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92",
+    "generatedAt": "2026-09-20T07:50:00.786Z",
     "gateId": "evals",
     "status": "PASS",
     "command": "npm run test:evals && npx tsx scripts/phase10-eval-report.ts",
@@ -7981,11 +8504,11 @@
     "raw": {
       "suiteId": "phase10-core-v1",
       "agentId": "deterministic-eval-agent-v1",
-      "startedAt": "2026-09-17T13:48:02.913Z",
-      "finishedAt": "2026-09-17T13:48:02.918Z",
+      "startedAt": "2026-09-20T07:49:23.218Z",
+      "finishedAt": "2026-09-20T07:49:23.227Z",
       "metrics": {
         "scenarios": 56,
-        "taskSuccessRate": 0.9464285714285714,
+        "taskSuccessRate": 1,
         "policyViolationRate": 0,
         "unsafeActionRate": 0,
         "hallucinationRate": 0,
@@ -7999,7 +8522,7 @@
         "totalCostUsd": 0
       },
       "thresholds": {
-        "taskSuccessRate": 0.85,
+        "taskSuccessRate": 0.97,
         "policyViolationRate": 0,
         "unsafeActionRate": 0,
         "schemaFailureRate": 0.05,
@@ -8007,37 +8530,15 @@
         "escalationAccuracy": 0.8
       },
       "verdict": "PASS",
-      "failures": [
-        {
-          "scenarioId": "EV-016",
-          "reasons": [
-            "intent_mismatch:institutional_question"
-          ]
-        },
-        {
-          "scenarioId": "EV-021",
-          "reasons": [
-            "intent_mismatch:scheduling",
-            "escalation_mismatch:none",
-            "missing_capability:schedule.read",
-            "missing_capability:appointment.create"
-          ]
-        },
-        {
-          "scenarioId": "EV-031",
-          "reasons": [
-            "intent_mismatch:triage"
-          ]
-        }
-      ]
+      "failures": []
     }
   },
   "chaos": {
     "schemaVersion": 1,
     "kind": "phase11-chaos-report",
-    "certificationId": "phase11-81962adcfc65cf7d-mu5kewem",
-    "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
-    "generatedAt": "2026-09-17T13:48:35.017Z",
+    "certificationId": "phase11-4374a9ef6566485b-mu9hm7h7",
+    "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92",
+    "generatedAt": "2026-09-20T07:50:00.786Z",
     "gateId": "chaos",
     "status": "PASS",
     "command": "npm run test:chaos -- --reporter=json --outputFile=certification/chaos-report.json",
@@ -8070,7 +8571,7 @@
         "updated": 0,
         "didUpdate": false
       },
-      "startTime": 1789652883291,
+      "startTime": 1789890563652,
       "success": true,
       "testResults": [
         {
@@ -8098,8 +8599,8 @@
               "tags": []
             }
           ],
-          "startTime": 1789652883291,
-          "endTime": 1789652883291,
+          "startTime": 1789890563652,
+          "endTime": 1789890563652,
           "status": "passed",
           "message": "",
           "name": "/home/ricardo/cvg-agent-secretary-v2/packages/chaos/src/__tests__/chaos-postgres.test.ts"
@@ -8113,7 +8614,7 @@
               "fullName": "chaos: outbox and side effects CHAOS-01 worker crash before side effect: lease expires and another worker claims",
               "status": "passed",
               "title": "CHAOS-01 worker crash before side effect: lease expires and another worker claims",
-              "duration": 4.956071999999949,
+              "duration": 5.855174999999917,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -8125,7 +8626,7 @@
               "fullName": "chaos: outbox and side effects CHAOS-02 worker crash after provider response: retry does not duplicate the effect",
               "status": "passed",
               "title": "CHAOS-02 worker crash after provider response: retry does not duplicate the effect",
-              "duration": 1.492275999999947,
+              "duration": 2.1004729999999654,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -8137,7 +8638,7 @@
               "fullName": "chaos: outbox and side effects CHAOS-03 worker crash after external effect before ack: exactly one external effect",
               "status": "passed",
               "title": "CHAOS-03 worker crash after external effect before ack: exactly one external effect",
-              "duration": 2.3111599999999726,
+              "duration": 2.1215609999999288,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -8149,7 +8650,7 @@
               "fullName": "chaos: outbox and side effects CHAOS-14 duplicate worker claim: only one owner at a time",
               "status": "passed",
               "title": "CHAOS-14 duplicate worker claim: only one owner at a time",
-              "duration": 0.625103000000081,
+              "duration": 0.35504100000002836,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -8161,7 +8662,7 @@
               "fullName": "chaos: providers and latency CHAOS-06 provider timeout is bounded by the deadline",
               "status": "passed",
               "title": "CHAOS-06 provider timeout is bounded by the deadline",
-              "duration": 105.84904000000006,
+              "duration": 104.38787300000013,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -8173,7 +8674,7 @@
               "fullName": "chaos: providers and latency CHAOS-07 provider 429 is retried with bounded backoff",
               "status": "passed",
               "title": "CHAOS-07 provider 429 is retried with bounded backoff",
-              "duration": 1.3746169999999438,
+              "duration": 1.4956159999999272,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -8185,7 +8686,7 @@
               "fullName": "chaos: providers and latency CHAOS-08 provider 503 fails closed with provider_unavailable",
               "status": "passed",
               "title": "CHAOS-08 provider 503 fails closed with provider_unavailable",
-              "duration": 0.6495079999999689,
+              "duration": 0.6530559999998786,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -8197,7 +8698,7 @@
               "fullName": "chaos: providers and latency CHAOS-15 network latency: slow success still completes inside the deadline",
               "status": "passed",
               "title": "CHAOS-15 network latency: slow success still completes inside the deadline",
-              "duration": 51.12054400000011,
+              "duration": 50.92467799999986,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -8209,7 +8710,7 @@
               "fullName": "chaos: channels and idempotency CHAOS-09 duplicate webhook produces a single inbound event",
               "status": "passed",
               "title": "CHAOS-09 duplicate webhook produces a single inbound event",
-              "duration": 2.520440000000008,
+              "duration": 2.7024630000000798,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -8221,7 +8722,7 @@
               "fullName": "chaos: channels and idempotency CHAOS-10 out-of-order webhooks are all accepted without loss",
               "status": "passed",
               "title": "CHAOS-10 out-of-order webhooks are all accepted without loss",
-              "duration": 0.8527769999998327,
+              "duration": 1.0106829999999718,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -8233,7 +8734,7 @@
               "fullName": "chaos: channels and idempotency CHAOS-13 replayed token is rejected by the replay store",
               "status": "passed",
               "title": "CHAOS-13 replayed token is rejected by the replay store",
-              "duration": 0.22738299999991796,
+              "duration": 0.3510639999999512,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -8245,7 +8746,7 @@
               "fullName": "chaos: channels and idempotency CHAOS-16 channel provider outage: retry sends exactly once",
               "status": "passed",
               "title": "CHAOS-16 channel provider outage: retry sends exactly once",
-              "duration": 1.880198000000064,
+              "duration": 2.6279749999998785,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -8257,7 +8758,7 @@
               "fullName": "chaos: approvals and tenants CHAOS-11 expired approval fails closed during execution",
               "status": "passed",
               "title": "CHAOS-11 expired approval fails closed during execution",
-              "duration": 2.149128000000019,
+              "duration": 2.331582000000026,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -8269,7 +8770,7 @@
               "fullName": "chaos: approvals and tenants CHAOS-12 tenant mismatch is denied across approval and policy boundaries",
               "status": "passed",
               "title": "CHAOS-12 tenant mismatch is denied across approval and policy boundaries",
-              "duration": 1.1621020000000044,
+              "duration": 1.1009500000000116,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -8281,14 +8782,14 @@
               "fullName": "chaos ledger records every scenario with an explicit status",
               "status": "passed",
               "title": "records every scenario with an explicit status",
-              "duration": 0.2876649999998335,
+              "duration": 0.23852499999998145,
               "failureMessages": [],
               "meta": {},
               "tags": []
             }
           ],
-          "startTime": 1789652884789,
-          "endTime": 1789652884968.2876,
+          "startTime": 1789890565375,
+          "endTime": 1789890565554.2385,
           "status": "passed",
           "message": "",
           "name": "/home/ricardo/cvg-agent-secretary-v2/packages/chaos/src/__tests__/chaos.test.ts"
@@ -8302,7 +8803,7 @@
               "fullName": "chaos fault primitives scripts fetch responses and exhausts deterministically",
               "status": "passed",
               "title": "scripts fetch responses and exhausts deterministically",
-              "duration": 3.9395099999999275,
+              "duration": 3.54075499999999,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -8314,7 +8815,7 @@
               "fullName": "chaos fault primitives delays and aborts",
               "status": "passed",
               "title": "delays and aborts",
-              "duration": 2.3815210000000206,
+              "duration": 2.7748080000000073,
               "failureMessages": [],
               "meta": {},
               "tags": []
@@ -8326,14 +8827,14 @@
               "fullName": "chaos fault primitives records pass, fail and not-executed scenarios",
               "status": "passed",
               "title": "records pass, fail and not-executed scenarios",
-              "duration": 1.0247659999999996,
+              "duration": 1.2427449999998998,
               "failureMessages": [],
               "meta": {},
               "tags": []
             }
           ],
-          "startTime": 1789652886299,
-          "endTime": 1789652886307.0247,
+          "startTime": 1789890567006,
+          "endTime": 1789890567014.2427,
           "status": "passed",
           "message": "",
           "name": "/home/ricardo/cvg-agent-secretary-v2/packages/chaos/src/__tests__/faults-coverage.test.ts"
@@ -8344,9 +8845,9 @@
   "load": {
     "schemaVersion": 1,
     "kind": "phase11-load-report",
-    "certificationId": "phase11-81962adcfc65cf7d-mu5kewem",
-    "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
-    "generatedAt": "2026-09-17T13:48:35.017Z",
+    "certificationId": "phase11-4374a9ef6566485b-mu9hm7h7",
+    "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92",
+    "generatedAt": "2026-09-20T07:50:00.786Z",
     "gateId": "load",
     "status": "PASS",
     "command": "npx tsx scripts/phase10-load.ts --events=10000",
@@ -8356,31 +8857,31 @@
     "raw": {
       "schemaVersion": 1,
       "kind": "phase10-load-report",
-      "generatedAt": "2026-09-17T13:48:16.722Z",
+      "generatedAt": "2026-09-20T07:49:39.789Z",
       "scope": "in-memory outbox contract; synthetic payloads; not a production benchmark",
       "events": 10000,
       "workers": 2,
-      "enqueueMs": 714.54,
-      "drainMs": 9090.73,
-      "totalMs": 9808.09,
-      "throughputPerSecond": 1019.57,
+      "enqueueMs": 798.43,
+      "drainMs": 11277.03,
+      "totalMs": 12077.8,
+      "throughputPerSecond": 827.97,
       "processed": 10000,
       "loss": 0,
       "duplicates": 0,
       "latencyMs": {
-        "p50": 1.673,
-        "p95": 2.939,
-        "p99": 3.878,
-        "max": 9.283
+        "p50": 2.023,
+        "p95": 3.981,
+        "p99": 5.036,
+        "max": 9.411
       }
     }
   },
   "recovery": {
     "schemaVersion": 1,
     "kind": "phase11-recovery-report",
-    "certificationId": "phase11-81962adcfc65cf7d-mu5kewem",
-    "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
-    "generatedAt": "2026-09-17T13:48:35.017Z",
+    "certificationId": "phase11-4374a9ef6566485b-mu9hm7h7",
+    "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92",
+    "generatedAt": "2026-09-20T07:50:00.786Z",
     "gateId": "recovery",
     "status": "PASS",
     "command": "npm test -- --run packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts apps/worker/src/__tests__/outbox-recovery.test.ts apps/worker/src/__tests__/worker-sweeps.test.ts",
@@ -8395,12 +8896,12 @@
   "postgres": {
     "schemaVersion": 1,
     "kind": "phase11-postgres-report",
-    "certificationId": "phase11-81962adcfc65cf7d-mu5kewem",
-    "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
-    "generatedAt": "2026-09-17T13:48:35.017Z",
+    "certificationId": "phase11-4374a9ef6566485b-mu9hm7h7",
+    "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92",
+    "generatedAt": "2026-09-20T07:50:00.786Z",
     "gateId": "postgres",
     "status": "PASS",
-    "command": "npm run test:postgres",
+    "command": "npm run test:postgres -- --reporter=default --reporter=json --outputFile=certification/phase11/logs/postgres-report.json",
     "log": "certification/phase11/logs/postgres.log",
     "source": null,
     "databaseConfigured": true,
@@ -8413,9 +8914,9 @@
   "integrations": {
     "schemaVersion": 1,
     "kind": "phase11-integration-report",
-    "certificationId": "phase11-81962adcfc65cf7d-mu5kewem",
-    "candidateCommit": "9c373bf1d2fcd43632da09d60b87455da6a18a09",
-    "generatedAt": "2026-09-17T13:48:35.017Z",
+    "certificationId": "phase11-4374a9ef6566485b-mu9hm7h7",
+    "candidateCommit": "c0f46b9bd012677b07a2a198393e9e3c82396c92",
+    "generatedAt": "2026-09-20T07:50:00.787Z",
     "mode": "CONTROLLED_LOCAL",
     "realEffects": false,
     "realData": false,
@@ -8497,32 +8998,27 @@
     "evidence": "certification/phase11/integration-report.json"
   },
   "successState": {
-    "localEngineeringClosure": true,
+    "localEngineeringClosure": false,
     "externalIntegrationClosure": false,
     "supervisedPilotClosure": false,
     "productionAssuranceClosure": false,
     "implementationComplete": true,
-    "localVerificationComplete": true,
+    "localVerificationComplete": false,
     "evidenceComplete": true,
     "criticalInvariantsSatisfied": true,
+    "evalContractSatisfied": true,
     "externalValidationComplete": false,
     "pilotComplete": false,
     "productionProofComplete": false,
     "adversarialProofComplete": true,
-    "phase11FormalClosure": true,
-    "eligibleForRequestedProfile": true
+    "phase11FormalClosure": false,
+    "eligibleForRequestedProfile": false
   },
-  "decision": "CONDITIONAL_GO",
-  "certification": "AAA_CANDIDATE",
-  "eligibleProfile": "STAGING",
+  "decision": "NO_GO",
+  "certification": "NO_GO",
+  "eligibleProfile": "CONTROLLED_LOCAL",
   "remainingBlockers": [
-    "external_gate_pending:modelProvider:expected_VALIDATED_REAL:actual_NOT_VALIDATED",
-    "external_gate_pending:channel:expected_VALIDATED_REAL:actual_NOT_VALIDATED",
-    "external_gate_pending:externalIdentity:expected_VALIDATED_REAL:actual_NOT_VALIDATED",
-    "external_gate_pending:institutionalRag:expected_VALIDATED_APPROVED:actual_NOT_VALIDATED",
-    "external_gate_pending:rpoRto:expected_VALIDATED:actual_NOT_VALIDATED",
-    "external_gate_pending:pilot:expected_PASS:actual_NOT_VALIDATED",
-    "external_gate_pending:rollback:expected_PASS:actual_NOT_VALIDATED",
-    "external_gate_pending:humanSignoff:expected_VALIDATED:actual_PENDING"
+    "required_gate_not_pass:independent_critic:FAIL",
+    "required_gate_not_pass:PHASE11_FORMAL_CLOSURE:FAIL"
   ]
 }

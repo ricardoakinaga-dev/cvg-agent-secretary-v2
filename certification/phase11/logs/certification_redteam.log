@@ -1,13 +1,13 @@
 $ node scripts/phase11-2-redteam.mjs --suite=certification && npm test -- --run apps/api/src/__tests__/aud17-connected-redteam.test.ts
-# certificationId=phase11-81962adcfc65cf7d-mu5kewem
-# candidateId=81962adcfc65cf7dae4d8075ca78f8e3f4732790f18917d3816c65db424f2747
-# commit=9c373bf1d2fcd43632da09d60b87455da6a18a09
-# treeHash=f888b174065e305ba819c16fb588813a3b8b7d9c2d2c45625e96bd9293a60fd6
+# certificationId=phase11-4374a9ef6566485b-mu9hm7h7
+# candidateId=4374a9ef6566485b6ac1c240dddac1a9b5af93b78475f1559ade887937385220
+# commit=c0f46b9bd012677b07a2a198393e9e3c82396c92
+# treeHash=3e68ae4477ba45996ae0557e0a74575205a761bd0039a652b5ce2d6e96f10445
 # gate=certification_redteam
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=2230
+# exitCode=0 durationMs=2606
 
 {
   "schemaVersion": 1,
@@ -39,6 +39,18 @@ $ node scripts/phase11-2-redteam.mjs --suite=certification && npm test -- --run 
     {
       "id": "SIXTEEN-INVARIANTS-REQUIRED",
       "status": "PASS"
+    },
+    {
+      "id": "FALSE-GO-EVAL-THRESHOLD-REDUCED",
+      "status": "PASS"
+    },
+    {
+      "id": "FALSE-GO-EVAL-SUCCESS-BELOW-CONTRACT",
+      "status": "PASS"
+    },
+    {
+      "id": "FALSE-GO-EVAL-EVIDENCE-MISSING",
+      "status": "PASS"
     }
   ]
 }
@@ -52,8 +64,8 @@ $ node scripts/phase11-2-redteam.mjs --suite=certification && npm test -- --run 
 
  Test Files  1 passed (1)
       Tests  1 passed (1)
-   Start at  10:48:30
-   Duration  1.74s (transform 683ms, setup 0ms, import 962ms, tests 121ms, environment 551ms)
+   Start at  04:49:55
+   Duration  2.06s (transform 863ms, setup 0ms, import 1.18s, tests 125ms, environment 631ms)
 
 
 
