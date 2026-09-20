@@ -1,26 +1,26 @@
 $ node scripts/phase11-2-evidence-check.mjs --critic
-# certificationId=phase11-97f6a182c528f069-mua1khi3
-# candidateId=97f6a182c528f06931b0ccd0037fec663dc332b8f2d1f287381b4c9e6260ee4c
-# commit=cfcf1a376e3db1e8d130fef7034cb2f71c81f427
-# treeHash=ea9ac643f7c05e5fd76908e298ef58e742f63a9a47ac260aaeb9e3dfb037fc70
+# certificationId=phase11-9988762db1fc6c28-mua51bhb
+# candidateId=9988762db1fc6c28b6aec31472a3cc95c14c2f7571db996aa09984fe5d1deb12
+# commit=cc28bfba2e293384b393ce4a568f645d05f3b85a
+# treeHash=586cf14ffd76296f73dfee6dbf25eaa02bf5620cf0bf157634d2e9df762769bb
 # gate=independent_critic
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=1 durationMs=291
+# exitCode=0 durationMs=380
 
 {
   "schemaVersion": 1,
   "kind": "phase11-2-evidence-check",
   "mode": "critic",
-  "status": "FAIL",
+  "status": "PASS",
   "syntheticOnly": true,
   "sideEffects": false,
   "checks": [
     {
       "id": "CRITIC:environment",
       "status": "PASS",
-      "detail": "live candidate 97f6a182c528@cfcf1a376e3d"
+      "detail": "live candidate 9988762db1fc@cc28bfba2e29"
     },
     {
       "id": "CRITIC:schema",
@@ -30,12 +30,12 @@ $ node scripts/phase11-2-evidence-check.mjs --critic
     {
       "id": "CRITIC:binding",
       "status": "PASS",
-      "detail": "97f6a182c528"
+      "detail": "9988762db1fc"
     },
     {
       "id": "CRITIC:fingerprint",
       "status": "PASS",
-      "detail": "61b918fc42ef"
+      "detail": "3dbd1452741e"
     },
     {
       "id": "CRITIC:independence",
@@ -49,13 +49,13 @@ $ node scripts/phase11-2-evidence-check.mjs --critic
     },
     {
       "id": "CRITIC:artifacts",
-      "status": "FAIL",
-      "detail": "digest mismatch: certification/agent-eval-report.json (declared ec4f4c742801ee428b666d9d5c39bb1f733591616e7d0c8856f66c02a52822f1)"
+      "status": "PASS",
+      "detail": "16 artifact digest(s) verified"
     },
     {
       "id": "CRITIC:check_evidence",
       "status": "PASS",
-      "detail": "12 check(s) cite declared artifacts"
+      "detail": "11 check(s) cite declared artifacts"
     },
     {
       "id": "CRITIC:verdict",
@@ -63,9 +63,7 @@ $ node scripts/phase11-2-evidence-check.mjs --critic
       "detail": "PASS derived from checks"
     }
   ],
-  "failures": [
-    "CRITIC:artifacts:digest mismatch: certification/agent-eval-report.json (declared ec4f4c742801ee428b666d9d5c39bb1f733591616e7d0c8856f66c02a52822f1)"
-  ]
+  "failures": []
 }
 
 

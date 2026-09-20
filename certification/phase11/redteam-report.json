@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "kind": "phase11-certification_redteam-report",
-  "certificationId": "phase11-97f6a182c528f069-mua1khi3",
-  "candidateCommit": "cfcf1a376e3db1e8d130fef7034cb2f71c81f427",
-  "generatedAt": "2026-09-20T17:16:35.484Z",
+  "certificationId": "phase11-9988762db1fc6c28-mua51bhb",
+  "candidateCommit": "cc28bfba2e293384b393ce4a568f645d05f3b85a",
+  "generatedAt": "2026-09-20T18:58:06.347Z",
   "gateId": "certification_redteam",
   "status": "PASS",
   "command": "node scripts/phase11-2-redteam.mjs --suite=certification && npm test -- --run apps/api/src/__tests__/aud17-connected-redteam.test.ts",

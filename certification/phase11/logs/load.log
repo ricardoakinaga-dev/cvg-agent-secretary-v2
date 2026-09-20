@@ -1,14 +1,14 @@
 $ npx tsx scripts/phase10-load.ts --events=10000
-# certificationId=phase11-97f6a182c528f069-mua1khi3
-# candidateId=97f6a182c528f06931b0ccd0037fec663dc332b8f2d1f287381b4c9e6260ee4c
-# commit=cfcf1a376e3db1e8d130fef7034cb2f71c81f427
-# treeHash=ea9ac643f7c05e5fd76908e298ef58e742f63a9a47ac260aaeb9e3dfb037fc70
+# certificationId=phase11-9988762db1fc6c28-mua51bhb
+# candidateId=9988762db1fc6c28b6aec31472a3cc95c14c2f7571db996aa09984fe5d1deb12
+# commit=cc28bfba2e293384b393ce4a568f645d05f3b85a
+# treeHash=586cf14ffd76296f73dfee6dbf25eaa02bf5620cf0bf157634d2e9df762769bb
 # gate=load
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=12756
+# exitCode=0 durationMs=12700
 
-{"schemaVersion":1,"kind":"phase10-load-report","generatedAt":"2026-09-20T17:16:15.729Z","scope":"in-memory outbox contract; synthetic payloads; not a production benchmark","events":10000,"workers":2,"enqueueMs":734.36,"drainMs":11400.17,"totalMs":12136.82,"throughputPerSecond":823.94,"processed":10000,"loss":0,"duplicates":0,"latencyMs":{"p50":2.083,"p95":3.907,"p99":5.11,"max":9.416}}
+{"schemaVersion":1,"kind":"phase10-load-report","generatedAt":"2026-09-20T18:57:43.906Z","scope":"in-memory outbox contract; synthetic payloads; not a production benchmark","events":10000,"workers":2,"enqueueMs":771.48,"drainMs":11320.1,"totalMs":12094.32,"throughputPerSecond":826.83,"processed":10000,"loss":0,"duplicates":0,"latencyMs":{"p50":1.872,"p95":4.564,"p99":5.687,"max":9.786}}
 
 
