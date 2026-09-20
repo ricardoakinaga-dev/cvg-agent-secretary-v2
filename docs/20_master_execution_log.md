@@ -5788,3 +5788,14 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - decision: `SPEC_APPROVED_CONTROLLED_BUILD` apenas para escopo local controlado; staging real, producao e AUD20-13..15 permanecem `NO_GO`/`BLOCKED`.
 - next_action: executar `AUD20-02` com RED/GREEN do piso `0,97` e negativos `AUD20-N01/N02`.
 - evidence: `docs/02_spec/aud20_01_baseline_contract_20260920.md`, `docs/04_audit/evidence/AUD20/AUD20-requirements-matrix.json`, `docs/04_audit/evidence/AUD20/AUD20-quality-bar.json`, receipts e revisao independente AUD20-01.
+
+# AUD20-02-EVAL-20260920 — piso de eval irredutível
+
+- timestamp: `2026-09-20`; pipeline `BUILD -> AUDIT`; atividade `TASK`; task corrente após a entrega `AUD20-03`; status `READY_FOR_NEXT_STEP`.
+- action: `runEvalSuite` passou a rejeitar overrides menos estritos que o contrato e entradas não finitas/ausentes/string; o contrato de certificação e os testes de verifier preservam a mesma barreira `0,97`.
+- RED/GREEN: o RED falhou com cinco testes novos antes da implementação; após a correção, focused eval/negative/mutation executou `3` arquivos/`25` testes PASS e `npm run test:evals` executou `2` arquivos/`18` testes PASS.
+- verification: typecheck, lint, format, build e red-team sintético `9/9` PASS; regressão `npm test` `282` arquivos PASS/`12` SKIP, `2.158` testes PASS/`172` SKIP; coverage `91,67%` statements, `87,51%` branches, `89,54%` functions, `92,25%` lines. O piso final de coverage/denominador permanece AUD20-12.
+- decision: `AUD20-02=COMPLETED` somente em BUILD local controlado; `AUD20-03=READY_FOR_NEXT_STEP`; `AUD20-04..12` continuam bloqueadas pela sequência/DAG; externos, staging e produção permanecem `BLOCKED`/`NO_GO`.
+- boundary: dataset sintético determinístico; nenhum re-selo de `certification/current.json`, PostgreSQL/Docker/Playwright, provider/canal/IdP/RAG, egress, dado real ou efeito externo.
+- next_action: executar `AUD20-03` com RED/GREEN de lineage/concorrência e negativos `AUD20-N03/N04`.
+- evidence: `docs/04_audit/evidence/AUD20/AUD20-02-candidate-receipt.json`, `docs/04_audit/evidence/AUD20/AUD20-02-red-green-report.md`, `certification/agent-eval-report.json`.

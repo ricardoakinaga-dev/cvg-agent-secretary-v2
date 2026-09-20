@@ -1848,3 +1848,12 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 - **Baseline:** candidato live `b4cb18ac…@98ec5e8`, Node `22.23.2`, worktree limpo na captura; selo `fbca3d2b…@fa78f92` histórico/stale.
 - **Verificação:** `docs:check`, `git diff --check` e `docs-integrity` PASS; verifier/evidence/critic/promotion/preflight permanecem FAIL/NO_GO fail-closed.
 - **Próxima ação:** executar `AUD20-02`; manter AUD20-13..15, staging real e produção bloqueados.
+
+## AUD20-02 — piso de eval irredutível
+
+- **Status:** `COMPLETED` em BUILD local controlado; produção `NO_GO`.
+- **Entrega:** `runEvalSuite` agora falha fechado para override menos estrito, threshold/métrica não finito, ausente, string ou arredondado abaixo da barra; a origem de `0,97` continua alinhada às regras de certificação.
+- **Evidência:** RED reproduzido; focused `25/25`, `test:evals` `18/18`, red-team `9/9`, typecheck/lint/format/build e regressão `282/2.158` PASS; relatório sintético `56/56`, `1,0`, zero policy/unsafe.
+- **Limitações:** functions coverage global `89,54%` e gates de denominador/coverage final ainda não fechados; `certification/current.json` continua histórico/stale; nenhum PostgreSQL, Docker, Playwright, sistema externo, staging ou produção foi usado.
+- **Próxima ação:** `AUD20-03` — RED/GREEN de lineage/concorrência com negativos `AUD20-N03/N04`; manter AUD20-04..15, staging e produção bloqueados.
+- **Evidência corrente:** `docs/04_audit/evidence/AUD20/AUD20-02-candidate-receipt.json`, `docs/04_audit/evidence/AUD20/AUD20-02-red-green-report.md` e `certification/agent-eval-report.json`.

@@ -2706,3 +2706,14 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - gate_state: `AUD20-01=COMPLETED`; `AUD20-02=READY_FOR_NEXT_STEP`; `AUD20-03..12=BLOCKED` pelo DAG; `AUD20-13..15=BLOCKED`; staging/production `NO_GO`.
 - next_action: executar `AUD20-02` com RED/GREEN do piso de eval, preservando `0,97` e os negativos `AUD20-N01/N02`; não iniciar qualificação externa e manter staging real e produção `NO_GO`.
 - evidence: `docs/04_audit/evidence/AUD20/AUD20-01-independent-review.md`, `docs/04_audit/evidence/AUD20/AUD20-01-live-candidate-receipt.json`, `docs/04_audit/evidence/AUD20/AUD20-01-command-receipt.json`.
+
+# AUD20-02-EVAL-20260920 — piso de eval irredutível
+
+- current_engine: `BUILD -> AUDIT`; activity: `TASK`; task: `AUD20-03`; status: `READY_FOR_NEXT_STEP`; execution: `CONTROLLED_LOCAL`; staging: `NO_GO`; production: `NO_GO`.
+- authorization: execução local controlada sob G0; somente dataset sintético, testes, build e commit local. Nenhum provider/canal/IdP/RAG, egress, credencial, dado real, staging, produção ou efeito externo.
+- last_completed_action: AUD20-02 implementou validação fail-closed no `runEvalSuite`; overrides não podem ser menos estritos que a barra; métricas e thresholds não finitos, ausentes, strings ou arredondados abaixo do contrato falham. Certificador e red-team preservam a rejeição de `53/56` com `0,85`.
+- repository_state: commit local `1f6159d`; candidato pós-implementação registrado no receipt da task; `certification/current.json` histórico/stale e não re-selado.
+- verification_state: RED reproduzido antes da implementação; GREEN focado `25/25`, evals `18/18`, typecheck, lint, format, build e red-team `9/9` PASS; regressão `282` arquivos PASS/`12` SKIP, `2.158` testes PASS/`172` SKIP; coverage global `91,67/87,51/89,54/92,25` PASS sem fechar o gate final de AUD20-12.
+- gate_state: AUD20-01 `COMPLETED`; AUD20-02 `COMPLETED`; AUD20-03 `READY_FOR_NEXT_STEP`; AUD20-04..12 `BLOCKED` pela sequência/DAG; AUD20-13..15 `BLOCKED`; staging/production `NO_GO`.
+- next_action: executar `AUD20-03` com RED/GREEN de lineage/concorrência, preservando os negativos `AUD20-N03/N04`; não iniciar qualificação externa e manter staging real e produção `NO_GO`.
+- evidence: `docs/04_audit/evidence/AUD20/AUD20-02-candidate-receipt.json`, `docs/04_audit/evidence/AUD20/AUD20-02-red-green-report.md`, `certification/agent-eval-report.json`.
