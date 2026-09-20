@@ -17,8 +17,10 @@
     "staging": "NO_GO",
     "production": "NO_GO",
     "externalGates": "BLOCKED",
-    "localDecision": "IN_PROGRESS_FINAL_SEAL",
-    "previousSeal": "NO_GO"
+    "localDecision": "CONDITIONAL_GO",
+    "certification": "AAA_CANDIDATE",
+    "eligibleProfile": "STAGING",
+    "sealedCandidate": "9988762d…@cc28bfb"
   },
   "tasks": [
     {
@@ -177,17 +179,17 @@
     {
       "id": "AUD19-12",
       "title": "Qualificar e re-selar candidato staging-like",
-      "status": "IN_PROGRESS",
+      "status": "COMPLETED",
       "dependencies": [
         "AUD19-01..11"
       ],
       "gate": "G5",
       "evidence": [
-        "docs/04_audit/evidence/AUD19/AUD19-12-certification-outcome.md",
-        "docs/04_audit/evidence/AUD19/AUD19-08-critic-report.json",
-        "certification/current.json"
+        "certification/current.json",
+        "docs/04_audit/evidence/AUD19/AUD19-12-final-seal-outcome.md",
+        "docs/04_audit/evidence/AUD19/AUD19-08-critic-report.json"
       ],
-      "verification": "P1 de cobertura fechado; selo final e verificacao candidate-bound em execucao"
+      "verification": "selo final 9988762d…@cc28bfb: 34/34 gates locais PASS; CONDITIONAL_GO/AAA_CANDIDATE elegivel STAGING; producao NO_GO"
     },
     {
       "id": "AUD19-13",

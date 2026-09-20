@@ -5748,3 +5748,12 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - verification: `npm test` `282/12` arquivos e `2.145` testes PASS/172 skips condicionais (0 required); gate PostgreSQL `30` arquivos/`319` testes/`0` skips; typecheck/lint/format verdes; skip inventory PASS.
 - next_action: selar e verificar o candidato final AUD19-12 com crítico fresco; manter staging real e produção NO_GO.
 - evidence: `docs/03_build/tracking/aud19-critical-coverage.json`, `scripts/aud19-critical-coverage.mjs`, testes `*-branch-hardening.test.ts`, `docs/04_audit/evidence/AUD19/AUD19-08-skip-inventory.json`.
+
+# AUD19-12-FINAL-SEAL-20260920 — selo final e verificação
+
+- timestamp: `2026-09-20T16:10:00-03:00`; pipeline `BUILD -> AUDIT`; task `AUD19-12`; execução local controlada com PostgreSQL descartável.
+- action: após fechar o P1 de cobertura de branches críticos com 219 testes comportamentais e gate mecânico, o selo final foi executado no candidato `9988762d…@cc28bfb` com crítico independente fresco; `34/34` gates locais `PASS` e nenhum invariante crítico falho.
+- verification: evals `56/56` @0,97; cobertura global `95,95/92,53/95,48/96,65` e críticos kernel `97,09%`, approval `98,72%`, policy `97,87%`, journal `98,15%`, canal `97,41%`, RLS `100%`; PostgreSQL `30/319` com 0 skips; E2E `75/75` em Chromium/Firefox/WebKit; a11y `48/48`; chaos/load/recovery/redteam/self-test/histórico `PASS`; preflight de produção rejeitado (exit 1, 32 bloqueios, sem side effect); `certification:verify` e `evidence:verify` `PASS`; promotion check `eligible=false`.
+- decision: `CONDITIONAL_GO` / `AAA_CANDIDATE`; perfil elegível `STAGING`; produção `NO_GO`; oito gates externos/humanos pendentes.
+- next_action: obter autorização, ambiente e owners externos para AUD19-13..15 (provider, canal, IdP, RAG, RPO/RTO, rollback, piloto e sign-off) e manter staging real e produção NO_GO.
+- evidence: `certification/current.json`, `certification/phase11/phase11-result.json`, `docs/04_audit/evidence/AUD19/AUD19-12-final-seal-outcome.md`.

@@ -1822,7 +1822,7 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 - [x] `AUD19-08`: QA adversarial e inventário de skips (0 required) e mutantes 9/9; piso §9.1 de branches críticos fechado com testes de comportamento (gate `docs/03_build/tracking/aud19-critical-coverage.json`).
 - [x] `AUD19-09..10`: observabilidade com SLIs/alertas/runbooks; acessibilidade multibrowser 75/75.
 - [x] `AUD19-11`: topologia API+worker empacotável, non-root, readiness/drain, digests e smoke controlado; produção continua bloqueada.
-- [~] `AUD19-12`: selo final em execução após fechar o P1 de cobertura; selo anterior `NO_GO` preservado como histórico.
+- [x] `AUD19-12`: `COMPLETED` — selo `9988762d…@cc28bfb` com `34/34` gates locais `PASS`, crítico fresco `PASS`, verificadores `PASS`; decisão `CONDITIONAL_GO` / `AAA_CANDIDATE` elegível `STAGING`; produção `NO_GO`.
 - [ ] `AUD19-13..14`: `BLOCKED` até provider/canal/IdP/RAG e RPO/RTO/rollback/piloto terem ambientes e autoridades próprios; `AUD19-15` também está `BLOCKED` pelas dependências e exigirá aprovação humana ao chegar ao gate final.
-- **Estado:** BUILD local controlado executado em 2026-09-20; `AUD19-01..11` `COMPLETED`; P1 de cobertura fechado; `AUD19-12` em selagem final; staging real e produção `NO_GO`.
-- **Próxima ação:** selar e verificar o candidato final AUD19-12 com crítico fresco; manter staging real e produção `NO_GO`.
+- **Estado:** `AUD19-01..12` `COMPLETED` em 2026-09-20; selo local `CONDITIONAL_GO` / `AAA_CANDIDATE` elegível `STAGING`; staging real e produção `NO_GO`; `AUD19-13..15` `BLOCKED` externamente.
+- **Próxima ação:** obter autorização, ambiente e owners externos para AUD19-13..15 (provider, canal, IdP, RAG, RPO/RTO, rollback, piloto e sign-off) e manter staging real e produção `NO_GO`.

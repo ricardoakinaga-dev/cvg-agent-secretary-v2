@@ -2661,3 +2661,13 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - gap_state: oito gates externos/humanos e dossiês AUD19-13..15 permanecem `BLOCKED`; P2 de harness de eval no runtime integrado e leitor de tela real continuam registrados.
 - next_action: selar e verificar o candidato final AUD19-12 com crítico fresco; manter staging real e produção NO_GO.
 - evidence: `docs/03_build/tracking/aud19-critical-coverage.json`, `scripts/aud19-critical-coverage.mjs`, `docs/04_audit/evidence/AUD19/AUD19-08-skip-inventory.json`.
+
+# AUD19-12-FINAL-SEAL-20260920 — estado corrente
+
+- current_engine: `AUDIT`; tasks: `AUD19-01..12`; status: `COMPLETED`; execution: `CONTROLLED_LOCAL`; requested profile: `STAGING`; eligible profile: `STAGING`; staging real: `NO_GO`; production: `NO_GO`.
+- last_completed_action: P1 de cobertura de branches críticos fechado e selo final executado no candidato `9988762d…@cc28bfb`; `34/34` gates locais `PASS`; crítico independente fresco `PASS`; verificadores `PASS`; release manifest com digests de build/container/migration/policy/SBOM.
+- verification_state: evals `56/56` @0,97; cobertura global `95,95/92,53/95,48/96,65` e críticos `>=95%`; PostgreSQL `30/319` com 0 skips; E2E `75/75`; a11y `48/48`; mutation sentinel `9/9`; preflight de produção rejeitado; promotion inelegível.
+- decision: `CONDITIONAL_GO` / `AAA_CANDIDATE` apenas para `STAGING` controlado; produção `NO_GO`.
+- gap_state: oito gates externos/humanos `BLOCKED` (provider, canal, identidade, RAG institucional, RPO/RTO, piloto, rollback, sign-off); dossiês AUD19-13..15 prontos com schema e checker.
+- next_action: obter autorização, ambiente e owners externos para AUD19-13..15 (provider, canal, IdP, RAG, RPO/RTO, rollback, piloto e sign-off) e manter staging real e produção NO_GO.
+- evidence: `certification/current.json`, `docs/04_audit/evidence/AUD19/AUD19-12-final-seal-outcome.md`, `docs/03_build/tracking/aud19-critical-coverage.json`.
