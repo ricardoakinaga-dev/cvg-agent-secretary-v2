@@ -136,6 +136,14 @@ import {
   type HttpSecurityOptions
 } from './http-security.ts'
 import { InMemoryRateLimiter } from './rate-limit.ts'
+import {
+  createConfiguredOperatorReplayGuard,
+  type OperatorReplayGuard
+} from './operator-identity.ts'
+import {
+  createOperatorReplayStoreFromEnv,
+  type OperatorReplayStore
+} from './operator-replay-store.ts'
 import { ControlledRequestMetrics } from './request-metrics.ts'
 import { installResponseCorrelationHook } from './response-correlation.ts'
 import { healthRoute, liveRoute, readyRoute } from './routes/health.ts'
@@ -237,6 +245,12 @@ export interface BuildServerOptions {
   platform?: ControlPlaneStore
   operatorIdentityResolver?: OperatorIdentityResolver
   /**
+   * Distributed operator JTI replay guard. Absent keeps the resolver's
+   * process-local replay cache; configuring a store without the guard leaves
+   * cross-instance replay unblocked.
+   */
+  operatorReplayGuard?: OperatorReplayGuard
+  /**
    * Explicit identity mode. Defaults to `simulation` only for `NODE_ENV=test`;
    * every other environment defaults to `trusted` and must inject a resolver.
    */
@@ -279,6 +293,8 @@ export type BuildServerFromEnvOptions = Omit<
   'persistence'
 > & {
   webhookReplayStore?: WebhookReplayStore
+  /** Explicit operator replay store override (tests/composition). */
+  operatorReplayStore?: OperatorReplayStore
 }
 
 export function buildServer(options: BuildServerOptions = {}) {
@@ -457,6 +473,23 @@ export function buildServer(options: BuildServerOptions = {}) {
       )
     }
   })
+  const operatorReplayGuard = options.operatorReplayGuard
+  if (operatorReplayGuard && identityMode === 'trusted') {
+    app.addHook('onRequest', async (request, reply) => {
+      try {
+        await operatorReplayGuard(request.headers as Record<string, unknown>)
+      } catch {
+        reply.code(401).header('cache-control', 'no-store')
+        return reply.send(
+          fail(
+            'unauthorized',
+            'Trusted operator token is invalid or replayed',
+            createCorrelationId()
+          )
+        )
+      }
+    })
+  }
   const conversations = persistence.conversations
   const tasks = persistence.tasks
   const approvals = persistence.approvals
@@ -4334,7 +4367,9 @@ const tenantIsolationMigrationVersions = [
   '0021_orchestrator_iteration_budget',
   '0022_orchestrator_evaluation_lineage',
   '0023_orchestrator_replan_fencing',
-  '0024_tenant_isolation_constraint_validation'
+  '0024_tenant_isolation_constraint_validation',
+  '0025_retention_ledger',
+  '0026_operator_replay_events'
 ] as const
 
 const tenantIsolationRequiredConstraints = [
@@ -5803,7 +5838,11 @@ export async function buildServerFromEnv(
       'NODE_ENV must be explicitly set to development, test or production'
     )
   }
-  const { webhookReplayStore, ...buildOptions } = options
+  const {
+    webhookReplayStore,
+    operatorReplayStore: injectedOperatorReplayStore,
+    ...buildOptions
+  } = options
   /**
    * The identity mode follows the explicit option, then `CVG_IDENTITY_MODE`,
    * then the process environment (the source `buildServer` itself reads).
@@ -5860,6 +5899,12 @@ export async function buildServerFromEnv(
         env,
         buildOptions.inboundTenantResolver
       )
+    const operatorReplayStore =
+      injectedOperatorReplayStore ?? createOperatorReplayStoreFromEnv(env)
+    if (operatorReplayStore) await operatorReplayStore.assertReady?.()
+    const operatorReplayGuard = operatorReplayStore
+      ? createConfiguredOperatorReplayGuard(env, operatorReplayStore)
+      : undefined
     const app = buildServer({
       ...buildOptions,
       ...(configuredInboundAgentRuntime
@@ -5868,6 +5913,7 @@ export async function buildServerFromEnv(
       ...(configuredWebhookVerifier
         ? { webhookVerifier: configuredWebhookVerifier }
         : {}),
+      ...(operatorReplayGuard ? { operatorReplayGuard } : {}),
       ...(configuredInboundTenantResolver
         ? { inboundTenantResolver: configuredInboundTenantResolver }
         : {}),
@@ -5950,6 +5996,7 @@ export async function buildServerFromEnv(
   }
 
   let configuredWebhookVerifier: WebhookVerifier | undefined
+  let operatorReplayGuard: OperatorReplayGuard | undefined
   try {
     const effectiveReplayStore =
       webhookReplayStore ??
@@ -5961,6 +6008,15 @@ export async function buildServerFromEnv(
       effectiveBuildOptions.webhookVerifier,
       effectiveReplayStore
     )
+    const operatorReplayStore =
+      injectedOperatorReplayStore ?? createOperatorReplayStoreFromEnv(env, pool)
+    if (operatorReplayStore) {
+      await operatorReplayStore.assertReady?.()
+      operatorReplayGuard = createConfiguredOperatorReplayGuard(
+        env,
+        operatorReplayStore
+      )
+    }
     let migrationRoleName: string | undefined
     let runtimeRoleName: string | undefined
     if (env.POSTGRES_RLS_ENFORCEMENT === 'true') {
@@ -6054,6 +6110,7 @@ export async function buildServerFromEnv(
     ...(configuredWebhookVerifier
       ? { webhookVerifier: configuredWebhookVerifier }
       : {}),
+    ...(operatorReplayGuard ? { operatorReplayGuard } : {}),
     ...(env.NODE_ENV === 'production'
       ? { requireAuthenticatedMutations: true }
       : {}),

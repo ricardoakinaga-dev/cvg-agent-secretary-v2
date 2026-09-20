@@ -8,6 +8,7 @@ import {
   type OperatorIdentity,
   type OperatorIdentityResolver
 } from '@cvg/shared'
+import type { OperatorReplayStore } from './operator-replay-store.ts'
 
 export const TRUSTED_OPERATOR_TOKEN_HEADER = 'x-cvg-operator-token'
 export const OPERATOR_IDENTITY_KEYRING_ENV = 'CVG_OPERATOR_IDENTITY_KEYRING'
@@ -29,7 +30,7 @@ interface TrustedOperatorTokenClaims extends OperatorIdentity {
 
 export type TrustedOperatorSigningKey = IdentitySigningKey
 
-export interface TrustedOperatorIdentityResolverOptions {
+export interface TrustedOperatorTokenVerifierOptions {
   /**
    * Active secret first; previous secrets may remain during a bounded rotation.
    * Ignored when `keyRing` is provided.
@@ -44,9 +45,37 @@ export interface TrustedOperatorIdentityResolverOptions {
   now?: () => number
   maxLifetimeSeconds?: number
   clockSkewSeconds?: number
+}
+
+export interface TrustedOperatorIdentityResolverOptions extends TrustedOperatorTokenVerifierOptions {
   /** Maximum number of unexpired token IDs retained for replay protection. */
   replayCacheSize?: number
 }
+
+export interface VerifiedTrustedOperatorToken {
+  identity: OperatorIdentity
+  jti: string
+  expiresAtSeconds: number
+  verifiedAtSeconds: number
+}
+
+export interface TrustedOperatorReplayGuardOptions extends TrustedOperatorTokenVerifierOptions {
+  /** Distributed or explicit store that owns the atomic JTI claim. */
+  store: OperatorReplayStore
+  /** Claim namespace; defaults to the trusted token audience. */
+  issuer?: string
+}
+
+/**
+ * Request-level replay guard: verifies the trusted token (when present) and
+ * atomically claims its JTI in the configured store. Invalid tokens and store
+ * failures throw, so a caller that maps errors to denial stays fail-closed.
+ * Requests without the trusted token header are ignored here and remain the
+ * route resolver's responsibility.
+ */
+export type OperatorReplayGuard = (
+  headers: Record<string, unknown>
+) => Promise<void>
 
 export interface LocalIdentityKeyRingOptions {
   current: TrustedOperatorSigningKey
@@ -86,6 +115,49 @@ export function createTrustedOperatorIdentityToken(
 export function createTrustedOperatorIdentityResolver(
   options: TrustedOperatorIdentityResolverOptions
 ): OperatorIdentityResolver {
+  const verify = buildTrustedOperatorTokenVerifier(options)
+  const replayCacheSize = options.replayCacheSize ?? DEFAULT_REPLAY_CACHE_SIZE
+  assertReplayCacheSize(replayCacheSize)
+  const replayedTokenIds = new Map<string, number>()
+
+  return (headers) => {
+    const verified = verify(headers)
+    pruneReplayedTokenIds(replayedTokenIds, verified.verifiedAtSeconds)
+    if (replayedTokenIds.has(verified.jti)) {
+      throw new Error('Trusted operator token replay detected')
+    }
+    if (replayedTokenIds.size >= replayCacheSize) {
+      throw new Error('Trusted operator replay cache is full')
+    }
+    replayedTokenIds.set(verified.jti, verified.expiresAtSeconds)
+    return verified.identity
+  }
+}
+
+export function createTrustedOperatorReplayGuard(
+  options: TrustedOperatorReplayGuardOptions
+): OperatorReplayGuard {
+  const verify = buildTrustedOperatorTokenVerifier(options)
+  const store = options.store
+  const issuer = options.issuer ?? TRUSTED_OPERATOR_TOKEN_AUDIENCE
+  return async (headers) => {
+    const token = headers[TRUSTED_OPERATOR_TOKEN_HEADER]
+    if (typeof token !== 'string' || token.trim() === '') return
+    const verified = verify(headers)
+    const claimed = await store.claim({
+      issuer,
+      jti: verified.jti,
+      expiresAtSeconds: verified.expiresAtSeconds
+    })
+    if (!claimed) {
+      throw new Error('Trusted operator token replay detected')
+    }
+  }
+}
+
+function buildTrustedOperatorTokenVerifier(
+  options: TrustedOperatorTokenVerifierOptions
+): (headers: Record<string, unknown>) => VerifiedTrustedOperatorToken {
   const keyRing = options.keyRing
   const secrets =
     options.secret === undefined
@@ -105,10 +177,7 @@ export function createTrustedOperatorIdentityResolver(
     options.maxLifetimeSeconds ?? DEFAULT_TOKEN_LIFETIME_SECONDS
   const clockSkewSeconds =
     options.clockSkewSeconds ?? DEFAULT_CLOCK_SKEW_SECONDS
-  const replayCacheSize = options.replayCacheSize ?? DEFAULT_REPLAY_CACHE_SIZE
   assertTokenWindow(maxLifetimeSeconds, clockSkewSeconds)
-  assertReplayCacheSize(replayCacheSize)
-  const replayedTokenIds = new Map<string, number>()
 
   return (headers) => {
     const token = headers[TRUSTED_OPERATOR_TOKEN_HEADER]
@@ -165,15 +234,12 @@ export function createTrustedOperatorIdentityResolver(
       throw new Error('Trusted operator token is expired or not active')
     }
 
-    pruneReplayedTokenIds(replayedTokenIds, currentTime)
-    if (replayedTokenIds.has(claims.jti)) {
-      throw new Error('Trusted operator token replay detected')
+    return {
+      identity,
+      jti: claims.jti,
+      expiresAtSeconds: claims.exp,
+      verifiedAtSeconds: currentTime
     }
-    if (replayedTokenIds.size >= replayCacheSize) {
-      throw new Error('Trusted operator replay cache is full')
-    }
-    replayedTokenIds.set(claims.jti, claims.exp)
-    return identity
   }
 }
 
@@ -239,6 +305,29 @@ export function createLocalIdentityKeyRing(
 export function createConfiguredOperatorIdentityResolver(
   env: NodeJS.ProcessEnv
 ): OperatorIdentityResolver | undefined {
+  const keyRing = resolveConfiguredTrustedKeyRing(env)
+  if (!keyRing) return undefined
+  return createTrustedOperatorIdentityResolver({ keyRing })
+}
+
+/**
+ * Composition helper for the distributed replay guard. Uses the same explicit
+ * runtime key ring as the resolver and returns `undefined` in simulation mode
+ * or when no key material is configured, so the composition never invents a
+ * verifier. Store availability is the caller's responsibility.
+ */
+export function createConfiguredOperatorReplayGuard(
+  env: NodeJS.ProcessEnv,
+  store: OperatorReplayStore
+): OperatorReplayGuard | undefined {
+  const keyRing = resolveConfiguredTrustedKeyRing(env)
+  if (!keyRing) return undefined
+  return createTrustedOperatorReplayGuard({ keyRing, store })
+}
+
+function resolveConfiguredTrustedKeyRing(
+  env: NodeJS.ProcessEnv
+): IdentityKeyRingPort | undefined {
   const identityMode = parseIdentityMode(env[IDENTITY_MODE_ENV], env.NODE_ENV)
   if (identityMode !== 'trusted') return undefined
   const rawKeyRing = env[OPERATOR_IDENTITY_KEYRING_ENV]?.trim()
@@ -261,15 +350,11 @@ export function createConfiguredOperatorIdentityResolver(
     const rotationWindowSeconds = parseRotationWindow(
       record.rotationWindowSeconds
     )
-    return createTrustedOperatorIdentityResolver({
-      keyRing: createLocalIdentityKeyRing({
-        current,
-        previous,
-        revokedKeyIds,
-        ...(rotationWindowSeconds === undefined
-          ? {}
-          : { rotationWindowSeconds })
-      })
+    return createLocalIdentityKeyRing({
+      current,
+      previous,
+      revokedKeyIds,
+      ...(rotationWindowSeconds === undefined ? {} : { rotationWindowSeconds })
     })
   } catch {
     throw new Error(`${OPERATOR_IDENTITY_KEYRING_ENV} is invalid`)

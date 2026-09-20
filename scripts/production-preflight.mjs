@@ -13,6 +13,10 @@ import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { evaluateProductionBootstrap } from './lib/production-preflight-core.mjs'
+import {
+  EXTERNAL_ATTESTATION_ENV,
+  evaluateExternalSignalsAttestation
+} from './lib/production-preflight-core.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const args = new Map()
@@ -209,6 +213,12 @@ add(
   'unrestricted real effects are forbidden; use governed effect adapters'
 )
 
+const externalAttestation = evaluateExternalSignalsAttestation({
+  env,
+  root,
+  profile
+})
+
 const externalSignals = [
   ['provider', 'CVG_EXTERNAL_PROVIDER_APPROVED'],
   ['channel', 'CVG_EXTERNAL_CHANNEL_APPROVED'],
@@ -220,10 +230,15 @@ const externalSignals = [
   ['human_signoff', 'CVG_HUMAN_SIGNOFF']
 ]
 for (const [label, name] of externalSignals) {
+  const approved =
+    externalAttestation.valid &&
+    externalAttestation.signals[label] === 'APPROVED'
   add(
     `external.${label}`,
-    isTrue(name),
-    `${name}=true is required; a declaration is not evidence of validation`
+    approved,
+    approved
+      ? `${label} is APPROVED inside the signed, versioned external attestation`
+      : `${label} requires APPROVED status inside the signed attestation pinned by ${EXTERNAL_ATTESTATION_ENV.file}/${EXTERNAL_ATTESTATION_ENV.sha256}; ${name}=true alone is not evidence`
   )
 }
 
@@ -235,7 +250,9 @@ add(
     '0021_orchestrator_iteration_budget.sql',
     '0022_orchestrator_evaluation_lineage.sql',
     '0023_orchestrator_replan_fencing.sql',
-    '0024_tenant_isolation_constraint_validation.sql'
+    '0024_tenant_isolation_constraint_validation.sql',
+    '0025_retention_ledger.sql',
+    '0026_operator_replay_events.sql'
   ].every((file) => fileExists(`packages/persistence/migrations/${file}`)),
   'required orchestrator migration sources must be present'
 )
@@ -260,6 +277,13 @@ const output = {
   sideEffects: false,
   checks,
   blocking,
+  externalAttestation: {
+    status: externalAttestation.valid ? 'PASS' : 'FAIL',
+    reason: externalAttestation.reason,
+    owner: externalAttestation.owner,
+    expiresAt: externalAttestation.expiresAt,
+    signals: externalAttestation.signals
+  },
   note: expectedRejected
     ? 'Negative-validation mode passes only when unsafe production configuration is rejected.'
     : 'A PASS authorizes no deployment by itself; external gates and human release authority remain separate.'
