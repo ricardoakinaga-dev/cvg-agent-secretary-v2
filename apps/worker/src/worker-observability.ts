@@ -1,6 +1,7 @@
 import {
   InMemoryTelemetry,
   redactFields,
+  type ObservabilityCollectorPort,
   type Telemetry
 } from '@cvg/observability'
 
@@ -58,6 +59,38 @@ export function createJsonWorkerTelemetry(
           timestamp: clock().toISOString()
         })
       )
+    }
+  }
+}
+
+/**
+ * Worker sink that exports exclusively through the controlled collector. Fields
+ * and attributes cross the collector's allowlist before reaching any sink, so
+ * payloads, objectives and free text never leave the process. Use this sink
+ * when an audited destination is required; `createJsonWorkerTelemetry` remains
+ * the local debug sink with pattern-based redaction only.
+ */
+export function createCollectorWorkerTelemetry(
+  collector: ObservabilityCollectorPort,
+  options: { clock?: () => Date } = {}
+): WorkerTelemetry {
+  const clock = options.clock ?? (() => new Date())
+  return {
+    log(event, fields = {}, level = 'info') {
+      collector.recordLog({
+        level,
+        message: event,
+        fields,
+        timestamp: clock().toISOString()
+      })
+    },
+    metric(name, value, attributes = {}) {
+      collector.recordMetric({
+        name,
+        value,
+        attributes,
+        timestamp: clock().toISOString()
+      })
     }
   }
 }

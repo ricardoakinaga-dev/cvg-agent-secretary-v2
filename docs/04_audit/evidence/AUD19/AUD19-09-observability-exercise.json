@@ -1,0 +1,555 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud19-09-observability-exercise",
+  "program": "AUD19-REM",
+  "task": "AUD19-09",
+  "generatedAt": "2026-09-20T13:01:30.120Z",
+  "status": "PASS",
+  "scenario": {
+    "description": "Synthetic webhook -> outbox -> worker claim failure -> dead letter -> sweep UNCERTAIN -> operator replay -> effect dispatch, run locally with no external collector and no real data.",
+    "synthetic": true,
+    "correlationId": "corr_aud19_09_00000000-0000-4000-8000-000000000009",
+    "traceId": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "timelineStart": "2026-09-20T12:00:00.000Z",
+    "timelineEnd": "2026-09-20T13:01:30.120Z"
+  },
+  "phases": [
+    {
+      "phase": "detection",
+      "startedAt": "2026-09-20T12:00:00.000Z",
+      "endedAt": "2026-09-20T12:00:00.090Z",
+      "detail": "Synthetic fault injected (claim failure, dead letter, lag, UNCERTAIN, approval latency, cost); rules evaluated over the emission window."
+    },
+    {
+      "phase": "correlation",
+      "startedAt": "2026-09-20T12:00:00.000Z",
+      "endedAt": "2026-09-20T12:00:30.120Z",
+      "detail": "All hops share one correlationId and one traceId; worker and operator spans carry the producer spanId as parentSpanId across the process boundary."
+    },
+    {
+      "phase": "recovery",
+      "startedAt": "2026-09-20T12:00:00.090Z",
+      "endedAt": "2026-09-20T12:00:30.120Z",
+      "detail": "Operator replay reprocessed the event, lag returned to 0 and the correlated effect was dispatched; immediate evaluation is expected to keep firing while the rolling windows still contain fault samples."
+    }
+  ],
+  "correlation": {
+    "correlationId": "corr_aud19_09_00000000-0000-4000-8000-000000000009",
+    "traceId": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "hops": [
+      {
+        "process": "api",
+        "span": "api.webhook.received",
+        "spanId": "0000000000000001",
+        "parentSpanId": null,
+        "traceId": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "correlationId": "corr_aud19_09_00000000-0000-4000-8000-000000000009",
+        "at": "2026-09-20T12:00:00.025Z"
+      },
+      {
+        "process": "api",
+        "span": "outbox.enqueue",
+        "spanId": "0000000000000002",
+        "parentSpanId": "0000000000000001",
+        "traceId": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "correlationId": "corr_aud19_09_00000000-0000-4000-8000-000000000009",
+        "at": "2026-09-20T12:00:00.035Z"
+      },
+      {
+        "process": "worker",
+        "span": "worker.outbox.claim",
+        "spanId": "0000000000000003",
+        "parentSpanId": "0000000000000002",
+        "traceId": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "correlationId": "corr_aud19_09_00000000-0000-4000-8000-000000000009",
+        "at": "2026-09-20T12:00:00.075Z"
+      },
+      {
+        "process": "operator",
+        "span": "operator.replay",
+        "spanId": "0000000000000005",
+        "parentSpanId": "0000000000000002",
+        "traceId": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "correlationId": "corr_aud19_09_00000000-0000-4000-8000-000000000009",
+        "at": "2026-09-20T12:00:30.110Z"
+      },
+      {
+        "process": "worker",
+        "span": "channel.effect.dispatched",
+        "spanId": "0000000000000006",
+        "parentSpanId": "0000000000000002",
+        "traceId": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "correlationId": "corr_aud19_09_00000000-0000-4000-8000-000000000009",
+        "at": "2026-09-20T12:00:30.120Z"
+      }
+    ],
+    "uniqueTraceIds": 1,
+    "crossProcessLinked": true,
+    "detail": "Traceparent propagation preserves the trace root from the API webhook to the worker and operator spans; correlationId is stable across every hop."
+  },
+  "alerts": {
+    "rules": [
+      "AUD19-09-ALERT-QUEUE-LAG",
+      "AUD19-09-ALERT-LEASE-CLAIM",
+      "AUD19-09-ALERT-APPROVAL-LATENCY",
+      "AUD19-09-ALERT-UNCERTAIN",
+      "AUD19-09-ALERT-DLQ",
+      "AUD19-09-ALERT-HANDOFF",
+      "AUD19-09-ALERT-ERRORS",
+      "AUD19-09-ALERT-COST"
+    ],
+    "detection": {
+      "evaluatedAt": "2026-09-20T12:00:00.090Z",
+      "firing": [
+        "AUD19-09-ALERT-QUEUE-LAG",
+        "AUD19-09-ALERT-LEASE-CLAIM",
+        "AUD19-09-ALERT-APPROVAL-LATENCY",
+        "AUD19-09-ALERT-UNCERTAIN",
+        "AUD19-09-ALERT-DLQ",
+        "AUD19-09-ALERT-COST"
+      ],
+      "ok": [
+        "AUD19-09-ALERT-ERRORS"
+      ],
+      "noData": [
+        "AUD19-09-ALERT-HANDOFF"
+      ],
+      "evaluations": [
+        {
+          "ruleId": "AUD19-09-ALERT-QUEUE-LAG",
+          "domain": "queue",
+          "severity": "P2",
+          "threshold": 100,
+          "aggregation": "max",
+          "comparison": "gt",
+          "windowMs": 300000,
+          "sampleCount": 1,
+          "evaluatedAt": "2026-09-20T12:00:00.090Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-QUEUE-LAG.md",
+          "owner": null,
+          "state": "firing",
+          "observed": 143
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-LEASE-CLAIM",
+          "domain": "lease",
+          "severity": "P1",
+          "threshold": 0,
+          "aggregation": "sum",
+          "comparison": "gt",
+          "windowMs": 300000,
+          "sampleCount": 1,
+          "evaluatedAt": "2026-09-20T12:00:00.090Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-LEASE-CLAIM.md",
+          "owner": null,
+          "state": "firing",
+          "observed": 1
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-APPROVAL-LATENCY",
+          "domain": "approval",
+          "severity": "P1",
+          "threshold": 5000,
+          "aggregation": "p95",
+          "comparison": "gt",
+          "windowMs": 900000,
+          "sampleCount": 5,
+          "evaluatedAt": "2026-09-20T12:00:00.090Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-APPROVAL-LATENCY.md",
+          "owner": null,
+          "state": "firing",
+          "observed": 9000
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-UNCERTAIN",
+          "domain": "uncertain",
+          "severity": "P1",
+          "threshold": 0,
+          "aggregation": "sum",
+          "comparison": "gt",
+          "windowMs": 900000,
+          "sampleCount": 1,
+          "evaluatedAt": "2026-09-20T12:00:00.090Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-UNCERTAIN.md",
+          "owner": null,
+          "state": "firing",
+          "observed": 1
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-DLQ",
+          "domain": "dlq",
+          "severity": "P1",
+          "threshold": 0,
+          "aggregation": "sum",
+          "comparison": "gt",
+          "windowMs": 900000,
+          "sampleCount": 1,
+          "evaluatedAt": "2026-09-20T12:00:00.090Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-DLQ.md",
+          "owner": null,
+          "state": "firing",
+          "observed": 1
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-HANDOFF",
+          "domain": "handoff",
+          "severity": "P2",
+          "threshold": 5,
+          "aggregation": "sum",
+          "comparison": "gt",
+          "windowMs": 900000,
+          "sampleCount": 0,
+          "evaluatedAt": "2026-09-20T12:00:00.090Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-HANDOFF.md",
+          "owner": null,
+          "state": "no_data",
+          "observed": null
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-ERRORS",
+          "domain": "errors",
+          "severity": "P1",
+          "threshold": 3,
+          "aggregation": "sum",
+          "comparison": "gt",
+          "windowMs": 300000,
+          "sampleCount": 2,
+          "evaluatedAt": "2026-09-20T12:00:00.090Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-ERRORS.md",
+          "owner": null,
+          "state": "ok",
+          "observed": 2
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-COST",
+          "domain": "cost",
+          "severity": "P2",
+          "threshold": 25,
+          "aggregation": "sum",
+          "comparison": "gt",
+          "windowMs": 3600000,
+          "sampleCount": 1,
+          "evaluatedAt": "2026-09-20T12:00:00.090Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-COST.md",
+          "owner": null,
+          "state": "firing",
+          "observed": 27.5
+        }
+      ]
+    },
+    "recoveryImmediate": {
+      "evaluatedAt": "2026-09-20T12:00:30.120Z",
+      "firing": [
+        "AUD19-09-ALERT-QUEUE-LAG",
+        "AUD19-09-ALERT-LEASE-CLAIM",
+        "AUD19-09-ALERT-APPROVAL-LATENCY",
+        "AUD19-09-ALERT-UNCERTAIN",
+        "AUD19-09-ALERT-DLQ",
+        "AUD19-09-ALERT-COST"
+      ],
+      "ok": [
+        "AUD19-09-ALERT-ERRORS"
+      ],
+      "noData": [
+        "AUD19-09-ALERT-HANDOFF"
+      ],
+      "evaluations": [
+        {
+          "ruleId": "AUD19-09-ALERT-QUEUE-LAG",
+          "domain": "queue",
+          "severity": "P2",
+          "threshold": 100,
+          "aggregation": "max",
+          "comparison": "gt",
+          "windowMs": 300000,
+          "sampleCount": 2,
+          "evaluatedAt": "2026-09-20T12:00:30.120Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-QUEUE-LAG.md",
+          "owner": null,
+          "state": "firing",
+          "observed": 143
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-LEASE-CLAIM",
+          "domain": "lease",
+          "severity": "P1",
+          "threshold": 0,
+          "aggregation": "sum",
+          "comparison": "gt",
+          "windowMs": 300000,
+          "sampleCount": 1,
+          "evaluatedAt": "2026-09-20T12:00:30.120Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-LEASE-CLAIM.md",
+          "owner": null,
+          "state": "firing",
+          "observed": 1
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-APPROVAL-LATENCY",
+          "domain": "approval",
+          "severity": "P1",
+          "threshold": 5000,
+          "aggregation": "p95",
+          "comparison": "gt",
+          "windowMs": 900000,
+          "sampleCount": 5,
+          "evaluatedAt": "2026-09-20T12:00:30.120Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-APPROVAL-LATENCY.md",
+          "owner": null,
+          "state": "firing",
+          "observed": 9000
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-UNCERTAIN",
+          "domain": "uncertain",
+          "severity": "P1",
+          "threshold": 0,
+          "aggregation": "sum",
+          "comparison": "gt",
+          "windowMs": 900000,
+          "sampleCount": 1,
+          "evaluatedAt": "2026-09-20T12:00:30.120Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-UNCERTAIN.md",
+          "owner": null,
+          "state": "firing",
+          "observed": 1
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-DLQ",
+          "domain": "dlq",
+          "severity": "P1",
+          "threshold": 0,
+          "aggregation": "sum",
+          "comparison": "gt",
+          "windowMs": 900000,
+          "sampleCount": 1,
+          "evaluatedAt": "2026-09-20T12:00:30.120Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-DLQ.md",
+          "owner": null,
+          "state": "firing",
+          "observed": 1
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-HANDOFF",
+          "domain": "handoff",
+          "severity": "P2",
+          "threshold": 5,
+          "aggregation": "sum",
+          "comparison": "gt",
+          "windowMs": 900000,
+          "sampleCount": 0,
+          "evaluatedAt": "2026-09-20T12:00:30.120Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-HANDOFF.md",
+          "owner": null,
+          "state": "no_data",
+          "observed": null
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-ERRORS",
+          "domain": "errors",
+          "severity": "P1",
+          "threshold": 3,
+          "aggregation": "sum",
+          "comparison": "gt",
+          "windowMs": 300000,
+          "sampleCount": 2,
+          "evaluatedAt": "2026-09-20T12:00:30.120Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-ERRORS.md",
+          "owner": null,
+          "state": "ok",
+          "observed": 2
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-COST",
+          "domain": "cost",
+          "severity": "P2",
+          "threshold": 25,
+          "aggregation": "sum",
+          "comparison": "gt",
+          "windowMs": 3600000,
+          "sampleCount": 1,
+          "evaluatedAt": "2026-09-20T12:00:30.120Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-COST.md",
+          "owner": null,
+          "state": "firing",
+          "observed": 27.5
+        }
+      ]
+    },
+    "recoverySustained": {
+      "evaluatedAt": "2026-09-20T13:01:30.120Z",
+      "firing": [],
+      "ok": [],
+      "noData": [
+        "AUD19-09-ALERT-QUEUE-LAG",
+        "AUD19-09-ALERT-LEASE-CLAIM",
+        "AUD19-09-ALERT-APPROVAL-LATENCY",
+        "AUD19-09-ALERT-UNCERTAIN",
+        "AUD19-09-ALERT-DLQ",
+        "AUD19-09-ALERT-HANDOFF",
+        "AUD19-09-ALERT-ERRORS",
+        "AUD19-09-ALERT-COST"
+      ],
+      "evaluations": [
+        {
+          "ruleId": "AUD19-09-ALERT-QUEUE-LAG",
+          "domain": "queue",
+          "severity": "P2",
+          "threshold": 100,
+          "aggregation": "max",
+          "comparison": "gt",
+          "windowMs": 300000,
+          "sampleCount": 0,
+          "evaluatedAt": "2026-09-20T13:01:30.120Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-QUEUE-LAG.md",
+          "owner": null,
+          "state": "no_data",
+          "observed": null
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-LEASE-CLAIM",
+          "domain": "lease",
+          "severity": "P1",
+          "threshold": 0,
+          "aggregation": "sum",
+          "comparison": "gt",
+          "windowMs": 300000,
+          "sampleCount": 0,
+          "evaluatedAt": "2026-09-20T13:01:30.120Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-LEASE-CLAIM.md",
+          "owner": null,
+          "state": "no_data",
+          "observed": null
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-APPROVAL-LATENCY",
+          "domain": "approval",
+          "severity": "P1",
+          "threshold": 5000,
+          "aggregation": "p95",
+          "comparison": "gt",
+          "windowMs": 900000,
+          "sampleCount": 0,
+          "evaluatedAt": "2026-09-20T13:01:30.120Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-APPROVAL-LATENCY.md",
+          "owner": null,
+          "state": "no_data",
+          "observed": null
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-UNCERTAIN",
+          "domain": "uncertain",
+          "severity": "P1",
+          "threshold": 0,
+          "aggregation": "sum",
+          "comparison": "gt",
+          "windowMs": 900000,
+          "sampleCount": 0,
+          "evaluatedAt": "2026-09-20T13:01:30.120Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-UNCERTAIN.md",
+          "owner": null,
+          "state": "no_data",
+          "observed": null
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-DLQ",
+          "domain": "dlq",
+          "severity": "P1",
+          "threshold": 0,
+          "aggregation": "sum",
+          "comparison": "gt",
+          "windowMs": 900000,
+          "sampleCount": 0,
+          "evaluatedAt": "2026-09-20T13:01:30.120Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-DLQ.md",
+          "owner": null,
+          "state": "no_data",
+          "observed": null
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-HANDOFF",
+          "domain": "handoff",
+          "severity": "P2",
+          "threshold": 5,
+          "aggregation": "sum",
+          "comparison": "gt",
+          "windowMs": 900000,
+          "sampleCount": 0,
+          "evaluatedAt": "2026-09-20T13:01:30.120Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-HANDOFF.md",
+          "owner": null,
+          "state": "no_data",
+          "observed": null
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-ERRORS",
+          "domain": "errors",
+          "severity": "P1",
+          "threshold": 3,
+          "aggregation": "sum",
+          "comparison": "gt",
+          "windowMs": 300000,
+          "sampleCount": 0,
+          "evaluatedAt": "2026-09-20T13:01:30.120Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-ERRORS.md",
+          "owner": null,
+          "state": "no_data",
+          "observed": null
+        },
+        {
+          "ruleId": "AUD19-09-ALERT-COST",
+          "domain": "cost",
+          "severity": "P2",
+          "threshold": 25,
+          "aggregation": "sum",
+          "comparison": "gt",
+          "windowMs": 3600000,
+          "sampleCount": 0,
+          "evaluatedAt": "2026-09-20T13:01:30.120Z",
+          "runbook": "docs/08_runtime/runbooks/AUD19-09-ALERT-COST.md",
+          "owner": null,
+          "state": "no_data",
+          "observed": null
+        }
+      ]
+    },
+    "detectedFault": "AUD19-09-ALERT-DLQ",
+    "clearedAfterRecovery": true
+  },
+  "recovery": {
+    "startedAt": "2026-09-20T12:00:00.090Z",
+    "recoveredAt": "2026-09-20T12:00:30.120Z",
+    "actions": [
+      "operator.replay event outbox_aud19_09_0001",
+      "worker reprocessed the outbox event",
+      "channel effect dispatched with the same correlationId"
+    ],
+    "processedAfterReplay": 1,
+    "lagAfterReplay": 0,
+    "effectDispatched": true
+  },
+  "redaction": {
+    "canary": "SENSITIVE-AUD19-09-CANARY",
+    "canaryInjected": true,
+    "canaryHits": 0,
+    "scanTargets": [
+      "api collector export",
+      "worker collector export"
+    ],
+    "exportedSpans": 6,
+    "exportedMetrics": 15,
+    "exportedLogs": 4,
+    "droppedAttributes": 1,
+    "droppedLogFields": 3,
+    "replacedNames": 0,
+    "blockedCanaries": 1,
+    "status": "PASS"
+  },
+  "limitations": [
+    "No hosted collector, dashboard, pager or external sink: exports are in-process or opt-in JSONL/OTLP-shaped files.",
+    "SLOs remain PROPOSED_NOT_APPROVED; no operational owner has approved objectives or thresholds.",
+    "Approval latency requires the proposed approval_latency_ms instrumentation; the exercise injects synthetic samples.",
+    "Recovery is proven for the controlled-local process; physical RPO/RTO and production alert delivery are out of scope.",
+    "The exercise uses synthetic IDs, synthetic tenant and no real data or external effect."
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud19-09-redaction-report",
+  "program": "AUD19-REM",
+  "task": "AUD19-09",
+  "generatedAt": "2026-09-20T04:27:59.738Z",
+  "canary": "SENSITIVE-AUD19-09-CANARY",
+  "status": "PASS",
+  "canaryHits": 0,
+  "exercise": {
+    "status": "PASS",
+    "exportedSpans": 6,
+    "exportedMetrics": 15,
+    "exportedLogs": 4,
+    "blockedCanaries": 1,
+    "canaryHits": 0
+  },
+  "adapterChecks": [
+    {
+      "adapter": "in_process_worker_sink",
+      "enabled": true,
+      "canaryHits": 0,
+      "exportedSpans": 0,
+      "exportedMetrics": 4,
+      "exportedLogs": 2,
+      "blockedCanaries": 1,
+      "detail": "sink do worker ligado ao collector in-process durante o exercício"
+    },
+    {
+      "adapter": "file_jsonl",
+      "enabled": true,
+      "canaryHits": 0,
+      "exportedSpans": 1,
+      "exportedMetrics": 1,
+      "exportedLogs": 1,
+      "blockedCanaries": 4,
+      "detail": "adapter de arquivo habilitado explicitamente, gravado em diretório temporário"
+    },
+    {
+      "adapter": "otlp_json_memory_transport",
+      "enabled": true,
+      "canaryHits": 0,
+      "exportedSpans": 1,
+      "exportedMetrics": 1,
+      "exportedLogs": 1,
+      "blockedCanaries": 4,
+      "detail": "payload OTLP/JSON com transporte injetado em memória; nenhuma rede"
+    }
+  ],
+  "totals": {
+    "exportedSpans": 6,
+    "exportedMetrics": 19,
+    "exportedLogs": 6,
+    "droppedRecords": null,
+    "droppedAttributes": 1,
+    "droppedLogFields": 6,
+    "replacedNames": 0,
+    "blockedCanaries": 2
+  },
+  "scanScope": "export batches and adapter payloads only; raw process stdout is a debug sink and is not part of this proof",
+  "limitations": [
+    "Nenhum collector hospedado ou entrega externa; a prova é local e determinística.",
+    "O canary é sintético (SENSITIVE-AUD19-09-CANARY) e não representa dado real.",
+    "approval_latency_ms é instrumentação proposta; o exercício injeta amostras.",
+    "SLOs permanecem PROPOSED_NOT_APPROVED; nenhum owner foi inventado."
+  ]
+}

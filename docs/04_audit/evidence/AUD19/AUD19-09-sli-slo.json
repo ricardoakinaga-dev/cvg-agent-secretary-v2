@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud19-09-sli-slo-catalog",
+  "program": "AUD19-REM",
+  "task": "AUD19-09",
+  "generatedAt": "2026-09-20T00:00:00.000Z",
+  "governance": {
+    "sloStatus": "PROPOSED_NOT_APPROVED",
+    "approvalRequired": true,
+    "authority": "operational owner (not yet designated)",
+    "approvedBy": null,
+    "approvedAt": null,
+    "policy": "No SLI is promoted to an approved SLO until a named operational owner approves the objective, window and threshold. Until then every objective stays PROPOSED_NOT_APPROVED and every alert is a local proposal with owner null.",
+    "scope": "controlled-local synthetic execution only; no production, real data, provider, channel or external effect"
+  },
+  "slis": [
+    {
+      "domain": "queue",
+      "sli": "outbox_lag",
+      "description": "Pendências no outbox durable, medida como gauge máximo da janela.",
+      "unit": "events",
+      "direction": "lower_is_better",
+      "emission": {
+        "status": "EMITTED",
+        "source": "apps/worker/src/continuous-worker.ts",
+        "metrics": ["worker_outbox_lag"],
+        "attributes": ["operation"],
+        "notes": "Emitido por sampleLag() no worker contínuo a cada intervalo de amostragem."
+      },
+      "consultation": "evaluateAlertRules(DEFAULT_ALERT_RULES, samples) com aggregation max; no coletor, filtrar metrics por name === 'worker_outbox_lag'.",
+      "alertRules": ["AUD19-09-ALERT-QUEUE-LAG"],
+      "proposedObjective": {
+        "target": "max <= 100 events sustentado",
+        "window": "5m",
+        "status": "PROPOSED_NOT_APPROVED",
+        "approvedBy": null,
+        "approvedAt": null
+      },
+      "owner": null
+    },
+    {
+      "domain": "lease",
+      "sli": "lease_lost_and_claim_failures",
+      "description": "Perdas de lease, falhas de claim e conflitos de claim de step no mesmo período.",
+      "unit": "count",
+      "direction": "lower_is_better",
+      "emission": {
+        "status": "EMITTED",
+        "source": "apps/worker/src/continuous-worker.ts; packages/agent-runtime/src/orchestration.ts",
+        "metrics": [
+          "worker_outbox_lease_lost_total",
+          "worker_outbox_claim_failures_total",
+          "orchestrator_step_claim_total"
+        ],
+        "attributes": ["outcome", "operation"],
+        "notes": "orchestrator_step_claim_total é filtrado por outcome=conflict para não contar claims saudáveis."
+      },
+      "consultation": "evaluateAlertRules(...) com metricFilters { orchestrator_step_claim_total: { outcome: 'conflict' } } e aggregation sum.",
+      "alertRules": ["AUD19-09-ALERT-LEASE-CLAIM"],
+      "proposedObjective": {
+        "target": "sum == 0 na janela",
+        "window": "5m",
+        "status": "PROPOSED_NOT_APPROVED",
+        "approvedBy": null,
+        "approvedAt": null
+      },
+      "owner": null
+    },
+    {
+      "domain": "approval",
+      "sli": "approval_latency_p95",
+      "description": "Tempo entre solicitação e confirmação de aprovação, p95 da janela.",
+      "unit": "milliseconds",
+      "direction": "lower_is_better",
+      "emission": {
+        "status": "PROPOSED_INSTRUMENTATION",
+        "source": "packages/agent-runtime/src/runtime.ts (approval_required_total/approval_confirmed_total sem timestamp de latência)",
+        "metrics": ["approval_latency_ms"],
+        "attributes": ["status"],
+        "notes": "A métrica approval_latency_ms ainda não é emitida pelo runtime; o exercício sintético injeta amostras. Instrumentação requer aprovação do owner e não foi adicionada ao caminho produtivo nesta task."
+      },
+      "consultation": "Enquanto a emissão não existir, derivar de timestamps de auditoria (approval.requested -> approval.confirmed) por correlationId; no exercício, avaliar as amostras sintéticas com aggregation p95.",
+      "alertRules": ["AUD19-09-ALERT-APPROVAL-LATENCY"],
+      "proposedObjective": {
+        "target": "p95 <= 5000 ms",
+        "window": "15m",
+        "status": "PROPOSED_NOT_APPROVED",
+        "approvedBy": null,
+        "approvedAt": null
+      },
+      "owner": null
+    },
+    {
+      "domain": "uncertain",
+      "sli": "uncertain_settlements",
+      "description": "Aprovações e steps liquidados como UNCERTAIN, que exigem inspeção humana antes de continuar.",
+      "unit": "count",
+      "direction": "lower_is_better",
+      "emission": {
+        "status": "EMITTED",
+        "source": "apps/worker/src/sweeps.ts; packages/agent-runtime/src/orchestration.ts",
+        "metrics": [
+          "worker_sweep_approvals_uncertain_total",
+          "orchestrator_step_settle_total"
+        ],
+        "attributes": ["outcome", "status"],
+        "notes": "orchestrator_step_settle_total é filtrado por outcome=uncertain."
+      },
+      "consultation": "evaluateAlertRules(...) com metricFilters { orchestrator_step_settle_total: { outcome: 'uncertain' } } e aggregation sum.",
+      "alertRules": ["AUD19-09-ALERT-UNCERTAIN"],
+      "proposedObjective": {
+        "target": "sum == 0 na janela",
+        "window": "15m",
+        "status": "PROPOSED_NOT_APPROVED",
+        "approvedBy": null,
+        "approvedAt": null
+      },
+      "owner": null
+    },
+    {
+      "domain": "dlq",
+      "sli": "dead_lettered_events",
+      "description": "Eventos que esgotaram tentativas e foram para a dead-letter queue.",
+      "unit": "count",
+      "direction": "lower_is_better",
+      "emission": {
+        "status": "EMITTED",
+        "source": "apps/worker/src/continuous-worker.ts",
+        "metrics": ["worker_outbox_dead_lettered_total"],
+        "attributes": ["status"],
+        "notes": "Incrementado em recordResult quando o resultado é dead_letter."
+      },
+      "consultation": "evaluateAlertRules(...) com aggregation sum; no exercício é a falha injetada de referência.",
+      "alertRules": ["AUD19-09-ALERT-DLQ"],
+      "proposedObjective": {
+        "target": "sum == 0 na janela",
+        "window": "15m",
+        "status": "PROPOSED_NOT_APPROVED",
+        "approvedBy": null,
+        "approvedAt": null
+      },
+      "owner": null
+    },
+    {
+      "domain": "handoff",
+      "sli": "human_handoffs",
+      "description": "Eventos encaminhados para atendimento humano.",
+      "unit": "count",
+      "direction": "lower_is_better",
+      "emission": {
+        "status": "EMITTED",
+        "source": "apps/worker/src/continuous-worker.ts",
+        "metrics": ["worker_outbox_handoffs_total"],
+        "attributes": ["outcome"],
+        "notes": "Handoff é resultado legítimo; o alerta observa apenas a elevação de volume."
+      },
+      "consultation": "evaluateAlertRules(...) com aggregation sum e janela de 15m.",
+      "alertRules": ["AUD19-09-ALERT-HANDOFF"],
+      "proposedObjective": {
+        "target": "sum <= 5 na janela",
+        "window": "15m",
+        "status": "PROPOSED_NOT_APPROVED",
+        "approvedBy": null,
+        "approvedAt": null
+      },
+      "owner": null
+    },
+    {
+      "domain": "errors",
+      "sli": "worker_error_rate",
+      "description": "Erros de processamento, falhas, conflitos de claim e falhas de sweep acumulados.",
+      "unit": "count",
+      "direction": "lower_is_better",
+      "emission": {
+        "status": "EMITTED",
+        "source": "apps/worker/src/continuous-worker.ts; apps/worker/src/sweeps.ts",
+        "metrics": [
+          "worker_outbox_errors_total",
+          "worker_outbox_failed_total",
+          "worker_sweep_failures_total",
+          "worker_outbox_claim_failures_total"
+        ],
+        "attributes": ["outcome", "status"],
+        "notes": "Agregação por soma; erros de claim também aparecem no alerta de lease, com tratamento próprio."
+      },
+      "consultation": "evaluateAlertRules(...) com aggregation sum e janela de 5m.",
+      "alertRules": ["AUD19-09-ALERT-ERRORS"],
+      "proposedObjective": {
+        "target": "sum <= 3 na janela",
+        "window": "5m",
+        "status": "PROPOSED_NOT_APPROVED",
+        "approvedBy": null,
+        "approvedAt": null
+      },
+      "owner": null
+    },
+    {
+      "domain": "cost",
+      "sli": "model_cost_usd",
+      "description": "Custo acumulado de chamadas de modelo.",
+      "unit": "USD",
+      "direction": "lower_is_better",
+      "emission": {
+        "status": "EMITTED",
+        "source": "packages/agent-runtime/src/runtime.ts",
+        "metrics": ["model_cost_usd"],
+        "attributes": [],
+        "notes": "Emitido por chamada de modelo; atribuição por Goal/tenant exige instrumentação adicional e não é alegada aqui."
+      },
+      "consultation": "evaluateAlertRules(...) com aggregation sum e janela de 1h.",
+      "alertRules": ["AUD19-09-ALERT-COST"],
+      "proposedObjective": {
+        "target": "sum <= 25 USD por hora",
+        "window": "1h",
+        "status": "PROPOSED_NOT_APPROVED",
+        "approvedBy": null,
+        "approvedAt": null
+      },
+      "owner": null
+    }
+  ],
+  "limitations": [
+    "Nenhum SLO aprovado: todos os objetivos permanecem PROPOSED_NOT_APPROVED até decisão de um owner operacional nomeado.",
+    "Sem collector hospedado, dashboard, pager ou entrega externa; export é in-process ou arquivo JSONL/OTLP-shaped opt-in.",
+    "approval_latency_ms ainda não é emitida pelo runtime; o alerta correspondente opera sobre instrumentação proposta.",
+    "Custo por Goal/tenant não é atribuído; o SLI de custo é global no run sintético.",
+    "O exercício usa relógio, IDs e tenant sintéticos, sem dado real e sem efeito externo."
+  ]
+}
