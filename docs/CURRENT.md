@@ -64,4 +64,4 @@
 
 ## Próxima ação
 
-- Próxima ação: executar `AUD20-03` com RED/GREEN de lineage/concorrência, preservando os negativos `AUD20-N03/N04`; não iniciar qualificação externa e manter staging real e produção `NO_GO`.
+- Próxima ação: obter crítica independente fresca do pacote corrigido; se `PACKAGE_READY`, executar `AUD20-03` com RED/GREEN de lineage/concorrência e negativos `AUD20-N03/N04`; não iniciar qualificação externa.
