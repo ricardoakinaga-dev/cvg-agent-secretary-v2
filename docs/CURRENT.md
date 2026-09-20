@@ -36,23 +36,23 @@
 
 ## Tasks correntes (estados oficiais)
 
-| Task     | Estado      | Evidência corrente                                                                                      |
-| -------- | ----------- | ------------------------------------------------------------------------------------------------------- |
-| AUD19-01 | `COMPLETED` | [SPEC](02_spec/aud19_01_eval_contract_20260919.md), relatório de eval e testes                          |
-| AUD19-02 | `COMPLETED` | Este índice, checker documental, matriz AUD19 e ADR LangGraph                                           |
-| AUD19-03 | `COMPLETED` | Get-or-create linearizável com validação de lineage                                                     |
-| AUD19-04 | `COMPLETED` | Teste PostgreSQL de duas conexões, fencing e ausência de DLQ espúria                                    |
-| AUD19-05 | `COMPLETED` | Retenção/erasure fail-closed, migration 0025 e mapa de dados                                            |
-| AUD19-06 | `COMPLETED` | Replay distribuído, atestação de preflight e negativos                                                  |
-| AUD19-07 | `COMPLETED` | [ADR 0002](02_spec/adr/0002-hotspot-decomposition-bounded-slice.md) e fatia medida                      |
-| AUD19-08 | `BLOCKED`   | Inventário de skips e mutantes 9/9 concluídos; piso §9.1 de branches críticos não passa                 |
-| AUD19-09 | `COMPLETED` | SLIs, alertas→runbooks e exercício sintético; SLOs pendentes de owner                                   |
-| AUD19-10 | `COMPLETED` | axe/contraste, teclado, zoom, forced-colors e 3 browsers                                                |
-| AUD19-11 | `COMPLETED` | Topologia API+worker, non-root, readiness/drain, digests e smoke                                        |
-| AUD19-12 | `BLOCKED`   | `NO_GO` candidate-bound: 32/34 gates PASS; `independent_critic` falha no piso §9.1 de branches críticos |
-| AUD19-13 | `BLOCKED`   | Ambiente e autoridade externos                                                                          |
-| AUD19-14 | `BLOCKED`   | Ambiente e autoridade externos                                                                          |
-| AUD19-15 | `BLOCKED`   | Depende de AUD19-12..14; exigirá `WAITING_HUMAN_APPROVAL` quando o dossiê estiver apto                  |
+| Task     | Estado        | Evidência corrente                                                                        |
+| -------- | ------------- | ----------------------------------------------------------------------------------------- |
+| AUD19-01 | `COMPLETED`   | [SPEC](02_spec/aud19_01_eval_contract_20260919.md), relatório de eval e testes            |
+| AUD19-02 | `COMPLETED`   | Este índice, checker documental, matriz AUD19 e ADR LangGraph                             |
+| AUD19-03 | `COMPLETED`   | Get-or-create linearizável com validação de lineage                                       |
+| AUD19-04 | `COMPLETED`   | Teste PostgreSQL de duas conexões, fencing e ausência de DLQ espúria                      |
+| AUD19-05 | `COMPLETED`   | Retenção/erasure fail-closed, migration 0025 e mapa de dados                              |
+| AUD19-06 | `COMPLETED`   | Replay distribuído, atestação de preflight e negativos                                    |
+| AUD19-07 | `COMPLETED`   | [ADR 0002](02_spec/adr/0002-hotspot-decomposition-bounded-slice.md) e fatia medida        |
+| AUD19-08 | `COMPLETED`   | Skips 0 required, mutantes 9/9 e piso §9.1 de branches críticos fechado (gate versionado) |
+| AUD19-09 | `COMPLETED`   | SLIs, alertas→runbooks e exercício sintético; SLOs pendentes de owner                     |
+| AUD19-10 | `COMPLETED`   | axe/contraste, teclado, zoom, forced-colors e 3 browsers                                  |
+| AUD19-11 | `COMPLETED`   | Topologia API+worker, non-root, readiness/drain, digests e smoke                          |
+| AUD19-12 | `IN_PROGRESS` | P1 de cobertura fechado; selo final e verificação candidate-bound em execução             |
+| AUD19-13 | `BLOCKED`     | Ambiente e autoridade externos                                                            |
+| AUD19-14 | `BLOCKED`     | Ambiente e autoridade externos                                                            |
+| AUD19-15 | `BLOCKED`     | Depende de AUD19-12..14; exigirá `WAITING_HUMAN_APPROVAL` quando o dossiê estiver apto    |
 
 ## Decisões correntes
 
@@ -65,4 +65,4 @@
 
 ## Próxima ação
 
-- Próxima ação: fechar o P1 de cobertura de branches dos módulos críticos (kernel 81,08%; orchestration 68,38%) sem reduzir o piso e reexecutar AUD19-12 com crítico fresco; manter staging real e produção NO_GO.
+- Próxima ação: selar e verificar o candidato final AUD19-12 com crítico fresco; manter staging real e produção NO_GO.

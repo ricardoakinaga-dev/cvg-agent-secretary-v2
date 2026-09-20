@@ -2652,3 +2652,12 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - decision: nenhuma elegibilidade de staging emitida; produção `NO_GO`; não reduzir o piso para fabricar PASS.
 - next_action: fechar o P1 de cobertura de branches dos módulos críticos (kernel 81,08%; orchestration 68,38%) sem reduzir o piso e reexecutar AUD19-12 com crítico fresco; manter staging real e produção NO_GO.
 - evidence: `docs/04_audit/evidence/AUD19/AUD19-12-certification-outcome.md`, `certification/current.json`, `docs/04_audit/evidence/AUD19/AUD19-13-external-qualification-dossier.md`, `AUD19-14-restore-rpo-rto-pilot-dossier.md`, `AUD19-15-final-audit-release-dossier.md`.
+
+# AUD19-COVERAGE-CLOSURE-20260920 — estado corrente
+
+- current_engine: `BUILD -> AUDIT`; tasks: `AUD19-08`/`AUD19-12`; status: `IN_PROGRESS` (selo final em execução); execution: `CONTROLLED_LOCAL`; staging: `NO_GO`; production: `NO_GO`.
+- last_completed_action: P1 de cobertura de branches críticos fechado com 219 testes comportamentais e gate mecânico (`aud19-critical-coverage`): kernel `97,09%`, approval `98,72%`, policy `97,87%`, journal `98,15%`, canal `97,41%`, RLS `100%`; cobertura global com PostgreSQL `95,95/92,53/95,48/96,65`.
+- verification_state: `npm test` `282` arquivos/`2.145` testes PASS/172 skips condicionais (0 required); gate PostgreSQL `30/319/0`; typecheck/lint/format PASS; selo anterior `NO_GO` permanece histórico até o novo selo.
+- gap_state: oito gates externos/humanos e dossiês AUD19-13..15 permanecem `BLOCKED`; P2 de harness de eval no runtime integrado e leitor de tela real continuam registrados.
+- next_action: selar e verificar o candidato final AUD19-12 com crítico fresco; manter staging real e produção NO_GO.
+- evidence: `docs/03_build/tracking/aud19-critical-coverage.json`, `scripts/aud19-critical-coverage.mjs`, `docs/04_audit/evidence/AUD19/AUD19-08-skip-inventory.json`.

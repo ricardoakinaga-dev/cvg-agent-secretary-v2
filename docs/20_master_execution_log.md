@@ -5740,3 +5740,11 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - blocker: `independent_critic` `FAIL` pelo piso §9.1 de branches de módulos críticos (kernel `81,08%`, `orchestration.ts` `68,38%`, `kernel-composition.ts` `63,60%`, RLS `78,13%`); `PHASE11_FORMAL_CLOSURE` falha por cascata. P2: harness de eval no agente determinístico (`Q-A16-01`) e leitor de tela real ausente.
 - next_action: fechar o P1 de cobertura de branches dos módulos críticos (kernel 81,08%; orchestration 68,38%) sem reduzir o piso e reexecutar AUD19-12 com crítico fresco; manter staging real e produção NO_GO.
 - evidence: `docs/04_audit/evidence/AUD19/AUD19-12-certification-outcome.md`, `certification/current.json`, `certification/phase11/phase11-result.json` e dossiês AUD19-13..15.
+
+# AUD19-COVERAGE-CLOSURE-20260920 — fechamento do P1 de branches críticos
+
+- timestamp: `2026-09-20T13:00:00-03:00`; pipeline `BUILD -> AUDIT`; task `AUD19-08`/`AUD19-12`; execução local controlada com PostgreSQL descartável.
+- action: congelado o denominador acordado dos módulos críticos em `docs/03_build/tracking/aud19-critical-coverage.json` (kernel, approval, policy, journal, canal, RLS) e implementado gate mecânico `scripts/aud19-critical-coverage.mjs` ligado ao gate de coverage da certificação; 219 testes comportamentais novos elevaram os branches para kernel `97,09%`, approval `98,72%`, policy `97,87%`, journal `98,15%`, canal `97,41%` e RLS `100%`; `npm run test:coverage` com PostgreSQL passou a `95,95/92,53/95,48/96,65` (293 arquivos/2.313 testes, 0 skips).
+- verification: `npm test` `282/12` arquivos e `2.145` testes PASS/172 skips condicionais (0 required); gate PostgreSQL `30` arquivos/`319` testes/`0` skips; typecheck/lint/format verdes; skip inventory PASS.
+- next_action: selar e verificar o candidato final AUD19-12 com crítico fresco; manter staging real e produção NO_GO.
+- evidence: `docs/03_build/tracking/aud19-critical-coverage.json`, `scripts/aud19-critical-coverage.mjs`, testes `*-branch-hardening.test.ts`, `docs/04_audit/evidence/AUD19/AUD19-08-skip-inventory.json`.

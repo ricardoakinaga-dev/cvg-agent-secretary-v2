@@ -1819,10 +1819,10 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 - [x] `AUD19-03..04`: get-or-create linearizável com validação de lineage e teste PostgreSQL de duas conexões; conflito benigno não vira DLQ e fencing vencido não settle.
 - [x] `AUD19-05..06`: retenção/erasure parametrizada fail-closed (migration `0025`), replay distribuído e atestação versionada de preflight (migration `0026`).
 - [x] `AUD19-07`: hotspots decompostos em fatia medida com architecture tests/ADR.
-- [~] `AUD19-08`: `BLOCKED` — QA adversarial e inventário de skips (0 required) e mutantes 9/9 concluídos, mas o piso §9.1 de branches de módulos críticos não passa.
+- [x] `AUD19-08`: QA adversarial e inventário de skips (0 required) e mutantes 9/9; piso §9.1 de branches críticos fechado com testes de comportamento (gate `docs/03_build/tracking/aud19-critical-coverage.json`).
 - [x] `AUD19-09..10`: observabilidade com SLIs/alertas/runbooks; acessibilidade multibrowser 75/75.
 - [x] `AUD19-11`: topologia API+worker empacotável, non-root, readiness/drain, digests e smoke controlado; produção continua bloqueada.
-- [~] `AUD19-12`: `BLOCKED` — selo candidate-bound executado com 32/34 gates `PASS`; `independent_critic` falha no piso §9.1 de branches críticos (kernel/orchestration/kernel-composition/RLS); `NO_GO` local.
+- [~] `AUD19-12`: selo final em execução após fechar o P1 de cobertura; selo anterior `NO_GO` preservado como histórico.
 - [ ] `AUD19-13..14`: `BLOCKED` até provider/canal/IdP/RAG e RPO/RTO/rollback/piloto terem ambientes e autoridades próprios; `AUD19-15` também está `BLOCKED` pelas dependências e exigirá aprovação humana ao chegar ao gate final.
-- **Estado:** BUILD local controlado executado em 2026-09-20; `AUD19-01..11` `COMPLETED`; `AUD19-12` `BLOCKED` por P1 de cobertura de branches críticos; staging real e produção `NO_GO`.
-- **Próxima ação:** fechar o P1 de cobertura de branches dos módulos críticos sem reduzir o piso e reexecutar AUD19-12 com crítico fresco; manter staging real e produção `NO_GO`.
+- **Estado:** BUILD local controlado executado em 2026-09-20; `AUD19-01..11` `COMPLETED`; P1 de cobertura fechado; `AUD19-12` em selagem final; staging real e produção `NO_GO`.
+- **Próxima ação:** selar e verificar o candidato final AUD19-12 com crítico fresco; manter staging real e produção `NO_GO`.

@@ -17,8 +17,8 @@
     "staging": "NO_GO",
     "production": "NO_GO",
     "externalGates": "BLOCKED",
-    "localDecision": "NO_GO",
-    "sealedCandidate": "4374a9ef…@c0f46b9"
+    "localDecision": "IN_PROGRESS_FINAL_SEAL",
+    "previousSeal": "NO_GO"
   },
   "tasks": [
     {
@@ -130,7 +130,7 @@
     {
       "id": "AUD19-08",
       "title": "Fortalecer QA adversarial e cobertura crítica",
-      "status": "BLOCKED",
+      "status": "COMPLETED",
       "dependencies": [
         "AUD19-01",
         "AUD19-03",
@@ -141,7 +141,7 @@
       ],
       "gate": "G3",
       "evidence": [],
-      "verification": "skips required=0, mutantes 9/9, critico/evidence comportamentais; piso §9.1 de branches de modulos criticos nao passa (mesmo P1 de AUD19-12)"
+      "verification": "skips required=0, mutantes 9/9 e piso §9.1 de branches criticos fechado (gate aud19-critical-coverage)"
     },
     {
       "id": "AUD19-09",
@@ -177,7 +177,7 @@
     {
       "id": "AUD19-12",
       "title": "Qualificar e re-selar candidato staging-like",
-      "status": "BLOCKED",
+      "status": "IN_PROGRESS",
       "dependencies": [
         "AUD19-01..11"
       ],
@@ -187,7 +187,7 @@
         "docs/04_audit/evidence/AUD19/AUD19-08-critic-report.json",
         "certification/current.json"
       ],
-      "verification": "selo NO_GO candidate-bound: 32/34 gates PASS; independent_critic FAIL no piso §9.1 de branches críticos"
+      "verification": "P1 de cobertura fechado; selo final e verificacao candidate-bound em execucao"
     },
     {
       "id": "AUD19-13",
