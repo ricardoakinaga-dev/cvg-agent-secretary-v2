@@ -1,5 +1,9 @@
 # 0300 — Build Engineer Master
 
+## Programa de remediação pós-auditoria de 19/09/2026
+
+A auditoria integral [0566](../04_audit/0566_full_repository_gauntlet_audit_2026-09-19.md) é a fonte dos achados `AUD19`. O [roadmap 0331](0331_aud20260919_roadmap.md) e o [backlog 0332](0332_aud20260919_backlog.md) ordenam 15 tasks. O primeiro item é `AUD19-01`; qualquer BUILD depende de SPEC/gate próprio. Staging real e produção permanecem `NO_GO`.
+
 ## Programa pós-auditoria de 17/09/2026
 
 O plano [0328](0328_aud20260917_executive_plan.md), roadmap [0329](0329_aud20260917_roadmap.md) e backlog [0330](0330_aud20260917_backlog.md) cobrem os nove itens da auditoria 0565. São planejamento documental; o BUILD depende da SPEC/gate de cada task. Produção permanece `NO_GO`.

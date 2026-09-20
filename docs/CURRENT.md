@@ -39,17 +39,17 @@
 | Task     | Estado                | Evidência corrente                                                                     |
 | -------- | --------------------- | -------------------------------------------------------------------------------------- |
 | AUD19-01 | `COMPLETED`           | [SPEC](02_spec/aud19_01_eval_contract_20260919.md), relatório de eval e testes         |
-| AUD19-02 | `IN_PROGRESS`         | Este índice, checker documental e matriz AUD19                                         |
-| AUD19-03 | `IN_PROGRESS`         | Implementação get-or-create + teste PostgreSQL de concorrência                         |
-| AUD19-04 | `IN_PROGRESS`         | Teste PostgreSQL de duas conexões e invariantes de linha                               |
-| AUD19-05 | `IN_PROGRESS`         | Módulo de retenção/erasure, migration 0025 e mapa de dados                             |
-| AUD19-06 | `IN_PROGRESS`         | Replay distribuído, atestação de preflight e negativos                                 |
-| AUD19-07 | `READY_FOR_NEXT_STEP` | [ADR 0001](02_spec/adr/0001-langgraph-frontier-decision.md); decomposição pendente     |
-| AUD19-08 | `BLOCKED`             | Depende de AUD19-01 e AUD19-03..07                                                     |
-| AUD19-09 | `READY_FOR_NEXT_STEP` | Depende de collector controlado local (sem SLO aprovado)                               |
-| AUD19-10 | `READY_FOR_NEXT_STEP` | Sem dependência externa; fixtures rotuladas                                            |
-| AUD19-11 | `BLOCKED`             | Depende de AUD19-03..09                                                                |
-| AUD19-12 | `BLOCKED`             | Depende de AUD19-01..11                                                                |
+| AUD19-02 | `COMPLETED`           | Este índice, checker documental, matriz AUD19 e ADR LangGraph                          |
+| AUD19-03 | `COMPLETED`           | Get-or-create linearizável com validação de lineage                                    |
+| AUD19-04 | `COMPLETED`           | Teste PostgreSQL de duas conexões, fencing e ausência de DLQ espúria                   |
+| AUD19-05 | `COMPLETED`           | Retenção/erasure fail-closed, migration 0025 e mapa de dados                           |
+| AUD19-06 | `COMPLETED`           | Replay distribuído, atestação de preflight e negativos                                 |
+| AUD19-07 | `COMPLETED`           | [ADR 0002](02_spec/adr/0002-hotspot-decomposition-bounded-slice.md) e fatia medida     |
+| AUD19-08 | `COMPLETED`           | Inventário de skips (0 required), mutantes 9/9 e critic/evidence comportamentais       |
+| AUD19-09 | `COMPLETED`           | SLIs, alertas→runbooks e exercício sintético; SLOs pendentes de owner                  |
+| AUD19-10 | `COMPLETED`           | axe/contraste, teclado, zoom, forced-colors e 3 browsers                               |
+| AUD19-11 | `COMPLETED`           | Topologia API+worker, non-root, readiness/drain, digests e smoke                       |
+| AUD19-12 | `IN_PROGRESS`         | Selo candidate-bound e verificação no candidato final                                  |
 | AUD19-13 | `BLOCKED`             | Ambiente e autoridade externos                                                         |
 | AUD19-14 | `BLOCKED`             | Ambiente e autoridade externos                                                         |
 | AUD19-15 | `BLOCKED`             | Depende de AUD19-12..14; exigirá `WAITING_HUMAN_APPROVAL` quando o dossiê estiver apto |
@@ -64,4 +64,4 @@
 
 ## Próxima ação
 
-- Próxima ação: executar AUD19-07 (decomposição de hotspots com architecture tests) e AUD19-08 (QA adversarial comportamental), mantendo staging real e produção `NO_GO`.
+- Próxima ação: selar e verificar o candidato AUD19-12 com crítico fresco e negativos; manter staging real e produção `NO_GO`.

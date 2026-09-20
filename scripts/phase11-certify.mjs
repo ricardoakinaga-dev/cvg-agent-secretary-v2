@@ -31,6 +31,12 @@ import {
   verifyEvidenceGraph,
   verifyPromptIntegrity
 } from './lib/phase11-rules.mjs'
+import {
+  classifySkips,
+  extractSkipsFromVitestJson,
+  loadSkipManifest,
+  readPostgresScopedFiles
+} from './lib/skip-policy.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const certificationDir = path.join(root, 'certification')
@@ -70,12 +76,18 @@ const commandEntries = [
   ['typecheck', 'npm run typecheck'],
   ['lint', 'npm run lint'],
   ['build', 'npm run build'],
-  ['unit', 'npm test'],
+  [
+    'unit',
+    'npm test -- --reporter=default --reporter=json --outputFile=certification/phase11/logs/unit-report.json'
+  ],
   ['coverage', 'npm run test:coverage'],
   ['security', 'npm run audit:security'],
   ['supply_chain', 'npm run sbom && npm run licenses:check'],
   ['worker_startup', 'npm run test:worker:startup'],
-  ['postgres', 'npm run test:postgres'],
+  [
+    'postgres',
+    'npm run test:postgres -- --reporter=default --reporter=json --outputFile=certification/phase11/logs/postgres-report.json'
+  ],
   ['e2e', 'npm run test:e2e'],
   ['evals', 'npm run test:evals && npx tsx scripts/phase10-eval-report.ts'],
   [
@@ -537,7 +549,7 @@ function commandEnvironment(id) {
     CVG_ALLOW_REAL_EFFECTS: '0',
     CVG_REAL_EFFECTS: '0'
   }
-  if (id === 'postgres' && databaseConfigured) {
+  if ((id === 'postgres' || id === 'coverage') && databaseConfigured) {
     environment.TEST_DATABASE_URL = process.env.TEST_DATABASE_URL
   } else {
     delete environment.TEST_DATABASE_URL
@@ -644,6 +656,42 @@ const gates = [
   )
 ]
 for (const [id, command] of commandEntries) gates.push(runCommand(id, command))
+
+const skipManifest = loadSkipManifest(root)
+const postgresScopedFiles = readPostgresScopedFiles(root)
+for (const gateId of ['unit', 'postgres']) {
+  const gate = gates.find((entry) => entry.id === gateId)
+  if (!gate || gate.status === 'NOT_EXECUTED') continue
+  const reportRelative = `certification/phase11/logs/${gateId}-report.json`
+  const report = readJson(reportRelative)
+  if (!report) {
+    const blocker = `required_skip_inventory_missing:${gateId}`
+    gate.status = 'FAIL'
+    gate.exitCode = 1
+    gate.blocker = blocker
+    continue
+  }
+  const skips = extractSkipsFromVitestJson(report)
+  const classified = classifySkips({
+    skips,
+    gate: gateId,
+    databaseAvailable:
+      gateId === 'postgres' &&
+      databaseConfigured &&
+      Boolean(process.env.TEST_DATABASE_URL),
+    manifest: skipManifest,
+    postgresScopedFiles,
+    root
+  })
+  if (classified.required.length > 0) {
+    const sample = classified.required
+      .slice(0, 3)
+      .map((record) => `${record.file}::${record.name}`)
+    gate.status = 'FAIL'
+    gate.exitCode = 1
+    gate.blocker = `required_skip:${gateId}:${classified.required.length}:${sample.join('|')}`
+  }
+}
 
 const engine = readNodeTarget(root)
 gates.push(
@@ -1240,6 +1288,8 @@ function artifactPaths() {
         !['certification/phase11/manifest.json', resultRelative].includes(file)
     ),
     ...evidenceSourceFiles,
+    'certification/phase11/logs/unit-report.json',
+    'certification/phase11/logs/postgres-report.json',
     ...logPaths
   ].filter(
     (file, index, all) => all.indexOf(file) === index && pathExists(file)
@@ -1254,6 +1304,10 @@ function releaseManifest() {
   const sbom = pathExists('certification/sbom.cyclonedx.json')
     ? artifactRecord(root, 'certification/sbom.cyclonedx.json').sha256
     : null
+  const buildDigests =
+    readJson('docs/04_audit/evidence/AUD19/AUD19-11-digests.json') ?? null
+  const digestPart = (value) =>
+    typeof value === 'string' && value.length > 0 ? value : 'NOT_RUN'
   return {
     schemaVersion: 1,
     phase: '11',
@@ -1265,12 +1319,20 @@ function releaseManifest() {
       treeHash: candidate.treeHash,
       branch: candidate.branch
     },
-    buildId: null,
-    containerDigest: null,
-    sbomDigest: sbom,
-    migrationDigest: null,
+    buildId: buildDigests
+      ? `api:${digestPart(buildDigests.build?.api?.id)};worker:${digestPart(buildDigests.build?.worker?.id)}`
+      : null,
+    containerDigest: buildDigests
+      ? `api:${digestPart(buildDigests.container?.api?.configDigest)};worker:${digestPart(buildDigests.container?.worker?.configDigest)}`
+      : null,
+    sbomDigest: sbom ?? (buildDigests ? digestPart(buildDigests.sbom?.digest) : null),
+    migrationDigest: buildDigests
+      ? digestPart(buildDigests.migration?.digest)
+      : null,
     agentVersion: readJson('package.json')?.version ?? null,
-    policyVersion: null,
+    policyVersion: buildDigests
+      ? digestPart(buildDigests.policy?.digest)
+      : null,
     promptVersions: PHASE11_2_PROMPT_SHA256,
     toolVersions: {
       node: process.versions.node,

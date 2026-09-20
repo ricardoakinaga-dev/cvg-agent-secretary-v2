@@ -1,5 +1,9 @@
 # 0301 — Roadmap
 
+## Programa de remediação pós-auditoria de 19/09/2026
+
+Consultar [roadmap 0331](0331_aud20260919_roadmap.md), [backlog 0332](0332_aud20260919_backlog.md) e [auditoria 0566](../04_audit/0566_full_repository_gauntlet_audit_2026-09-19.md). Os marcos M0–M7 corrigem primeiro contrato/certificação e idempotência concorrente, depois dados, qualidade, operação, staging-like e somente então gates externos/humanos. Nenhum marco concede BUILD ou release por si só.
+
 ## Programa pós-auditoria de 17/09/2026
 
 Consultar [roadmap 0329](0329_aud20260917_roadmap.md), [plano 0328](0328_aud20260917_executive_plan.md) e [backlog 0330](0330_aud20260917_backlog.md). Seus marcos P0–P4 não renumeram as fases históricas abaixo.

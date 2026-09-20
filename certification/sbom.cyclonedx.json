@@ -4,7 +4,7 @@
   "serialNumber": "urn:uuid:04f2eb0d-708e-48ef-a95c-128bf6b3eef2",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-09-17T13:46:34.738Z",
+    "timestamp": "2026-09-20T04:29:42.709Z",
     "component": {
       "type": "application",
       "name": "cvg-agent-secretary-v2",
@@ -161,6 +161,35 @@
         {
           "name": "cvg:lockPath",
           "value": "node_modules/@asamuzakjp/nwsapi"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@axe-core/playwright",
+      "version": "4.13.0",
+      "purl": "pkg:npm/%40axe-core/playwright@4.13.0",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "e982f1fa4c57bb918971e1b8a33160fb7ddad84313763630586968277b1bf4ab5ae69a7e64d4b9deec4656883925eb4863cb3ef8fe54aed5fe72b8bebb454056"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MPL-2.0"
+          }
+        }
+      ],
+      "properties": [
+        {
+          "name": "cvg:dev",
+          "value": "true"
+        },
+        {
+          "name": "cvg:lockPath",
+          "value": "node_modules/@axe-core/playwright"
         }
       ]
     },
@@ -4673,6 +4702,35 @@
         {
           "name": "cvg:lockPath",
           "value": "node_modules/avvio"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "axe-core",
+      "version": "4.13.0",
+      "purl": "pkg:npm/axe-core@4.13.0",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "5331adf3383b372f1d8db60c871976cee11ebd56bbaf68098d86392f0af5c4cefe5d4da777a0a421615355c0886c03fadef4b3ef535a572cae4a4f651ca732d0"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MPL-2.0"
+          }
+        }
+      ],
+      "properties": [
+        {
+          "name": "cvg:dev",
+          "value": "true"
+        },
+        {
+          "name": "cvg:lockPath",
+          "value": "node_modules/axe-core"
         }
       ]
     },

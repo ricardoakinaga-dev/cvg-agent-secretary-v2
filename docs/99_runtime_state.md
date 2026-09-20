@@ -2632,3 +2632,13 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - decision: gate de evals local passa; staging real e produção continuam `NO_GO`; nenhuma média compensa gate externo ausente.
 - next_action: executar AUD19-07 (decomposição de hotspots com architecture tests) e AUD19-08 (QA adversarial comportamental), mantendo staging real e produção `NO_GO`.
 - evidence: `docs/CURRENT.md`, `docs/02_spec/aud19_01_eval_contract_20260919.md`, `docs/02_spec/adr/0001-langgraph-frontier-decision.md`, `docs/04_audit/evidence/AUD19/`, `certification/agent-eval-report.json`.
+
+# AUD19-M2-M5-20260920 — estado corrente antes do selo
+
+- current_engine: `SPEC -> BUILD -> AUDIT`; tasks: `AUD19-02..12`; status: `IN_PROGRESS` (`AUD19-12` em selagem); execution: `CONTROLLED_LOCAL`; staging: `NO_GO`; production: `NO_GO`.
+- last_completed_action: `AUD19-01..11` concluídas com evidência fresca: contrato de eval `>=97%`, documentação canônica e checker, Goal linearizável com concorrência PostgreSQL, retenção/erasure fail-closed, replay distribuído/atestação de preflight, hotspots em fatia medida, QA adversarial (0 required skips, 9/9 mutantes), observabilidade com SLIs/alertas/runbooks, acessibilidade 3 browsers e topologia API+worker com digests/smoke.
+- verification_state: Node `22.23.2`; unidade `272`/`1.928` PASS; PostgreSQL `28`/`226` PASS; cobertura com PostgreSQL `93/87,2/93,7/93,7`; E2E `75/75`; evals `56/56`; chaos `18` PASS (+2 skips PG no gate dedicado); load `10k` sem perda; recovery `87`; mutation sentinel `9/9`; `docs:check` PASS; verificadores candidate-bound dependem do selo `AUD19-12` desta rodada.
+- gap_state: oito gates externos/humanos permanecem `BLOCKED`; políticas de retenção restantes, owner de SLO e rate limiting distribuído aguardam decisão humana; `AUD19-13..15` seguem `BLOCKED`.
+- decision: candidate local apto a avaliação de staging somente após selo/verificação verdes; staging real e produção continuam `NO_GO`.
+- next_action: selar e verificar o candidato AUD19-12 com crítico fresco e negativos; manter staging real e produção `NO_GO`.
+- evidence: `docs/CURRENT.md`, `docs/03_build/0332_aud20260919_backlog.md`, `docs/04_audit/evidence/AUD19/`, `docs/02_spec/adr/`.

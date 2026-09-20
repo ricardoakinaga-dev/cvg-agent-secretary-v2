@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "kind": "phase11-evidence-reports",
+  "reports": [
+    {
+      "path": "docs/phase11/PHASE11_2_DELTA_AUDIT.md",
+      "sha256": "3f8ef43107d2373fcee02caab7c04f328bb32f3df6137180d4e99a5551a7b7b1",
+      "size": 5137,
+      "status": "PARTIAL",
+      "scope": "controlled-local",
+      "claimsNoProduction": true
+    },
+    {
+      "path": "docs/phase11/PHASE11_FORMAL_CLOSURE.md",
+      "sha256": "7779269a1ba7b9a4f80845b07563e35fbcc2fdaa59a5d0407b016ffc1e1f51cf",
+      "size": 1392,
+      "status": "PASS",
+      "scope": "controlled-local",
+      "claimsNoProduction": true
+    },
+    {
+      "path": "docs/phase11/PHASE11_ORCHESTRATOR_PROOF.md",
+      "sha256": "bd5c7cbffd9be86d40cd93f808dcb85621f40d4a2fbe885cecb520e8b7cd8f33",
+      "size": 1164,
+      "status": "PASS",
+      "scope": "controlled-local",
+      "claimsNoProduction": true
+    },
+    {
+      "path": "docs/phase11/PHASE11_SECURITY_REVIEW.md",
+      "sha256": "57cafa88ffc458aba2cd8af31e6b1cc80ea2068c19a4dc5c87ae87497095dee8",
+      "size": 995,
+      "status": "PASS",
+      "scope": "controlled-local",
+      "claimsNoProduction": true
+    },
+    {
+      "path": "docs/phase11/PHASE11_ADVERSARIAL_REPORT.md",
+      "sha256": "e7295341183f7770ae2208a332aaaf65f8c7dd6e56360993131add3350046d9f",
+      "size": 1055,
+      "status": "PASS",
+      "scope": "controlled-local",
+      "claimsNoProduction": true
+    },
+    {
+      "path": "docs/phase11/PHASE11_RECOVERY_REPORT.md",
+      "sha256": "6855169f65366f15ca729805c070af2801a5db1ab9dbcaced5ce8a9148bb0530",
+      "size": 1144,
+      "status": "PASS",
+      "scope": "controlled-local",
+      "claimsNoProduction": true
+    },
+    {
+      "path": "docs/phase11/PHASE11_CHAOS_REPORT.md",
+      "sha256": "342b4b2b478e1f9a43391de8a627984ab828a256ddf6e66030e2f0fd4187e4e2",
+      "size": 737,
+      "status": "PASS",
+      "scope": "controlled-local",
+      "claimsNoProduction": true
+    },
+    {
+      "path": "docs/phase11/PHASE11_LOAD_REPORT.md",
+      "sha256": "2b0b09a3a35c9ac0815a6742b569942222cf74af093a74262ac1198c8e8df2e6",
+      "size": 623,
+      "status": "PASS",
+      "scope": "controlled-local",
+      "claimsNoProduction": true
+    },
+    {
+      "path": "docs/phase11/PHASE11_INTEGRATION_REPORT.md",
+      "sha256": "ad58e4c8072e43ef304ce18364757ed0a72f7eead280434276825e43229a9fdb",
+      "size": 869,
+      "status": "BLOCKED_EXTERNAL",
+      "scope": "controlled-local",
+      "claimsNoProduction": true
+    },
+    {
+      "path": "docs/phase11/PHASE11_INDEPENDENT_CRITIC.md",
+      "sha256": "8382ea5545293175dd26a072c9757ccecdd46aac96cde5b56af09ab79841c34a",
+      "size": 2574,
+      "status": "PASS",
+      "scope": "controlled-local",
+      "claimsNoProduction": true
+    }
+  ]
+}

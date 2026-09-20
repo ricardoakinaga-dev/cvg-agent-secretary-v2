@@ -1815,11 +1815,12 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 - [x] Persistir a [auditoria 0566](04_audit/0566_full_repository_gauntlet_audit_2026-09-19.md), com notas por dimensão, métodos, limitações, findings e veredito `FAIL / NO_GO` contra o contrato AAA vigente.
 - [x] Publicar o [roadmap 0331](03_build/0331_aud20260919_roadmap.md) e o [backlog 0332](03_build/0332_aud20260919_backlog.md), com 15 tasks e gates M0–M7.
 - [x] `AUD19-01`: contrato/runner/regras/verificação alinhados a `>=97%`; negativo `53/56 = 94,64%` falha; cenários corrigidos sem relaxar expectativas (56/56).
-- [~] `AUD19-02`: índice `CURRENT`, checker documental, 15 links e JSON inválido corrigidos, matriz AUD19 e ADR LangGraph publicados.
-- [~] `AUD19-03..04`: get-or-create linearizável com validação de lineage e teste PostgreSQL de duas conexões; fechamento formal pendente de regressão final.
-- [~] `AUD19-05..06`: retenção/erasure parametrizada fail-closed (migration `0025`), replay distribuído e atestação versionada de preflight (migration `0026`).
-- [ ] `AUD19-07..10`: hotspots/QA adversarial/observabilidade/acessibilidade em execução após o gate G0.
-- [ ] `AUD19-11..12`: criar topologia API+worker staging-like, preencher digests, executar gates e re-selar somente após zero P0/P1 local.
+- [x] `AUD19-02`: índice `CURRENT`, checker documental, 15 links e JSON inválido corrigidos, matriz AUD19 e ADR LangGraph publicados.
+- [x] `AUD19-03..04`: get-or-create linearizável com validação de lineage e teste PostgreSQL de duas conexões; conflito benigno não vira DLQ e fencing vencido não settle.
+- [x] `AUD19-05..06`: retenção/erasure parametrizada fail-closed (migration `0025`), replay distribuído e atestação versionada de preflight (migration `0026`).
+- [x] `AUD19-07..10`: hotspots decompostos em fatia medida com architecture tests/ADR; QA adversarial comportamental (skips required = 0, mutantes 9/9); observabilidade com SLIs/alertas/runbooks; acessibilidade multibrowser 75/75.
+- [x] `AUD19-11`: topologia API+worker empacotável, non-root, readiness/drain, digests e smoke controlado; produção continua bloqueada.
+- [ ] `AUD19-12`: selo candidate-bound e verificação no candidato final (em execução nesta rodada).
 - [ ] `AUD19-13..14`: `BLOCKED` até provider/canal/IdP/RAG e RPO/RTO/rollback/piloto terem ambientes e autoridades próprios; `AUD19-15` também está `BLOCKED` pelas dependências e exigirá aprovação humana ao chegar ao gate final.
-- **Estado:** BUILD local iniciado em 2026-09-20 sob autorização controlada; `AUD19-01` `COMPLETED`; frentes de dados/concorrência `IN_PROGRESS`; staging real e produção `NO_GO`.
-- **Próxima ação:** executar AUD19-07 (decomposição de hotspots com architecture tests) e AUD19-08 (QA adversarial comportamental), mantendo staging real e produção `NO_GO`.
+- **Estado:** BUILD local controlado executado em 2026-09-20; `AUD19-01..11` `COMPLETED` com evidência executável; `AUD19-12` em selagem; staging real e produção `NO_GO`.
+- **Próxima ação:** selar e verificar o candidato AUD19-12 com crítico fresco e negativos; manter staging real e produção `NO_GO`.
