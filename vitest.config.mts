@@ -47,6 +47,10 @@ export default defineConfig({
         '**/main.tsx',
         'apps/web/src/**',
         'packages/persistence/src/postgres.ts',
+        // Extracted PostgreSQL adapter modules (AUD19-07) keep the same
+        // dedicated PostgreSQL gate as postgres.ts and stay out of the unit
+        // denominator for the reason above.
+        'packages/persistence/src/postgres/**',
         'packages/persistence/src/*postgres*.ts',
         'packages/persistence/src/platform-control-plane-repository.ts',
         'packages/persistence/src/platform-approval-repository.ts',

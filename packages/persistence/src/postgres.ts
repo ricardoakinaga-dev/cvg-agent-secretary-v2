@@ -4,8 +4,6 @@ import {
   attendanceDecisionAudit,
   type AttendanceApprovalDecision
 } from './attendance-approval.ts'
-import { readFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
 import { createHash } from 'node:crypto'
 import {
   CorrelationIdSchema,
@@ -16,8 +14,6 @@ import {
   IdempotencyKeySchema,
   redactSensitiveText,
   sanitizeAuditEvidencePayload,
-  sanitizeOutboxError,
-  sanitizeOutboxPayload,
   type Channel,
   type TaskPriority,
   type TaskStatus
@@ -37,7 +33,6 @@ import {
   type HumanTakeoverState,
   type TenantId
 } from '@cvg/platform'
-import type { QueryResult, QueryResultRow } from 'pg'
 import {
   auditEventMatches,
   summarizeAuditEvents
@@ -69,16 +64,11 @@ import type {
   InboundRuntimeContext,
   MessageRecord,
   PaginationInput,
-  OutboxEventRecord,
   RuntimeAuditLedgerRecord,
   SessionRecord,
   TaskRecord
 } from './schema.ts'
 import {
-  DEFAULT_OUTBOX_LEASE_MS,
-  DEFAULT_OUTBOX_MAX_ATTEMPTS,
-  DEFAULT_OUTBOX_RETRY_BASE_MS,
-  DEFAULT_OUTBOX_RETRY_MAX_MS,
   OUTBOX_TAKEOVER_SUPPRESSED_ERROR,
   type OutboxAckInput as MemoryOutboxAckInput,
   type OutboxClaimInput,
@@ -90,65 +80,58 @@ import {
 } from './outbox.ts'
 import { createSenderRefFingerprint } from './sender-fingerprint.ts'
 
-export interface PostgresMigrationOptions {
-  schemaName?: string
-  migrations?: string[]
-  createSchema?: boolean
-}
-
-const migrationPath = resolve(
-  process.cwd(),
-  'packages/persistence/migrations/0000_initial.sql'
-)
-const migrationDirectory = resolve(
-  process.cwd(),
-  'packages/persistence/migrations'
-)
-const defaultPostgresMigrations = [
-  '0000_initial',
-  '0001_tenant_isolation',
-  '0002_capability_approvals',
-  '0003_test_suite_catalog',
-  '0004_plugin_manifest_catalog',
-  '0005_knowledge_source_catalog',
-  '0006_release_candidate_evidence',
-  '0007_audit_evidence_checkpoint',
-  '0008_session_agent_version_pin',
-  '0009_release_candidate_validator_integrity',
-  '0010_outbox_durability',
-  '0011_outbox_payload_redaction',
-  '0012_channel_effect_journal',
-  '0013_runtime_effect_journal',
-  '0014_journeys',
-  '0015_runtime_approval_store',
-  '0016_runtime_continuation_trace',
-  '0017_runtime_audit_chain',
-  '0018_outbox_lease_fencing',
-  '0019_orchestrator_state',
-  '0020_orchestrator_lineage_hardening',
-  '0021_orchestrator_iteration_budget',
-  '0022_orchestrator_evaluation_lineage',
-  '0023_orchestrator_replan_fencing',
-  '0024_tenant_isolation_constraint_validation',
-  '0025_retention_ledger',
-  '0026_operator_replay_events'
-]
-
-export interface PostgresQueryable {
-  query<T extends QueryResultRow = QueryResultRow>(
-    text: string,
-    values?: unknown[]
-  ): Promise<QueryResult<T>>
-}
-
-/**
- * A checked-out pool connection is required for approval transactions. A
- * `pg.Pool` also exposes `query`, but it may route each statement to a
- * different connection and therefore cannot safely carry BEGIN/COMMIT.
- */
-export interface PostgresTransactionClient extends PostgresQueryable {
-  release(error?: Error): void
-}
+import {
+  appendDurableOutboxAudit,
+  assertOutboxDate,
+  assertOutboxPayload,
+  assertOutboxResult,
+  assertOutboxText,
+  createInboundIdempotencyKey,
+  mapDurableOutboxRow,
+  outboxBackoffMs,
+  outboxSelectColumns,
+  redactOutboxError,
+  resolveTakeoverCheck,
+  serializeOutboxJson,
+  validateOutboxEnvelopeVersion,
+  validateOutboxLeaseMs,
+  validateOutboxLeaseToken,
+  validateOutboxWorker,
+  withOutboxTransaction,
+  OUTBOX_DEFAULT_LEASE_MS,
+  OUTBOX_MAX_ATTEMPTS,
+  type DurableOutboxRow
+} from './postgres/outbox-support.ts'
+import type {
+  DurableOutboxEventRecord,
+  DurableOutboxStatus,
+  PostgresQueryable
+} from './postgres/types.ts'
+export {
+  baselineLegacyPostgresMigration,
+  legacyRequiredColumns,
+  legacyRequiredIndexes,
+  readInitialMigrationSql,
+  readPostgresMigrationSql,
+  runInitialPostgresMigration,
+  runPostgresMigrations
+} from './postgres/migrations.ts'
+export {
+  OUTBOX_BASE_BACKOFF_MS,
+  OUTBOX_DEFAULT_LEASE_MS,
+  OUTBOX_MAX_ATTEMPTS,
+  OUTBOX_MAX_BACKOFF_MS
+} from './postgres/outbox-support.ts'
+export type {
+  LegacyMigrationBaselineApproval,
+  PostgresMigrationOptions
+} from './postgres/migrations.ts'
+export type {
+  DurableOutboxEventRecord,
+  DurableOutboxStatus,
+  PostgresQueryable,
+  PostgresTransactionClient
+} from './postgres/types.ts'
 
 export interface PostgresRuntimeRepositoryOptions {
   tenantIsolation?: boolean
@@ -166,8 +149,6 @@ export interface InboundRuntimeCompletionInput {
   correlationId: string
 }
 
-export type DurableOutboxStatus = OutboxEventRecord['status']
-
 export interface RuntimeAuditChainVerification {
   valid: boolean
   count: number
@@ -179,27 +160,6 @@ export interface RuntimeAuditChainVerification {
     | 'event_hash_mismatch'
     | 'invalid_hash'
     | 'invalid_timestamp'
-}
-
-export type DurableOutboxEventRecord = OutboxEventRecord & {
-  tenantId: TenantId
-  correlationId: string
-  idempotencyKey: string
-  envelopeVersion: number
-  conversationId: string | null
-  sessionId: string | null
-  agentId: string | null
-  agentVersionId: string | null
-  inboundMessageId: string | null
-  availableAt: Date
-  attempts: number
-  leaseOwner: string | null
-  leaseToken: string | null
-  leaseUntil: Date | null
-  lastError: string | null
-  processedAt: Date | null
-  deadLetteredAt: Date | null
-  parentEventId: string | null
 }
 
 export type PostgresOutboxEnqueueInput = MemoryOutboxEnqueueInput & {
@@ -214,145 +174,6 @@ export type PostgresOutboxAckInput = Omit<MemoryOutboxAckInput, 'effect'> & {
 
 export type PostgresOutboxRequeueInput = MemoryOutboxRequeueInput & {
   now?: Date
-}
-
-export const OUTBOX_MAX_ATTEMPTS = DEFAULT_OUTBOX_MAX_ATTEMPTS
-export const OUTBOX_DEFAULT_LEASE_MS = DEFAULT_OUTBOX_LEASE_MS
-export const OUTBOX_BASE_BACKOFF_MS = DEFAULT_OUTBOX_RETRY_BASE_MS
-export const OUTBOX_MAX_BACKOFF_MS = DEFAULT_OUTBOX_RETRY_MAX_MS
-const OUTBOX_MAX_PAYLOAD_BYTES = 256 * 1024
-const SAFE_LEGACY_OUTBOX_ERRORS = new Set([
-  'legacy_outbox_missing_tenant',
-  'legacy_inbound_missing_runtime_identifiers',
-  'legacy_outbox_event_type_not_controlled',
-  'legacy_outbox_quarantined',
-  'legacy_processed_without_effect_journal',
-  'legacy_failed_without_retry_time'
-])
-
-const outboxSelectColumns = `
-  id, tenant_id, type, envelope_version, correlation_id, idempotency_key,
-  trace_id,
-  conversation_id, session_id, agent_id, agent_version_id,
-  inbound_message_id, payload, status, created_at, available_at, attempts,
-  lease_owner, lease_token, lease_until, last_error, processed_at, dead_lettered_at,
-  parent_event_id, orchestration_goal_id, orchestration_plan_id,
-  orchestration_step_id, orchestration_attempt_id`
-
-interface DurableOutboxRow {
-  id: string
-  tenant_id: TenantId
-  type: string
-  envelope_version: number
-  correlation_id: string
-  idempotency_key: string
-  trace_id: string | null
-  conversation_id: string | null
-  session_id: string | null
-  agent_id: string | null
-  agent_version_id: string | null
-  inbound_message_id: string | null
-  payload: unknown
-  status: DurableOutboxStatus
-  created_at: Date
-  available_at: Date
-  attempts: number
-  lease_owner: string | null
-  lease_token: string | null
-  lease_until: Date | null
-  last_error: string | null
-  processed_at: Date | null
-  dead_lettered_at: Date | null
-  parent_event_id: string | null
-  orchestration_goal_id: string | null
-  orchestration_plan_id: string | null
-  orchestration_step_id: string | null
-  orchestration_attempt_id: string | null
-}
-
-function assertOutboxText(value: string, label: string, max = 200): string {
-  if (typeof value !== 'string' || value.trim().length === 0) {
-    throw new DomainError('validation_failed', `${label} is required`)
-  }
-  if (value.length > max) {
-    throw new DomainError('validation_failed', `${label} is too long`)
-  }
-  return value
-}
-
-function assertOutboxDate(value: Date, label: string): Date {
-  if (!(value instanceof Date) || Number.isNaN(value.getTime())) {
-    throw new DomainError('validation_failed', `${label} is invalid`)
-  }
-  return value
-}
-
-function assertOutboxPayload(payload: unknown): unknown {
-  if (payload === undefined) {
-    throw new DomainError('validation_failed', 'Outbox payload is required')
-  }
-  return sanitizeAndValidateOutboxValue(payload, 'Outbox payload')
-}
-
-function assertOutboxResult(result: unknown): unknown {
-  return sanitizeAndValidateOutboxValue(result ?? null, 'Outbox result')
-}
-
-function sanitizeAndValidateOutboxValue(
-  value: unknown,
-  label: string
-): unknown {
-  try {
-    const serialized = JSON.stringify(value)
-    if (serialized === undefined) return null
-    if (Buffer.byteLength(serialized, 'utf8') > OUTBOX_MAX_PAYLOAD_BYTES) {
-      throw new DomainError('payload_too_large', `${label} is too large`)
-    }
-    const sanitized = sanitizeOutboxPayload(value).payload
-    const sanitizedSerialized = JSON.stringify(sanitized) ?? 'null'
-    if (
-      Buffer.byteLength(sanitizedSerialized, 'utf8') > OUTBOX_MAX_PAYLOAD_BYTES
-    ) {
-      throw new DomainError(
-        'payload_too_large',
-        `Sanitized ${label.toLowerCase()} is too large`
-      )
-    }
-    return sanitized
-  } catch (error) {
-    if (error instanceof DomainError) throw error
-    throw new DomainError('validation_failed', `${label} is not JSON`)
-  }
-}
-
-function serializeOutboxJson(value: unknown, label: string): string {
-  try {
-    const serialized = JSON.stringify(value ?? null)
-    if (serialized === undefined) return 'null'
-    return serialized
-  } catch {
-    throw new DomainError('validation_failed', `${label} is not JSON`)
-  }
-}
-
-function redactOutboxError(error: unknown): string {
-  if (error === OUTBOX_TAKEOVER_SUPPRESSED_ERROR) {
-    return OUTBOX_TAKEOVER_SUPPRESSED_ERROR
-  }
-  if (typeof error === 'string' && SAFE_LEGACY_OUTBOX_ERRORS.has(error)) {
-    return error
-  }
-  return sanitizeOutboxError(error)
-}
-
-function createInboundIdempotencyKey(
-  channel: string,
-  externalMessageId: string
-): string {
-  const digest = createHash('sha256')
-    .update(externalMessageId, 'utf8')
-    .digest('hex')
-  return `inbound:${channel}:sha256:${digest}`
 }
 
 const RUNTIME_AUDIT_GENESIS_HASH = '0'.repeat(64)
@@ -424,607 +245,6 @@ function assertRuntimeAuditRecord(
       'validation_failed',
       'Durable runtime audit record is invalid or outside the tenant scope'
     )
-  }
-}
-
-async function resolveTakeoverCheck(
-  value: OutboxTakeoverCheck | undefined
-): Promise<boolean> {
-  if (typeof value === 'function') return Boolean(await value())
-  return value === true
-}
-
-function outboxDate(value: Date | string | null | undefined): Date | null {
-  if (value === null || value === undefined) return null
-  const date = value instanceof Date ? value : new Date(value)
-  return Number.isNaN(date.getTime()) ? null : date
-}
-
-function mapDurableOutboxRow(row: DurableOutboxRow): DurableOutboxEventRecord {
-  const tenantId = TenantIdSchema.parse(row.tenant_id)
-  const availableAt = outboxDate(row.available_at)
-  const createdAt = outboxDate(row.created_at)
-  if (!availableAt || !createdAt) {
-    throw new DomainError(
-      'invalid_action',
-      'Outbox event timestamps are invalid'
-    )
-  }
-  return {
-    id: row.id,
-    tenantId,
-    type: row.type,
-    envelopeVersion: row.envelope_version,
-    correlationId: row.correlation_id,
-    idempotencyKey: row.idempotency_key,
-    ...(row.trace_id !== null ? { traceId: row.trace_id } : {}),
-    conversationId: row.conversation_id,
-    sessionId: row.session_id,
-    agentId: row.agent_id,
-    agentVersionId: row.agent_version_id,
-    inboundMessageId: row.inbound_message_id,
-    payload: sanitizeOutboxPayload(row.payload).payload,
-    status: row.status,
-    createdAt,
-    availableAt,
-    attempts: row.attempts,
-    leaseOwner: row.lease_owner,
-    leaseToken: row.lease_token,
-    leaseUntil: outboxDate(row.lease_until),
-    lastError: row.last_error ? redactOutboxError(row.last_error) : null,
-    processedAt: outboxDate(row.processed_at),
-    deadLetteredAt: outboxDate(row.dead_lettered_at),
-    parentEventId: row.parent_event_id,
-    ...(typeof row.orchestration_goal_id === 'string' &&
-    typeof row.orchestration_plan_id === 'string' &&
-    typeof row.orchestration_step_id === 'string'
-      ? {
-          orchestrationContext: {
-            goalId: row.orchestration_goal_id,
-            planId: row.orchestration_plan_id,
-            stepId: row.orchestration_step_id,
-            ...(row.orchestration_attempt_id !== null
-              ? { attemptId: row.orchestration_attempt_id }
-              : {})
-          }
-        }
-      : {})
-  }
-}
-
-async function withOutboxTransaction<T>(
-  client: PostgresQueryable,
-  operation: () => Promise<T>
-): Promise<T> {
-  await client.query('BEGIN')
-  try {
-    const result = await operation()
-    await client.query('COMMIT')
-    return result
-  } catch (error) {
-    try {
-      await client.query('ROLLBACK')
-    } catch {
-      // Preserve the original database or handler error.
-    }
-    throw error
-  }
-}
-
-function validateOutboxWorker(workerId: string): string {
-  return assertOutboxText(workerId, 'workerId', 120)
-}
-
-function validateOutboxLeaseToken(leaseToken: string | undefined): string {
-  return assertOutboxText(leaseToken ?? '', 'leaseToken', 160)
-}
-
-function validateOutboxEnvelopeVersion(version: number): number {
-  if (!Number.isSafeInteger(version) || version < 1 || version > 100) {
-    throw new DomainError(
-      'validation_failed',
-      'Outbox envelope version is invalid'
-    )
-  }
-  return version
-}
-
-function validateOutboxLeaseMs(leaseMs: number): number {
-  if (
-    !Number.isSafeInteger(leaseMs) ||
-    leaseMs < 1_000 ||
-    leaseMs > 3_600_000
-  ) {
-    throw new DomainError(
-      'validation_failed',
-      'Outbox lease duration is invalid'
-    )
-  }
-  return leaseMs
-}
-
-function outboxBackoffMs(attempt: number): number {
-  return Math.min(
-    OUTBOX_MAX_BACKOFF_MS,
-    OUTBOX_BASE_BACKOFF_MS * 2 ** Math.max(0, Math.min(attempt - 1, 16))
-  )
-}
-
-async function appendDurableOutboxAudit(
-  client: PostgresQueryable,
-  input: {
-    tenantId: TenantId
-    eventId: string
-    correlationId: string
-    actorId: string
-    action: 'ack' | 'fail' | 'dead_letter' | 'requeue' | 'handoff'
-    attempts: number
-    status: DurableOutboxStatus
-    error?: string | null
-    sessionId?: string | null
-    conversationId?: string | null
-  }
-): Promise<void> {
-  const payload = sanitizeAuditEvidencePayload({
-    tenantId: input.tenantId,
-    eventId: input.eventId,
-    correlationId: input.correlationId,
-    action: input.action,
-    attempts: input.attempts,
-    status: input.status,
-    ...(input.sessionId ? { sessionId: input.sessionId } : {}),
-    ...(input.conversationId ? { conversationId: input.conversationId } : {}),
-    ...(input.error ? { error: input.error } : {})
-  }).payload
-  await client.query(
-    `INSERT INTO audit_events
-       (tenant_id, id, type, actor_type, actor_id, correlation_id, policy_version, payload, created_at)
-     VALUES ($1, $2, 'integration_event', $3, $4, $5, $6, $7::jsonb, $8)`,
-    [
-      input.tenantId,
-      createDomainId('audit'),
-      input.action === 'requeue' ? 'Operator' : 'System',
-      input.actorId,
-      input.correlationId,
-      'outbox-r2',
-      JSON.stringify(payload),
-      new Date()
-    ]
-  )
-}
-
-function assertSafeSchemaName(schemaName: string): void {
-  if (!/^[a-z][a-z0-9_]{0,62}$/.test(schemaName)) {
-    throw new Error('Invalid PostgreSQL schema name')
-  }
-}
-
-export async function readInitialMigrationSql(): Promise<string> {
-  return readFile(migrationPath, 'utf8')
-}
-
-export async function readPostgresMigrationSql(
-  version: string
-): Promise<string> {
-  if (!/^\d{4}_[a-z0-9_]+$/.test(version)) {
-    throw new Error('Invalid PostgreSQL migration version')
-  }
-  return readFile(resolve(migrationDirectory, `${version}.sql`), 'utf8')
-}
-
-export async function runInitialPostgresMigration(
-  client: PostgresQueryable,
-  options: PostgresMigrationOptions = {}
-): Promise<void> {
-  const migration = await readInitialMigrationSql()
-
-  if (options.schemaName) {
-    assertSafeSchemaName(options.schemaName)
-  }
-
-  await client.query('BEGIN')
-  try {
-    if (options.schemaName) {
-      if (options.createSchema !== false) {
-        await client.query(`CREATE SCHEMA IF NOT EXISTS ${options.schemaName}`)
-      }
-      await client.query(`SET search_path TO ${options.schemaName}`)
-    }
-    await client.query(
-      `SELECT pg_advisory_xact_lock(hashtext('cvg-agent-secretary:migrations'))`
-    )
-    await client.query(
-      `CREATE TABLE IF NOT EXISTS schema_migrations (
-         version text PRIMARY KEY,
-         applied_at timestamptz NOT NULL DEFAULT now()
-       )`
-    )
-    const applied = await client.query<{ version: string }>(
-      `SELECT version FROM schema_migrations
-       WHERE version = $1
-       FOR UPDATE`,
-      ['0000_initial']
-    )
-    if (applied.rows.length > 0) {
-      await client.query('COMMIT')
-      return
-    }
-    await client.query(migration)
-    await client.query('COMMIT')
-  } catch (error) {
-    await client.query('ROLLBACK')
-    throw error
-  }
-}
-
-/**
- * Applies ordered migrations with a checksum guard. The legacy 0000 file is
- * intentionally preserved; production startup must use this runner so a
- * database marked with 0000 cannot silently skip tenant isolation.
- */
-export async function runPostgresMigrations(
-  client: PostgresQueryable,
-  options: PostgresMigrationOptions = {}
-): Promise<void> {
-  const migrations = options.migrations ?? defaultPostgresMigrations
-  for (const version of migrations) {
-    const migration = await readPostgresMigrationSql(version)
-    const checksum = createHash('sha256').update(migration).digest('hex')
-
-    await client.query('BEGIN')
-    try {
-      if (options.schemaName) {
-        assertSafeSchemaName(options.schemaName)
-        if (options.createSchema !== false) {
-          await client.query(
-            `CREATE SCHEMA IF NOT EXISTS ${options.schemaName}`
-          )
-        }
-        await client.query(`SET search_path TO ${options.schemaName}`)
-      }
-      await client.query(
-        `SELECT pg_advisory_xact_lock(hashtext('cvg-agent-secretary:migrations'))`
-      )
-      await client.query(
-        `CREATE TABLE IF NOT EXISTS schema_migrations (
-           version text PRIMARY KEY,
-           applied_at timestamptz NOT NULL DEFAULT now()
-         )`
-      )
-      await client.query(
-        `ALTER TABLE schema_migrations ADD COLUMN IF NOT EXISTS checksum text`
-      )
-      const applied = await client.query<{
-        version: string
-        checksum: string | null
-      }>(
-        `SELECT version, checksum
-         FROM schema_migrations
-         WHERE version = $1
-         FOR UPDATE`,
-        [version]
-      )
-      const current = applied.rows[0]
-      if (current) {
-        if (!current.checksum) {
-          throw new Error(`PostgreSQL migration checksum missing: ${version}`)
-        }
-        if (current.checksum !== checksum) {
-          throw new Error(`PostgreSQL migration checksum mismatch: ${version}`)
-        }
-      } else {
-        await client.query(migration)
-        await client.query(
-          `INSERT INTO schema_migrations (version, checksum)
-           VALUES ($1, $2)
-           ON CONFLICT (version) DO UPDATE SET checksum = EXCLUDED.checksum`,
-          [version, checksum]
-        )
-      }
-      await client.query('COMMIT')
-    } catch (error) {
-      await client.query('ROLLBACK')
-      throw error
-    }
-  }
-}
-
-export interface LegacyMigrationBaselineApproval {
-  actor: string
-  reference: string
-}
-
-const legacyMigrationTables = [
-  'conversations',
-  'messages',
-  'sessions',
-  'agent_runs',
-  'tool_calls',
-  'approval_requests',
-  'tasks',
-  'audit_events',
-  'idempotency',
-  'outbox_events',
-  'platform_agents',
-  'platform_agent_versions',
-  'platform_test_runs',
-  'platform_execution_traces'
-] as const
-
-export const legacyRequiredColumns = [
-  ['conversations', 'tenant_id'],
-  ['conversations', 'id'],
-  ['conversations', 'channel'],
-  ['conversations', 'sender_ref'],
-  ['conversations', 'sender_ref_hash'],
-  ['conversations', 'status'],
-  ['conversations', 'correlation_id'],
-  ['conversations', 'created_at'],
-  ['conversations', 'updated_at'],
-  ['messages', 'id'],
-  ['messages', 'conversation_id'],
-  ['messages', 'external_message_id'],
-  ['messages', 'direction'],
-  ['messages', 'body'],
-  ['messages', 'runtime_status'],
-  ['messages', 'created_at'],
-  ['sessions', 'id'],
-  ['sessions', 'conversation_id'],
-  ['sessions', 'status'],
-  ['sessions', 'takeover_state'],
-  ['sessions', 'created_at'],
-  ['sessions', 'updated_at'],
-  ['agent_runs', 'id'],
-  ['agent_runs', 'session_id'],
-  ['agent_runs', 'status'],
-  ['agent_runs', 'created_at'],
-  ['agent_runs', 'updated_at'],
-  ['tool_calls', 'id'],
-  ['tool_calls', 'agent_run_id'],
-  ['tool_calls', 'tool_name'],
-  ['tool_calls', 'status'],
-  ['tool_calls', 'input'],
-  ['tool_calls', 'output'],
-  ['tool_calls', 'error'],
-  ['tool_calls', 'created_at'],
-  ['approval_requests', 'id'],
-  ['approval_requests', 'session_id'],
-  ['approval_requests', 'proposed_action'],
-  ['approval_requests', 'summary'],
-  ['approval_requests', 'risk_level'],
-  ['approval_requests', 'status'],
-  ['approval_requests', 'decided_by'],
-  ['approval_requests', 'decided_at'],
-  ['approval_requests', 'created_at'],
-  ['tasks', 'id'],
-  ['tasks', 'session_id'],
-  ['tasks', 'title'],
-  ['tasks', 'description'],
-  ['tasks', 'priority'],
-  ['tasks', 'source'],
-  ['tasks', 'status'],
-  ['tasks', 'idempotency_key'],
-  ['tasks', 'created_at'],
-  ['audit_events', 'id'],
-  ['audit_events', 'type'],
-  ['audit_events', 'actor_type'],
-  ['audit_events', 'actor_id'],
-  ['audit_events', 'correlation_id'],
-  ['audit_events', 'policy_version'],
-  ['audit_events', 'payload'],
-  ['audit_events', 'created_at'],
-  ['idempotency', 'tenant_id'],
-  ['idempotency', 'key'],
-  ['idempotency', 'resource_id'],
-  ['idempotency', 'created_at'],
-  ['outbox_events', 'id'],
-  ['outbox_events', 'type'],
-  ['outbox_events', 'payload'],
-  ['outbox_events', 'status'],
-  ['outbox_events', 'created_at'],
-  ['platform_agents', 'tenant_id'],
-  ['platform_agents', 'id'],
-  ['platform_agents', 'slug'],
-  ['platform_agents', 'name'],
-  ['platform_agents', 'description'],
-  ['platform_agents', 'active_version_id'],
-  ['platform_agents', 'created_at'],
-  ['platform_agents', 'updated_at'],
-  ['platform_agent_versions', 'tenant_id'],
-  ['platform_agent_versions', 'id'],
-  ['platform_agent_versions', 'agent_id'],
-  ['platform_agent_versions', 'version'],
-  ['platform_agent_versions', 'status'],
-  ['platform_agent_versions', 'config'],
-  ['platform_agent_versions', 'created_by'],
-  ['platform_agent_versions', 'created_at'],
-  ['platform_agent_versions', 'published_at'],
-  ['platform_test_runs', 'tenant_id'],
-  ['platform_test_runs', 'trace_id'],
-  ['platform_test_runs', 'agent_id'],
-  ['platform_test_runs', 'version_id'],
-  ['platform_test_runs', 'trace'],
-  ['platform_test_runs', 'created_at'],
-  ['platform_execution_traces', 'tenant_id'],
-  ['platform_execution_traces', 'trace_id'],
-  ['platform_execution_traces', 'agent_id'],
-  ['platform_execution_traces', 'version_id'],
-  ['platform_execution_traces', 'trace'],
-  ['platform_execution_traces', 'created_at']
-] as const
-
-export const legacyRequiredIndexes = [
-  'conversations_pkey',
-  'messages_pkey',
-  'sessions_pkey',
-  'agent_runs_pkey',
-  'tool_calls_pkey',
-  'approval_requests_pkey',
-  'tasks_pkey',
-  'audit_events_pkey',
-  'idempotency_pkey',
-  'outbox_events_pkey',
-  'platform_agents_pkey',
-  'platform_agent_versions_pkey',
-  'platform_test_runs_pkey',
-  'platform_execution_traces_pkey',
-  'idx_messages_conversation_id',
-  'idx_messages_runtime_status',
-  'idx_conversations_tenant_id',
-  'idx_sessions_conversation_id',
-  'idx_agent_runs_session_id',
-  'idx_approval_requests_session_id',
-  'idx_tasks_session_id',
-  'idx_audit_events_correlation_id',
-  'idx_audit_events_type',
-  'idx_audit_events_actor_id',
-  'idx_audit_events_payload_session_id',
-  'idx_outbox_events_status',
-  'idx_platform_agents_tenant_id',
-  'idx_platform_agent_versions_tenant_agent',
-  'idx_platform_agent_versions_one_published',
-  'idx_platform_test_runs_tenant_created',
-  'idx_platform_execution_traces_tenant_created'
-] as const
-
-function assertBaselineApprovalText(value: string, label: string): void {
-  if (!/^[A-Za-z0-9._:/-]{3,200}$/.test(value)) {
-    throw new Error(`${label} is required for a legacy migration baseline`)
-  }
-}
-
-/**
- * Records an operator-approved checksum baseline for a legacy database that
- * was created by 0000_initial before checksum tracking existed. This is never
- * called by application startup; it is an explicit infrastructure operation.
- */
-export async function baselineLegacyPostgresMigration(
-  client: PostgresQueryable,
-  options: PostgresMigrationOptions & {
-    approval: LegacyMigrationBaselineApproval
-  }
-): Promise<void> {
-  assertBaselineApprovalText(options.approval.actor, 'Baseline actor')
-  assertBaselineApprovalText(options.approval.reference, 'Baseline reference')
-  if (options.schemaName) assertSafeSchemaName(options.schemaName)
-  const migration = await readPostgresMigrationSql('0000_initial')
-  const checksum = createHash('sha256').update(migration).digest('hex')
-
-  await client.query('BEGIN')
-  try {
-    if (options.schemaName) {
-      if (options.createSchema !== false) {
-        await client.query(`CREATE SCHEMA IF NOT EXISTS ${options.schemaName}`)
-      }
-      await client.query(`SET search_path TO ${options.schemaName}`)
-    }
-    await client.query(
-      `SELECT pg_advisory_xact_lock(hashtext('cvg-agent-secretary:migrations'))`
-    )
-    const tables = await client.query<{ table_name: string }>(
-      `SELECT c.relname AS table_name
-       FROM pg_class AS c
-       INNER JOIN pg_namespace AS n ON n.oid = c.relnamespace
-       WHERE n.nspname = current_schema()
-         AND c.relkind = 'r'
-         AND c.relname = ANY($1::text[])`,
-      [legacyMigrationTables]
-    )
-    if (tables.rows.length !== legacyMigrationTables.length) {
-      throw new Error(
-        'Legacy database does not match the required 0000_initial baseline'
-      )
-    }
-    const columns = await client.query<{
-      table_name: string
-      column_name: string
-    }>(
-      `SELECT table_name, column_name
-       FROM information_schema.columns
-       WHERE table_schema = current_schema()
-         AND table_name = ANY($1::text[])`,
-      [legacyMigrationTables]
-    )
-    const availableColumns = new Set(
-      columns.rows.map((column) => `${column.table_name}:${column.column_name}`)
-    )
-    const missingColumns = legacyRequiredColumns.filter(
-      ([tableName, columnName]) =>
-        !availableColumns.has(`${tableName}:${columnName}`)
-    )
-    if (missingColumns.length > 0) {
-      throw new Error(
-        `Legacy database columns are incomplete: ${missingColumns
-          .map(([tableName, columnName]) => `${tableName}.${columnName}`)
-          .join(', ')}`
-      )
-    }
-    const indexes = await client.query<{ indexname: string }>(
-      `SELECT indexname
-       FROM pg_indexes
-       WHERE schemaname = current_schema()
-         AND indexname = ANY($1::text[])`,
-      [legacyRequiredIndexes]
-    )
-    const availableIndexes = new Set(
-      indexes.rows.map((index) => index.indexname)
-    )
-    const missingIndexes = legacyRequiredIndexes.filter(
-      (index) => !availableIndexes.has(index)
-    )
-    if (missingIndexes.length > 0) {
-      throw new Error(
-        `Legacy database indexes are incomplete: ${missingIndexes.join(', ')}`
-      )
-    }
-    await client.query(
-      `CREATE TABLE IF NOT EXISTS schema_migrations (
-         version text PRIMARY KEY,
-         applied_at timestamptz NOT NULL DEFAULT now()
-       )`
-    )
-    await client.query(
-      `ALTER TABLE schema_migrations
-         ADD COLUMN IF NOT EXISTS checksum text,
-         ADD COLUMN IF NOT EXISTS baseline_actor text,
-         ADD COLUMN IF NOT EXISTS baseline_reference text,
-         ADD COLUMN IF NOT EXISTS baseline_at timestamptz`
-    )
-    const applied = await client.query<{
-      version: string
-      checksum: string | null
-    }>(
-      `SELECT version, checksum
-       FROM schema_migrations
-       WHERE version = $1
-       FOR UPDATE`,
-      ['0000_initial']
-    )
-    const current = applied.rows[0]
-    if (!current) {
-      throw new Error('Legacy database has no 0000_initial migration marker')
-    }
-    if (current.checksum) {
-      throw new Error('0000_initial already has a migration checksum')
-    }
-    await client.query(
-      `UPDATE schema_migrations
-       SET checksum = $2,
-           baseline_actor = $3,
-           baseline_reference = $4,
-           baseline_at = now()
-       WHERE version = $1`,
-      [
-        '0000_initial',
-        checksum,
-        options.approval.actor,
-        options.approval.reference
-      ]
-    )
-    await client.query('COMMIT')
-  } catch (error) {
-    await client.query('ROLLBACK')
-    throw error
   }
 }
 
