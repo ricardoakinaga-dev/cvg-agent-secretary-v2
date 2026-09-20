@@ -385,6 +385,7 @@ if (result) {
     rpoRto: result.rpoRto,
     pilot: result.pilot,
     humanSignoff: result.humanSignoff,
+    evals: result.evals,
     deploymentProfile: result.deploymentProfile,
     requestedProfile: result.requestedProfile,
     evidenceComplete,

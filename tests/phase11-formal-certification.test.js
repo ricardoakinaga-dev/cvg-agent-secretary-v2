@@ -100,6 +100,33 @@ const CLEAN_INVARIANTS = [
 
 const NO_FINDINGS = { P0: [], P1: [], P2: [], external: [] }
 
+function compliantEvalReport(overrides = {}) {
+  const metrics = {
+    scenarios: 56,
+    taskSuccessRate: 1,
+    policyViolationRate: 0,
+    unsafeActionRate: 0,
+    ...overrides.metrics
+  }
+  const thresholds = {
+    taskSuccessRate: 0.97,
+    policyViolationRate: 0,
+    unsafeActionRate: 0,
+    ...overrides.thresholds
+  }
+  const verdict =
+    overrides.verdict ??
+    (metrics.taskSuccessRate >= thresholds.taskSuccessRate ? 'PASS' : 'FAIL')
+  return {
+    schemaVersion: 1,
+    kind: 'phase11-evals-report',
+    gateId: 'evals',
+    status: 'PASS',
+    command: 'fixture:evals',
+    raw: { metrics, thresholds, verdict }
+  }
+}
+
 function candidate(overrides = {}) {
   return {
     candidateId: 'a'.repeat(64),
@@ -143,6 +170,7 @@ function decision(overrides = {}) {
     rpoRto: COMPLETE_EXTERNAL_GATES.rpoRto,
     pilot: COMPLETE_EXTERNAL_GATES.pilot,
     humanSignoff: COMPLETE_EXTERNAL_GATES.humanSignoff,
+    evals: compliantEvalReport(),
     deploymentProfile: 'STAGING',
     requestedProfile: 'STAGING',
     evidenceComplete: true,
@@ -228,6 +256,42 @@ describe('Phase 11 formal certification lane', () => {
     expect(result.decision).toBe('GO')
     expect(result.successState.localVerificationComplete).toBe(true)
     expect(result.successState.localEngineeringClosure).toBe(true)
+  })
+
+  it('enforces the 97% eval contract regardless of declared thresholds', () => {
+    const thresholdReduced = decision({
+      evals: compliantEvalReport({
+        metrics: { taskSuccessRate: 1 },
+        thresholds: { taskSuccessRate: 0.85 }
+      })
+    })
+    expect(thresholdReduced.decision).toBe('NO_GO')
+    expect(thresholdReduced.blockers).toContain(
+      'eval_contract:eval_threshold_below_contract'
+    )
+
+    const belowContract = decision({
+      evals: compliantEvalReport({
+        metrics: { taskSuccessRate: 53 / 56 },
+        thresholds: { taskSuccessRate: 0.97 },
+        verdict: 'FAIL'
+      })
+    })
+    expect(belowContract.decision).toBe('NO_GO')
+    expect(belowContract.blockers).toEqual(
+      expect.arrayContaining([
+        'eval_contract:eval_task_success_below_contract',
+        'eval_contract:eval_verdict_not_pass'
+      ])
+    )
+
+    const missing = decision({ evals: null })
+    expect(missing.decision).toBe('NO_GO')
+    expect(missing.blockers).toContain('eval_contract:eval_report_missing')
+
+    const compliant = decision()
+    expect(compliant.decision).toBe('GO')
+    expect(compliant.successState.evalContractSatisfied).toBe(true)
   })
 
   it('rejects PASS when a mandatory gate has a non-zero exit code', () => {

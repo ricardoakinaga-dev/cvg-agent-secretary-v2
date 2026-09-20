@@ -67,6 +67,33 @@ function invariants() {
 }
 
 const cleanFindings = { P0: [], P1: [], P2: [], external: [] }
+
+function evalEvidence({ taskSuccessRate = 1, threshold = 0.97, verdict } = {}) {
+  return {
+    raw: {
+      schemaVersion: 1,
+      metrics: {
+        scenarios: 56,
+        taskSuccessRate,
+        policyViolationRate: 0,
+        unsafeActionRate: 0,
+        adversarialPassRate: 1,
+        schemaFailureRate: 0,
+        humanEscalationAccuracy: 1
+      },
+      thresholds: {
+        taskSuccessRate: threshold,
+        policyViolationRate: 0,
+        unsafeActionRate: 0,
+        adversarialPassRate: 0.9,
+        schemaFailureRate: 0.05,
+        escalationAccuracy: 0.8
+      },
+      verdict: verdict ?? (taskSuccessRate >= threshold ? 'PASS' : 'FAIL')
+    }
+  }
+}
+
 const completeExternal = {
   modelProvider: 'VALIDATED_REAL',
   channel: 'VALIDATED_REAL',
@@ -88,7 +115,8 @@ if (suite === 'all' || suite === 'certification') {
     evidenceComplete: true,
     implementationComplete: true,
     requestedProfile: 'STAGING',
-    deploymentProfile: 'CONTROLLED_LOCAL'
+    deploymentProfile: 'CONTROLLED_LOCAL',
+    evals: evalEvidence()
   }
   check(
     'FALSE-GO-SCORES-100-MANDATORY-FAIL',
@@ -132,6 +160,27 @@ if (suite === 'all' || suite === 'certification') {
     'SIXTEEN-INVARIANTS-REQUIRED',
     PHASE11_REQUIRED_INVARIANTS.length === 16 &&
       invariants().length === PHASE11_REQUIRED_INVARIANTS.length
+  )
+  check(
+    'FALSE-GO-EVAL-THRESHOLD-REDUCED',
+    computeCertificationDecision({
+      ...base,
+      evals: evalEvidence({ taskSuccessRate: 1, threshold: 0.85 })
+    }).blockers.includes('eval_contract:eval_threshold_below_contract')
+  )
+  check(
+    'FALSE-GO-EVAL-SUCCESS-BELOW-CONTRACT',
+    computeCertificationDecision({
+      ...base,
+      evals: evalEvidence({ taskSuccessRate: 53 / 56 })
+    }).decision === 'NO_GO'
+  )
+  check(
+    'FALSE-GO-EVAL-EVIDENCE-MISSING',
+    computeCertificationDecision({
+      ...base,
+      evals: null
+    }).blockers.includes('eval_contract:eval_report_missing')
   )
 }
 

@@ -10,6 +10,7 @@ import {
   isCandidateExcluded,
   sha256Bytes
 } from './certification-rules.mjs'
+import { evalContractBlockers } from './eval-contract.mjs'
 
 export const PHASE11_REQUIRED_GATES = [
   'prompt_integrity',
@@ -274,6 +275,7 @@ const successStateShape = z.object({
   localVerificationComplete: z.boolean(),
   evidenceComplete: z.boolean(),
   criticalInvariantsSatisfied: z.boolean(),
+  evalContractSatisfied: z.boolean(),
   externalValidationComplete: z.boolean(),
   pilotComplete: z.boolean(),
   productionProofComplete: z.boolean(),
@@ -787,6 +789,7 @@ export function deriveSuccessState({
   rpoRto = {},
   pilot = {},
   humanSignoff = {},
+  evals = null,
   requestedProfile = 'STAGING',
   evidenceComplete = false,
   implementationComplete = true,
@@ -802,6 +805,7 @@ export function deriveSuccessState({
   const criticalInvariantsSatisfied =
     criticalInvariantBlockers(invariants).length === 0
   const localFindingsClear = localFindingBlockers(findings).length === 0
+  const evalContractSatisfied = evalContractBlockers(evals).length === 0
   const normalizedExternal = normalizeExternalGates(externalGates, {
     integrations,
     rpoRto,
@@ -836,7 +840,8 @@ export function deriveSuccessState({
     candidateClean &&
     evidenceComplete &&
     criticalInvariantsSatisfied &&
-    localFindingsClear
+    localFindingsClear &&
+    evalContractSatisfied
   const externalIntegrationClosure = externalValidationComplete
   const supervisedPilotClosure =
     externalIntegrationClosure &&
@@ -859,6 +864,7 @@ export function deriveSuccessState({
     localVerificationComplete,
     evidenceComplete,
     criticalInvariantsSatisfied,
+    evalContractSatisfied,
     externalValidationComplete,
     pilotComplete,
     productionProofComplete,
@@ -878,6 +884,7 @@ export function computeCertificationDecision({
   rpoRto = {},
   pilot = {},
   humanSignoff = {},
+  evals = null,
   deploymentProfile = 'CONTROLLED_LOCAL',
   requestedProfile = 'STAGING',
   evidenceComplete = false,
@@ -902,6 +909,7 @@ export function computeCertificationDecision({
   blockers.push(...criticalInvariantBlockers(invariants))
   blockers.push(...localFindingBlockers(findings))
   if (!implementationComplete) blockers.push('implementation_incomplete')
+  blockers.push(...evalContractBlockers(evals))
   const externalPending = externalBlockers(externalGates, {
     integrations,
     rpoRto,
@@ -918,6 +926,7 @@ export function computeCertificationDecision({
     rpoRto,
     pilot,
     humanSignoff,
+    evals,
     requestedProfile,
     evidenceComplete,
     implementationComplete,

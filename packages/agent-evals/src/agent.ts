@@ -89,7 +89,7 @@ const RULES: Rule[] = [
   {
     name: 'emergency',
     pattern:
-      /emergencia|dor no peito|sangramento|desmaio|falta de ar|engasgou|convulsao|vomitando|vomito/i,
+      /emergencia|dor no peito|sangr(amento|ando)|desmaio|falta de ar|engasgou|convulsao|vomitando|vomito/i,
     intent: 'triage',
     capabilities: [],
     escalation: 'handoff',
@@ -139,7 +139,7 @@ const RULES: Rule[] = [
   {
     name: 'schedule_appointment',
     pattern:
-      /agend|marcar (uma )?(consulta|exame)|quero (uma )?consulta|horario disponivel|tem vaga/i,
+      /agend|marcar (uma? )?(consulta|exame)|quero (uma )?consulta|horario disponivel|tem vaga/i,
     intent: 'scheduling',
     capabilities: ['schedule.read', 'appointment.create'],
     escalation: 'none',
@@ -166,7 +166,7 @@ const RULES: Rule[] = [
   {
     name: 'institutional',
     pattern:
-      /convenio|quanto custa|\bvalor\b|\bpreco\b|tabela de precos|horario de funcionamento|voces atendem|aceita (unimed|amil|bradesco)|como chegar|retorno/i,
+      /convenio|quanto custa|\bvalor\b|\bpreco\b|tabela de precos|horario de funcionamento|voces atendem|aceitam? (unimed|amil|bradesco)|como chegar|retorno/i,
     intent: 'institutional_question',
     capabilities: [],
     escalation: 'handoff',

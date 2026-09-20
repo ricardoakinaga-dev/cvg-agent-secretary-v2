@@ -1416,6 +1416,7 @@ function seal(pointerReady) {
     rpoRto,
     pilot,
     humanSignoff,
+    evals: evalReport,
     deploymentProfile,
     requestedProfile,
     evidenceComplete,
