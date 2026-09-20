@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud19-13-15-dry-run-evidence",
+  "program": "AUD19-REM",
+  "task": "AUD19-13",
+  "candidate": {
+    "commit": "fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6",
+    "candidateId": "fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89"
+  },
+  "scope": "controlled-local; no external system contacted",
+  "dryRuns": [
+    {
+      "id": "preflight-negative",
+      "command": "npm run production:preflight",
+      "exitCode": 1,
+      "status": "REJECTED_EXPECTED",
+      "sideEffects": false,
+      "blocking": 32
+    },
+    {
+      "id": "checker-missing-attestation",
+      "command": "node scripts/aud19-external-evidence-check.mjs --gate=provider --attestation=<missing>",
+      "exitCode": 1,
+      "status": "REJECTED"
+    },
+    {
+      "id": "checker-signed-placeholder-fixture",
+      "command": "... --attestation=fixture-signed-placeholder.json",
+      "exitCode": 1,
+      "status": "REJECTED",
+      "reason": "owner,candidate_digest,config_digest,signature"
+    },
+    {
+      "id": "checker-fixture-expect-reject",
+      "command": "... --expect=REJECT",
+      "exitCode": 0,
+      "status": "NEGATIVE_CONFIRMED"
+    }
+  ],
+  "conclusion": "Fixtures, flags and local documents never promote an external gate; authorization, environment, credentials, owners and signed dossiers are required."
+}
