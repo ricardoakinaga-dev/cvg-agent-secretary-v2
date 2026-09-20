@@ -1,0 +1,15 @@
+{
+  "synthetic": true,
+  "note": "Synthetic AUD19-10 accessibility evidence; no real data.",
+  "kind": "touch-targets",
+  "label": "console-full",
+  "project": "chromium",
+  "test": "accessibility.spec.ts > A11Y-07 touch targets and operational typography > interactive controls are >= 44x44 CSS px",
+  "recordedAt": "2026-09-20T03:54:28.352Z",
+  "data": {
+    "total": 30,
+    "tooSmall": [],
+    "inlineExceptions": [],
+    "wcagReference": "WCAG 2.5.5/2.5.8 with the inline-link exception recorded explicitly"
+  }
+}

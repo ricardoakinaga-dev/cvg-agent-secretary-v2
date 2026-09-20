@@ -1,0 +1,343 @@
+{
+  "synthetic": true,
+  "note": "Synthetic AUD19-10 accessibility evidence; no real data.",
+  "kind": "typography",
+  "label": "admin-control-center",
+  "project": "webkit",
+  "test": "accessibility.spec.ts > A11Y-07 touch targets and operational typography > operational typography is >= 12px with >= 1.4 line-height",
+  "recordedAt": "2026-09-20T03:58:37.562Z",
+  "data": {
+    "samples": [
+      {
+        "selector": "#platform-panel p",
+        "text": "Agentes, versões e Test Lab — tenant controlado.",
+        "fontSize": 13,
+        "lineHeight": 18.85,
+        "ratio": 1.45
+      },
+      {
+        "selector": "#platform-panel p",
+        "text": "Blocos system/safety e respostas kernel são somente leitura.",
+        "fontSize": 13,
+        "lineHeight": 18.85,
+        "ratio": 1.45
+      },
+      {
+        "selector": "#platform-panel p",
+        "text": "Versão 1 — DRAFT",
+        "fontSize": 13,
+        "lineHeight": 18.85,
+        "ratio": 1.45
+      },
+      {
+        "selector": "#platform-panel p",
+        "text": "Snapshots tenant-aware; avaliações A/B nunca publicam nem de",
+        "fontSize": 13,
+        "lineHeight": 18.85,
+        "ratio": 1.45
+      },
+      {
+        "selector": "#platform-panel p",
+        "text": "Manifests tenant-aware para revisão; este catálogo não insta",
+        "fontSize": 13,
+        "lineHeight": 18.85,
+        "ratio": 1.45
+      },
+      {
+        "selector": "#platform-panel p",
+        "text": "APPROVED: metadata revisada; execução continua bloqueada.",
+        "fontSize": 13,
+        "lineHeight": 18.85,
+        "ratio": 1.45
+      },
+      {
+        "selector": "#platform-panel p",
+        "text": "Identidade, versão e lifecycle metadata-only; nenhum conteúd",
+        "fontSize": 13,
+        "lineHeight": 18.85,
+        "ratio": 1.45
+      },
+      {
+        "selector": "#platform-panel p",
+        "text": "APPROVED: identidade revisada; RAG continua indisponível.",
+        "fontSize": 13,
+        "lineHeight": 18.85,
+        "ratio": 1.45
+      },
+      {
+        "selector": "#platform-panel p",
+        "text": "Atestação tenant-aware e imutável; VALIDATED não publica soz",
+        "fontSize": 13,
+        "lineHeight": 18.85,
+        "ratio": 1.45
+      },
+      {
+        "selector": "#platform-panel p",
+        "text": "Execuções persistidas, redigidas e tenant-scoped.",
+        "fontSize": 13,
+        "lineHeight": 18.85,
+        "ratio": 1.45
+      },
+      {
+        "selector": "#platform-panel p",
+        "text": "Nenhuma trace persistida.",
+        "fontSize": 13,
+        "lineHeight": 18.85,
+        "ratio": 1.45
+      },
+      {
+        "selector": "#platform-panel label",
+        "text": "Slug do agente",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel label",
+        "text": "Nome do agente",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel label",
+        "text": "Descrição",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel label",
+        "text": "Nome da persona",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel label",
+        "text": "Papel da persona",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel label",
+        "text": "Tom da persona",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel label",
+        "text": "Saudação",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel label",
+        "text": "Prompt blocks JSON[ { \"id\": \"kernel-safety\", \"kind\": \"safety",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel label",
+        "text": "Response templates JSON{}",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel label",
+        "text": "Provider lógico",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel label",
+        "text": "Modelo lógico",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel label",
+        "text": "Threshold de clarificação",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel h3",
+        "text": "Agentes",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel h3",
+        "text": "Novo agente / configuração",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel h3",
+        "text": "Suites / regressão controlada",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel h3",
+        "text": "Plugins / catálogo declarativo",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel h3",
+        "text": "Knowledge / catálogo de fontes controladas",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel h3",
+        "text": "Release candidate / ledger de evidências controladas",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel h3",
+        "text": "Trace Viewer",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel button",
+        "text": "Agente sintético a11ysynthetic-agent-a11y",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel button",
+        "text": "Salvar nova versão",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel button",
+        "text": "Novo agente",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel button",
+        "text": "Enviar para teste",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel button",
+        "text": "Executar dry-run",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel button",
+        "text": "Carregar suites",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel button",
+        "text": "Criar suite do agente",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel button",
+        "text": "Carregar catálogo de plugins",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel button",
+        "text": "Criar metadata do plugin",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel button",
+        "text": "Carregar catálogo de fontes de knowledge",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel button",
+        "text": "Criar metadata da fonte",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel button",
+        "text": "Carregar ledger de release candidates",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel .platformNav a",
+        "text": "Editor",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel .platformNav a",
+        "text": "Test Lab",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel .platformNav a",
+        "text": "Catálogos",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel .platformNav a",
+        "text": "Release ledger",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "#platform-panel .platformNav a",
+        "text": "Traces",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      }
+    ],
+    "failures": []
+  }
+}

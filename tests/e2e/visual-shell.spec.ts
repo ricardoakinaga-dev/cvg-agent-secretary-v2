@@ -64,6 +64,7 @@ test('console shell preserves layout, focus and control sizing across viewports'
         })
       )
       .toBe(true)
+    await page.evaluate(() => window.scrollTo(0, 0))
     await expect(page).toHaveScreenshot(`console-${viewport.name}.png`, {
       animations: 'disabled',
       caret: 'hide',

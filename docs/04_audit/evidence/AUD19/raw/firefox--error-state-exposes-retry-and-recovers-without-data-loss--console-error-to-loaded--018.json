@@ -1,0 +1,13 @@
+{
+  "synthetic": true,
+  "note": "Synthetic AUD19-10 accessibility evidence; no real data.",
+  "kind": "state-retry",
+  "label": "console-error-to-loaded",
+  "project": "firefox",
+  "test": "accessibility.spec.ts > A11Y-04 preserved operational states > error state exposes retry and recovers without data loss",
+  "recordedAt": "2026-09-20T03:55:42.117Z",
+  "data": {
+    "initialState": "error-with-retry",
+    "recovered": true
+  }
+}

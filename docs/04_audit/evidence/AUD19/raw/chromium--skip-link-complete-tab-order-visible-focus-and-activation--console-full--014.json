@@ -1,0 +1,38 @@
+{
+  "synthetic": true,
+  "note": "Synthetic AUD19-10 accessibility evidence; no real data.",
+  "kind": "keyboard-order",
+  "label": "console-full",
+  "project": "chromium",
+  "test": "accessibility.spec.ts > A11Y-03 keyboard navigation and focus order > skip link, complete tab order, visible focus and activation",
+  "recordedAt": "2026-09-20T03:54:12.526Z",
+  "data": {
+    "probeCount": 21,
+    "visited": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20
+    ],
+    "unreached": [],
+    "missingFocusIndicator": [],
+    "strictlyDomOrdered": true
+  }
+}

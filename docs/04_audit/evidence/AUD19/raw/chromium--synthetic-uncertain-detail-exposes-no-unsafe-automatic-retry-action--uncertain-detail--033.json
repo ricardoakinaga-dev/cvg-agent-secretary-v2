@@ -1,0 +1,14 @@
+{
+  "synthetic": true,
+  "note": "Synthetic AUD19-10 accessibility evidence; no real data.",
+  "kind": "uncertain-readonly",
+  "label": "uncertain-detail",
+  "project": "chromium",
+  "test": "accessibility.spec.ts > A11Y-08 UNCERTAIN read model detail > synthetic UNCERTAIN detail exposes no unsafe automatic retry action",
+  "recordedAt": "2026-09-20T03:54:32.619Z",
+  "data": {
+    "text": "Reconciliação necessáriaO efeito não pode ser classificado como concluído com segurança.1 step(s) permanecem UNCERTAIN; nenhuma repetição automática está autorizada.Próxima ação seguraReconciliar estado e registrar decisão controladaAutomaçãoRetomada automática suspensa",
+    "buttons": 0,
+    "syntheticDetailId": "synthetic_goal_uncertain"
+  }
+}

@@ -1,0 +1,917 @@
+{
+  "synthetic": true,
+  "note": "Synthetic AUD19-10 accessibility evidence; no real data.",
+  "kind": "typography",
+  "label": "console-full",
+  "project": "webkit",
+  "test": "accessibility.spec.ts > A11Y-07 touch targets and operational typography > operational typography is >= 12px with >= 1.4 line-height",
+  "recordedAt": "2026-09-20T03:58:36.290Z",
+  "data": {
+    "samples": [
+      {
+        "selector": "p",
+        "text": "OPERAÇÃO CONTROLADA · CVG",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "p",
+        "text": "Operacao assistida com aprovacoes, auditoria e acoes sensive",
+        "fontSize": 14,
+        "lineHeight": 20.299999,
+        "ratio": 1.45
+      },
+      {
+        "selector": "p",
+        "text": "CONTEXTO DA SESSÃO",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "p",
+        "text": "Contexto somente leitura; permissões e autoridade são sempre",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "p",
+        "text": "LEITURA OPERACIONAL",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "p",
+        "text": "Goal, plano, passo atual, limites, riscos e handoff em modo ",
+        "fontSize": 13,
+        "lineHeight": 18.85,
+        "ratio": 1.45
+      },
+      {
+        "selector": "p",
+        "text": "Execução automatizada controlada; nenhum responsável nominal",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "p",
+        "text": "Uso atual / limite configurado; sem ações de alteração.",
+        "fontSize": 12,
+        "lineHeight": 17.4,
+        "ratio": 1.45
+      },
+      {
+        "selector": "p",
+        "text": "Observações, avaliações e versões expostas como metadados op",
+        "fontSize": 12,
+        "lineHeight": 17.4,
+        "ratio": 1.45
+      },
+      {
+        "selector": "p",
+        "text": "Nenhuma evidência registrada.",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "p",
+        "text": "1 plano(s) no read model completo.",
+        "fontSize": 12,
+        "lineHeight": 17.4,
+        "ratio": 1.45
+      },
+      {
+        "selector": "p",
+        "text": "Motivo: synthetic controlled plan",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".eyebrow",
+        "text": "OPERAÇÃO CONTROLADA · CVG",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".eyebrow",
+        "text": "CONTEXTO DA SESSÃO",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".eyebrow",
+        "text": "LEITURA OPERACIONAL",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".state",
+        "text": "synthetic_event_recorded: 1",
+        "fontSize": 12,
+        "lineHeight": 17.4,
+        "ratio": 1.45
+      },
+      {
+        "selector": ".state",
+        "text": "synthetic_retention_policy / Dados reais bloqueados / payloa",
+        "fontSize": 12,
+        "lineHeight": 17.4,
+        "ratio": 1.45
+      },
+      {
+        "selector": ".state",
+        "text": "Evidencias 1-1 de 1",
+        "fontSize": 12,
+        "lineHeight": 17.4,
+        "ratio": 1.45
+      },
+      {
+        "selector": ".state",
+        "text": "Salve o rascunho do tutor primeiro.",
+        "fontSize": 12,
+        "lineHeight": 17.4,
+        "ratio": 1.45
+      },
+      {
+        "selector": ".state",
+        "text": "Risco, ambiguidade ou ausência de fonte devem seguir para um",
+        "fontSize": 12,
+        "lineHeight": 17.4,
+        "ratio": 1.45
+      },
+      {
+        "selector": ".recordSummary",
+        "text": "Mensagem sintética de acessibilidade.",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordSummary",
+        "text": "Revisão humana sintética; nenhuma ação real é autorizada.",
+        "fontSize": 12,
+        "lineHeight": 17.4,
+        "ratio": 1.45
+      },
+      {
+        "selector": ".recordSummary",
+        "text": "Descrição sintética sem qualquer efeito operacional real.",
+        "fontSize": 12,
+        "lineHeight": 17.4,
+        "ratio": 1.45
+      },
+      {
+        "selector": ".recordSummary",
+        "text": "synthetic_terminal_error_for_a11y_fixture",
+        "fontSize": 12,
+        "lineHeight": 17.4,
+        "ratio": 1.45
+      },
+      {
+        "selector": ".row span",
+        "text": "Objetivo sintético synthetic_goal_executingEm execução",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".row span",
+        "text": "Em execução",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".row span",
+        "text": "synthetic_goal_executing · versão 7",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".row span",
+        "text": "Atualizado 20/09/2026, 09:00 · correlation synthetic_corr_sy",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".row span",
+        "text": "Motivo: step claimed",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".row span",
+        "text": "Motivo: step claimed",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".row span",
+        "text": "Objetivo sintético synthetic_goal_approvalAguardando aprovaç",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".row span",
+        "text": "Aguardando aprovação",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".row span",
+        "text": "synthetic_goal_approval · versão 7",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".row span",
+        "text": "Atualizado 20/09/2026, 09:00 · correlation synthetic_corr_sy",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".row span",
+        "text": "Motivo: Aprovação pendente",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".row span",
+        "text": "Motivo: Aprovação pendente",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dt",
+        "text": "Plano ativo",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dt",
+        "text": "Prazo",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dt",
+        "text": "Correlação",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dt",
+        "text": "Sessão",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dt",
+        "text": "Replans",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dt",
+        "text": "Critérios de sucesso",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dt",
+        "text": "Atualizado",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dt",
+        "text": "Aprovações vinculadas",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dt",
+        "text": "Sessao",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dt",
+        "text": "Correlation",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dt",
+        "text": "Atualizada",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dt",
+        "text": "Sessao",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dd",
+        "text": "synthetic_plan_1",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dd",
+        "text": "Não definido",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dd",
+        "text": "synthetic_corr_synthetic_goal_executing",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dd",
+        "text": "synthetic_session_1",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dd",
+        "text": "1/3",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dd",
+        "text": "1",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dd",
+        "text": "20/09/2026, 09:00",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dd",
+        "text": "0",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dd",
+        "text": "synthetic_session_1",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dd",
+        "text": "synthetic_correlation_conversation_1",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dd",
+        "text": "20/09/2026, 09:00",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".recordMeta dd",
+        "text": "synthetic_session_1",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".stateBadge",
+        "text": "Em execução",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".stateBadge",
+        "text": "Aguardando aprovação",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".stateBadge",
+        "text": "Handoff humano",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".stateBadge",
+        "text": "Requer reconciliação",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".stateBadge",
+        "text": "Falhou",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".stateBadge",
+        "text": "Em execução",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".stateBadge",
+        "text": "Ativa",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".stateBadge",
+        "text": "Em execução",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".stateBadge",
+        "text": "Ativa",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".stateBadge",
+        "text": "Pendente",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".stateBadge",
+        "text": "Aberta",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".stateBadge",
+        "text": "Dead-letter",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".counter",
+        "text": "5",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".counter",
+        "text": "1",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".counter",
+        "text": "1",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".counter",
+        "text": "1",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".counter",
+        "text": "1",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".counter",
+        "text": "1",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".identityMeta dt",
+        "text": "Operador autenticado",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".identityMeta dt",
+        "text": "Papel atribuído",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".identityMeta dt",
+        "text": "Tenant vinculado",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".identityMeta dd",
+        "text": "supervisor.synthetic.a11y",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".identityMeta dd",
+        "text": "Supervisor",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".identityMeta dd",
+        "text": "tenant_00000000-0000-4000-8000-00000000a11e",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".sectionNav a",
+        "text": "Operação",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".sectionNav a",
+        "text": "Goals duráveis",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".sectionNav a",
+        "text": "Jornadas",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".sectionNav a",
+        "text": "Dead letters",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationStat",
+        "text": "Ativos 4",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationStat",
+        "text": "Replanejando 0",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationStat",
+        "text": "Aprovação 1",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationStat",
+        "text": "Handoff 1",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationStat",
+        "text": "Incerto 1",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationStat",
+        "text": "Bloqueado 0",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationStat",
+        "text": "Falha 1",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationStat",
+        "text": "Dead letters 1",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationBudgetMetric dt",
+        "text": "Passos",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationBudgetMetric dt",
+        "text": "Replans",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationBudgetMetric dt",
+        "text": "Iterações",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationBudgetMetric dt",
+        "text": "Chamadas de modelo",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationBudgetMetric dt",
+        "text": "Chamadas de ferramenta",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationBudgetMetric dt",
+        "text": "Duração máxima",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationBudgetMetric dt",
+        "text": "Custo USD",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationBudgetMetric dd",
+        "text": "2 / 12uso / limite",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationBudgetMetric dd",
+        "text": "1 / 3uso / limite",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationBudgetMetric dd",
+        "text": "4 / 256uso / limite",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationBudgetMetric dd",
+        "text": "1 / 8uso / limite",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationBudgetMetric dd",
+        "text": "2 / 10uso / limite",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationBudgetMetric dd",
+        "text": "2 minlimite configurado",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationBudgetMetric dd",
+        "text": "$0.04 / $2.00uso / limite",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationStepMeta",
+        "text": "Risco: Baixo risco · leituraAprovação: Sem aprovaçãoDependên",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationAttempt",
+        "text": "Última tentativa: Em andamento · worker worker.synthetic.a11",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".orchestrationPlanLineage",
+        "text": "1 step(s)Plano inicial",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".journeyProgress li",
+        "text": "Tutor",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".journeyProgress li",
+        "text": "Pet",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".journeyProgress li",
+        "text": "Horário",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": ".journeyProgress li",
+        "text": "Handoff",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "button",
+        "text": "Encerrar sessão",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": "button",
+        "text": "Objetivo sintético synthetic_goal_executingEm execuçãosynthe",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": "button",
+        "text": "Objetivo sintético synthetic_goal_approvalAguardando aprovaç",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": "button",
+        "text": "Objetivo sintético synthetic_goal_handoffHandoff humanosynth",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": "button",
+        "text": "Objetivo sintético synthetic_goal_uncertainRequer reconcilia",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": "button",
+        "text": "Objetivo sintético synthetic_goal_failedFalhousynthetic_goal",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": "button",
+        "text": "synthetic_sender_0001Ativasynthetic_channel / activeMensagem",
+        "fontSize": 13,
+        "lineHeight": 18.200001,
+        "ratio": 1.4
+      },
+      {
+        "selector": "button",
+        "text": "Aprovar",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "button",
+        "text": "Rejeitar",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "button",
+        "text": "Assumir handoff",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "button",
+        "text": "Iniciar",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      },
+      {
+        "selector": "button",
+        "text": "Concluir",
+        "fontSize": 12,
+        "lineHeight": 16.799999,
+        "ratio": 1.4
+      }
+    ],
+    "failures": []
+  }
+}

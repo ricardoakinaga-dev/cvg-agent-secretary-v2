@@ -9,11 +9,17 @@ test('configures, publishes and dry-runs an agent through the real web/API bound
   await controlCenter.authenticateAsAdmin(
     'tenant_00000000-0000-4000-8000-000000000051'
   )
+  const newAgentButton = page.getByRole('button', { name: 'Novo agente' })
+  if (await newAgentButton.isVisible()) {
+    await newAgentButton.click()
+  }
+  await expect(page.getByLabel('Slug do agente')).toHaveValue('')
 
   const slug = `e2e-controlled-agent-${Date.now()}`
+  const agentName = `E2E Agent ${slug}`
   await controlCenter.createDraft({
     slug,
-    name: 'E2E Controlled Agent',
+    name: agentName,
     greeting: 'Olá, resposta fictícia.',
     knowledgeSource: 'controlled://e2e-hours',
     handoff: {
@@ -28,9 +34,10 @@ test('configures, publishes and dry-runs an agent through the real web/API bound
   await controlCenter.startNewAgent()
   await expect(page.getByLabel('Slug do agente')).toHaveValue('')
   const secondSlug = `${slug}-b`
+  const secondAgentName = `E2E Agent B ${secondSlug}`
   await controlCenter.createDraft({
     slug: secondSlug,
-    name: 'E2E Controlled Agent B',
+    name: secondAgentName,
     greeting: 'Olá, resposta do Agent B.',
     knowledgeSource: 'controlled://e2e-hours-b',
     handoff: {
@@ -41,7 +48,7 @@ test('configures, publishes and dry-runs an agent through the real web/API bound
       priority: 'low'
     }
   })
-  await expect(page.getByText('E2E Controlled Agent B')).toBeVisible()
+  await expect(page.getByText(secondAgentName).first()).toBeVisible()
   await controlCenter.selectAgent(slug)
   await expect(page.getByLabel('Saudação')).toHaveValue(
     'Olá, resposta fictícia.'
@@ -69,7 +76,7 @@ test('configures, publishes and dry-runs an agent through the real web/API bound
   )
   await page.getByRole('button', { name: 'Criar suite do agente' }).click()
   await expect(
-    page.getByText('E2E Controlled Agent Smoke Suite v1')
+    page.getByText(`${agentName} Smoke Suite`, { exact: false }).first()
   ).toBeVisible()
   await page.getByRole('button', { name: 'Comparar A/B' }).click()
   await expect(page.getByLabel('Resultado da suite do Test Lab')).toContainText(
@@ -110,7 +117,7 @@ test('configures, publishes and dry-runs an agent through the real web/API bound
     page.getByText('Metadata do plugin aprovada; execução continua bloqueada.')
   ).toBeVisible()
   await controlCenter.createAndApproveKnowledgeSource(
-    'controlled://e2e-institutional-hours'
+    `controlled://e2e-institutional-hours-${slug}`
   )
   await controlCenter.createAndValidateReleaseCandidate()
   await expect(

@@ -1,0 +1,14 @@
+{
+  "synthetic": true,
+  "note": "Synthetic AUD19-10 accessibility evidence; no real data.",
+  "kind": "axe-gate",
+  "label": "console-error",
+  "project": "webkit",
+  "test": "accessibility.spec.ts > A11Y-01 axe scan on main operator screens > unchanged read-only states: empty and error",
+  "recordedAt": "2026-09-20T03:57:31.686Z",
+  "data": {
+    "blocking": [],
+    "exemptedByFrozenList": [],
+    "frozenExceptions": []
+  }
+}

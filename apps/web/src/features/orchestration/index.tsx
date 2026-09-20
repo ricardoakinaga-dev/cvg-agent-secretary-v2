@@ -230,8 +230,8 @@ function BudgetMetric({
         {used === null
           ? formatValue(limit)
           : `${formatValue(used)} / ${formatValue(limit)}`}
+        <span>{used === null ? 'limite configurado' : 'uso / limite'}</span>
       </dd>
-      <span>{used === null ? 'limite configurado' : 'uso / limite'}</span>
     </div>
   )
 }

@@ -1,0 +1,13 @@
+{
+  "synthetic": true,
+  "note": "Synthetic AUD19-10 accessibility evidence; no real data.",
+  "kind": "state-handoff",
+  "label": "supervisor-handoff",
+  "project": "chromium",
+  "test": "accessibility.spec.ts > A11Y-04 preserved operational states > handoff and UNCERTAIN remain read-only and clearly announced",
+  "recordedAt": "2026-09-20T03:54:20.839Z",
+  "data": {
+    "action": "assume-handoff-with-enter",
+    "result": "success-message-visible"
+  }
+}

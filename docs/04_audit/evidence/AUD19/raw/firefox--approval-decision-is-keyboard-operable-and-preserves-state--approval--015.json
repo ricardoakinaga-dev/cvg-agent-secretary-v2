@@ -1,0 +1,13 @@
+{
+  "synthetic": true,
+  "note": "Synthetic AUD19-10 accessibility evidence; no real data.",
+  "kind": "keyboard-activation",
+  "label": "approval",
+  "project": "firefox",
+  "test": "accessibility.spec.ts > A11Y-03 keyboard navigation and focus order > approval decision is keyboard operable and preserves state",
+  "recordedAt": "2026-09-20T03:55:38.171Z",
+  "data": {
+    "action": "approve-with-enter",
+    "result": "success-message-visible"
+  }
+}

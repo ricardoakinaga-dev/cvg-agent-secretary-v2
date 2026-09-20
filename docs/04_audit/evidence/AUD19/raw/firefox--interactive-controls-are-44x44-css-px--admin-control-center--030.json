@@ -1,0 +1,14 @@
+{
+  "synthetic": true,
+  "note": "Synthetic AUD19-10 accessibility evidence; no real data.",
+  "kind": "touch-targets",
+  "label": "admin-control-center",
+  "project": "firefox",
+  "test": "accessibility.spec.ts > A11Y-07 touch targets and operational typography > interactive controls are >= 44x44 CSS px",
+  "recordedAt": "2026-09-20T03:56:00.631Z",
+  "data": {
+    "total": 86,
+    "tooSmall": [],
+    "inlineExceptions": []
+  }
+}

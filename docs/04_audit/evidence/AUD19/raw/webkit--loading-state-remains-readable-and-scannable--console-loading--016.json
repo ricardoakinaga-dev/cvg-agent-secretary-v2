@@ -1,0 +1,14 @@
+{
+  "synthetic": true,
+  "note": "Synthetic AUD19-10 accessibility evidence; no real data.",
+  "kind": "axe",
+  "label": "console-loading",
+  "project": "webkit",
+  "test": "accessibility.spec.ts > A11Y-04 preserved operational states > loading state remains readable and scannable",
+  "recordedAt": "2026-09-20T03:58:02.826Z",
+  "data": {
+    "violations": [],
+    "incompleteCount": 2,
+    "passesCount": 27
+  }
+}

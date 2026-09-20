@@ -1,0 +1,57 @@
+{
+  "synthetic": true,
+  "note": "Synthetic AUD19-10 accessibility evidence; no real data.",
+  "kind": "zoom-reflow",
+  "label": "zoom-200",
+  "project": "webkit",
+  "test": "accessibility.spec.ts > A11Y-05 zoom and reflow (320 CSS px, 200% and 400%) > zoom-200: no horizontal scroll and no content loss",
+  "recordedAt": "2026-09-20T03:58:19.781Z",
+  "data": {
+    "emulation": {
+      "zoom": "200%",
+      "equivalentScreenWidth": 1280
+    },
+    "metrics": {
+      "viewport": 640,
+      "documentScrollWidth": 640,
+      "bodyScrollWidth": 640,
+      "panels": [
+        {
+          "id": "orchestration-panel",
+          "clientWidth": 614,
+          "scrollWidth": 614
+        },
+        {
+          "id": "conversations-title",
+          "clientWidth": 614,
+          "scrollWidth": 614
+        },
+        {
+          "id": "approvals-title",
+          "clientWidth": 614,
+          "scrollWidth": 614
+        },
+        {
+          "id": "tasks-title",
+          "clientWidth": 614,
+          "scrollWidth": 614
+        },
+        {
+          "id": "audit-title",
+          "clientWidth": 614,
+          "scrollWidth": 614
+        },
+        {
+          "id": "dead-letters-panel",
+          "clientWidth": 614,
+          "scrollWidth": 614
+        },
+        {
+          "id": "journeys-panel",
+          "clientWidth": 614,
+          "scrollWidth": 614
+        }
+      ]
+    }
+  }
+}

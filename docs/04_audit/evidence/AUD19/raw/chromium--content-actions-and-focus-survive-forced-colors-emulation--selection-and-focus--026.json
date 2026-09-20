@@ -1,0 +1,22 @@
+{
+  "synthetic": true,
+  "note": "Synthetic AUD19-10 accessibility evidence; no real data.",
+  "kind": "forced-colors",
+  "label": "selection-and-focus",
+  "project": "chromium",
+  "test": "accessibility.spec.ts > A11Y-06 forced colors > content, actions and focus survive forced-colors emulation",
+  "recordedAt": "2026-09-20T03:54:25.653Z",
+  "data": {
+    "selectedStyles": {
+      "outlineStyle": "solid",
+      "outlineWidth": 3,
+      "borderTopStyle": "none",
+      "borderTopWidth": 0
+    },
+    "focusStyles": {
+      "outlineStyle": "solid",
+      "outlineWidth": 3,
+      "boxShadow": "none"
+    }
+  }
+}
