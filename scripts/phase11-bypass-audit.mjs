@@ -20,6 +20,22 @@ const forbidden = [
   { id: 'direct_sql_write', pattern: /\b(?:INSERT|UPDATE|DELETE)\s+INTO?\b/gi }
 ]
 
+// Infrastructure/security stores that own their tables directly and never
+// execute a governed business effect. Every entry must stay narrowly scoped.
+const allowedSqlWriteInfrastructure = new Map([
+  [
+    'apps/api/src/webhook-security.ts',
+    'webhook signature replay store (pre-kernel security boundary)'
+  ],
+  [
+    'apps/api/src/operator-replay-store.ts',
+    'distributed operator token replay claims (pre-kernel security boundary)'
+  ]
+])
+
+const stripComments = (source) =>
+  source.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/\/\/[^\n]*/g, ' ')
+
 const allowedBoundary = (relativePath, findingId) => {
   if (findingId === 'direct_fetch') return false
   if (findingId === 'direct_evolution' || findingId === 'direct_chatwoot')
@@ -27,7 +43,7 @@ const allowedBoundary = (relativePath, findingId) => {
   if (findingId === 'direct_channel_send') return false
   if (findingId === 'direct_external_http') return false
   if (findingId === 'direct_sql_write') {
-    return relativePath === 'apps/api/src/webhook-security.ts'
+    return allowedSqlWriteInfrastructure.has(relativePath)
   }
   return relativePath.startsWith('packages/channel-gateway/src/adapters/')
 }
@@ -44,7 +60,9 @@ const files = (listed.stdout ?? '')
 
 const findings = []
 for (const relativePath of files) {
-  const source = fs.readFileSync(path.join(root, relativePath), 'utf8')
+  const source = stripComments(
+    fs.readFileSync(path.join(root, relativePath), 'utf8')
+  )
   for (const rule of forbidden) {
     rule.pattern.lastIndex = 0
     let match
@@ -67,7 +85,10 @@ const report = {
     'packages/model-gateway/src/providers/',
     'packages/adapters/src/fake/'
   ],
-  note: 'Application and worker entrypoints must route through the governed kernel; adapter implementations are the only outbound boundary.'
+  allowedSqlWriteInfrastructure: [...allowedSqlWriteInfrastructure].map(
+    ([file, rationale]) => ({ file, rationale })
+  ),
+  note: 'Application and worker entrypoints must route through the governed kernel; adapter implementations are the only outbound boundary. Comments are stripped before scanning so prose cannot create findings, and only the two named pre-kernel security stores may own direct SQL writes.'
 }
 console.log(JSON.stringify(report, null, 2))
 process.exitCode = findings.length === 0 ? 0 : 1

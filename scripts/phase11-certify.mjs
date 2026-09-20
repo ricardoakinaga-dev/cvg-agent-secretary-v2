@@ -1325,7 +1325,8 @@ function releaseManifest() {
     containerDigest: buildDigests
       ? `api:${digestPart(buildDigests.container?.api?.configDigest)};worker:${digestPart(buildDigests.container?.worker?.configDigest)}`
       : null,
-    sbomDigest: sbom ?? (buildDigests ? digestPart(buildDigests.sbom?.digest) : null),
+    sbomDigest:
+      sbom ?? (buildDigests ? digestPart(buildDigests.sbom?.digest) : null),
     migrationDigest: buildDigests
       ? digestPart(buildDigests.migration?.digest)
       : null,
