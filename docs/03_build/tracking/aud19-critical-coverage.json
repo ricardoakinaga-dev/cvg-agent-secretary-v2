@@ -5,7 +5,7 @@
   "task": "AUD19-12",
   "floorBranchesPct": 95,
   "source": "docs/02_spec/aaa_quality_contract.md §9.1",
-  "denominator": "coverage measured with the disposable PostgreSQL available (npm run test:coverage with TEST_DATABASE_URL), so PostgreSQL-bound behaviour is exercised; adapters excluded from the coverage denominator by vitest.config.mts remain covered by the dedicated PostgreSQL gate (28 files / 226 tests / 0 skips).",
+  "denominator": "coverage measured with the disposable PostgreSQL available (npm run test:coverage with TEST_DATABASE_URL), so PostgreSQL-bound behaviour is exercised; adapters excluded from the coverage denominator by vitest.config.mts remain covered by the dedicated PostgreSQL gate (selection in package.json scripts.test:postgres, zero required skips).",
   "criticalModules": {
     "kernel": [
       "packages/agent-runtime/src/orchestration.ts",
