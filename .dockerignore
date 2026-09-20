@@ -1,6 +1,8 @@
+# Build context exclusions for the API/worker/web images.
 node_modules
 **/node_modules
 .git
+.gitignore
 .github
 coverage
 test-results
@@ -9,11 +11,23 @@ blob-report
 .gauntlet
 .opencode
 docs
-BRIEFING
 certification
+BRIEFING
+tests
+# Test sources are never imported at runtime; keeping them out of the image
+# removes fixtures and dev-only code from the production surface.
+**/__tests__
 *.log
 .env
 .env.*
 !.env.example
 *.tsbuildinfo
 **/*.tsbuildinfo
+# Local secrets and operator material must never enter the build context.
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+**/secrets/**
+**/.secrets/**

@@ -46,16 +46,17 @@ describe('controlled PostgreSQL worker boundary', () => {
     )
   })
 
-  it('rejects the controlled PostgreSQL adapter in production', () => {
+  it('refuses an incomplete production profile before opening a pool', () => {
     expect(() =>
       createPostgresControlledWorker({
         NODE_ENV: 'production',
+        CVG_WORKER_QUEUE_ADAPTER: 'postgres-controlled',
         DATABASE_URL: 'postgres://fixture.invalid/cvg',
         POSTGRES_RLS_ENFORCEMENT: 'true',
         CVG_WORKER_CONTROLLED_MODE: 'true',
         CVG_WORKER_TENANT_ID: tenantId
       })
-    ).toThrow(/disabled in production/)
+    ).toThrow(/Production worker requires CVG_WORKER_RUNTIME=kernel/)
   })
 
   it('runs a committed inbound event through the deterministic runtime and finalizer', async () => {

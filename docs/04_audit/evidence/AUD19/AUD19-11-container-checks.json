@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud19-11-container-checks",
+  "task": "AUD19-11",
+  "observedAt": "2026-09-20T04:30:00Z",
+  "scope": "CONTROLLED_LOCAL",
+  "production": "NO_GO",
+  "images": {
+    "api": "cvg-aud19-api:local",
+    "worker": "cvg-aud19-worker:local"
+  },
+  "nonRoot": {
+    "apiUid": 10001,
+    "workerUid": 10001,
+    "user": "cvg"
+  },
+  "api": {
+    "command": "docker run -d -e NODE_ENV=test -e WEBHOOK_SIGNING_SECRET=<synthetic> -p 127.0.0.1:13019:3000 cvg-aud19-api:local",
+    "dockerHealth": "healthy",
+    "liveHttpStatus": 200,
+    "readyHttpStatus": 200
+  },
+  "workerFailClosed": {
+    "command": "docker run --rm cvg-aud19-worker:local",
+    "exitCode": 1,
+    "event": "worker.startup_failed",
+    "code": "production_bootstrap_preflight_failed",
+    "blocking": [
+      "bootstrap.persistence",
+      "bootstrap.database",
+      "bootstrap.migration_database",
+      "bootstrap.database_separation",
+      "bootstrap.rls",
+      "bootstrap.no_auto_migrate",
+      "bootstrap.kernel",
+      "bootstrap.inbound",
+      "bootstrap.identity",
+      "bootstrap.secrets",
+      "bootstrap.operator_identity",
+      "bootstrap.http_security",
+      "bootstrap.governance",
+      "bootstrap.external_attestation",
+      "bootstrap.external_attestations",
+      "bootstrap.runtime_attestation"
+    ]
+  },
+  "workerCompleteStaticProductionProfile": {
+    "description": "NODE_ENV=production (image default) plus the complete static durable-kernel profile with synthetic values and no attestation files.",
+    "exitCode": 1,
+    "blocking": [
+      "bootstrap.external_attestation",
+      "bootstrap.external_attestations",
+      "bootstrap.runtime_attestation"
+    ],
+    "conclusion": "The previous unconditional production impossibility (production_controlled_worker_forbidden) is replaced by the real residual gate: signed external/human attestations and the hashed runtime attestation. Production stays fail-closed."
+  },
+  "workerContainerSmoke": {
+    "evidence": "docs/04_audit/evidence/AUD19/AUD19-11-worker-smoke-container.json",
+    "target": "docker-container",
+    "readinessStatus": "ready",
+    "dockerHealth": "healthy",
+    "exitCode": 0,
+    "externalEffects": false
+  },
+  "notes": [
+    "No image was pushed, tagged for a registry, deployed or published.",
+    "Synthetic secrets only; no real credential or provider was contacted."
+  ]
+}

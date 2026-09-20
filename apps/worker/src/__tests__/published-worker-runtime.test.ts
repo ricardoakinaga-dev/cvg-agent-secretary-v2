@@ -385,9 +385,9 @@ describe('published worker runtime boundary', () => {
         CVG_WORKER_CONTROLLED_MODE: 'true'
       })
     ).toEqual({
-      code: 'production_controlled_worker_forbidden',
+      code: 'production_durable_kernel_required',
       message:
-        'Controlled PostgreSQL worker is disabled in production pending external gates'
+        'Production worker requires CVG_WORKER_RUNTIME=kernel and CVG_DURABLE_KERNEL_ORCHESTRATOR=true; inline/published-agent execution is forbidden'
     })
   })
 })

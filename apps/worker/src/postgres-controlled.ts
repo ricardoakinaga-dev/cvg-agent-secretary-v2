@@ -39,6 +39,7 @@ import {
   type OutboxBacklogProbe
 } from './continuous-worker.ts'
 import { createPeriodicSweepRunner } from './sweeps.ts'
+import { assertProductionWorkerConfiguration } from './production-worker-guard.ts'
 import {
   KERNEL_WORKER_RUNTIME,
   KernelRuntimeConfigurationError,
@@ -154,18 +155,17 @@ function createPostgresKernelSweepRunner(
 /**
  * Validates the controlled PostgreSQL configuration and opens the shared
  * pool/adapter/control-plane resources. It never activates an external effect
- * path: production is rejected and controlled mode is mandatory.
+ * path: production additionally requires the durable kernel profile, a
+ * distinct migration role, RLS/controlled mode and real effects disabled, and
+ * a production worker is only reachable after the signed bootstrap preflight
+ * passes in the entrypoint.
  */
 export function openPostgresControlledConnection(
   env: NodeJS.ProcessEnv,
   handlers?: ControlledWorkerHandlers,
   options: OpenPostgresControlledConnectionOptions = {}
 ): PostgresControlledConnection {
-  if (env.NODE_ENV === 'production') {
-    throw new Error(
-      'Controlled PostgreSQL worker is disabled in production pending external gates'
-    )
-  }
+  assertProductionWorkerConfiguration(env)
   const databaseUrl = env.DATABASE_URL?.trim()
   if (!databaseUrl) {
     throw new Error('DATABASE_URL is required for the PostgreSQL worker')

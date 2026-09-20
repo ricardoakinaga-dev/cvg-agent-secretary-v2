@@ -18,6 +18,10 @@ import {
 } from './kernel-composition.ts'
 import { InMemoryDatabase, OutboxRepository } from '@cvg/persistence'
 import { assertProductionBootstrap } from '../../../scripts/lib/production-preflight-core.mjs'
+import {
+  createWorkerHealthReporter,
+  parseWorkerHealthConfig
+} from './worker-health.ts'
 
 const startupFailure = getWorkerStartupFailure()
 let productionBootstrapFailure: Error | undefined
@@ -76,12 +80,15 @@ if (productionBootstrapFailure) {
       process.exitCode = 1
     })
   } else {
-    void runPostgresControlledWorker(process.env).catch(() => {
+    void runPostgresControlledWorker(process.env).catch((error: unknown) => {
       console.error(
         JSON.stringify({
           event: 'worker.controlled_failed',
           code: 'controlled_worker_failed',
-          message: 'Controlled PostgreSQL worker failed'
+          message:
+            error instanceof Error
+              ? error.message
+              : 'Controlled PostgreSQL worker failed'
         })
       )
       process.exitCode = 1
@@ -132,8 +139,20 @@ async function runControlledMemoryWorker(env: NodeJS.ProcessEnv) {
 
 async function runPostgresControlledWorker(env: NodeJS.ProcessEnv) {
   const runtime = createPostgresControlledWorker(env)
+  const health = await createWorkerHealthReporter(
+    parseWorkerHealthConfig(env),
+    {
+      workerId: env.CVG_WORKER_ID?.trim() || 'worker-controlled-postgres',
+      log: (event, fields) =>
+        console.error(JSON.stringify({ event, ...(fields ?? {}) }))
+    }
+  )
   const shutdown = createShutdownController({
-    close: () => runtime.pool.end(),
+    close: async () => {
+      await health.markDraining()
+      await runtime.pool.end()
+      await health.markStopped()
+    },
     exit: (code) => process.exit(code),
     log: (event) => {
       if (event.type !== 'shutdown.started') {
@@ -154,6 +173,12 @@ async function runPostgresControlledWorker(env: NodeJS.ProcessEnv) {
         TenantIdSchema.parse(env.CVG_WORKER_TENANT_ID)
       )
     }
+    await health.markReady({
+      adapter: POSTGRES_CONTROLLED_QUEUE_ADAPTER,
+      runMode: 'once',
+      durable: true,
+      externalEffects: false
+    })
     const drained = await runtime.worker.drain(
       parseControlledDrainLimit(env.CVG_WORKER_MAX_EVENTS)
     )
@@ -168,6 +193,7 @@ async function runPostgresControlledWorker(env: NodeJS.ProcessEnv) {
       })
     )
   } finally {
+    await health.markStopped()
     await runtime.pool.end()
   }
 }
@@ -182,6 +208,13 @@ async function runPostgresControlledWorker(env: NodeJS.ProcessEnv) {
 async function runPostgresContinuousWorker(env: NodeJS.ProcessEnv) {
   const telemetry = createJsonWorkerTelemetry()
   const runtime = createPostgresContinuousWorker(env, { telemetry })
+  const health = await createWorkerHealthReporter(
+    parseWorkerHealthConfig(env),
+    {
+      workerId: runtime.workerId,
+      log: (event, fields) => telemetry.log(event, fields)
+    }
+  )
   try {
     await assertPostgresWorkerPreflight(runtime.pool, {
       tenantId: runtime.tenantId
@@ -195,12 +228,14 @@ async function runPostgresContinuousWorker(env: NodeJS.ProcessEnv) {
   }
   const shutdown = createShutdownController({
     close: async () => {
+      await health.markDraining()
       const stopped = await runtime.worker.stop()
       telemetry.log('worker.continuous_drained', {
         drained: stopped.drained,
         released: stopped.released,
         releaseFailed: stopped.releaseFailed
       })
+      await health.markStopped()
       await runtime.pool.end()
     },
     exit: (code) => process.exit(code),
@@ -219,6 +254,11 @@ async function runPostgresContinuousWorker(env: NodeJS.ProcessEnv) {
   })
   shutdown.install(process)
   runtime.worker.start()
+  await health.markReady({
+    adapter: POSTGRES_CONTROLLED_QUEUE_ADAPTER,
+    durable: true,
+    externalEffects: false
+  })
   telemetry.log('worker.continuous_ready', {
     adapter: POSTGRES_CONTROLLED_QUEUE_ADAPTER,
     concurrency: runtime.tuning.concurrency,

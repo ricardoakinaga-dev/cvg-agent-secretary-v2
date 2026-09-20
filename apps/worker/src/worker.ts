@@ -8,6 +8,10 @@ import {
   CONTINUOUS_WORKER_RUN_MODE,
   parseContinuousWorkerSettings
 } from './continuous-worker.ts'
+import {
+  getProductionWorkerConfigurationFailure,
+  type ProductionWorkerGuardCode
+} from './production-worker-guard.ts'
 
 export type WorkerRuntimeDependencies = PublishedAgentJobDependencies
 
@@ -19,10 +23,10 @@ export interface WorkerStartupFailure {
     | 'postgres_database_missing'
     | 'postgres_rls_required'
     | 'controlled_mode_required'
-    | 'production_controlled_worker_forbidden'
     | 'worker_run_mode_unsupported'
     | 'continuous_durable_adapter_required'
     | 'continuous_settings_invalid'
+    | ProductionWorkerGuardCode
   message: string
 }
 
@@ -91,11 +95,8 @@ export function getWorkerStartupFailure(
 
   if (adapter === 'postgres-controlled' || adapter === 'postgres') {
     if (env.NODE_ENV === 'production') {
-      return {
-        code: 'production_controlled_worker_forbidden',
-        message:
-          'Controlled PostgreSQL worker is disabled in production pending external gates'
-      }
+      const productionFailure = getProductionWorkerConfigurationFailure(env)
+      if (productionFailure) return productionFailure
     }
     if (!env.DATABASE_URL?.trim()) {
       return {

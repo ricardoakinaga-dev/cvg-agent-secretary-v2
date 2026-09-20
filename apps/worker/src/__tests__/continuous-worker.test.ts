@@ -203,7 +203,7 @@ describe('AAA-19 continuous worker startup fail-closed', () => {
     ).toMatchObject({ code: 'controlled_mode_required' })
     expect(
       getWorkerStartupFailure({ ...base, NODE_ENV: 'production' })
-    ).toMatchObject({ code: 'production_controlled_worker_forbidden' })
+    ).toMatchObject({ code: 'production_durable_kernel_required' })
   })
 
   it('rejects unsupported run modes and invalid continuous settings', () => {

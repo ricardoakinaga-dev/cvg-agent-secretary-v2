@@ -1,0 +1,246 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud19-11-digests",
+  "task": "AUD19-11",
+  "observedAt": "2026-09-20T04:29:42.038Z",
+  "scope": "CONTROLLED_LOCAL",
+  "production": "NO_GO",
+  "toolchain": {
+    "node": "v22.23.2",
+    "npm": "10.9.8",
+    "docker": "29.1.3"
+  },
+  "source": {
+    "head": "99dffff71c768bc7741e373a5fb19bcf08ef4702",
+    "dirtyFiles": 113,
+    "note": "informational only; the candidate identity is owned by AUD19-12"
+  },
+  "build": {
+    "api": {
+      "status": "PASS",
+      "tag": "cvg-aud19-api:local",
+      "id": "sha256:1a910a14681e78a137c6b8bab6165d1a58e782e2c39a9751638565021bee2d1c",
+      "created": "2026-09-20T01:24:43.204816783-03:00",
+      "user": "cvg",
+      "architecture": "amd64",
+      "os": "linux",
+      "repoDigests": [
+        "cvg-aud19-api@sha256:1a910a14681e78a137c6b8bab6165d1a58e782e2c39a9751638565021bee2d1c"
+      ],
+      "note": "id is the content-addressed manifest image ID (local, never pushed)"
+    },
+    "worker": {
+      "status": "PASS",
+      "tag": "cvg-aud19-worker:local",
+      "id": "sha256:292a0f9b0df66e37bf9122154149b2a4967bba72c393e0b9f9ff7739a9d9babb",
+      "created": "2026-09-20T01:24:43.204816783-03:00",
+      "user": "cvg",
+      "architecture": "amd64",
+      "os": "linux",
+      "repoDigests": [
+        "cvg-aud19-worker@sha256:292a0f9b0df66e37bf9122154149b2a4967bba72c393e0b9f9ff7739a9d9babb"
+      ],
+      "note": "id is the content-addressed manifest image ID (local, never pushed)"
+    }
+  },
+  "container": {
+    "api": {
+      "status": "PASS",
+      "image": "cvg-aud19-api:local",
+      "imageId": "sha256:1a910a14681e78a137c6b8bab6165d1a58e782e2c39a9751638565021bee2d1c",
+      "configDigest": "09656e09b1456a965dd260ac3b16b786216980ddaae263bc299bbf1585448e10",
+      "user": "cvg",
+      "cmd": [
+        "./node_modules/.bin/tsx",
+        "apps/api/src/main.ts"
+      ],
+      "entrypoint": [
+        "docker-entrypoint.sh"
+      ],
+      "healthcheck": [
+        "CMD-SHELL",
+        "node -e \"fetch('http://127.0.0.1:'+(process.env.PORT||3000)+'/live').then((response)=>process.exit(response.ok?0:1)).catch(()=>process.exit(1))\""
+      ],
+      "envKeys": [
+        "NODE_ENV",
+        "NODE_VERSION",
+        "NPM_CONFIG_AUDIT",
+        "NPM_CONFIG_FUND",
+        "PATH",
+        "YARN_VERSION"
+      ]
+    },
+    "worker": {
+      "status": "PASS",
+      "image": "cvg-aud19-worker:local",
+      "imageId": "sha256:292a0f9b0df66e37bf9122154149b2a4967bba72c393e0b9f9ff7739a9d9babb",
+      "configDigest": "9f1ffb373ac6aa90c41a232eda5cca5a5b7c6434ca0782fabb8a4427aac7716c",
+      "user": "cvg",
+      "cmd": [
+        "./node_modules/.bin/tsx",
+        "apps/worker/src/main.ts"
+      ],
+      "entrypoint": [
+        "docker-entrypoint.sh"
+      ],
+      "healthcheck": [
+        "CMD-SHELL",
+        "grep -q '\"status\":\"ready\"' /tmp/cvg-worker-ready || exit 1"
+      ],
+      "envKeys": [
+        "CVG_WORKER_READINESS_FILE",
+        "NODE_ENV",
+        "NODE_VERSION",
+        "NPM_CONFIG_AUDIT",
+        "NPM_CONFIG_FUND",
+        "PATH",
+        "YARN_VERSION"
+      ]
+    }
+  },
+  "migration": {
+    "status": "PASS",
+    "algorithm": "sha256(file:sha256 sorted by path)",
+    "range": "0019..0026",
+    "count": 8,
+    "digest": "dc9da14b59af03a348b10006fba1e55ef8e6f11e5a5f38a8fe19e23ceda9fc36",
+    "files": [
+      {
+        "path": "packages/persistence/migrations/0019_orchestrator_state.sql",
+        "sha256": "bb68ac4144181a365dd9822f745b2c8dcca0168cd2e95218a99e51ff1293e90c"
+      },
+      {
+        "path": "packages/persistence/migrations/0020_orchestrator_lineage_hardening.sql",
+        "sha256": "7697158637adb4713f7867aaffab56b9d451a449f506fe8a7c6f2feea82fd9cc"
+      },
+      {
+        "path": "packages/persistence/migrations/0021_orchestrator_iteration_budget.sql",
+        "sha256": "ddab2c20ce81195da12a62d84b1b73ccd65f2474f63a9f6f37774e1c6c64a7c6"
+      },
+      {
+        "path": "packages/persistence/migrations/0022_orchestrator_evaluation_lineage.sql",
+        "sha256": "634adbd25d2f5e121b8fcc854d8b61827b31c6093dc88d03c6c706c751032b8a"
+      },
+      {
+        "path": "packages/persistence/migrations/0023_orchestrator_replan_fencing.sql",
+        "sha256": "94a33390987c78b5e1ba9907292fe77f77d6074a22fa7a8761bed78281ae58bf"
+      },
+      {
+        "path": "packages/persistence/migrations/0024_tenant_isolation_constraint_validation.sql",
+        "sha256": "d1680430e5f1c1b7f296946b5b96304526962d356cc2d25e1b3a8bf26751c360"
+      },
+      {
+        "path": "packages/persistence/migrations/0025_retention_ledger.sql",
+        "sha256": "df5638bedb0176809f9cf39fe038c79ff23027236f7efbbb6689c085c15fc49d"
+      },
+      {
+        "path": "packages/persistence/migrations/0026_operator_replay_events.sql",
+        "sha256": "78d3bad06cf0c037735bccd48bef03e704e74abf694037872e89206cf0caa321"
+      }
+    ]
+  },
+  "policy": {
+    "status": "PASS",
+    "algorithm": "sha256(file:sha256 sorted by path)",
+    "scope": [
+      "policy-engine + policy runtime sources (excluding tests)",
+      "production bootstrap preflight contract (governance/deny-by-default checks)"
+    ],
+    "digest": "0c2059f53de09b988f48b761b4fd69edae95de30b080917ddd355ce95400a349",
+    "files": [
+      {
+        "path": "packages/policy-engine/src/capabilities.ts",
+        "sha256": "8bd71d6980b503394e8c66237d1174d87241ce97e15493e17b70685326bfb00c"
+      },
+      {
+        "path": "packages/policy-engine/src/documents.ts",
+        "sha256": "1a181cb51c23330990c6e5e596462588eb40af9a5dd2f675956c4905874f8b97"
+      },
+      {
+        "path": "packages/policy-engine/src/engine.ts",
+        "sha256": "70fdc4f16de73df51a814c07dadd127c10830cdf489ab36a8a67bf3b66525d05"
+      },
+      {
+        "path": "packages/policy-engine/src/grants.ts",
+        "sha256": "bba4c243372303208afe9418c828af7b586c9fbc431a2db709d31e037584662c"
+      },
+      {
+        "path": "packages/policy-engine/src/index.ts",
+        "sha256": "3350cad03c735cddb6c3df320551ebbd025cf7b7d4d21502d5c7e053f1dc1a1f"
+      },
+      {
+        "path": "packages/policy/src/approvals/approval-service.ts",
+        "sha256": "899135dc41a0559efa529ad7624a1bae36ed8d6c815932037e3e37676ee6b6f3"
+      },
+      {
+        "path": "packages/policy/src/index.ts",
+        "sha256": "f2e2ecfa76a4fc6e8b4fd3777e48e70f4f6a5825c43d42eec9048b4560380826"
+      },
+      {
+        "path": "packages/policy/src/policy-engine.ts",
+        "sha256": "8d9cd8b85ba6c08652141adf1f69919fbc3f4b241fda28596e27d9736796eeb0"
+      },
+      {
+        "path": "packages/policy/src/policy-version.ts",
+        "sha256": "593bca162b63f77901da54eb01742b5823fd93da78f7863e8a6f5b5743cd9fd4"
+      },
+      {
+        "path": "packages/policy/src/safety/clinical-boundaries.ts",
+        "sha256": "8877ed5b1a21dd12b4bf149bb33be14560e4344633d68a3f3f5c43c5c4196f8e"
+      },
+      {
+        "path": "scripts/lib/production-preflight-core.mjs",
+        "sha256": "af5b8a8f033c777f487260507c136ab2f5f5b466a87e571a5e398ced73a3e621"
+      }
+    ]
+  },
+  "scans": {
+    "note": "Local scans re-executed by this script; exit codes are authoritative, result is the last JSON line emitted by the scan.",
+    "sbom": {
+      "command": "npm run sbom",
+      "exitCode": 0,
+      "result": {
+        "event": "sbom.generated",
+        "path": "certification/sbom.cyclonedx.json",
+        "components": 374,
+        "sha256": "d8843096c1590ef48369a6464abdc42a6d6de8493cb0d700d704173422b249da"
+      },
+      "summary": "{\"event\":\"sbom.generated\",\"path\":\"certification/sbom.cyclonedx.json\",\"components\":374,\"sha256\":\"d8843096c1590ef48369a6464abdc42a6d6de8493cb0d700d704173422b249da\"}"
+    },
+    "licenses": {
+      "command": "npm run licenses:check",
+      "exitCode": 0,
+      "result": {
+        "event": "licenses.checked",
+        "total": 374,
+        "internal": 21,
+        "denied": 0,
+        "unclassified": 0,
+        "invalidExceptions": 0
+      },
+      "summary": "{\"event\":\"licenses.checked\",\"total\":374,\"internal\":21,\"denied\":0,\"unclassified\":0,\"invalidExceptions\":0}"
+    },
+    "securityAudit": {
+      "command": "npm run audit:security",
+      "exitCode": 0,
+      "result": null,
+      "summary": "found 0 vulnerabilities"
+    }
+  },
+  "sbom": {
+    "status": "PASS",
+    "path": "certification/sbom.cyclonedx.json",
+    "digest": "d8843096c1590ef48369a6464abdc42a6d6de8493cb0d700d704173422b249da",
+    "bytes": 254555,
+    "componentCount": 374,
+    "generatedAt": "2026-09-20T04:29:42.709Z"
+  },
+  "releaseManifestMapping": {
+    "buildId": "build.api.id (api image) / build.worker.id (worker image)",
+    "containerDigest": "container.api.configDigest / container.worker.configDigest",
+    "migrationDigest": "migration.digest (0019..0026)",
+    "policyVersion": "policy.digest (policy contracts)",
+    "sbomDigest": "sbom.digest (certification/sbom.cyclonedx.json)",
+    "note": "Integration into certification/phase11/release-manifest.json belongs to AUD19-12; this report never writes certification artifacts."
+  }
+}

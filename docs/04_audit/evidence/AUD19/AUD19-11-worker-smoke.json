@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud19-11-worker-smoke",
+  "task": "AUD19-11",
+  "observedAt": "2026-09-20T04:26:20.541Z",
+  "status": "PASS",
+  "scope": "CONTROLLED_LOCAL",
+  "production": "NO_GO",
+  "realEffects": false,
+  "node": "v22.23.2",
+  "target": "local-process",
+  "database": {
+    "url": "postgres://<redacted>@127.0.0.1:5434/cvg_test",
+    "schema": "cvg_aud19_smoke_1789878380542_39eb41",
+    "role": "cvg_aud19_sm..."
+  },
+  "profile": {
+    "nodeEnv": "test",
+    "runtime": "kernel",
+    "durableKernelOrchestrator": true,
+    "adapter": "postgres",
+    "runMode": "continuous",
+    "rls": true,
+    "autoMigrate": false,
+    "controlledMode": true,
+    "realEffects": false
+  },
+  "enqueuedEvent": {
+    "id": "outbox_9fe31dc3-f8d7-4c00-87f0-4eceee60569c",
+    "type": "message.outbound"
+  },
+  "readiness": {
+    "file": "cvg-aud19-worker-ready-1789878380542_39eb41.json",
+    "observedStatus": "ready",
+    "readyEvent": {
+      "event": "worker.continuous_ready",
+      "level": "info",
+      "timestamp": "2026-09-20T04:26:21.906Z",
+      "adapter": "postgres-controlled",
+      "concurrency": 2,
+      "pollIntervalMs": 20,
+      "leaseMs": 30000,
+      "durable": true,
+      "externalEffects": false
+    },
+    "removedAfterShutdown": true
+  },
+  "processing": {
+    "eventStatus": "processed",
+    "attempts": 1,
+    "outboxEffects": 1,
+    "effectResult": {
+      "status": "[redacted-outbox-text]",
+      "externalEffects": false
+    },
+    "effectJournalRows": 0,
+    "externalEffects": false
+  },
+  "drain": {
+    "signal": "SIGTERM",
+    "exitCode": 0,
+    "signalReceived": null,
+    "shutdownEvents": [
+      "worker.shutdown.started",
+      "worker.shutdown.completed"
+    ],
+    "drained": {
+      "event": "worker.continuous_drained",
+      "level": "info",
+      "timestamp": "2026-09-20T04:26:22.026Z",
+      "drained": true,
+      "released": 0,
+      "releaseFailed": 0
+    }
+  },
+  "notes": [
+    "Synthetic message.outbound consumed by the governed kernel; the composed handler returns controlled_outbound_suppressed with externalEffects=false.",
+    "No provider, channel, IdP or RAG credential is present in the environment; effect_journal stayed empty.",
+    "Production profile remains gated by the signed bootstrap preflight (external attestations); this smoke runs NODE_ENV=test."
+  ]
+}
