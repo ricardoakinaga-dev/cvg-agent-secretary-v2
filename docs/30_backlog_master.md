@@ -1833,13 +1833,14 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 
 - [x] Publicar [reauditoria 0567](04_audit/0567_aud19_delivery_reaudit_2026-09-20.md), [roadmap 0333](03_build/0333_aud20260920_roadmap.md) e [backlog 0334](03_build/0334_aud20260920_backlog.md).
 - [x] `AUD20-01` `COMPLETED`: SPEC/barra, negativos, matriz, manifesto, receipts e revisão independente concluídos; G0 aprovado para BUILD local controlado.
-- [ ] `AUD20-02..05` `BLOCKED`: eval irredutível; lineage/concorrência E2E; dedupe durante retenção; binding da atestação e privilégios do replay.
+- [x] `AUD20-02` `COMPLETED`: piso de eval irredutível, N01/N02 e evidências candidate-bound concluídos em BUILD local controlado.
+- [ ] `AUD20-03..05` `BLOCKED`: lineage/concorrência E2E; dedupe durante retenção; binding da atestação e privilégios do replay.
 - [ ] `AUD20-06..08` `BLOCKED`: crítico/mutation candidate-bound; rebuild/digests do mesmo candidato; checker documental e caps arquiteturais.
 - [ ] `AUD20-09..11` `BLOCKED`: holdout integrado, observabilidade conectada e composição API+worker+DB staging-like.
 - [ ] `AUD20-12` `BLOCKED`: reauditoria e re-selo local somente após zero P0/P1.
 - [ ] `AUD20-13..15` `BLOCKED`: Opção A registrada, porém inputs, owners, ambiente e gates anteriores ausentes; sign-off humano apenas com dossiê completo.
 - **Estado:** entrega local `PARTIAL PASS`; conclusão integral e staging `FAIL / NO_GO`; produção `NO_GO`.
-- **Próxima ação:** executar `AUD20-02` com RED/GREEN do piso de eval; preservar `0,97`, negativos `AUD20-N01/N02`, staging real `NO_GO` e produção `NO_GO`.
+- **Próxima ação:** executar `AUD20-03` com RED/GREEN de lineage/concorrência; preservar `0,97`, negativos `AUD20-N03/N04`, staging real `NO_GO` e produção `NO_GO`.
 
 ## AUD20-01 — registro de SPEC e baseline
 
@@ -1853,7 +1854,7 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 
 - **Status:** `COMPLETED` em BUILD local controlado; produção `NO_GO`.
 - **Entrega:** `runEvalSuite` agora falha fechado para override menos estrito, threshold/métrica não finito, ausente, string ou arredondado abaixo da barra; a origem de `0,97` continua alinhada às regras de certificação.
-- **Evidência:** RED reproduzido; focused `25/25`, `test:evals` `18/18`, red-team `9/9`, typecheck/lint/format/build e regressão `282/2.158` PASS; relatório sintético `56/56`, `1,0`, zero policy/unsafe.
-- **Limitações:** functions coverage global `89,54%` e gates de denominador/coverage final ainda não fechados; `certification/current.json` continua histórico/stale; nenhum PostgreSQL, Docker, Playwright, sistema externo, staging ou produção foi usado.
+- **Evidência:** RED reproduzido; focused `52/52`, `test:evals` `23/23`, red-team `9/9`, typecheck/lint/format/build e regressão `282/2.171` PASS; relatório sintético `56/56`, `1,0`, zero policy/unsafe.
+- **Limitações:** functions coverage global `89,55%` e gates de denominador/coverage final ainda não fechados; `certification/current.json` continua histórico/stale; nenhum PostgreSQL, Docker, Playwright, sistema externo, staging ou produção foi usado.
 - **Próxima ação:** `AUD20-03` — RED/GREEN de lineage/concorrência com negativos `AUD20-N03/N04`; manter AUD20-04..15, staging e produção bloqueados.
-- **Evidência corrente:** `docs/04_audit/evidence/AUD20/AUD20-02-candidate-receipt.json`, `docs/04_audit/evidence/AUD20/AUD20-02-red-green-report.md` e `certification/agent-eval-report.json`.
+- **Evidência corrente:** `docs/04_audit/evidence/AUD20/AUD20-02-candidate-manifest.json`, `docs/04_audit/evidence/AUD20/AUD20-02-command-receipt.json`, `docs/04_audit/evidence/AUD20/AUD20-02-candidate-receipt.json`, `docs/04_audit/evidence/AUD20/AUD20-02-red-green-report.md` e `certification/agent-eval-report.json`.

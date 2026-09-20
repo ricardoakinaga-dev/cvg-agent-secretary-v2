@@ -43,7 +43,7 @@
 | Faixa                 | Estado                | Nota                                                                                 |
 | --------------------- | --------------------- | ------------------------------------------------------------------------------------ |
 | AUD20-01              | `COMPLETED`           | SPEC, barra, matriz, receipts e revisão concluídos; G0 local controlado aprovado     |
-| AUD20-02              | `COMPLETED`           | Piso `0,97` irredutível; N01/N02 e eval sintético verificados localmente             |
+| AUD20-02              | `COMPLETED`           | Piso `0,97` irredutível; N01/N02 e eval sintético verificados no candidato `0de51135…@41b7ea1` |
 | AUD20-03              | `READY_FOR_NEXT_STEP` | Próxima task; lineage/concorrência e negativos N03/N04                               |
 | AUD20-04..12          | `BLOCKED`             | Dependem da sequência e do DAG técnico após AUD20-03                                 |
 | AUD20-13..15          | `BLOCKED`             | Opção A registrada; faltam inputs, owners, ambiente e gates anteriores               |

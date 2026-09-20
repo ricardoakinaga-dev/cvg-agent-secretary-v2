@@ -5799,3 +5799,13 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - boundary: dataset sintético determinístico; nenhum re-selo de `certification/current.json`, PostgreSQL/Docker/Playwright, provider/canal/IdP/RAG, egress, dado real ou efeito externo.
 - next_action: executar `AUD20-03` com RED/GREEN de lineage/concorrência e negativos `AUD20-N03/N04`.
 - evidence: `docs/04_audit/evidence/AUD20/AUD20-02-candidate-receipt.json`, `docs/04_audit/evidence/AUD20/AUD20-02-red-green-report.md`, `certification/agent-eval-report.json`.
+
+# AUD20-02-EVAL-HARDENED-20260920 — contrato uniforme e receipts atuais
+
+- timestamp: `2026-09-20`; pipeline `BUILD -> AUDIT`; atividade `FIX_RETEST`; task corrente `AUD20-03`; status `READY_FOR_NEXT_STEP`.
+- action: após a crítica `BLOCK`, o contrato passou a cobrir uniformemente os seis thresholds no verifier; o runner passou a rejeitar corpus vazio, rates inválidas e métricas auxiliares não finitas; fixtures formais foram alinhados ao contrato vigente.
+- candidate: `0de51135ea4b0422aede9d45af2d7062f67951753fe93c3346114276f250aff5` em `41b7ea13f57b6629dbe054e8fec64af120f7bdbb`, tree `4af049f58afc0918db897bdacd980b48266147d008a6e55aaa28deb76f16e26e`, scope limpo, `1104` arquivos.
+- verification: focused `52/52`, `npm run test:evals` `23/23`, red-team `9/9`, typecheck/lint/format/build PASS; `npm test` `282` arquivos PASS/`12` SKIP, `2.171` testes PASS/`172` SKIP; coverage `91,68%` statements, `87,53%` branches, `89,55%` functions, `92,26%` lines.
+- evidence: manifesto completo `docs/04_audit/evidence/AUD20/AUD20-02-candidate-manifest.json`; comandos `AUD20-02-command-receipt.json` SHA-256 `59b927ae545006b1a428edc551f2f90334ade34f0362020ce8ab19c0894ca461`; receipt SHA-256 `463a8ed9a38391518b65cc3960e507144130ed37615dcf15e76625c8fd8e3b74`; eval report SHA-256 `7b9ba9f3f666ffe914dc589df18b06b150546444b4d6b024dacf45232a503824`.
+- decision: `AUD20-02=COMPLETED` somente em BUILD local controlado; aguardar crítica fresca `PACKAGE_READY` antes de iniciar `AUD20-03`; staging, produção, externos e `certification/current.json` permanecem `NO_GO`/stale.
+- next_action: crítica independente fresca do pacote corrente; então, se aprovada, executar `AUD20-03` com RED/GREEN de lineage/concorrência e negativos `AUD20-N03/N04`.

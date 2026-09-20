@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-command-receipt",
+  "program": "AUD20-REM",
+  "task": "AUD20-02",
+  "observedAt": "2026-09-20T23:21:38.936Z",
+  "candidate": {
+    "candidateId": "0de51135ea4b0422aede9d45af2d7062f67951753fe93c3346114276f250aff5",
+    "commit": "41b7ea13f57b6629dbe054e8fec64af120f7bdbb",
+    "treeHash": "4af049f58afc0918db897bdacd980b48266147d008a6e55aaa28deb76f16e26e"
+  },
+  "node": "v22.23.2",
+  "commands": [
+    {
+      "id": "red",
+      "command": "npm run test:evals -- packages/agent-evals/src/__tests__/eval-contract.test.ts",
+      "status": "PASS_EXPECTED_FAILURE",
+      "exitCode": 1,
+      "summary": "Five new runner threshold tests failed before implementation; the known bypass was reproduced."
+    },
+    {
+      "id": "focused",
+      "command": "npm exec -- vitest run packages/agent-evals/src/__tests__/eval-contract.test.ts tests/phase11-eval-contract.test.js tests/mutation-sentinel.test.js tests/phase11-formal-certification.test.js --no-file-parallelism --maxWorkers=2",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "4 test files, 52 tests passed."
+    },
+    {
+      "id": "evals",
+      "command": "npm run test:evals",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "2 test files, 23 tests passed."
+    },
+    {
+      "id": "redteam",
+      "command": "node scripts/phase11-2-redteam.mjs --suite=certification",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "9/9 synthetic certification checks passed."
+    },
+    {
+      "id": "typecheck",
+      "command": "npm run typecheck",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "TypeScript check passed."
+    },
+    {
+      "id": "lint",
+      "command": "npm run lint",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "ESLint passed."
+    },
+    {
+      "id": "format",
+      "command": "npm run format:check",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "Prettier check passed."
+    },
+    {
+      "id": "build",
+      "command": "npm run build",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "Web production build passed."
+    },
+    {
+      "id": "regression",
+      "command": "npm test",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "282 test files passed, 12 skipped; 2,171 tests passed, 172 skipped."
+    },
+    {
+      "id": "coverage",
+      "command": "npm run test:coverage",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "Statements 91.68%; branches 87.53%; functions 89.55%; lines 92.26%; final coverage gate remains AUD20-12."
+    }
+  ]
+}
