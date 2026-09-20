@@ -1818,7 +1818,9 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 - [x] `AUD19-02`: índice `CURRENT`, checker documental, 15 links e JSON inválido corrigidos, matriz AUD19 e ADR LangGraph publicados.
 - [x] `AUD19-03..04`: get-or-create linearizável com validação de lineage e teste PostgreSQL de duas conexões; conflito benigno não vira DLQ e fencing vencido não settle.
 - [x] `AUD19-05..06`: retenção/erasure parametrizada fail-closed (migration `0025`), replay distribuído e atestação versionada de preflight (migration `0026`).
-- [x] `AUD19-07..10`: hotspots decompostos em fatia medida com architecture tests/ADR; QA adversarial comportamental (skips required = 0, mutantes 9/9); observabilidade com SLIs/alertas/runbooks; acessibilidade multibrowser 75/75.
+- [x] `AUD19-07`: hotspots decompostos em fatia medida com architecture tests/ADR.
+- [~] `AUD19-08`: `BLOCKED` — QA adversarial e inventário de skips (0 required) e mutantes 9/9 concluídos, mas o piso §9.1 de branches de módulos críticos não passa.
+- [x] `AUD19-09..10`: observabilidade com SLIs/alertas/runbooks; acessibilidade multibrowser 75/75.
 - [x] `AUD19-11`: topologia API+worker empacotável, non-root, readiness/drain, digests e smoke controlado; produção continua bloqueada.
 - [~] `AUD19-12`: `BLOCKED` — selo candidate-bound executado com 32/34 gates `PASS`; `independent_critic` falha no piso §9.1 de branches críticos (kernel/orchestration/kernel-composition/RLS); `NO_GO` local.
 - [ ] `AUD19-13..14`: `BLOCKED` até provider/canal/IdP/RAG e RPO/RTO/rollback/piloto terem ambientes e autoridades próprios; `AUD19-15` também está `BLOCKED` pelas dependências e exigirá aprovação humana ao chegar ao gate final.

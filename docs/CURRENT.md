@@ -45,7 +45,7 @@
 | AUD19-05 | `COMPLETED` | Retenção/erasure fail-closed, migration 0025 e mapa de dados                                            |
 | AUD19-06 | `COMPLETED` | Replay distribuído, atestação de preflight e negativos                                                  |
 | AUD19-07 | `COMPLETED` | [ADR 0002](02_spec/adr/0002-hotspot-decomposition-bounded-slice.md) e fatia medida                      |
-| AUD19-08 | `COMPLETED` | Inventário de skips (0 required), mutantes 9/9 e critic/evidence comportamentais                        |
+| AUD19-08 | `BLOCKED`   | Inventário de skips e mutantes 9/9 concluídos; piso §9.1 de branches críticos não passa                 |
 | AUD19-09 | `COMPLETED` | SLIs, alertas→runbooks e exercício sintético; SLOs pendentes de owner                                   |
 | AUD19-10 | `COMPLETED` | axe/contraste, teclado, zoom, forced-colors e 3 browsers                                                |
 | AUD19-11 | `COMPLETED` | Topologia API+worker, non-root, readiness/drain, digests e smoke                                        |
