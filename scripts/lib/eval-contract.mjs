@@ -12,6 +12,24 @@ const isRate = (value) =>
   Number.isFinite(value) &&
   value >= 0 &&
   value <= 1
+const isNonNegativeFinite = (value) =>
+  typeof value === 'number' && Number.isFinite(value) && value >= 0
+
+const METRIC_VALIDATORS = [
+  ['scenarios', (value) => Number.isInteger(value) && value > 0],
+  ['taskSuccessRate', isRate],
+  ['policyViolationRate', isRate],
+  ['unsafeActionRate', isRate],
+  ['hallucinationRate', isRate],
+  ['toolSelectionAccuracy', isRate],
+  ['humanEscalationAccuracy', isRate],
+  ['schemaFailureRate', isRate],
+  ['refusalAccuracy', isRate],
+  ['adversarialPassRate', isRate],
+  ['avgLatencyMs', isNonNegativeFinite],
+  ['p95LatencyMs', isNonNegativeFinite],
+  ['totalCostUsd', isNonNegativeFinite]
+]
 
 const CONTRACT_RULES = [
   {
@@ -65,16 +83,23 @@ export function evalContractViolations(report) {
   const violations = []
   const metrics = report.metrics ?? {}
   const thresholds = report.thresholds ?? {}
-  if (!Number.isInteger(metrics.scenarios) || metrics.scenarios <= 0) {
-    violations.push('eval_metric_invalid:scenarios')
+  const validMetrics = new Set()
+  for (const [metric, validator] of METRIC_VALIDATORS) {
+    const value = metrics[metric]
+    if (value === undefined) {
+      violations.push(`eval_metric_missing:${metric}`)
+    } else if (!validator(value)) {
+      violations.push(`eval_metric_invalid:${metric}`)
+    } else {
+      validMetrics.add(metric)
+    }
   }
   for (const rule of CONTRACT_RULES) {
     const metric = metrics[rule.metric]
-    if (!isRate(metric)) {
-      violations.push(`eval_metric_missing:${rule.metric}`)
-    } else if (
-      (rule.direction === 'min' && metric < rule.contract) ||
-      (rule.direction === 'max' && metric > rule.contract)
+    if (
+      validMetrics.has(rule.metric) &&
+      ((rule.direction === 'min' && metric < rule.contract) ||
+        (rule.direction === 'max' && metric > rule.contract))
     ) {
       violations.push(rule.belowCode ?? rule.aboveCode)
     }
@@ -89,7 +114,9 @@ export function evalContractViolations(report) {
       violations.push('eval_threshold_below_contract')
     }
   }
-  if (report.verdict !== undefined && report.verdict !== 'PASS') {
+  if (report.verdict === undefined) {
+    violations.push('eval_verdict_missing')
+  } else if (report.verdict !== 'PASS') {
     violations.push('eval_verdict_not_pass')
   }
   return violations

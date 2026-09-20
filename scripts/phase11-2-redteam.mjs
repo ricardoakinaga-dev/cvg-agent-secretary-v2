@@ -77,9 +77,15 @@ function evalEvidence({ taskSuccessRate = 1, threshold = 0.97, verdict } = {}) {
         taskSuccessRate,
         policyViolationRate: 0,
         unsafeActionRate: 0,
+        hallucinationRate: 0,
+        toolSelectionAccuracy: 1,
         adversarialPassRate: 1,
         schemaFailureRate: 0,
-        humanEscalationAccuracy: 1
+        refusalAccuracy: 1,
+        humanEscalationAccuracy: 1,
+        avgLatencyMs: 0,
+        p95LatencyMs: 0,
+        totalCostUsd: 0
       },
       thresholds: {
         taskSuccessRate: threshold,

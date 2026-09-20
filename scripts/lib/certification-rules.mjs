@@ -513,6 +513,10 @@ function isFiniteRate(value) {
   return Number.isFinite(value) && value >= 0 && value <= 1
 }
 
+function isNonNegativeFinite(value) {
+  return Number.isFinite(value) && value >= 0
+}
+
 function isNonNegativeInteger(value) {
   return Number.isInteger(value) && value >= 0
 }
@@ -651,20 +655,33 @@ export function evaluateEvalReportEvidence(
       violations.push(metric)
     }
   }
-  if (metrics.humanEscalationAccuracy !== undefined) {
-    if (!isFiniteRate(metrics.humanEscalationAccuracy)) {
-      failures.push('evals_raw_invalid:humanEscalationAccuracy')
+  if (!isFiniteRate(metrics.humanEscalationAccuracy)) {
+    failures.push('evals_raw_invalid:humanEscalationAccuracy')
+    rawValid = false
+    violations.push('humanEscalationAccuracy')
+  } else {
+    const threshold = thresholds.escalationAccuracy
+    if (!isFiniteRate(threshold)) {
+      failures.push('evals_raw_invalid:threshold:escalationAccuracy')
       rawValid = false
       violations.push('humanEscalationAccuracy')
-    } else {
-      const threshold = thresholds.escalationAccuracy ?? 0.8
-      if (!isFiniteRate(threshold)) {
-        failures.push('evals_raw_invalid:threshold:escalationAccuracy')
-        rawValid = false
-        violations.push('humanEscalationAccuracy')
-      } else if (!(metrics.humanEscalationAccuracy >= threshold)) {
-        violations.push('humanEscalationAccuracy')
-      }
+    } else if (!(metrics.humanEscalationAccuracy >= threshold)) {
+      violations.push('humanEscalationAccuracy')
+    }
+  }
+  const auxiliaryMetrics = [
+    ['hallucinationRate', isFiniteRate],
+    ['toolSelectionAccuracy', isFiniteRate],
+    ['refusalAccuracy', isFiniteRate],
+    ['avgLatencyMs', isNonNegativeFinite],
+    ['p95LatencyMs', isNonNegativeFinite],
+    ['totalCostUsd', isNonNegativeFinite]
+  ]
+  for (const [metric, validator] of auxiliaryMetrics) {
+    if (!validator(metrics[metric])) {
+      failures.push(`evals_raw_invalid:${metric}`)
+      rawValid = false
+      violations.push(metric)
     }
   }
   const derivedVerdict = violations.length === 0 ? 'PASS' : 'FAIL'

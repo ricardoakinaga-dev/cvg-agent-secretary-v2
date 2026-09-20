@@ -13,9 +13,15 @@ function evalReport({ taskSuccessRate = 1, threshold = 0.97, verdict } = {}) {
       taskSuccessRate,
       policyViolationRate: 0,
       unsafeActionRate: 0,
+      hallucinationRate: 0,
+      toolSelectionAccuracy: 1,
       schemaFailureRate: 0,
       adversarialPassRate: 1,
-      humanEscalationAccuracy: 1
+      refusalAccuracy: 1,
+      humanEscalationAccuracy: 1,
+      avgLatencyMs: 1,
+      p95LatencyMs: 1,
+      totalCostUsd: 0
     },
     thresholds: {
       taskSuccessRate: threshold,
@@ -133,6 +139,21 @@ describe('Phase 11 eval evidence contract', () => {
         metrics: { ...report.metrics, scenarios: 0 }
       })
     ).toContain('eval_metric_invalid:scenarios')
+  })
+
+  it('rejects missing verdict and auxiliary metrics', () => {
+    const report = evalReport()
+    delete report.verdict
+    delete report.metrics.toolSelectionAccuracy
+    const outcome = evaluateEvalReportEvidence(report)
+    expect(outcome.pass).toBe(false)
+    expect(outcome.failures).toContain('eval_contract:eval_verdict_missing')
+    expect(outcome.failures).toContain(
+      'eval_contract:eval_metric_missing:toolSelectionAccuracy'
+    )
+    expect(outcome.failures).toContain(
+      'evals_raw_invalid:toolSelectionAccuracy'
+    )
   })
 
   it('rejects the historical 53/56 result under the 97% contract', () => {
