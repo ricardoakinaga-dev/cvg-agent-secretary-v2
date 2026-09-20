@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { evaluateEvalReportEvidence } from '../scripts/lib/certification-rules.mjs'
-import { EVAL_CONTRACT } from '../scripts/lib/eval-contract.mjs'
+import {
+  EVAL_CONTRACT,
+  evalContractBlockers,
+  evalContractViolations
+} from '../scripts/lib/eval-contract.mjs'
 
 function evalReport({ taskSuccessRate = 1, threshold = 0.97, verdict } = {}) {
   return {
@@ -54,6 +58,32 @@ describe('Phase 11 eval evidence contract', () => {
         'eval_contract:eval_threshold_below_contract',
         'eval_contract:eval_task_success_below_contract'
       ])
+    )
+  })
+
+  it.each([
+    ['schema failure threshold', { thresholds: { schemaFailureRate: 1 } }],
+    ['adversarial threshold', { thresholds: { adversarialPassRate: 0 } }],
+    ['escalation threshold', { thresholds: { escalationAccuracy: 0 } }],
+    ['schema metric', { metrics: { schemaFailureRate: '0' } }],
+    ['adversarial metric', { metrics: { adversarialPassRate: '1' } }],
+    ['escalation metric', { metrics: { humanEscalationAccuracy: undefined } }]
+  ])('certifier rejects a malformed %s', (_label, patch) => {
+    const report = evalReport()
+    const outcome = evaluateEvalReportEvidence({
+      ...report,
+      metrics: { ...report.metrics, ...patch.metrics },
+      thresholds: { ...report.thresholds, ...patch.thresholds }
+    })
+    expect(outcome.pass).toBe(false)
+  })
+
+  it('exposes uniform fail-closed blockers to the Phase 11 verifier', () => {
+    const report = evalReport({ threshold: 0.85 })
+    const blockers = evalContractBlockers({ raw: report })
+    expect(blockers).toContain('eval_contract:eval_threshold_below_contract')
+    expect(evalContractViolations(report)).toContain(
+      'eval_threshold_below_contract'
     )
   })
 

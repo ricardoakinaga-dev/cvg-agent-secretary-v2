@@ -65,6 +65,21 @@ describe('AAA eval contract', () => {
   })
 
   it.each([
+    ['schema failure', { schemaFailureRate: 1 }],
+    ['adversarial pass', { adversarialPassRate: 0 }],
+    ['escalation accuracy', { escalationAccuracy: 0 }]
+  ])('rejects a less-strict %s override', async (_label, thresholds) => {
+    const report = await runEvalSuite({
+      suiteId: `contract-negative-${_label}`,
+      dataset: CORE_EVAL_DATASET,
+      agent: createDeterministicEvalAgent(),
+      thresholds,
+      now: () => NOW
+    })
+    expect(report.verdict).toBe('FAIL')
+  })
+
+  it.each([
     ['NaN', Number.NaN],
     ['missing', undefined],
     ['string', '0.97'],
