@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud19-external-session-inputs",
+  "program": "AUD19-REM",
+  "task": "AUD19-13",
+  "candidate": {
+    "commit": "fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6",
+    "candidateId": "fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89"
+  },
+  "authorizedBy": "<nome/e-mail da autoridade que autorizou>",
+  "window": { "start": "<ISO-8601>", "end": "<ISO-8601>" },
+  "environment": {
+    "name": "<ex.: staging-integrations>",
+    "hostnames": ["<host permitido>"],
+    "egressAllowlist": ["<host:porta>"],
+    "tls": "required",
+    "maxDataClassification": "<PUBLIC|INTERNAL|CONFIDENTIAL>",
+    "realPatientData": false
+  },
+  "gates": {
+    "modelProvider": {
+      "owner": "<nome/e-mail>",
+      "adapter": "openai-compatible",
+      "baseUrl": "<https://...>",
+      "model": "<modelo>",
+      "credentialRef": "<referencia no cofre; nunca o valor>"
+    },
+    "channel": {
+      "owner": "<nome/e-mail>",
+      "adapter": "<chatwoot|evolution>",
+      "baseUrl": "<https://...>",
+      "credentialRef": "<referencia no cofre>",
+      "webhookSigningSecretRef": "<referencia no cofre>",
+      "publicWebhookUrl": "<https://...>"
+    },
+    "externalIdentity": {
+      "owner": "<nome/e-mail>",
+      "issuer": "<https://...>",
+      "audience": "cvg-api",
+      "keyRingRef": "<referencia no cofre (current+previous)>",
+      "revocationProcedure": "<documento/procedimento>"
+    },
+    "institutionalRag": {
+      "owner": "<curador>",
+      "sourceId": "<identificador institucional>",
+      "version": "<versao/hash>",
+      "citationPolicy": "<documento>",
+      "revocationProcedure": "<documento>"
+    }
+  },
+  "signoffAuthority": "<nome/e-mail da autoridade de release>"
+}

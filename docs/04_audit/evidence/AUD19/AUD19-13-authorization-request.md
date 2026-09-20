@@ -6,6 +6,13 @@
 - Este pedido não autoriza nada por si só: ele apresenta a decisão humana
   necessária, o impacto e o procedimento exato no ambiente autorizado.
 
+## 0. Registro de decisão
+
+- `2026-09-20`: o solicitante humano escolheu a **Opção A** (autorizar a
+  qualificação externa). A autorização de *iniciar* está registrada; a execução
+  permanece condicionada ao preenchimento dos inputs da seção 2 e ao ambiente
+  autorizado. Nenhum sistema real foi contatado até aqui.
+
 ## 1. Decisão solicitada
 
 **Opção A — autorizar a qualificação externa (recomendada se houver ambiente):**
