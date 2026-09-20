@@ -9,12 +9,12 @@
   "contexts": [
     {
       "gate": "postgres",
-      "command": "npm run test:postgres -- --reporter=json --outputFile=/tmp/opencode/aud19/postgres-report.json",
+      "command": "parsed:/tmp/opencode/pg-final2.json",
       "databaseAvailable": true,
       "totals": {
-        "testFiles": 28,
-        "tests": 226,
-        "passed": 226,
+        "testFiles": 30,
+        "tests": 319,
+        "passed": 319,
         "failed": 0,
         "skipped": 0
       },
@@ -27,23 +27,23 @@
       "required": [],
       "optional": [],
       "exitCode": 0,
-      "source": "report:/tmp/opencode/aud19/postgres-report.json"
+      "source": "report:/tmp/opencode/pg-final2.json"
     },
     {
       "gate": "unit",
-      "command": "parsed:/tmp/opencode/unit-final.json",
+      "command": "parsed:/tmp/opencode/unit-final2.json",
       "databaseAvailable": false,
       "totals": {
-        "testFiles": 284,
-        "tests": 2059,
-        "passed": 1928,
+        "testFiles": 294,
+        "tests": 2317,
+        "passed": 2145,
         "failed": 0,
-        "skipped": 131
+        "skipped": 172
       },
       "counts": {
-        "total": 131,
+        "total": 172,
         "required": 0,
-        "optional": 131
+        "optional": 172
       },
       "files": [
         {
@@ -258,6 +258,170 @@
             },
             {
               "name": "AAA-19 continuous PostgreSQL worker composes durable approval and journal sweeps for the kernel worker",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "total": 26,
+          "required": 0,
+          "optional": 26,
+          "tests": [
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) recovers an expired lease with no approval using the requirement decision",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) treats an unreadable approval or missing operation key as uncertain",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) decides replay safety from the persisted journal and approval state",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) retries terminal no-effect journal states only for re-armable approvals",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) retries an absent journal only for an approved reservation",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) resolves an expired waiting approval and skips pending ones",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) skips waiting goals without a plan, without a waiting step or without an approval identity",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) skips a waiting goal whose approval cannot be read",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) rebuilds the plan from the runtime planner context when persisted context is invalid",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) fails closed when no persisted or runtime planner context exists",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) rejects a persisted runtime snapshot that does not match the controlled kernel",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) executes a seeded step with a null conversation and session lineage",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) executes a seeded step with a non-object input and absent model messages",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) executes a seeded step with a null idempotency key and tool identity",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) re-evaluates a recovered plan and executes the recovered step",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) re-evaluates a recovered plan without tool identity",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) resolves a rejected durable approval continuation and fails closed on a mismatch",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) resumes a durable approval continuation and ignores an undecided approval",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) rejects a durable continuation whose approval does not match a waiting step",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) fails closed when a waiting goal has no active plan for a continuation",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) completes a message.draft goal through the durable journal and reports the effect",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) replays a confirmed message.draft effect without a tool call",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) denies a message.draft goal when the caller operation is uncertain",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) drives a denied capability to a terminal goal without evidence",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) keeps a step successful when the outbox is unavailable after the effect",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "kernel durable composition branch hardening (PostgreSQL) fails closed when the durable runtime audit chain is invalid",
               "classification": "optional",
               "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
               "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
@@ -923,6 +1087,104 @@
           ]
         },
         {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts",
+          "total": 15,
+          "required": 0,
+          "optional": 15,
+          "tests": [
+            {
+              "name": "durable runtime approval branch hardening deduplicates an inbound continuation and rejects a divergent reuse",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval branch hardening round-trips a minimal approval without optional proposal columns",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval branch hardening decides a PENDING approval with and without a reason, idempotently",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval branch hardening decides rejections from REQUESTED and PENDING and refuses terminal states",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval branch hardening decides every REQUESTED and PENDING reason variant",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval branch hardening persists an explicit operator rejection and cancellation",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval branch hardening refuses to resume a continuation without a durable trace root",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval branch hardening consumes an approved single-use approval and persists the execution",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval branch hardening marks a reserved approval uncertain with an explicit reason",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval branch hardening fails a reserved approval with explicit no-effect evidence",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval branch hardening reports not-found for missing approvals and lookups",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval branch hardening finds a continuation by inbound message and returns undefined otherwise",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval branch hardening sweeps expired reservations with the repository clock",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval branch hardening expires stale requests for one tenant through the set-based update",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            },
+            {
+              "name": "durable runtime approval branch hardening rejects the cross-tenant expireStale sweep",
+              "classification": "optional",
+              "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+              "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs."
+            }
+          ]
+        },
+        {
           "file": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
           "total": 14,
           "required": 0,
@@ -1262,6 +1524,214 @@
         {
           "file": "apps/worker/src/__tests__/continuous-worker-postgres.integration.test.ts",
           "name": "AAA-19 continuous PostgreSQL worker composes durable approval and journal sweeps for the kernel worker",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) recovers an expired lease with no approval using the requirement decision",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) treats an unreadable approval or missing operation key as uncertain",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) decides replay safety from the persisted journal and approval state",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) retries terminal no-effect journal states only for re-armable approvals",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) retries an absent journal only for an approved reservation",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) resolves an expired waiting approval and skips pending ones",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) skips waiting goals without a plan, without a waiting step or without an approval identity",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) skips a waiting goal whose approval cannot be read",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) rebuilds the plan from the runtime planner context when persisted context is invalid",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) fails closed when no persisted or runtime planner context exists",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) rejects a persisted runtime snapshot that does not match the controlled kernel",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) executes a seeded step with a null conversation and session lineage",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) executes a seeded step with a non-object input and absent model messages",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) executes a seeded step with a null idempotency key and tool identity",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) re-evaluates a recovered plan and executes the recovered step",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) re-evaluates a recovered plan without tool identity",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) resolves a rejected durable approval continuation and fails closed on a mismatch",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) resumes a durable approval continuation and ignores an undecided approval",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) rejects a durable continuation whose approval does not match a waiting step",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) fails closed when a waiting goal has no active plan for a continuation",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) completes a message.draft goal through the durable journal and reports the effect",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) replays a confirmed message.draft effect without a tool call",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) denies a message.draft goal when the caller operation is uncertain",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) drives a denied capability to a terminal goal without evidence",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) keeps a step successful when the outbox is unavailable after the effect",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+          "name": "kernel durable composition branch hardening (PostgreSQL) fails closed when the durable runtime audit chain is invalid",
           "classification": "optional",
           "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
           "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
@@ -1964,6 +2434,126 @@
           "coveredByGate": "postgres"
         },
         {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts",
+          "name": "durable runtime approval branch hardening deduplicates an inbound continuation and rejects a divergent reuse",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts",
+          "name": "durable runtime approval branch hardening round-trips a minimal approval without optional proposal columns",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts",
+          "name": "durable runtime approval branch hardening decides a PENDING approval with and without a reason, idempotently",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts",
+          "name": "durable runtime approval branch hardening decides rejections from REQUESTED and PENDING and refuses terminal states",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts",
+          "name": "durable runtime approval branch hardening decides every REQUESTED and PENDING reason variant",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts",
+          "name": "durable runtime approval branch hardening persists an explicit operator rejection and cancellation",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts",
+          "name": "durable runtime approval branch hardening refuses to resume a continuation without a durable trace root",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts",
+          "name": "durable runtime approval branch hardening consumes an approved single-use approval and persists the execution",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts",
+          "name": "durable runtime approval branch hardening marks a reserved approval uncertain with an explicit reason",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts",
+          "name": "durable runtime approval branch hardening fails a reserved approval with explicit no-effect evidence",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts",
+          "name": "durable runtime approval branch hardening reports not-found for missing approvals and lookups",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts",
+          "name": "durable runtime approval branch hardening finds a continuation by inbound message and returns undefined otherwise",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts",
+          "name": "durable runtime approval branch hardening sweeps expired reservations with the repository clock",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts",
+          "name": "durable runtime approval branch hardening expires stale requests for one tenant through the set-based update",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
+          "file": "packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts",
+          "name": "durable runtime approval branch hardening rejects the cross-tenant expireStale sweep",
+          "classification": "optional",
+          "ruleId": "OPT-DATABASE-CONDITIONAL-UNIT",
+          "reason": "The test is conditionally bound to TEST_DATABASE_URL and its file is selected by the separate PostgreSQL gate (package.json scripts.test:postgres). Absent in the default unit inventory is structural, and zero-skip execution is enforced by REQ-POSTGRES-GATE-ANY when that gate runs.",
+          "coveredByGate": "postgres"
+        },
+        {
           "file": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
           "name": "durable runtime approval authority (PROD-04) ships the additive runtime approval migration with forced RLS",
           "classification": "optional",
@@ -2101,13 +2691,13 @@
         }
       ],
       "exitCode": 0,
-      "source": "report:/tmp/opencode/unit-final.json"
+      "source": "report:/tmp/opencode/unit-final2.json"
     }
   ],
   "summary": {
-    "totalSkips": 131,
+    "totalSkips": 172,
     "required": 0,
-    "optional": 131,
+    "optional": 172,
     "status": "PASS"
   }
 }

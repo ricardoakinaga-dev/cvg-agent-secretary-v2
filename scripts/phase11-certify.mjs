@@ -37,6 +37,10 @@ import {
   loadSkipManifest,
   readPostgresScopedFiles
 } from './lib/skip-policy.mjs'
+import {
+  evaluateCriticalCoverage,
+  loadCriticalCoverageManifest
+} from './aud19-critical-coverage.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const certificationDir = path.join(root, 'certification')
@@ -690,6 +694,27 @@ for (const gateId of ['unit', 'postgres']) {
     gate.status = 'FAIL'
     gate.exitCode = 1
     gate.blocker = `required_skip:${gateId}:${classified.required.length}:${sample.join('|')}`
+  }
+}
+
+const criticalCoverageManifest = loadCriticalCoverageManifest(root)
+const coverageGate = gates.find((entry) => entry.id === 'coverage')
+if (criticalCoverageManifest && coverageGate?.status === 'PASS') {
+  const coverageSummary = readJson('coverage/coverage-summary.json')
+  if (!coverageSummary) {
+    coverageGate.status = 'FAIL'
+    coverageGate.exitCode = 1
+    coverageGate.blocker = 'critical_coverage_summary_missing'
+  } else {
+    const criticalReport = evaluateCriticalCoverage({
+      summary: coverageSummary,
+      manifest: criticalCoverageManifest
+    })
+    if (!criticalReport.valid) {
+      coverageGate.status = 'FAIL'
+      coverageGate.exitCode = 1
+      coverageGate.blocker = criticalReport.blockers.join('|')
+    }
   }
 }
 
