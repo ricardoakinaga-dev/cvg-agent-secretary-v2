@@ -2,7 +2,7 @@
 
 ## Backlog corrente pós-reauditoria — 2026-09-20
 
-O programa corrente é `AUD20-REM`: [roadmap 0333](0333_aud20260920_roadmap.md) e [backlog 0334](0334_aud20260920_backlog.md). `AUD20-01` está `COMPLETED` no escopo documental; `AUD20-02` é a próxima task para BUILD local controlado e as demais seguem o DAG. O estado AUD19 abaixo é histórico e foi supersedido pela auditoria 0567.
+O programa corrente é `AUD20-REM`: [roadmap 0333](0333_aud20260920_roadmap.md) e [backlog 0334](0334_aud20260920_backlog.md). `AUD20-01` está `COMPLETED` no escopo documental, `AUD20-02` está `COMPLETED` em BUILD local controlado e `AUD20-03` é a próxima task; as demais seguem o DAG. O estado AUD19 abaixo é histórico e foi supersedido pela auditoria 0567.
 
 ## Programa de remediação pós-auditoria de 19/09/2026
 

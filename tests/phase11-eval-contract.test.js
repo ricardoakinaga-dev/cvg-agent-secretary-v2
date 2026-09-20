@@ -44,6 +44,51 @@ describe('Phase 11 eval evidence contract', () => {
     )
   })
 
+  it('rejects 53/56 even when the report lowers its threshold to 0.85', () => {
+    const outcome = evaluateEvalReportEvidence(
+      evalReport({ taskSuccessRate: 53 / 56, threshold: 0.85 })
+    )
+    expect(outcome.pass).toBe(false)
+    expect(outcome.failures).toEqual(
+      expect.arrayContaining([
+        'eval_contract:eval_threshold_below_contract',
+        'eval_contract:eval_task_success_below_contract'
+      ])
+    )
+  })
+
+  it.each([
+    ['NaN metric', { metrics: { taskSuccessRate: Number.NaN } }],
+    ['string metric', { metrics: { taskSuccessRate: '0.97' } }],
+    ['NaN threshold', { thresholds: { taskSuccessRate: Number.NaN } }],
+    ['string threshold', { thresholds: { taskSuccessRate: '0.97' } }]
+  ])('fails closed for %s eval input', (_label, patch) => {
+    const report = evalReport()
+    const outcome = evaluateEvalReportEvidence({
+      ...report,
+      ...patch,
+      metrics: { ...report.metrics, ...patch.metrics },
+      thresholds: { ...report.thresholds, ...patch.thresholds }
+    })
+    expect(outcome.pass).toBe(false)
+  })
+
+  it('fails closed when the task-success metric is missing', () => {
+    const report = evalReport()
+    const metrics = { ...report.metrics }
+    delete metrics.taskSuccessRate
+    const outcome = evaluateEvalReportEvidence({ ...report, metrics })
+    expect(outcome.pass).toBe(false)
+  })
+
+  it('fails closed when the task-success threshold is missing', () => {
+    const report = evalReport()
+    const thresholds = { ...report.thresholds }
+    delete thresholds.taskSuccessRate
+    const outcome = evaluateEvalReportEvidence({ ...report, thresholds })
+    expect(outcome.pass).toBe(false)
+  })
+
   it('rejects the historical 53/56 result under the 97% contract', () => {
     const outcome = evaluateEvalReportEvidence(
       evalReport({ taskSuccessRate: 53 / 56, threshold: 0.97 })

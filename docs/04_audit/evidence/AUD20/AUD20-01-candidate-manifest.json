@@ -3,7 +3,7 @@
   "kind": "aud20-candidate-manifest",
   "program": "AUD20-REM",
   "task": "AUD20-01",
-  "observedAt": "2026-09-20T21:40:23.566Z",
+  "observedAt": "2026-09-20T21:56:12.154Z",
   "environment": {
     "node": "v22.23.2",
     "platform": "linux",
@@ -12,14 +12,14 @@
   },
   "candidate": {
     "schemaVersion": "phase11-candidate-v2",
-    "candidateId": "bea683171cc2bf5ae7b3d7254a231cc4f7716555d0d8ea000661027a23fc4767",
-    "commit": "c198343424bdc170fc8d26003ffc6965ebe26bb8",
-    "treeHash": "c032c47c2f819fef44666ab650a26001904a2a602fdbe6394e4378719422abf9",
-    "gitTreeHash": "8259ec41eb67fe0058323cb2b2c1faf88b495bc7",
+    "candidateId": "a836d615c2f051b2a8fc0cf610757682dc0f3c345d41e3ec10b2ef1903748fbe",
+    "commit": "3af8f5f809f930706576c9bafea1f4f355c8d093",
+    "treeHash": "49523fbdb5979231a6239a5b1ff43bc3bf84d94305099a373b1e8886ac9021fb",
+    "gitTreeHash": "f887e695059031368374daf23449f929d088a4cb",
     "branch": "main",
     "dirty": false,
     "untrackedFiles": [],
-    "createdAt": "2026-09-20T21:40:23.566Z",
+    "createdAt": "2026-09-20T21:56:12.154Z",
     "fileCount": 1104,
     "files": [
       {
@@ -1638,8 +1638,8 @@
       },
       {
         "path": "docs/02_spec/aud20_01_baseline_contract_20260920.md",
-        "sha256": "721c0b10469cad564427d37ce0e6bbdc2544697f4ac52bf4f5c730d823ea7213",
-        "size": 13399,
+        "sha256": "cf9a61231369f7909f7ddd546b1a7bc92d5326259dd09404e7dd9939c1cec1c5",
+        "size": 13632,
         "tracked": true
       },
       {
@@ -1680,8 +1680,8 @@
       },
       {
         "path": "docs/03_build/0300_build_engineer_master.md",
-        "sha256": "e7131379b550a7f85691d40459a350eba4d70ee796a7e438abe98fe761cdac52",
-        "size": 5580,
+        "sha256": "43094707746f796f51feb15345c3194036313ec66fc8bd2f79132b3d77022e74",
+        "size": 5640,
         "tracked": true
       },
       {
@@ -1692,8 +1692,8 @@
       },
       {
         "path": "docs/03_build/0302_backlog_master.md",
-        "sha256": "416057167d6af1322104ad96ceee7ef29016a4be4aa1614222abf6fec303025b",
-        "size": 6455,
+        "sha256": "279fc2ae8c40d780218f588609dddd4c166ccbb647a76cd2bca809b9b1650c5a",
+        "size": 6506,
         "tracked": true
       },
       {
@@ -1914,14 +1914,14 @@
       },
       {
         "path": "docs/03_build/0333_aud20260920_roadmap.md",
-        "sha256": "1cc4ee8d8520cce3caf80cdecf1b3b5573d6a243e3d073b4fe4e1fd38b0f4578",
-        "size": 5089,
+        "sha256": "4ffd97c74cba65359d248e6aea68de219040bc8f9341e7346ae03e6f27c9a868",
+        "size": 5150,
         "tracked": true
       },
       {
         "path": "docs/03_build/0334_aud20260920_backlog.md",
-        "sha256": "a8fd9f23fe5c942567bf4f3e27dfb9525f4fdfd7a046b6627052b869a515548e",
-        "size": 8440,
+        "sha256": "09caed33e3ed5489fd28334fe3af16f2e95f9a7bf76dc43458343c899a8c69a6",
+        "size": 8645,
         "tracked": true
       },
       {
@@ -3270,20 +3270,20 @@
       },
       {
         "path": "docs/20_master_execution_log.md",
-        "sha256": "acd9399dc6d747466943d381ff63726f83630e0333bf17dc1bb8ce190101e36e",
-        "size": 286478,
+        "sha256": "e57d2da28025c23a28ab681c384dbd59d7e8a0f3f257dccf80f88470ba953a15",
+        "size": 287632,
         "tracked": true
       },
       {
         "path": "docs/30_backlog_master.md",
-        "sha256": "b04882e2317c31aec85fd098c4fae4f1da8d382e49d7e5cdca6b7b45d23eaeac",
-        "size": 131131,
+        "sha256": "d42955dacde1e363f80eadc37db0b82efbb05dbfda66758ac44945374664d2a3",
+        "size": 131085,
         "tracked": true
       },
       {
         "path": "docs/99_runtime_state.md",
-        "sha256": "864e2b05a6eb8e4c8b49d7746d2e174450bf2445faeaf3f80aac6fe7abfdf029",
-        "size": 210448,
+        "sha256": "19f994e49e1a972b345957189970651134c9baf27425cb38397bec163ea04833",
+        "size": 212203,
         "tracked": true
       },
       {
@@ -3300,8 +3300,8 @@
       },
       {
         "path": "docs/CURRENT.md",
-        "sha256": "d7fb8b2beb855eba68f8346e6600c1f99b8745eb0d164199b823c9f56260bb01",
-        "size": 9133,
+        "sha256": "9aee592865de94905645ca6cb25e67c5acf56a1cde7db465eaec41aeb9f078f7",
+        "size": 9350,
         "tracked": true
       },
       {

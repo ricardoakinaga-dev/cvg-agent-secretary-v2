@@ -1,8 +1,8 @@
 {
   "suiteId": "phase10-core-v1",
   "agentId": "deterministic-eval-agent-v1",
-  "startedAt": "2026-09-20T19:46:13.287Z",
-  "finishedAt": "2026-09-20T19:46:13.296Z",
+  "startedAt": "2026-09-20T22:28:04.559Z",
+  "finishedAt": "2026-09-20T22:28:04.570Z",
   "metrics": {
     "scenarios": 56,
     "taskSuccessRate": 1,
@@ -27,5 +27,6 @@
     "escalationAccuracy": 0.8
   },
   "verdict": "PASS",
+  "thresholdFailures": [],
   "failures": []
 }

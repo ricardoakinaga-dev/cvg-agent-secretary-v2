@@ -3,7 +3,7 @@
   "kind": "aud20-command-receipt",
   "program": "AUD20-REM",
   "task": "AUD20-01",
-  "observedAt": "2026-09-20T21:47:43.983Z",
+  "observedAt": "2026-09-20T21:56:29.825Z",
   "sideEffects": false,
   "environment": {
     "node": "v22.23.2",
@@ -23,7 +23,7 @@
       "command": "npm run docs:check",
       "exitCode": 0,
       "signal": null,
-      "stdoutSha256": "f31f1d008fbf983704f6076d88bc33999738fcac2375670dfd51e1111cd3851a",
+      "stdoutSha256": "610e93f5acd90c90d583cbe5ffdc257bbc14904b1eafe614641ba3eb14f7c2cf",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "summary": {
         "schemaVersion": 1,
@@ -34,20 +34,20 @@
           "broken": []
         },
         "json": {
-          "checked": 561,
+          "checked": 562,
           "invalid": []
         },
         "states": {
           "declared": [
-            "IN_PROGRESS"
+            "READY_FOR_NEXT_STEP"
           ],
           "unexpected": []
         },
         "nextAction": {
           "valid": true,
           "reason": null,
-          "runtimeStateAction": "revisão independente da SPEC/barra de `AUD20-01` e registro do G0; não iniciar código, re-selo ou qualificação externa antes do gate aplicável e manter staging real e produção `NO_GO`.",
-          "currentIndexAction": "revisão independente da SPEC/barra de `AUD20-01` e registro do G0; não iniciar código, re-selo ou qualificação externa antes do gate aplicável e manter staging real e produção `NO_GO`."
+          "runtimeStateAction": "executar `AUD20-02` com RED/GREEN do piso de eval, preservando `0,97` e os negativos `AUD20-N01/N02`; não iniciar qualificação externa e manter staging real e produção `NO_GO`.",
+          "currentIndexAction": "executar `AUD20-02` com RED/GREEN do piso de eval, preservando `0,97` e os negativos `AUD20-N01/N02`; não iniciar qualificação externa e manter staging real e produção `NO_GO`."
         }
       }
     },
@@ -55,7 +55,7 @@
       "command": "npm exec -- vitest run tests/docs-integrity.test.js --no-file-parallelism --maxWorkers=2",
       "exitCode": 0,
       "signal": null,
-      "stdoutSha256": "fc5d60a29fcbcbe2e896f2faa27221c1ea3d3bcf7bacc269e1fc0eab08f51d3d",
+      "stdoutSha256": "34f74024fb172a0e3da0e4dfb1a4f75d435a81eb8bd250308dd38cc052cb6a7e",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "summary": {}
     },
@@ -63,7 +63,7 @@
       "command": "npm run certification:verify:phase11",
       "exitCode": 1,
       "signal": null,
-      "stdoutSha256": "ca4c9214d8530c4d3f6d273d857048337f1c14bb9785d90accc7bae4b987aa5b",
+      "stdoutSha256": "1106cddc49900f72037d4a92dfd2c5c6b30f8f55cc43a6bb4cf6e330a174093d",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "summary": {
         "schemaVersion": 1,
@@ -74,11 +74,11 @@
         "result": "certification/phase11/phase11-result.json",
         "manifest": "certification/phase11/manifest.json",
         "failures": [
-          "candidate_tree_stale:69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23:c032c47c2f819fef44666ab650a26001904a2a602fdbe6394e4378719422abf9",
+          "candidate_tree_stale:69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23:49523fbdb5979231a6239a5b1ff43bc3bf84d94305099a373b1e8886ac9021fb",
           "candidate_id_stale",
           "candidate_file_count_changed",
           "candidate_file_hash_changed",
-          "candidate_scope_drift:[{\"type\":\"added\",\"path\":\"docs/02_spec/aud20_01_baseline_contract_20260920.md\",\"current\":\"721c0b10469cad564427d37ce0e6bbdc2544697f4ac52bf4f5c730d823ea7213\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0300_build_engineer_master.md\",\"recorded\":\"d689fdd218e3cc8ebfb7a49431913666ea3d9065563057519e5b64c99fa2e91a\",\"current\":\"e7131379b550a7f85691d40459a350eba4d70ee796a7e438abe98fe761cdac52\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0301_roadmap.md\",\"recorded\":\"5735074c2b8abe5dfd7ef8a023576d0319f69078f9ae9bd9aebcd0dab6b9f07e\",\"current\":\"24124198b75633d39fb7ccfcaa7c623e75fef7472e13c0fec1a7b2a510d0bb7e\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0302_backlog_master.md\",\"recorded\":\"6479feb5c224b18f707679ee5de914a6227fa8ada34c758a277229a864188f0e\",\"current\":\"416057167d6af1322104ad96ceee7ef29016a4be4aa1614222abf6fec303025b\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0331_aud20260919_roadmap.md\",\"recorded\":\"6e1af3b4bc0549bf535cbcb199179ed57ce5f20615f099c6d3c3dfd8a4ed8f4f\",\"current\":\"a45437264e265be5a361db535ef7cb53d3ede68eccf935cc723d1c3d8023db5a\"}]",
+          "candidate_scope_drift:[{\"type\":\"added\",\"path\":\"docs/02_spec/aud20_01_baseline_contract_20260920.md\",\"current\":\"cf9a61231369f7909f7ddd546b1a7bc92d5326259dd09404e7dd9939c1cec1c5\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0300_build_engineer_master.md\",\"recorded\":\"d689fdd218e3cc8ebfb7a49431913666ea3d9065563057519e5b64c99fa2e91a\",\"current\":\"43094707746f796f51feb15345c3194036313ec66fc8bd2f79132b3d77022e74\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0301_roadmap.md\",\"recorded\":\"5735074c2b8abe5dfd7ef8a023576d0319f69078f9ae9bd9aebcd0dab6b9f07e\",\"current\":\"24124198b75633d39fb7ccfcaa7c623e75fef7472e13c0fec1a7b2a510d0bb7e\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0302_backlog_master.md\",\"recorded\":\"6479feb5c224b18f707679ee5de914a6227fa8ada34c758a277229a864188f0e\",\"current\":\"279fc2ae8c40d780218f588609dddd4c166ccbb647a76cd2bca809b9b1650c5a\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0331_aud20260919_roadmap.md\",\"recorded\":\"6e1af3b4bc0549bf535cbcb199179ed57ce5f20615f099c6d3c3dfd8a4ed8f4f\",\"current\":\"a45437264e265be5a361db535ef7cb53d3ede68eccf935cc723d1c3d8023db5a\"}]",
           "pointer_candidateId_mismatch",
           "pointer_treeHash_mismatch",
           "manifest_candidate_mismatch",
@@ -93,7 +93,7 @@
       "command": "npm run evidence:verify:phase11",
       "exitCode": 1,
       "signal": null,
-      "stdoutSha256": "344d258182e80e6454341cc45c48cd36bf44661645040e15ff399e5efd89efdb",
+      "stdoutSha256": "9e23dc4dd5532408ba56d83b79b5e3d5ce5b7a0adc99727e27233f111d17ca94",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "summary": {
         "schemaVersion": 1,
@@ -104,11 +104,11 @@
         "result": "certification/phase11/phase11-result.json",
         "manifest": "certification/phase11/manifest.json",
         "failures": [
-          "candidate_tree_stale:69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23:c032c47c2f819fef44666ab650a26001904a2a602fdbe6394e4378719422abf9",
+          "candidate_tree_stale:69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23:49523fbdb5979231a6239a5b1ff43bc3bf84d94305099a373b1e8886ac9021fb",
           "candidate_id_stale",
           "candidate_file_count_changed",
           "candidate_file_hash_changed",
-          "candidate_scope_drift:[{\"type\":\"added\",\"path\":\"docs/02_spec/aud20_01_baseline_contract_20260920.md\",\"current\":\"721c0b10469cad564427d37ce0e6bbdc2544697f4ac52bf4f5c730d823ea7213\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0300_build_engineer_master.md\",\"recorded\":\"d689fdd218e3cc8ebfb7a49431913666ea3d9065563057519e5b64c99fa2e91a\",\"current\":\"e7131379b550a7f85691d40459a350eba4d70ee796a7e438abe98fe761cdac52\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0301_roadmap.md\",\"recorded\":\"5735074c2b8abe5dfd7ef8a023576d0319f69078f9ae9bd9aebcd0dab6b9f07e\",\"current\":\"24124198b75633d39fb7ccfcaa7c623e75fef7472e13c0fec1a7b2a510d0bb7e\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0302_backlog_master.md\",\"recorded\":\"6479feb5c224b18f707679ee5de914a6227fa8ada34c758a277229a864188f0e\",\"current\":\"416057167d6af1322104ad96ceee7ef29016a4be4aa1614222abf6fec303025b\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0331_aud20260919_roadmap.md\",\"recorded\":\"6e1af3b4bc0549bf535cbcb199179ed57ce5f20615f099c6d3c3dfd8a4ed8f4f\",\"current\":\"a45437264e265be5a361db535ef7cb53d3ede68eccf935cc723d1c3d8023db5a\"}]",
+          "candidate_scope_drift:[{\"type\":\"added\",\"path\":\"docs/02_spec/aud20_01_baseline_contract_20260920.md\",\"current\":\"cf9a61231369f7909f7ddd546b1a7bc92d5326259dd09404e7dd9939c1cec1c5\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0300_build_engineer_master.md\",\"recorded\":\"d689fdd218e3cc8ebfb7a49431913666ea3d9065563057519e5b64c99fa2e91a\",\"current\":\"43094707746f796f51feb15345c3194036313ec66fc8bd2f79132b3d77022e74\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0301_roadmap.md\",\"recorded\":\"5735074c2b8abe5dfd7ef8a023576d0319f69078f9ae9bd9aebcd0dab6b9f07e\",\"current\":\"24124198b75633d39fb7ccfcaa7c623e75fef7472e13c0fec1a7b2a510d0bb7e\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0302_backlog_master.md\",\"recorded\":\"6479feb5c224b18f707679ee5de914a6227fa8ada34c758a277229a864188f0e\",\"current\":\"279fc2ae8c40d780218f588609dddd4c166ccbb647a76cd2bca809b9b1650c5a\"},{\"type\":\"changed\",\"path\":\"docs/03_build/0331_aud20260919_roadmap.md\",\"recorded\":\"6e1af3b4bc0549bf535cbcb199179ed57ce5f20615f099c6d3c3dfd8a4ed8f4f\",\"current\":\"a45437264e265be5a361db535ef7cb53d3ede68eccf935cc723d1c3d8023db5a\"}]",
           "pointer_candidateId_mismatch",
           "pointer_treeHash_mismatch",
           "manifest_candidate_mismatch",
@@ -123,7 +123,7 @@
       "command": "node scripts/phase11-2-evidence-check.mjs --critic",
       "exitCode": 1,
       "signal": null,
-      "stdoutSha256": "6a8de77049c4dde3abe8d39559d17213670fd871ace01414c5e5175f88390ce0",
+      "stdoutSha256": "95be627878224b6f0e91da8002f4745f0e35721d0ea78a75a6c438dde15e09ef",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "summary": {
         "schemaVersion": 1,
@@ -136,7 +136,7 @@
           {
             "id": "CRITIC:environment",
             "status": "PASS",
-            "detail": "live candidate bea683171cc2@c198343424bd"
+            "detail": "live candidate a836d615c2f0@3af8f5f809f9"
           },
           {
             "id": "CRITIC:schema",
@@ -146,12 +146,12 @@
           {
             "id": "CRITIC:binding",
             "status": "FAIL",
-            "detail": "candidateId=fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89!=bea683171cc2bf5ae7b3d7254a231cc4f7716555d0d8ea000661027a23fc4767, commit=fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6!=c198343424bdc170fc8d26003ffc6965ebe26bb8, treeHash=69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23!=c032c47c2f819fef44666ab650a26001904a2a602fdbe6394e4378719422abf9"
+            "detail": "candidateId=fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89!=a836d615c2f051b2a8fc0cf610757682dc0f3c345d41e3ec10b2ef1903748fbe, commit=fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6!=3af8f5f809f930706576c9bafea1f4f355c8d093, treeHash=69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23!=49523fbdb5979231a6239a5b1ff43bc3bf84d94305099a373b1e8886ac9021fb"
           },
           {
             "id": "CRITIC:fingerprint",
             "status": "FAIL",
-            "detail": "worktree changed after review: reported 71ec54729c917e202438f0ae166b7217723e49fd26f865b899429e64436405a8, current b67e1ad3f8068aa5f043d163dcf183ec1b1ceae10ad4f0b38ab9d72dcee4ab14"
+            "detail": "worktree changed after review: reported 71ec54729c917e202438f0ae166b7217723e49fd26f865b899429e64436405a8, current 6b2a19390e288b9ff900d09be4b32d9e7c71d1d21ab7db934e1ca246e6f3e946"
           },
           {
             "id": "CRITIC:independence",
@@ -190,8 +190,8 @@
           }
         ],
         "failures": [
-          "CRITIC:binding:candidateId=fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89!=bea683171cc2bf5ae7b3d7254a231cc4f7716555d0d8ea000661027a23fc4767, commit=fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6!=c198343424bdc170fc8d26003ffc6965ebe26bb8, treeHash=69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23!=c032c47c2f819fef44666ab650a26001904a2a602fdbe6394e4378719422abf9",
-          "CRITIC:fingerprint:worktree changed after review: reported 71ec54729c917e202438f0ae166b7217723e49fd26f865b899429e64436405a8, current b67e1ad3f8068aa5f043d163dcf183ec1b1ceae10ad4f0b38ab9d72dcee4ab14",
+          "CRITIC:binding:candidateId=fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89!=a836d615c2f051b2a8fc0cf610757682dc0f3c345d41e3ec10b2ef1903748fbe, commit=fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6!=3af8f5f809f930706576c9bafea1f4f355c8d093, treeHash=69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23!=49523fbdb5979231a6239a5b1ff43bc3bf84d94305099a373b1e8886ac9021fb",
+          "CRITIC:fingerprint:worktree changed after review: reported 71ec54729c917e202438f0ae166b7217723e49fd26f865b899429e64436405a8, current 6b2a19390e288b9ff900d09be4b32d9e7c71d1d21ab7db934e1ca246e6f3e946",
           "CRITIC:artifacts:digest mismatch: docs/CURRENT.md (declared 602f147fd850cc0330614be15e0097698ceb0a014199555f6a177781b96a4f0b)",
           "CRITIC:artifacts:digest mismatch: docs/03_build/0332_aud20260919_backlog.md (declared 9172d944cb6280d9ad82c9b3da2dbc315ad8d6d7c36930f774e5e607dc806081)",
           "CRITIC:artifacts:digest mismatch: docs/04_audit/evidence/AUD19/AUD19-12-final-seal-outcome.md (declared 300c1250e10d6b987b137c679bde6f2cb91a3e5b3f7b35c7130fb2b8ef1abf8e)"

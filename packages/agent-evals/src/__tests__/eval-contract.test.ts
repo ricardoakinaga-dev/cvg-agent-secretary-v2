@@ -53,6 +53,38 @@ describe('AAA eval contract', () => {
     expect(report.metrics.taskSuccessRate).toBe(1)
   })
 
+  it('rejects a less-strict runner override even with a perfect score', async () => {
+    const report = await runEvalSuite({
+      suiteId: 'contract-negative-reduced-runner-threshold',
+      dataset: CORE_EVAL_DATASET,
+      agent: createDeterministicEvalAgent(),
+      thresholds: { taskSuccessRate: 0.85 },
+      now: () => NOW
+    })
+    expect(report.verdict).toBe('FAIL')
+  })
+
+  it.each([
+    ['NaN', Number.NaN],
+    ['missing', undefined],
+    ['string', '0.97'],
+    ['rounded-below-contract', 0.9699999999999999]
+  ])(
+    'fails closed for a %s task-success threshold',
+    async (_label, taskSuccessRate) => {
+      const report = await runEvalSuite({
+        suiteId: `contract-negative-${_label}`,
+        dataset: CORE_EVAL_DATASET,
+        agent: createDeterministicEvalAgent(),
+        thresholds: {
+          taskSuccessRate: taskSuccessRate as unknown as number
+        },
+        now: () => NOW
+      })
+      expect(report.verdict).toBe('FAIL')
+    }
+  )
+
   it('fails the historical 53/56 result under the contract threshold', async () => {
     const report = await runEvalSuite({
       suiteId: 'contract-negative-53-56',

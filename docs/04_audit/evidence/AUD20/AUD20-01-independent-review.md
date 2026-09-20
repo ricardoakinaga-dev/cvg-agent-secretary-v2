@@ -40,3 +40,25 @@
 This report is a preserved blocking review. A fresh review is required after
 the G0 transition because the transition itself changes candidate-scoped
 control documents.
+
+## Post-transition review
+
+**Reviewer:** fresh-context `gauntlet-critic` (read-only)
+**Candidate inspected:** `a836d615c2f051b2a8fc0cf610757682dc0f3c345d41e3ec10b2ef1903748fbe` at `3af8f5f809f930706576c9bafea1f4f355c8d093`.
+**Decision:** `PACKAGE_READY` for G0 and local controlled BUILD only.
+
+- Live manifest and receipt matched candidateId, commit, treeHash, gitTreeHash,
+  1104 files, `dirty:false` and no untracked candidate files.
+- Command receipt had exits `0,0,0,1,1,1,1,1`; the failures were expected
+  fail-closed stale-certificate/production negatives with `sideEffects:false`.
+- All current pointers converged on `AUD20-01=COMPLETED` and
+  `AUD20-02=READY_FOR_NEXT_STEP`; `P1-OBS-01` maps to `10,11,14`.
+- `certification/current.json` remains historical/stale by design; no reseal or
+  staging eligibility was claimed.
+- Loaded P0/P1 findings remain assigned to later AUD20 tasks; no new P0/P1
+  blocks starting AUD20-02. The pre-existing AAA v1/v2 wording ambiguity is
+  P2 and does not lower the AUD20 v1 thresholds.
+
+**Transition result:** AUD20-02 may start with synthetic data and disposable
+local infrastructure only. External gates, staging and production remain
+`BLOCKED`/`NO_GO`.

@@ -75,3 +75,23 @@ without persisting secrets or raw sensitive payloads.
 - no re-seal, staging, production, credentials, real data or side effect.
 
 Those items belong to later tasks and remain gated by the matrix.
+
+## G0 transition candidate
+
+After the formal transition commit `3af8f5f809f930706576c9bafea1f4f355c8d093`,
+the live builder receipt was regenerated before the post-transition review:
+
+| Field | Value |
+| --- | --- |
+| candidateId | `a836d615c2f051b2a8fc0cf610757682dc0f3c345d41e3ec10b2ef1903748fbe` |
+| commit | `3af8f5f809f930706576c9bafea1f4f355c8d093` |
+| treeHash | `49523fbdb5979231a6239a5b1ff43bc3bf84d94305099a373b1e8886ac9021fb` |
+| gitTreeHash | `f887e695059031368374daf23449f929d088a4cb` |
+| fileCount | `1104` |
+| manifest SHA-256 | `dfa12b17341a4af1fa0128e762891dd88e7af6ffff9f7d2c7849f0670862b33a` |
+| live receipt SHA-256 | `fdb267c5259f4c659362dfc8604e7c47f34d1458da308527aa2c3d911508a6a6` |
+| command receipt SHA-256 | `3d2c95c4127a9a28d62198e42e9338b0adf633e8fcd502222c7968897ae8e2dc` |
+
+The transition candidate preserves the same candidate-scope rule: evidence
+files are not included in the product bytes, while the live receipt proves the
+identity fields against `buildPhase11Candidate`.

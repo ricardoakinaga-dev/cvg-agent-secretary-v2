@@ -38,13 +38,14 @@
 ## Tasks correntes (estados oficiais)
 
 - status: `READY_FOR_NEXT_STEP`
-- task corrente: `AUD20-02` — tornar o piso de eval irredutível sob BUILD local controlado.
+- task corrente: `AUD20-03` — validar lineage completa e jornada concorrente de Goal sob BUILD local controlado.
 
 | Faixa                 | Estado                | Nota                                                                                 |
 | --------------------- | --------------------- | ------------------------------------------------------------------------------------ |
 | AUD20-01              | `COMPLETED`           | SPEC, barra, matriz, receipts e revisão concluídos; G0 local controlado aprovado     |
-| AUD20-02              | `READY_FOR_NEXT_STEP` | Próxima task; threshold `0,97` e negativos N01/N02 congelados                        |
-| AUD20-03..12          | `BLOCKED`             | Dependem do DAG técnico após AUD20-02                                                |
+| AUD20-02              | `COMPLETED`           | Piso `0,97` irredutível; N01/N02 e eval sintético verificados localmente             |
+| AUD20-03              | `READY_FOR_NEXT_STEP` | Próxima task; lineage/concorrência e negativos N03/N04                               |
+| AUD20-04..12          | `BLOCKED`             | Dependem da sequência e do DAG técnico após AUD20-03                                 |
 | AUD20-13..15          | `BLOCKED`             | Opção A registrada; faltam inputs, owners, ambiente e gates anteriores               |
 | AUD19-01..06,08,09,11 | `BLOCKED`             | Claims de conclusão supersedidos; remediação mapeada ao DAG AUD20                    |
 | AUD19-07,10           | `COMPLETED`           | Entregas locais preservadas; limitações/P2 seguem no programa AUD20                  |
@@ -63,4 +64,4 @@
 
 ## Próxima ação
 
-- Próxima ação: executar `AUD20-02` com RED/GREEN do piso de eval, preservando `0,97` e os negativos `AUD20-N01/N02`; não iniciar qualificação externa e manter staging real e produção `NO_GO`.
+- Próxima ação: executar `AUD20-03` com RED/GREEN de lineage/concorrência, preservando os negativos `AUD20-N03/N04`; não iniciar qualificação externa e manter staging real e produção `NO_GO`.

@@ -35,6 +35,17 @@
     "manifest": "docs/04_audit/evidence/AUD20/AUD20-01-candidate-manifest.json",
     "manifestSha256": "3ec9e740325eccfb5c65b53bf4248769b97f6492eae037a8548bb01d740a56c2"
   },
+  "g0TransitionCandidate": {
+    "commit": "3af8f5f809f930706576c9bafea1f4f355c8d093",
+    "candidateId": "a836d615c2f051b2a8fc0cf610757682dc0f3c345d41e3ec10b2ef1903748fbe",
+    "treeHash": "49523fbdb5979231a6239a5b1ff43bc3bf84d94305099a373b1e8886ac9021fb",
+    "gitTreeHash": "f887e695059031368374daf23449f929d088a4cb",
+    "fileCount": 1104,
+    "manifest": "docs/04_audit/evidence/AUD20/AUD20-01-candidate-manifest.json",
+    "manifestSha256": "dfa12b17341a4af1fa0128e762891dd88e7af6ffff9f7d2c7849f0670862b33a",
+    "liveReceipt": "docs/04_audit/evidence/AUD20/AUD20-01-live-candidate-receipt.json",
+    "commandReceipt": "docs/04_audit/evidence/AUD20/AUD20-01-command-receipt.json"
+  },
   "gate": {
     "id": "G0",
     "task": "AUD20-01",
@@ -142,7 +153,7 @@
     "AUD20-N12",
     "AUD20-N13"
   ],
-  "nextTask": "AUD20-02",
+  "nextTask": "AUD20-03",
   "tasks": [
     {
       "id": "AUD20-01",
@@ -179,7 +190,7 @@
       "id": "AUD20-02",
       "title": "Tornar o piso de eval irredutivel",
       "priority": "P0",
-      "status": "READY_FOR_NEXT_STEP",
+      "status": "COMPLETED",
       "dependencies": ["AUD20-01"],
       "owner": "agent-evals/certification",
       "findings": ["P1-EVAL-01"],
@@ -194,15 +205,19 @@
         "certification/agent-eval-report.json"
       ],
       "verification": ["focused eval tests", "npm run test:evals", "phase11 eval gate"],
-      "evidence": ["AUD20-02 focused RED/GREEN report", "fresh eval report"],
+      "evidence": [
+        "docs/04_audit/evidence/AUD20/AUD20-02-red-green-report.md",
+        "docs/04_audit/evidence/AUD20/AUD20-02-candidate-receipt.json",
+        "certification/agent-eval-report.json"
+      ],
       "rollback": "revert task files; keep AUD20 contract and negative report"
     },
     {
       "id": "AUD20-03",
       "title": "Validar lineage completa e jornada concorrente de Goal",
       "priority": "P0",
-      "status": "BLOCKED",
-      "dependencies": ["AUD20-01"],
+      "status": "READY_FOR_NEXT_STEP",
+      "dependencies": ["AUD20-01", "AUD20-02"],
       "owner": "orchestration/persistence",
       "findings": ["P1-ORCH-01", "P1-ORCH-02"],
       "boundary": "disposable PostgreSQL; two controlled worker journeys",
