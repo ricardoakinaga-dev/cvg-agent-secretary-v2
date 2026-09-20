@@ -2,7 +2,7 @@
 
 ## Backlog corrente pós-reauditoria — 2026-09-20
 
-O programa corrente é `AUD20-REM`: [roadmap 0333](0333_aud20260920_roadmap.md) e [backlog 0334](0334_aud20260920_backlog.md). `AUD20-01` está `READY_FOR_NEXT_STEP` apenas para SPEC/barra; tasks técnicas permanecem `BLOCKED`. O estado AUD19 abaixo é histórico e foi supersedido pela auditoria 0567.
+O programa corrente é `AUD20-REM`: [roadmap 0333](0333_aud20260920_roadmap.md) e [backlog 0334](0334_aud20260920_backlog.md). `AUD20-01` está `IN_PROGRESS` na SPEC/barra; tasks técnicas permanecem `BLOCKED`. O estado AUD19 abaixo é histórico e foi supersedido pela auditoria 0567.
 
 ## Programa de remediação pós-auditoria de 19/09/2026
 

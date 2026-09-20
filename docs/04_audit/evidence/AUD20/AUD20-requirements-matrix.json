@@ -1,0 +1,454 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-requirements-matrix",
+  "program": "AUD20-REM",
+  "source": "docs/04_audit/0567_aud19_delivery_reaudit_2026-09-20.md",
+  "spec": "docs/02_spec/aud20_01_baseline_contract_20260920.md",
+  "roadmap": "docs/03_build/0333_aud20260920_roadmap.md",
+  "backlog": "docs/03_build/0334_aud20260920_backlog.md",
+  "currentIndex": "docs/CURRENT.md",
+  "officialStates": [
+    "IN_PROGRESS",
+    "READY_FOR_NEXT_STEP",
+    "BLOCKED",
+    "WAITING_HUMAN_APPROVAL",
+    "COMPLETED"
+  ],
+  "baseline": {
+    "scope": "controlled-local",
+    "node": "22.23.2",
+    "commit": "98ec5e80d8149f504e09f7855a3d86924e5754d3",
+    "candidateId": "b4cb18ac74610a644695bdde1d36e9234ee9322b2d7f18b5b9d600c69c93c7f7",
+    "treeHash": "68a2a2b44a4997d89c1ceeb1e999f3256489d047c4774f2b3010f48560f56d7c",
+    "gitTreeHash": "1ffd178b15bbc5c94feec60d51bd50d518274f58",
+    "fileCount": 1103,
+    "dirty": false,
+    "historicalPointerCandidateId": "fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+    "historicalPointerCommit": "fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6"
+  },
+  "gate": {
+    "id": "G0",
+    "task": "AUD20-01",
+    "status": "IN_PROGRESS",
+    "buildAuthorized": false,
+    "staging": "NO_GO",
+    "production": "NO_GO",
+    "externalGates": "BLOCKED"
+  },
+  "findings": [
+    {
+      "id": "P0-EVID-01",
+      "tasks": ["AUD20-01", "AUD20-06", "AUD20-12"],
+      "owner": "certification/evidence-integrity"
+    },
+    {
+      "id": "P0-SUPPLY-01",
+      "tasks": ["AUD20-07", "AUD20-11", "AUD20-12"],
+      "owner": "supply-chain/runtime"
+    },
+    {
+      "id": "P1-EVAL-01",
+      "tasks": ["AUD20-02", "AUD20-09", "AUD20-12"],
+      "owner": "agent-evals/certification"
+    },
+    {
+      "id": "P1-ORCH-01",
+      "tasks": ["AUD20-03", "AUD20-11", "AUD20-12"],
+      "owner": "orchestration/persistence"
+    },
+    {
+      "id": "P1-ORCH-02",
+      "tasks": ["AUD20-03", "AUD20-11", "AUD20-12"],
+      "owner": "orchestration/worker"
+    },
+    {
+      "id": "P1-DATA-01",
+      "tasks": ["AUD20-04", "AUD20-11", "AUD20-12"],
+      "owner": "persistence/data-governance"
+    },
+    {
+      "id": "P1-SEC-01",
+      "tasks": ["AUD20-05", "AUD20-11", "AUD20-12"],
+      "owner": "security/attestation"
+    },
+    {
+      "id": "P1-SEC-02",
+      "tasks": ["AUD20-05", "AUD20-11", "AUD20-12"],
+      "owner": "security/persistence"
+    },
+    {
+      "id": "P1-QA-01",
+      "tasks": ["AUD20-06", "AUD20-09", "AUD20-12"],
+      "owner": "qa/certification"
+    },
+    {
+      "id": "P1-OBS-01",
+      "tasks": ["AUD20-10", "AUD20-11", "AUD20-14"],
+      "owner": "observability/operations"
+    },
+    {
+      "id": "P2-DOC-01",
+      "tasks": ["AUD20-01", "AUD20-08"],
+      "owner": "control-plane/docs"
+    },
+    {
+      "id": "P2-ARCH-01",
+      "tasks": ["AUD20-08", "AUD20-12"],
+      "owner": "architecture"
+    },
+    {
+      "id": "P2-OPS-01",
+      "tasks": ["AUD20-11", "AUD20-12"],
+      "owner": "operations/runtime"
+    },
+    {
+      "id": "P2-UX-01",
+      "tasks": ["AUD20-09", "AUD20-12"],
+      "owner": "qa/frontend"
+    },
+    {
+      "id": "P2-MAINT-01",
+      "tasks": ["AUD20-09", "AUD20-12"],
+      "owner": "qa/maintainability"
+    }
+  ],
+  "negativeIds": [
+    "AUD20-N01",
+    "AUD20-N02",
+    "AUD20-N03",
+    "AUD20-N04",
+    "AUD20-N05",
+    "AUD20-N06",
+    "AUD20-N07",
+    "AUD20-N08",
+    "AUD20-N09",
+    "AUD20-N10",
+    "AUD20-N11",
+    "AUD20-N12",
+    "AUD20-N13"
+  ],
+  "tasks": [
+    {
+      "id": "AUD20-01",
+      "title": "Congelar contrato, baseline, barra e matriz",
+      "priority": "P0",
+      "status": "IN_PROGRESS",
+      "dependencies": [],
+      "owner": "control-plane/certification",
+      "findings": ["P0-EVID-01", "P2-DOC-01"],
+      "boundary": "documentation-only",
+      "negative": ["AUD20-N07", "AUD20-N09", "AUD20-N13"],
+      "allowedPaths": [
+        "docs/02_spec/aud20_01_baseline_contract_20260920.md",
+        "docs/03_build/0333_aud20260920_roadmap.md",
+        "docs/03_build/0334_aud20260920_backlog.md",
+        "docs/04_audit/evidence/AUD20/**",
+        "docs/CURRENT.md",
+        "docs/20_master_execution_log.md",
+        "docs/30_backlog_master.md",
+        "docs/99_runtime_state.md"
+      ],
+      "verification": ["git diff --check", "npm run docs:check", "docs-integrity"],
+      "evidence": [
+        "docs/04_audit/evidence/AUD20/AUD20-01-baseline.md",
+        "docs/04_audit/evidence/AUD20/AUD20-requirements-matrix.json",
+        "docs/04_audit/evidence/AUD20/AUD20-01-candidate-manifest.json"
+      ],
+      "rollback": "revert only the AUD20-01 documentation commit; preserve 0567 and historical evidence"
+    },
+    {
+      "id": "AUD20-02",
+      "title": "Tornar o piso de eval irredutivel",
+      "priority": "P0",
+      "status": "BLOCKED",
+      "dependencies": ["AUD20-01"],
+      "owner": "agent-evals/certification",
+      "findings": ["P1-EVAL-01"],
+      "boundary": "local-controlled; synthetic eval dataset only",
+      "negative": ["AUD20-N01", "AUD20-N02"],
+      "allowedPaths": [
+        "packages/agent-evals/src/runner.ts",
+        "packages/agent-evals/src/__tests__/**",
+        "scripts/lib/eval-contract.mjs",
+        "scripts/lib/certification-rules.mjs",
+        "tests/phase11-eval-contract.test.js",
+        "certification/agent-eval-report.json"
+      ],
+      "verification": ["focused eval tests", "npm run test:evals", "phase11 eval gate"],
+      "evidence": ["AUD20-02 focused RED/GREEN report", "fresh eval report"],
+      "rollback": "revert task files; keep AUD20 contract and negative report"
+    },
+    {
+      "id": "AUD20-03",
+      "title": "Validar lineage completa e jornada concorrente de Goal",
+      "priority": "P0",
+      "status": "BLOCKED",
+      "dependencies": ["AUD20-01"],
+      "owner": "orchestration/persistence",
+      "findings": ["P1-ORCH-01", "P1-ORCH-02"],
+      "boundary": "disposable PostgreSQL; two controlled worker journeys",
+      "negative": ["AUD20-N03", "AUD20-N04"],
+      "allowedPaths": [
+        "packages/agent-runtime/src/orchestration.ts",
+        "packages/persistence/src/orchestrator-postgres.ts",
+        "apps/worker/src/kernel-composition.ts",
+        "packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts",
+        "apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts",
+        "apps/worker/src/__tests__/postgres-outbox-bridge.integration.test.ts"
+      ],
+      "verification": ["test:postgres", "two runDurableGoal journeys", "redelivery/crash negatives"],
+      "evidence": ["PostgreSQL concurrency report", "lineage fingerprint report"],
+      "rollback": "rollback only additive orchestration changes and migration forward-fix if needed"
+    },
+    {
+      "id": "AUD20-04",
+      "title": "Preservar dedupe durante retencao",
+      "priority": "P0",
+      "status": "BLOCKED",
+      "dependencies": ["AUD20-01"],
+      "owner": "persistence/data-governance",
+      "findings": ["P1-DATA-01"],
+      "boundary": "additive PostgreSQL migration; synthetic tenants and legal holds",
+      "negative": ["AUD20-N05"],
+      "allowedPaths": [
+        "packages/persistence/src/retention.ts",
+        "packages/persistence/migrations/**",
+        "packages/agent-core/src/commands/receive-inbound-message.ts",
+        "packages/persistence/src/__tests__/retention-postgres.test.ts",
+        "packages/persistence/src/__tests__/*idempotency*"
+      ],
+      "verification": ["test:postgres", "TTL/tombstone replay matrix", "tenant/hold isolation"],
+      "evidence": ["migration checksum", "retention replay report"],
+      "rollback": "forward-fix only for deployed schema assumptions; no destructive purge"
+    },
+    {
+      "id": "AUD20-05",
+      "title": "Vincular atestacao e replay aos recursos reais",
+      "priority": "P0",
+      "status": "BLOCKED",
+      "dependencies": ["AUD20-01"],
+      "owner": "security/attestation",
+      "findings": ["P1-SEC-01", "P1-SEC-02"],
+      "boundary": "controlled bootstrap and disposable PostgreSQL only",
+      "negative": ["AUD20-N06"],
+      "allowedPaths": [
+        "apps/api/src/operator-replay-store.ts",
+        "apps/api/src/server.ts",
+        "apps/api/src/server/tenant-isolation.ts",
+        "packages/persistence/migrations/0026_operator_replay_events.sql",
+        "scripts/production-preflight.mjs",
+        "scripts/lib/production-preflight-core.mjs",
+        "apps/api/src/__tests__/operator-replay-store.test.ts",
+        "apps/api/src/__tests__/operator-replay-guard.test.ts"
+      ],
+      "verification": ["operator replay PostgreSQL tests", "startup grants negative", "preflight negatives"],
+      "evidence": ["attestation binding report", "role CRUD/readiness report"],
+      "rollback": "disable only the controlled adapter path; preserve fail-closed startup"
+    },
+    {
+      "id": "AUD20-06",
+      "title": "Tornar critico e mutation candidate-bound",
+      "priority": "P0",
+      "status": "BLOCKED",
+      "dependencies": ["AUD20-02", "AUD20-03", "AUD20-04", "AUD20-05"],
+      "owner": "qa/certification",
+      "findings": ["P0-EVID-01", "P1-QA-01"],
+      "boundary": "read-only verifier plus local mutation fixtures",
+      "negative": ["AUD20-N07"],
+      "allowedPaths": [
+        "scripts/phase11-2-evidence-check.mjs",
+        "scripts/phase11-certify.mjs",
+        "scripts/phase11-verify.mjs",
+        "scripts/lib/critic-evidence.mjs",
+        "scripts/phase11-2-redteam.mjs",
+        "certification/phase11/**",
+        "tests/**"
+      ],
+      "verification": ["--critic", "--fail-on-gaps", "mutation sentinel", "N1-N9"],
+      "evidence": ["fresh critic report", "mutation report", "candidate-bound verifier output"],
+      "rollback": "restore verifier changes without rewriting historical reports"
+    },
+    {
+      "id": "AUD20-07",
+      "title": "Reconstruir imagens e digests no mesmo run",
+      "priority": "P0",
+      "status": "BLOCKED",
+      "dependencies": ["AUD20-02", "AUD20-03", "AUD20-04", "AUD20-05", "AUD20-06"],
+      "owner": "supply-chain/runtime",
+      "findings": ["P0-SUPPLY-01"],
+      "boundary": "local Docker build; no registry publication",
+      "negative": ["AUD20-N08"],
+      "allowedPaths": [
+        "Dockerfile",
+        ".dockerignore",
+        "scripts/generate-sbom.mjs",
+        "scripts/check-licenses.mjs",
+        "certification/phase11/release-manifest.json",
+        "certification/phase11/manifest.json",
+        "certification/phase11/**"
+      ],
+      "verification": ["npm ci --ignore-scripts", "sbom", "licenses:check", "Docker rebuild and inspection"],
+      "evidence": ["image content digests", "SBOM", "non-root/secret inspection"],
+      "rollback": "remove only local image/tag artifacts; no published artifact exists"
+    },
+    {
+      "id": "AUD20-08",
+      "title": "Fortalecer checker documental e caps arquiteturais",
+      "priority": "P1",
+      "status": "BLOCKED",
+      "dependencies": ["AUD20-01"],
+      "owner": "control-plane/docs",
+      "findings": ["P2-DOC-01", "P2-ARCH-01"],
+      "boundary": "repository-local static checks",
+      "negative": ["AUD20-N09"],
+      "allowedPaths": [
+        "scripts/docs-check.mjs",
+        "tests/docs-integrity.test.js",
+        "tests/architecture*.test.*",
+        "apps/api/src/server.ts",
+        "packages/persistence/src/postgres.ts",
+        "docs/**"
+      ],
+      "verification": ["docs:check", "docs integrity", "architecture caps", "stale action negatives"],
+      "evidence": ["semantic checker report", "post-extraction size report"],
+      "rollback": "revert checker/cap changes while retaining audit findings"
+    },
+    {
+      "id": "AUD20-09",
+      "title": "Executar holdout integrado e reduzir branch chasing",
+      "priority": "P1",
+      "status": "BLOCKED",
+      "dependencies": ["AUD20-02", "AUD20-03", "AUD20-04", "AUD20-05"],
+      "owner": "qa/evals",
+      "findings": ["P1-EVAL-01", "P1-QA-01", "P2-UX-01", "P2-MAINT-01"],
+      "boundary": "synthetic holdout and controlled runtime boundary",
+      "negative": ["AUD20-N10"],
+      "allowedPaths": [
+        "packages/agent-evals/**",
+        "packages/chaos/**",
+        "tests/**",
+        "apps/api/src/__tests__/**",
+        "apps/worker/src/__tests__/**",
+        "packages/observability/src/__tests__/**"
+      ],
+      "verification": ["holdout by category", "test:evals", "chaos", "E2E/a11y where applicable"],
+      "evidence": ["frozen holdout manifest", "category result", "safety result"],
+      "rollback": "discard only synthetic holdout changes; never edit frozen dataset expectations"
+    },
+    {
+      "id": "AUD20-10",
+      "title": "Conectar observabilidade ao runtime real",
+      "priority": "P1",
+      "status": "BLOCKED",
+      "dependencies": ["AUD20-01"],
+      "owner": "observability/operations",
+      "findings": [],
+      "boundary": "local API/worker with controlled collector and synthetic sink",
+      "negative": ["AUD20-N11"],
+      "allowedPaths": [
+        "packages/observability/**",
+        "apps/worker/src/worker-observability.ts",
+        "apps/worker/src/main.ts",
+        "apps/worker/src/continuous-worker.ts",
+        "apps/api/src/**",
+        "packages/observability/src/__tests__/**"
+      ],
+      "verification": ["worker/API integrated exercise", "redaction", "approval_latency_ms", "alert correlation"],
+      "evidence": ["collector export", "synthetic incident timeline", "redaction scan"],
+      "rollback": "disable only controlled sink wiring; preserve fail-closed redaction",
+      "humanDecision": "owner and SLO remain WAITING_HUMAN_APPROVAL"
+    },
+    {
+      "id": "AUD20-11",
+      "title": "Provar composicao staging-like reproduzivel",
+      "priority": "P1",
+      "status": "BLOCKED",
+      "dependencies": ["AUD20-03", "AUD20-04", "AUD20-05", "AUD20-06", "AUD20-07", "AUD20-08", "AUD20-09", "AUD20-10"],
+      "owner": "operations/runtime",
+      "findings": ["P0-SUPPLY-01", "P1-ORCH-02", "P1-DATA-01", "P1-SEC-02", "P1-OBS-01", "P2-OPS-01"],
+      "boundary": "disposable Docker Compose with API, worker and PostgreSQL only",
+      "negative": ["AUD20-N04", "AUD20-N05", "AUD20-N12"],
+      "allowedPaths": [
+        "docker-compose*.yml",
+        "deploy/**",
+        "Dockerfile",
+        "scripts/**",
+        "apps/api/src/**",
+        "apps/worker/src/**",
+        "packages/persistence/**",
+        "tests/**"
+      ],
+      "verification": ["compose up/readiness", "same-build identity", "restart/drain/replay", "test:postgres zero required skips"],
+      "evidence": ["compose smoke", "teardown report", "build identity manifest"],
+      "rollback": "tear down disposable compose only; no external resource is touched"
+    },
+    {
+      "id": "AUD20-12",
+      "title": "Auditoria fresca e re-selo local",
+      "priority": "P0",
+      "status": "BLOCKED",
+      "dependencies": ["AUD20-02", "AUD20-03", "AUD20-04", "AUD20-05", "AUD20-06", "AUD20-07", "AUD20-08", "AUD20-09", "AUD20-10", "AUD20-11"],
+      "owner": "independent-audit/certification",
+      "findings": ["P0-EVID-01", "P0-SUPPLY-01", "P1-EVAL-01", "P1-ORCH-01", "P1-ORCH-02", "P1-DATA-01", "P1-SEC-01", "P1-SEC-02", "P1-QA-01", "P1-OBS-01"],
+      "boundary": "frozen local candidate; no staging or production promotion",
+      "negative": ["AUD20-N01", "AUD20-N03", "AUD20-N05", "AUD20-N07", "AUD20-N08", "AUD20-N10", "AUD20-N12"],
+      "allowedPaths": [
+        "certification/**",
+        "scripts/**",
+        "docs/04_audit/evidence/AUD20/**",
+        "docs/CURRENT.md",
+        "docs/20_master_execution_log.md",
+        "docs/30_backlog_master.md",
+        "docs/99_runtime_state.md"
+      ],
+      "verification": ["full local suite", "fresh critic", "mutation", "rebuild", "all required gates", "promotion check"],
+      "evidence": ["new candidate manifest", "critical review", "final controlled-local verdict"],
+      "rollback": "retain historical candidates and mark the new candidate NO_GO if any required gate fails"
+    },
+    {
+      "id": "AUD20-13",
+      "title": "Intake externo e qualificacao de provider/canal/IdP/RAG",
+      "priority": "P1",
+      "status": "BLOCKED",
+      "dependencies": ["AUD20-12", "external inputs and owners"],
+      "owner": "external qualification/human authority",
+      "findings": ["P1-OBS-01"],
+      "boundary": "external environment only after explicit handoff",
+      "negative": ["AUD20-N13"],
+      "allowedPaths": ["docs/04_audit/evidence/AUD19/**", "external dossier templates"],
+      "verification": ["not runnable locally"],
+      "evidence": ["four signed external dossiers"],
+      "rollback": "no execution authorized"
+    },
+    {
+      "id": "AUD20-14",
+      "title": "Restore, RPO/RTO, rollback e piloto",
+      "priority": "P1",
+      "status": "BLOCKED",
+      "dependencies": ["AUD20-13"],
+      "owner": "operations/human authority",
+      "findings": ["P1-OBS-01", "P2-OPS-01"],
+      "boundary": "external approved environment and synthetic data only",
+      "negative": ["AUD20-N13"],
+      "allowedPaths": ["external dossier templates"],
+      "verification": ["not runnable locally"],
+      "evidence": ["approved goals, measured times, stop criteria, rollback record"],
+      "rollback": "no execution authorized"
+    },
+    {
+      "id": "AUD20-15",
+      "title": "Auditoria final e decisao humana",
+      "priority": "P0",
+      "status": "BLOCKED",
+      "dependencies": ["AUD20-12", "AUD20-13", "AUD20-14"],
+      "owner": "independent auditor/release authority",
+      "findings": ["P0-EVID-01", "P0-SUPPLY-01"],
+      "boundary": "human release decision; never inferred by scripts",
+      "negative": ["AUD20-N13"],
+      "allowedPaths": ["docs/04_audit/evidence/AUD19/**", "external dossier templates"],
+      "verification": ["not runnable locally"],
+      "evidence": ["hash-bound human sign-off"],
+      "rollback": "missing sign-off keeps NO_GO"
+    }
+  ]
+}

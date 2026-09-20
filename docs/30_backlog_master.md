@@ -1832,7 +1832,7 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 # AUD20-REM-20260920 — remediação pós-entrega AUD19
 
 - [x] Publicar [reauditoria 0567](04_audit/0567_aud19_delivery_reaudit_2026-09-20.md), [roadmap 0333](03_build/0333_aud20260920_roadmap.md) e [backlog 0334](03_build/0334_aud20260920_backlog.md).
-- [ ] `AUD20-01` `READY_FOR_NEXT_STEP`: congelar SPEC/barra, negativos, matriz e ownership; atividade documental/revisão, sem BUILD implícito.
+- [ ] `AUD20-01` `IN_PROGRESS`: congelar SPEC/barra, negativos, matriz e ownership; atividade documental/revisão, sem BUILD implícito.
 - [ ] `AUD20-02..05` `BLOCKED`: eval irredutível; lineage/concorrência E2E; dedupe durante retenção; binding da atestação e privilégios do replay.
 - [ ] `AUD20-06..08` `BLOCKED`: crítico/mutation candidate-bound; rebuild/digests do mesmo candidato; checker documental e caps arquiteturais.
 - [ ] `AUD20-09..11` `BLOCKED`: holdout integrado, observabilidade conectada e composição API+worker+DB staging-like.
@@ -1840,3 +1840,11 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 - [ ] `AUD20-13..15` `BLOCKED`: Opção A registrada, porém inputs, owners, ambiente e gates anteriores ausentes; sign-off humano apenas com dossiê completo.
 - **Estado:** entrega local `PARTIAL PASS`; conclusão integral e staging `FAIL / NO_GO`; produção `NO_GO`.
 - **Próxima ação:** preparar e revisar a SPEC/barra de `AUD20-01`, preservando os dois P0 e os negativos P1 da auditoria 0567; não iniciar código, re-selo ou qualificação externa antes do gate aplicável.
+
+## AUD20-01 — registro de SPEC e baseline
+
+- **Status:** `IN_PROGRESS`; G0 ainda não aprovado; BUILD AUD20 continua bloqueado.
+- **Entregas documentais:** SPEC, baseline executável, quality bar v1 e matriz requisito→task→negativo→teste→evidência publicados em `docs/02_spec/aud20_01_baseline_contract_20260920.md` e `docs/04_audit/evidence/AUD20/`.
+- **Baseline:** candidato live `b4cb18ac…@98ec5e8`, Node `22.23.2`, worktree limpo na captura; selo `fbca3d2b…@fa78f92` histórico/stale.
+- **Verificação:** `docs:check`, `git diff --check` e `docs-integrity` PASS; verifier/evidence/critic/promotion/preflight permanecem FAIL/NO_GO fail-closed.
+- **Próxima ação:** revisão independente e registro do G0; somente depois liberar `AUD20-02`, mantendo AUD20-13..15 e produção bloqueados.

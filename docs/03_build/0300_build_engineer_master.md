@@ -2,7 +2,7 @@
 
 ## Programa de remediação pós-reauditoria de 20/09/2026
 
-A [reauditoria 0567](../04_audit/0567_aud19_delivery_reaudit_2026-09-20.md) supersede o claim de conclusão integral do programa AUD19. O [roadmap 0333](0333_aud20260920_roadmap.md) e o [backlog 0334](0334_aud20260920_backlog.md) governam `AUD20-REM`. Somente `AUD20-01` está `READY_FOR_NEXT_STEP` para SPEC/barra; nenhum BUILD, re-selo, staging ou produção foi autorizado.
+A [reauditoria 0567](../04_audit/0567_aud19_delivery_reaudit_2026-09-20.md) supersede o claim de conclusão integral do programa AUD19. O [roadmap 0333](0333_aud20260920_roadmap.md) e o [backlog 0334](0334_aud20260920_backlog.md) governam `AUD20-REM`. `AUD20-01` está `IN_PROGRESS` na SPEC/barra; nenhum BUILD, re-selo, staging ou produção foi autorizado.
 
 ## Programa de remediação pós-auditoria de 19/09/2026
 

@@ -2684,3 +2684,14 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - candidate_effect: estas alterações documentais pertencem ao candidate scope; o pacote anterior está stale e não pode ser re-selado sem concluir AUD20-02..12.
 - next_action: preparar e revisar a SPEC/barra de `AUD20-01`, preservando os dois P0 e os negativos P1 da auditoria 0567; não iniciar código, re-selo ou qualificação externa antes do gate aplicável e manter staging real e produção `NO_GO`.
 - evidence: `docs/04_audit/0567_aud19_delivery_reaudit_2026-09-20.md`, `docs/03_build/0333_aud20260920_roadmap.md`, `docs/03_build/0334_aud20260920_backlog.md`.
+
+# AUD20-01-SPEC-20260920 — baseline, barra e matriz em revisao
+
+- current_engine: `SPEC`; activity: `DISCOVERY -> SPEC`; task: `AUD20-01`; status: `IN_PROGRESS`; execution: `CONTROLLED_LOCAL`; staging: `NO_GO`; production: `NO_GO`.
+- authorization: usuario autorizou codigo/testes locais controlados, PostgreSQL/Docker/Playwright descartaveis e commits locais depois do G0; sem provider/canal/IdP/RAG real, egress, credenciais, dados reais, deploy, publicacao, staging ou producao.
+- last_completed_action: checkpoint documental `98ec5e8`; baseline viva capturada no candidato `b4cb18ac...@98ec5e8`; SPEC, quality bar, matriz e evidencia AUD20-01 publicadas sem alterar codigo de produto.
+- repository_state: branch `main`, 24 commits locais a frente de `origin/main`, worktree limpo no inicio da baseline; Node `22.23.2`; ponteiro historico `fbca3d2b...@fa78f92` permanece stale.
+- verification_state: `git diff --check`, `docs:check` (719 links/557 JSONs) e `docs-integrity` (5/5) PASS; `certification:verify:phase11`, `evidence:verify:phase11`, `phase11-2-evidence-check --critic` e `promotion:check` FAIL fechado por drift candidato/artefato; `production:preflight` FAIL com `sideEffects:false`.
+- gate_state: G0 ainda nao aprovado; `AUD20-02..12` permanecem `BLOCKED`; nenhuma implementacao, migration, rebuild ou re-selo AUD20 foi iniciado.
+- next_action: revisão independente da SPEC/barra de `AUD20-01` e registro do G0; não iniciar código, re-selo ou qualificação externa antes do gate aplicável e manter staging real e produção `NO_GO`.
+- evidence: `docs/02_spec/aud20_01_baseline_contract_20260920.md`, `docs/04_audit/evidence/AUD20/AUD20-01-baseline.md`, `docs/04_audit/evidence/AUD20/AUD20-requirements-matrix.json`, `docs/04_audit/evidence/AUD20/AUD20-quality-bar.json`.

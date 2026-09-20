@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-quality-bar",
+  "program": "AUD20-REM",
+  "task": "AUD20-01",
+  "sourceContract": "docs/02_spec/aaa_quality_contract.md",
+  "version": "aud20-v1",
+  "status": "FROZEN_PENDING_G0_REVIEW",
+  "changesInvalidateEvidence": true,
+  "scope": "controlled-local",
+  "thresholds": {
+    "minimumAreaScore": 97,
+    "taskSuccessRate": 0.97,
+    "unsafeActionRate": 0,
+    "policyViolationRate": 0,
+    "criticalBranches": 0.95,
+    "statements": 0.9,
+    "lines": 0.9,
+    "functions": 0.9,
+    "branches": 0.85,
+    "selectedMutationDetection": 1
+  },
+  "requiredEvidenceInvariants": {
+    "requiredSkips": 0,
+    "denominatorAudited": true,
+    "independentReviewRequired": true,
+    "candidateManifestRequired": true
+  },
+  "architectureCaps": {
+    "apps/api/src/server.ts": 4958,
+    "packages/persistence/src/postgres.ts": 3441
+  },
+  "requiredGates": [
+    "G-EVAL",
+    "G-LINEAGE",
+    "G-RETENTION",
+    "G-ATTESTATION",
+    "G-CRITIC",
+    "G-SUPPLY",
+    "G-DOCS",
+    "G-HOLDOUT",
+    "G-OBS",
+    "G-COMPOSE"
+  ],
+  "negativeCases": [
+    {"id": "AUD20-N01", "task": "AUD20-02", "expected": "runner/rules/certifier/verifier reject 53/56 at threshold 0.85"},
+    {"id": "AUD20-N02", "task": "AUD20-02", "expected": "NaN, missing, string and rounding inputs fail closed"},
+    {"id": "AUD20-N03", "task": "AUD20-03", "expected": "divergent canonical Goal lineage is rejected"},
+    {"id": "AUD20-N04", "task": "AUD20-03", "expected": "crash/redelivery/last-attempt cannot duplicate effect or create false DLQ"},
+    {"id": "AUD20-N05", "task": "AUD20-04", "expected": "late replay after retention cannot recreate inbound processing"},
+    {"id": "AUD20-N06", "task": "AUD20-05", "expected": "self-declared digest or missing replay CRUD fails startup"},
+    {"id": "AUD20-N07", "task": "AUD20-06", "expected": "stale critic/report/mutant cannot qualify current candidate"},
+    {"id": "AUD20-N08", "task": "AUD20-07", "expected": "other-commit image, root image or embedded secret fails supply gate"},
+    {"id": "AUD20-N09", "task": "AUD20-08", "expected": "table/JSON/state/action drift fails documentation checker"},
+    {"id": "AUD20-N10", "task": "AUD20-09", "expected": "unsafe or agent-only holdout result fails qualification"},
+    {"id": "AUD20-N11", "task": "AUD20-10", "expected": "runtime telemetry gap, sensitive sink or uncorrelated alert fails"},
+    {"id": "AUD20-N12", "task": "AUD20-11", "expected": "configured readiness, restart/replay or PostgreSQL skip fails compose gate"},
+    {"id": "AUD20-N13", "task": "AUD20-13..15", "expected": "synthetic/external fixture cannot satisfy human/external gate"}
+  ],
+  "verdictRules": [
+    "Any required gate not PASS blocks the corresponding seal.",
+    "Evidence is current only when candidateId, tree and artifact digests match the live frozen candidate.",
+    "Historical coherence never qualifies the current candidate.",
+    "No average, score or stored status overrides a required failure.",
+    "Local controlled PASS never implies staging or production authorization.",
+    "Changing this bar reopens dependent tasks and requires a new version and review."
+  ],
+  "externalBoundary": {
+    "staging": "NO_GO",
+    "production": "NO_GO",
+    "externalGates": "BLOCKED",
+    "humanSignoff": "NOT_INFERRED"
+  }
+}

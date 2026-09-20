@@ -5768,3 +5768,13 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - post_write_verification: format/docs/teste documental PASS (`719` links, `557` JSONs, `5/5` testes); current/evidence verifier e gate de crítico FAIL esperado por drift da nova árvore documental; nenhum re-selo executado.
 - external_boundary: Opção A registrada apenas para iniciar preparação; inputs, owners, ambiente, credenciais, restore, piloto e sign-off seguem ausentes. Nenhum sistema real foi contatado.
 - next_action: preparar/revisar SPEC e barra de AUD20-01; qualquer BUILD ou re-selo exige novo gate e deverá seguir AUD20-02..12 antes de AUD20-13..15.
+
+# AUD20-01-SPEC-20260920 — baseline, barra e matriz
+
+- timestamp: `2026-09-20`; pipeline `DISCOVERY -> PRD -> SPEC`; task `AUD20-01`; status `IN_PROGRESS`.
+- action: apos o checkpoint `98ec5e8`, capturado candidato live `b4cb18ac...@98ec5e8`, reproduzidos os negativos de candidate/critic/promotion/preflight e publicados SPEC, quality bar, matriz e baseline AUD20-01.
+- result: `git diff --check`, `npm run docs:check` (719 links/557 JSONs) e teste documental `5/5` PASS. Verificadores corrente/evidence/critic e promotion falharam fechado por stale candidate/digest; preflight de producao falhou com `sideEffects:false`.
+- boundary: somente documentacao e verificacao read-only; nenhum codigo, migration, Docker rebuild, PostgreSQL, Playwright, egress, credencial, dado real, re-selo ou efeito externo.
+- decision: G0 ainda `IN_PROGRESS`; AUD20-02..12 `BLOCKED`; staging e producao `NO_GO`; o ponteiro `fbca3d2b...@fa78f92` nao qualifica o candidato live.
+- next_action: revisao independente do pacote AUD20-01 e registro explicito do G0 antes de qualquer BUILD.
+- evidence: `docs/02_spec/aud20_01_baseline_contract_20260920.md`, `docs/04_audit/evidence/AUD20/AUD20-01-baseline.md`, `docs/04_audit/evidence/AUD20/AUD20-requirements-matrix.json`, `docs/04_audit/evidence/AUD20/AUD20-quality-bar.json`.
