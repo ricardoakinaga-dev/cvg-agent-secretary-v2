@@ -6,7 +6,10 @@ import {
 import { createDeterministicEvalAgent } from '../agent.ts'
 import type { EvalAgentOutcome, EvalScenario } from '../contracts.ts'
 import { EvalScenarioSchema } from '../contracts.ts'
-import { CORE_EVAL_DATASET } from '../datasets/core.ts'
+import {
+  CORE_EVAL_DATASET,
+  CORE_EVAL_DATASET_CONTRACT
+} from '../datasets/core.ts'
 import {
   AAA_TASK_SUCCESS_RATE_CONTRACT,
   DEFAULT_EVAL_THRESHOLDS,
@@ -51,6 +54,25 @@ describe('AAA eval contract', () => {
     expect(report.verdict).toBe('PASS')
     expect(report.metrics.scenarios).toBe(56)
     expect(report.metrics.taskSuccessRate).toBe(1)
+    expect(report.corpus).toEqual(CORE_EVAL_DATASET_CONTRACT)
+  })
+
+  it('fails closed for a nonempty reduced corpus', async () => {
+    const report = await runEvalSuite({
+      suiteId: 'contract-negative-reduced-corpus',
+      dataset: CORE_EVAL_DATASET.slice(0, 1),
+      agent: createDeterministicEvalAgent(),
+      now: () => NOW
+    })
+    expect(report.metrics.scenarios).toBe(1)
+    expect(report.verdict).toBe('FAIL')
+    expect(report.thresholdFailures).toEqual(
+      expect.arrayContaining([
+        'invalid_corpus:scenarios',
+        'invalid_corpus:adversarialScenarios',
+        'invalid_corpus:sha256'
+      ])
+    )
   })
 
   it('rejects a less-strict runner override even with a perfect score', async () => {
@@ -132,7 +154,7 @@ describe('AAA eval contract', () => {
   it('fails closed when a non-rate metric is not finite', async () => {
     const report = await runEvalSuite({
       suiteId: 'contract-negative-invalid-latency',
-      dataset: CORE_EVAL_DATASET.slice(0, 1),
+      dataset: CORE_EVAL_DATASET,
       agent: {
         id: 'invalid-latency-agent',
         async run(scenario) {

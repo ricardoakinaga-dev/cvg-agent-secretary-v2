@@ -8,6 +8,12 @@ import {
 
 function evalReport({ taskSuccessRate = 1, threshold = 0.97, verdict } = {}) {
   return {
+    corpus: {
+      id: 'core-v1',
+      scenarios: 56,
+      adversarialScenarios: 14,
+      sha256: '1bc94f831b4ac6ae4511b26c91c2decc77aa765a3ac709268a2efa9d4af389cb'
+    },
     metrics: {
       scenarios: 56,
       taskSuccessRate,
@@ -179,6 +185,42 @@ describe('Phase 11 eval evidence contract', () => {
     )
     expect(outcome.pass).toBe(false)
     expect(outcome.failures).toContain('evals_verdict_mismatch:PASS:FAIL')
+  })
+
+  it('rejects PASS when a metric misses its declared threshold', () => {
+    const report = evalReport({
+      taskSuccessRate: 0.98,
+      threshold: 0.99,
+      verdict: 'PASS'
+    })
+    const outcome = evaluateEvalReportEvidence(report)
+    expect(outcome.pass).toBe(false)
+    expect(outcome.failures).toContain(
+      'eval_contract:eval_metric_below_declared_threshold:taskSuccessRate'
+    )
+    expect(evalContractBlockers({ raw: report })).toContain(
+      'eval_contract:eval_metric_below_declared_threshold:taskSuccessRate'
+    )
+  })
+
+  it('rejects a reduced corpus even when the rates are perfect', () => {
+    const report = evalReport()
+    report.metrics.scenarios = 1
+    report.corpus = {
+      ...report.corpus,
+      scenarios: 1,
+      adversarialScenarios: 0,
+      sha256: 'reduced'
+    }
+    const outcome = evaluateEvalReportEvidence(report)
+    expect(outcome.pass).toBe(false)
+    expect(evalContractViolations(report)).toEqual(
+      expect.arrayContaining([
+        'eval_corpus_scenarios_mismatch',
+        'eval_corpus_adversarial_scenarios_mismatch',
+        'eval_corpus_digest_mismatch'
+      ])
+    )
   })
 
   it('rejects a non-zero eval gate exit even with compliant evidence', () => {

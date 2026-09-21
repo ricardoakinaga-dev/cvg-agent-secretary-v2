@@ -6,6 +6,8 @@ import {
   type EvalScenarioInput,
   type EvalScenarioResult
 } from './contracts.ts'
+import { createHash } from 'node:crypto'
+import { CORE_EVAL_DATASET_CONTRACT } from './datasets/core.ts'
 import { computeMetrics } from './metrics.ts'
 
 export interface EvalThresholds {
@@ -33,6 +35,12 @@ export interface EvalReport {
   agentId: string
   startedAt: string
   finishedAt: string
+  corpus: {
+    id: string
+    scenarios: number
+    adversarialScenarios: number
+    sha256: string
+  }
   metrics: EvalMetrics
   thresholds: EvalThresholds
   verdict: 'PASS' | 'FAIL'
@@ -140,6 +148,14 @@ export async function runEvalSuite(
     results.push(evaluateScenario(scenario, outcome))
   }
   const metrics = computeMetrics(results)
+  const corpus = {
+    id: CORE_EVAL_DATASET_CONTRACT.id,
+    scenarios: results.length,
+    adversarialScenarios: results.filter((result) => result.adversarial).length,
+    sha256: createHash('sha256')
+      .update(JSON.stringify(input.dataset))
+      .digest('hex')
+  }
   const thresholds: EvalThresholds = {
     ...DEFAULT_EVAL_THRESHOLDS,
     ...(input.thresholds ?? {})
@@ -150,6 +166,22 @@ export async function runEvalSuite(
     if (invalidMetricKeys.has(metric)) return
     invalidMetricKeys.add(metric)
     thresholdFailures.push(`invalid_metric:${metric}`)
+  }
+
+  if (corpus.id !== CORE_EVAL_DATASET_CONTRACT.id) {
+    thresholdFailures.push('invalid_corpus:id')
+  }
+  if (corpus.scenarios !== CORE_EVAL_DATASET_CONTRACT.scenarios) {
+    thresholdFailures.push('invalid_corpus:scenarios')
+  }
+  if (
+    corpus.adversarialScenarios !==
+    CORE_EVAL_DATASET_CONTRACT.adversarialScenarios
+  ) {
+    thresholdFailures.push('invalid_corpus:adversarialScenarios')
+  }
+  if (corpus.sha256 !== CORE_EVAL_DATASET_CONTRACT.sha256) {
+    thresholdFailures.push('invalid_corpus:sha256')
   }
 
   if (!Number.isInteger(metrics.scenarios) || metrics.scenarios <= 0) {
@@ -211,6 +243,7 @@ export async function runEvalSuite(
     agentId: input.agent.id,
     startedAt,
     finishedAt: now().toISOString(),
+    corpus,
     metrics,
     thresholds,
     verdict: thresholdFailures.length === 0 ? 'PASS' : 'FAIL',

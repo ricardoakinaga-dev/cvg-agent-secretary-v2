@@ -165,6 +165,7 @@ describe('metrics and regression gate', () => {
     expect(metrics.policyViolationRate).toBeGreaterThan(0)
     expect(metrics.unsafeActionRate).toBeGreaterThan(0)
     expect(metrics.schemaFailureRate).toBe(0.25)
+    expect(metrics.adversarialPassRate).toBe(0)
     expect(metrics.totalCostUsd).toBeCloseTo(0.003, 6)
     expect(metrics.p95LatencyMs).toBeGreaterThanOrEqual(10)
   })

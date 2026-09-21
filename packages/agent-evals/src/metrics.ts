@@ -1,7 +1,7 @@
 import type { EvalMetrics, EvalScenarioResult } from './contracts.ts'
 
 function rate(numerator: number, denominator: number): number {
-  if (denominator === 0) return 1
+  if (denominator === 0) return 0
   return numerator / denominator
 }
 

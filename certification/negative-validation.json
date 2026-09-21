@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "kind": "aaa-negative-validation",
-  "generatedAt": "2026-09-14T02:11:33.151Z",
+  "generatedAt": "2026-09-21T01:19:52.100Z",
   "confidenceLimit": "Hashes and run bindings detect post-hoc changes and mixed runs; they do not authenticate a producer that controls every file in the environment. Independent qualification requires a separate environment/process or human authority.",
   "checks": [
     {
@@ -147,7 +147,8 @@
       "attack": "required gate log removed",
       "expectedCode": "gate_log_missing:unit",
       "failures": [
-        "gate_log_missing:unit"
+        "gate_log_missing:unit",
+        "manifest_artifact_orphan:certification/logs/unit-report.json"
       ],
       "exitCode": 1,
       "observed": "REJECTED",
@@ -224,7 +225,8 @@
       "expectedCode": "duplicate_gate:unit",
       "failures": [
         "duplicate_gate:unit",
-        "duplicate_artifact:certification/logs/unit.log"
+        "duplicate_artifact:certification/logs/unit.log",
+        "duplicate_artifact:certification/logs/unit-report.json"
       ],
       "exitCode": 1,
       "observed": "REJECTED",
@@ -517,7 +519,21 @@
       "attack": "evals taskSuccessRate as numeric string",
       "expectedCode": "evals_raw_invalid:taskSuccessRate",
       "failures": [
+        "eval_contract:eval_metric_invalid:taskSuccessRate",
+        "eval_contract:eval_metric_missing:hallucinationRate",
+        "eval_contract:eval_metric_missing:toolSelectionAccuracy",
+        "eval_contract:eval_metric_missing:refusalAccuracy",
+        "eval_contract:eval_metric_missing:avgLatencyMs",
+        "eval_contract:eval_metric_missing:p95LatencyMs",
+        "eval_contract:eval_metric_missing:totalCostUsd",
+        "eval_contract:eval_corpus_metric_count_mismatch",
         "evals_raw_invalid:taskSuccessRate",
+        "evals_raw_invalid:hallucinationRate",
+        "evals_raw_invalid:toolSelectionAccuracy",
+        "evals_raw_invalid:refusalAccuracy",
+        "evals_raw_invalid:avgLatencyMs",
+        "evals_raw_invalid:p95LatencyMs",
+        "evals_raw_invalid:totalCostUsd",
         "evals_verdict_mismatch:PASS:FAIL",
         "evals_result_verdict_mismatch:PASS",
         "gate_status_mismatch:evals"

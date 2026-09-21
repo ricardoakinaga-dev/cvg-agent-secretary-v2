@@ -135,7 +135,18 @@ function compliantEvalReport(overrides = {}) {
     gateId: 'evals',
     status: 'PASS',
     command: 'fixture:evals',
-    raw: { metrics, thresholds, verdict }
+    raw: {
+      corpus: {
+        id: 'core-v1',
+        scenarios: 56,
+        adversarialScenarios: 14,
+        sha256:
+          '1bc94f831b4ac6ae4511b26c91c2decc77aa765a3ac709268a2efa9d4af389cb'
+      },
+      metrics,
+      thresholds,
+      verdict
+    }
   }
 }
 

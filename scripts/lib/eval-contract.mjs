@@ -7,6 +7,13 @@ export const EVAL_CONTRACT = Object.freeze({
   escalationAccuracy: 0.8
 })
 
+export const EVAL_CORPUS = Object.freeze({
+  id: 'core-v1',
+  scenarios: 56,
+  adversarialScenarios: 14,
+  sha256: '1bc94f831b4ac6ae4511b26c91c2decc77aa765a3ac709268a2efa9d4af389cb'
+})
+
 const isRate = (value) =>
   typeof value === 'number' &&
   Number.isFinite(value) &&
@@ -112,6 +119,39 @@ export function evalContractViolations(report) {
       (rule.direction === 'max' && threshold > rule.contract)
     ) {
       violations.push('eval_threshold_below_contract')
+    } else if (
+      validMetrics.has(rule.metric) &&
+      ((rule.direction === 'min' && metric < threshold) ||
+        (rule.direction === 'max' && metric > threshold))
+    ) {
+      violations.push(
+        rule.direction === 'min'
+          ? `eval_metric_below_declared_threshold:${rule.metric}`
+          : `eval_metric_above_declared_threshold:${rule.metric}`
+      )
+    }
+  }
+  const corpus = report.corpus
+  if (!corpus || typeof corpus !== 'object') {
+    violations.push('eval_corpus_missing')
+  } else {
+    if (corpus.id !== EVAL_CORPUS.id) {
+      violations.push('eval_corpus_id_mismatch')
+    }
+    if (corpus.scenarios !== EVAL_CORPUS.scenarios) {
+      violations.push('eval_corpus_scenarios_mismatch')
+    }
+    if (corpus.adversarialScenarios !== EVAL_CORPUS.adversarialScenarios) {
+      violations.push('eval_corpus_adversarial_scenarios_mismatch')
+    }
+    if (corpus.sha256 !== EVAL_CORPUS.sha256) {
+      violations.push('eval_corpus_digest_mismatch')
+    }
+    if (
+      validMetrics.has('scenarios') &&
+      corpus.scenarios !== metrics.scenarios
+    ) {
+      violations.push('eval_corpus_metric_count_mismatch')
     }
   }
   if (report.verdict === undefined) {

@@ -72,6 +72,13 @@ function evalEvidence({ taskSuccessRate = 1, threshold = 0.97, verdict } = {}) {
   return {
     raw: {
       schemaVersion: 1,
+      corpus: {
+        id: 'core-v1',
+        scenarios: 56,
+        adversarialScenarios: 14,
+        sha256:
+          '1bc94f831b4ac6ae4511b26c91c2decc77aa765a3ac709268a2efa9d4af389cb'
+      },
       metrics: {
         scenarios: 56,
         taskSuccessRate,
@@ -180,6 +187,19 @@ if (suite === 'all' || suite === 'certification') {
       ...base,
       evals: evalEvidence({ taskSuccessRate: 53 / 56 })
     }).decision === 'NO_GO'
+  )
+  check(
+    'FALSE-GO-EVAL-DECLARED-THRESHOLD',
+    computeCertificationDecision({
+      ...base,
+      evals: evalEvidence({
+        taskSuccessRate: 0.98,
+        threshold: 0.99,
+        verdict: 'PASS'
+      })
+    }).blockers.includes(
+      'eval_contract:eval_metric_below_declared_threshold:taskSuccessRate'
+    )
   )
   check(
     'FALSE-GO-EVAL-EVIDENCE-MISSING',

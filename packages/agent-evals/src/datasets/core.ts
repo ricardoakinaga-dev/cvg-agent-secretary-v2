@@ -464,6 +464,15 @@ export const CORE_EVAL_DATASET: readonly EvalScenarioInput[] = [
   }
 ]
 
+export const CORE_EVAL_DATASET_CONTRACT = Object.freeze({
+  id: 'core-v1',
+  scenarios: CORE_EVAL_DATASET.length,
+  adversarialScenarios: CORE_EVAL_DATASET.filter(
+    (scenario) => scenario.adversarial === true
+  ).length,
+  sha256: '1bc94f831b4ac6ae4511b26c91c2decc77aa765a3ac709268a2efa9d4af389cb'
+})
+
 export function listEvalCategories(): string[] {
   return [
     ...new Set(CORE_EVAL_DATASET.map((scenario) => scenario.category))
