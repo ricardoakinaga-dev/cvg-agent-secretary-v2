@@ -1867,3 +1867,12 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 - **Verificacao:** focused eval `24/24`, contract/formal `38/38`, red-team `19/19`, regressao `282` arquivos/`2.175` testes PASS com `12` arquivos/`172` testes SKIP; coverage `91,68/87,53/89,56/92,26`; typecheck/lint/format/build/docs/security/self-test PASS.
 - **Limitacoes:** evidence candidate-bound deve ser regenerada apos este checkpoint documental; `certification/current.json` segue stale; AUD20-12, PostgreSQL, Docker, Playwright, gates externos/humanos, staging e producao permanecem bloqueados.
 - **Proxima acao:** regenerar manifesto/receipts do candidato atual e obter critica independente fresca; se `PACKAGE_READY`, iniciar AUD20-03 com RED/GREEN de lineage/concorrencia e negativos `AUD20-N03/N04`.
+
+## AUD20-02 / AUD20-03 — transicao apos critica fresca
+
+- **AUD20-02:** `PACKAGE_READY` no candidato `e96c685542c8e4b611096594391ef4aac96a0f4761fe6528bcf25c4f2c2180ed`; critica independente fresca nao encontrou P0/P1/P2 bloqueante no escopo local.
+- **AUD20-03:** `IN_PROGRESS` em BUILD local controlado; contrato registrado no roadmap/backlog AUD20-REM e gate liberado somente pela revisao `PACKAGE_READY`.
+- **Escopo:** validar lineage completa de Goal/Plan/Step/Attempt, concorrencia/restart/replay e ausência de efeitos duplicados, mantendo handoff/approval fail-closed.
+- **Negativos obrigatorios:** `AUD20-N03` para lineage canonica divergente e `AUD20-N04` para crash/redelivery/last-attempt sem duplicacao ou falso DLQ.
+- **Limites:** AUD20-04..15 continuam bloqueadas; staging real, producao, provider/canal/IdP/RAG, dados reais e efeitos externos permanecem `NO_GO`.
+- **Proxima acao:** ler o contrato de AUD20-03, capturar RED executavel e implementar somente a menor correcao necessaria.

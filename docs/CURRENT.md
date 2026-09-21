@@ -37,14 +37,14 @@
 
 ## Tasks correntes (estados oficiais)
 
-- status: `READY_FOR_NEXT_STEP`
-- task corrente: `AUD20-02` — reseal candidate-bound e critica independente fresca apos a remediacao do contrato de eval.
+- status: `IN_PROGRESS`
+- task corrente: `AUD20-03` — validar lineage completa e concorrencia de Goal sob BUILD local controlado.
 
 | Faixa                 | Estado                | Nota                                                                                           |
 | --------------------- | --------------------- | ---------------------------------------------------------------------------------------------- |
 | AUD20-01              | `COMPLETED`           | SPEC, barra, matriz, receipts e revisão concluídos; G0 local controlado aprovado               |
-| AUD20-02              | `READY_FOR_NEXT_STEP` | Corpus canonico/digest e threshold declarado endurecidos; aguarda novo selo e critica fresca     |
-| AUD20-03              | `BLOCKED`             | Libera somente apos `PACKAGE_READY`; lineage/concorrencia e negativos N03/N04                  |
+| AUD20-02              | `COMPLETED`           | `PACKAGE_READY` em critica independente fresca; corpus canonico/digest e threshold declarado fechados |
+| AUD20-03              | `IN_PROGRESS`         | Lineage/concorrencia e negativos N03/N04 em BUILD local controlado                            |
 | AUD20-04..12          | `BLOCKED`             | Dependem da sequência e do DAG técnico após AUD20-03                                           |
 | AUD20-13..15          | `BLOCKED`             | Opção A registrada; faltam inputs, owners, ambiente e gates anteriores                         |
 | AUD19-01..06,08,09,11 | `BLOCKED`             | Claims de conclusão supersedidos; remediação mapeada ao DAG AUD20                              |
@@ -67,4 +67,4 @@
 
 ## Próxima ação
 
-- Próxima ação: regenerar manifesto/receipts candidate-bound no candidato apos este registro e obter critica independente fresca; somente com `PACKAGE_READY` iniciar AUD20-03 com RED/GREEN de lineage/concorrencia e negativos `AUD20-N03/N04`.
+- Próxima ação: ler o contrato/backlog de AUD20-03 e executar RED/GREEN de lineage completa e concorrencia de Goal, preservando os negativos `AUD20-N03/N04`.

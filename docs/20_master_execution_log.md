@@ -5819,3 +5819,12 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - decision: `AUD20-02` aguarda somente novo selo candidate-bound e critica independente; `AUD20-03..12` continuam bloqueadas pelo DAG; staging, producao, externos, humanos e `certification/current.json` permanecem `NO_GO`/stale.
 - next_action: gerar evidence candidate-bound no candidato apos este registro e solicitar critica fresca; somente `PACKAGE_READY` libera AUD20-03.
 - evidence: `1f4dd3c`, `certification/agent-eval-report.json`, `certification/negative-validation.json` e `docs/04_audit/evidence/AUD20/`.
+
+# AUD20-02-REVIEW-20260920 — PACKAGE_READY e transicao para AUD20-03
+
+- timestamp: `2026-09-20T22:51:17-03:00`; pipeline `AUDIT -> BUILD`; atividade `GATE`; task corrente `AUD20-03`; status `IN_PROGRESS`.
+- review: `gauntlet-critic` em contexto fresco emitiu `PACKAGE_READY` para o candidato `e96c685542c8e4b611096594391ef4aac96a0f4761fe6528bcf25c4f2c2180ed`; nenhum P0/P1/P2 bloqueante foi encontrado no escopo AUD20-02.
+- decision: `AUD20-02=PACKAGE_READY`; a barreira de corpus canonico/digest, denominador adversarial e metric-vs-declared-threshold foi considerada fechada. `AUD20-03` esta liberada somente para BUILD local controlado; AUD20-04..12 continuam bloqueadas pelo DAG.
+- boundary: nenhum gate externo/humano, staging, producao, provider/canal/IdP/RAG, dado real ou efeito externo foi executado ou inferido.
+- next_action: ler contrato/backlog de AUD20-03 e iniciar RED/GREEN de lineage completa e concorrencia de Goal, com negativos `AUD20-N03/N04`.
+- evidence: `docs/04_audit/evidence/AUD20/AUD20-02-independent-review.md` e os artefatos candidate-bound AUD20-02.
