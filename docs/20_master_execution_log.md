@@ -5800,12 +5800,12 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - next_action: executar `AUD20-03` com RED/GREEN de lineage/concorrência e negativos `AUD20-N03/N04`.
 - evidence: `docs/04_audit/evidence/AUD20/AUD20-02-candidate-receipt.json`, `docs/04_audit/evidence/AUD20/AUD20-02-red-green-report.md`, `certification/agent-eval-report.json`.
 
-# AUD20-02-EVAL-HARDENED-20260920 — contrato uniforme e receipts atuais
+# AUD20-02-EVAL-HARDENED-20260920 — contrato uniforme e revalidação pós-fix
 
 - timestamp: `2026-09-20`; pipeline `BUILD -> AUDIT`; atividade `FIX_RETEST`; task corrente `AUD20-03`; status `READY_FOR_NEXT_STEP`.
-- action: após a crítica `BLOCK`, o contrato passou a cobrir uniformemente os seis thresholds no verifier; o runner passou a rejeitar corpus vazio, rates inválidas e métricas auxiliares não finitas; fixtures formais foram alinhados ao contrato vigente.
-- candidate: o selo local de código/documentação foi concluído antes da regeneração final; commit, candidate ID, tree e `1104` arquivos estão vinculados no receipt candidate-bound corrente.
-- verification: focused `52/52`, `npm run test:evals` `23/23`, red-team `9/9`, typecheck/lint/format/build PASS; `npm test` `282` arquivos PASS/`12` SKIP, `2.171` testes PASS/`172` SKIP; coverage `91,68%` statements, `87,53%` branches, `89,55%` functions, `92,26%` lines.
-- evidence: manifesto completo `docs/04_audit/evidence/AUD20/AUD20-02-candidate-manifest.json`; comandos `AUD20-02-command-receipt.json` SHA-256 `59b927ae545006b1a428edc551f2f90334ade34f0362020ce8ab19c0894ca461`; receipt SHA-256 `463a8ed9a38391518b65cc3960e507144130ed37615dcf15e76625c8fd8e3b74`; eval report SHA-256 `7b9ba9f3f666ffe914dc589df18b06b150546444b4d6b024dacf45232a503824`.
+- action: após a crítica `BLOCK`, o commit `91d54c0` passou a exigir os treze campos métricos, `verdict=PASS`, métricas auxiliares e threshold explícito de escalation em todos os consumidores do contrato; fixtures formais foram alinhados sem relaxar a barra.
+- candidate: o candidato corrente deve ser lido exclusivamente do manifesto e receipt candidate-bound atuais; as receipts e evidências ficam fora do escopo do candidato para não contaminar o próprio selo.
+- verification: focused `53/53`, `npm run test:evals` `23/23`, red-team `9/9`, typecheck/lint/format/build PASS; `npm test` `282` arquivos PASS/`12` SKIP, `2.172` testes PASS/`172` SKIP; coverage `91,68%` statements, `87,53%` branches, `89,55%` functions, `92,26%` lines.
+- evidence: manifesto, command receipt, task receipt e RED/GREEN report em `docs/04_audit/evidence/AUD20/`; o relatório sintético `certification/agent-eval-report.json` permanece com `56/56`, `verdict=PASS`, threshold `0,97` e `thresholdFailures=[]`.
 - decision: `AUD20-02=COMPLETED` somente em BUILD local controlado; aguardar crítica fresca `PACKAGE_READY` antes de iniciar `AUD20-03`; staging, produção, externos e `certification/current.json` permanecem `NO_GO`/stale.
 - next_action: crítica independente fresca do pacote corrente; então, se aprovada, executar `AUD20-03` com RED/GREEN de lineage/concorrência e negativos `AUD20-N03/N04`.

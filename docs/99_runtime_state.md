@@ -2718,12 +2718,12 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - next_action: executar `AUD20-03` com RED/GREEN de lineage/concorrência, preservando os negativos `AUD20-N03/N04`; não iniciar qualificação externa e manter staging real e produção `NO_GO`.
 - evidence: `docs/04_audit/evidence/AUD20/AUD20-02-candidate-receipt.json`, `docs/04_audit/evidence/AUD20/AUD20-02-red-green-report.md`, `certification/agent-eval-report.json`.
 
-# AUD20-02-EVAL-HARDENED-20260920 — evidência candidate-bound atualizada
+# AUD20-02-EVAL-HARDENED-20260920 — contrato corrigido e revalidado
 
 - current_engine: `BUILD -> AUDIT`; activity: `TASK`; task: `AUD20-03`; status: `READY_FOR_NEXT_STEP`; execution: `CONTROLLED_LOCAL`; staging: `NO_GO`; production: `NO_GO`.
-- last_completed_action: o contrato de eval foi uniformizado nos seis thresholds; `runEvalSuite` também rejeita corpus vazio, rates fora de `[0,1]`, métricas não finitas e latência/custo inválidos; fixtures formais foram alinhados sem relaxar a barra.
-- repository_state: o selo local de código/documentação está completo antes da regeneração final dos receipts; identidade exata de `HEAD`, candidato, tree e `fileCount` deve ser lida do receipt candidate-bound corrente; `certification/current.json` permanece histórico/stale e não re-selado.
-- verification_state: focused `52/52`, evals `23/23`, red-team `9/9`, typecheck/lint/format/build e regressão `282` arquivos PASS/`12` SKIP, `2.171` testes PASS/`172` SKIP; coverage `91,68/87,53/89,55/92,26` PASS; gate final de coverage/denominador permanece AUD20-12.
+- last_completed_action: o commit local `91d54c0` uniformizou o contrato de eval nos treze campos métricos, exigiu `verdict=PASS`, métricas auxiliares completas e threshold explícito de escalation; fixtures formais e red-team foram alinhados sem relaxar a barra.
+- repository_state: o candidato e as receipts correntes devem ser lidos dos artefatos em `docs/04_audit/evidence/AUD20/`; evidência gerada fica fora do candidate scope. `certification/current.json` permanece histórico/stale e não foi re-selado.
+- verification_state: focused `53/53`, evals `23/23`, red-team `9/9`, typecheck/lint/format/build e regressão `282` arquivos PASS/`12` SKIP, `2.172` testes PASS/`172` SKIP; coverage `91,68/87,53/89,55/92,26` PASS; gate final de coverage/denominador permanece AUD20-12.
 - gate_state: AUD20-01 `COMPLETED`; AUD20-02 `COMPLETED`; AUD20-03 `READY_FOR_NEXT_STEP`; AUD20-04..12 `BLOCKED` pela sequência/DAG; AUD20-13..15 `BLOCKED`; staging/production `NO_GO`.
 - next_action: obter crítica independente fresca do pacote corrigido; se `PACKAGE_READY`, executar `AUD20-03` com RED/GREEN de lineage/concorrência e negativos `AUD20-N03/N04`; não iniciar qualificação externa.
 - evidence: `docs/04_audit/evidence/AUD20/AUD20-02-candidate-manifest.json`, `docs/04_audit/evidence/AUD20/AUD20-02-command-receipt.json`, `docs/04_audit/evidence/AUD20/AUD20-02-candidate-receipt.json`, `docs/04_audit/evidence/AUD20/AUD20-02-red-green-report.md`, `certification/agent-eval-report.json`.

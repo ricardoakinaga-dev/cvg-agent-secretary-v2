@@ -40,17 +40,17 @@
 - status: `READY_FOR_NEXT_STEP`
 - task corrente: `AUD20-03` — validar lineage completa e jornada concorrente de Goal sob BUILD local controlado.
 
-| Faixa                 | Estado                | Nota                                                                                 |
-| --------------------- | --------------------- | ------------------------------------------------------------------------------------ |
-| AUD20-01              | `COMPLETED`           | SPEC, barra, matriz, receipts e revisão concluídos; G0 local controlado aprovado     |
+| Faixa                 | Estado                | Nota                                                                                           |
+| --------------------- | --------------------- | ---------------------------------------------------------------------------------------------- |
+| AUD20-01              | `COMPLETED`           | SPEC, barra, matriz, receipts e revisão concluídos; G0 local controlado aprovado               |
 | AUD20-02              | `COMPLETED`           | Piso `0,97` irredutível; N01/N02 e eval sintético verificados no receipt candidate-bound atual |
-| AUD20-03              | `READY_FOR_NEXT_STEP` | Próxima task; lineage/concorrência e negativos N03/N04                               |
-| AUD20-04..12          | `BLOCKED`             | Dependem da sequência e do DAG técnico após AUD20-03                                 |
-| AUD20-13..15          | `BLOCKED`             | Opção A registrada; faltam inputs, owners, ambiente e gates anteriores               |
-| AUD19-01..06,08,09,11 | `BLOCKED`             | Claims de conclusão supersedidos; remediação mapeada ao DAG AUD20                    |
-| AUD19-07,10           | `COMPLETED`           | Entregas locais preservadas; limitações/P2 seguem no programa AUD20                  |
-| AUD19-12              | `BLOCKED`             | Selo histórico; crítico corrente falha e imagens não correspondem ao candidato final |
-| AUD19-13..15          | `BLOCKED`             | Nenhuma integração/restore/piloto/sign-off executado                                 |
+| AUD20-03              | `READY_FOR_NEXT_STEP` | Próxima task; lineage/concorrência e negativos N03/N04                                         |
+| AUD20-04..12          | `BLOCKED`             | Dependem da sequência e do DAG técnico após AUD20-03                                           |
+| AUD20-13..15          | `BLOCKED`             | Opção A registrada; faltam inputs, owners, ambiente e gates anteriores                         |
+| AUD19-01..06,08,09,11 | `BLOCKED`             | Claims de conclusão supersedidos; remediação mapeada ao DAG AUD20                              |
+| AUD19-07,10           | `COMPLETED`           | Entregas locais preservadas; limitações/P2 seguem no programa AUD20                            |
+| AUD19-12              | `BLOCKED`             | Selo histórico; crítico corrente falha e imagens não correspondem ao candidato final           |
+| AUD19-13..15          | `BLOCKED`             | Nenhuma integração/restore/piloto/sign-off executado                                           |
 
 ## Decisões correntes
 
