@@ -2727,3 +2727,13 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - gate_state: AUD20-01 `COMPLETED`; AUD20-02 `COMPLETED`; AUD20-03 `READY_FOR_NEXT_STEP`; AUD20-04..12 `BLOCKED` pela sequência/DAG; AUD20-13..15 `BLOCKED`; staging/production `NO_GO`.
 - next_action: obter crítica independente fresca do pacote corrigido; se `PACKAGE_READY`, executar `AUD20-03` com RED/GREEN de lineage/concorrência e negativos `AUD20-N03/N04`; não iniciar qualificação externa.
 - evidence: `docs/04_audit/evidence/AUD20/AUD20-02-candidate-manifest.json`, `docs/04_audit/evidence/AUD20/AUD20-02-command-receipt.json`, `docs/04_audit/evidence/AUD20/AUD20-02-candidate-receipt.json`, `docs/04_audit/evidence/AUD20/AUD20-02-red-green-report.md`, `certification/agent-eval-report.json`.
+
+# AUD20-02-EVAL-CORPUS-20260920 — remediacao pos-critica
+
+- current_engine: `BUILD -> AUDIT`; activity: `FIX_RETEST`; task: `AUD20-02`; status: `READY_FOR_NEXT_STEP`; execution: `CONTROLLED_LOCAL`; staging: `NO_GO`; production: `NO_GO`.
+- last_completed_action: a critica independente marcou o pacote anterior como `BLOCK`; o commit `1f4dd3c` agora exige o corpus canonico `core-v1` (`56` cenarios, `14` adversariais e digest SHA-256 fixo), faz taxa sem denominador falhar fechado e rejeita metrica abaixo/acima do threshold declarado no caminho direto do certificador/verifier.
+- repository_state: o relatorio de eval foi regenerado com `56/56`, `verdict=PASS`, `thresholdFailures=[]` e metadados do corpus; o pacote de evidencia candidate-bound sera regenerado depois deste checkpoint documental. `certification/current.json` permanece historico/stale.
+- verification_state: focused eval `24/24`, contract/formal `38/38`, red-team `19/19`, typecheck, lint, format, build, docs, security e Phase 10 self-test PASS; regressao `282` arquivos PASS/`12` SKIP, `2.175` testes PASS/`172` SKIP; coverage `91,68%` statements, `87,53%` branches, `89,56%` functions, `92,26%` lines. O gate final de coverage/denominador permanece AUD20-12.
+- gate_state: AUD20-01 `COMPLETED`; AUD20-02 `READY_FOR_NEXT_STEP` aguardando critica independente fresca; AUD20-03..12 `BLOCKED` pela sequencia/DAG; AUD20-13..15 `BLOCKED`; staging/production `NO_GO`.
+- next_action: regenerar manifesto/receipts candidate-bound no candidato apos este registro e obter critica independente fresca; somente com `PACKAGE_READY` iniciar AUD20-03 com RED/GREEN de lineage/concorrencia e negativos `AUD20-N03/N04`.
+- evidence: `1f4dd3c`, `certification/agent-eval-report.json`, `certification/negative-validation.json` e os artefatos `docs/04_audit/evidence/AUD20/`.

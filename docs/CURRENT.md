@@ -38,13 +38,13 @@
 ## Tasks correntes (estados oficiais)
 
 - status: `READY_FOR_NEXT_STEP`
-- task corrente: `AUD20-03` — validar lineage completa e jornada concorrente de Goal sob BUILD local controlado.
+- task corrente: `AUD20-02` — reseal candidate-bound e critica independente fresca apos a remediacao do contrato de eval.
 
 | Faixa                 | Estado                | Nota                                                                                           |
 | --------------------- | --------------------- | ---------------------------------------------------------------------------------------------- |
 | AUD20-01              | `COMPLETED`           | SPEC, barra, matriz, receipts e revisão concluídos; G0 local controlado aprovado               |
-| AUD20-02              | `COMPLETED`           | Piso `0,97` irredutível; N01/N02 e eval sintético verificados no receipt candidate-bound atual |
-| AUD20-03              | `READY_FOR_NEXT_STEP` | Próxima task; lineage/concorrência e negativos N03/N04                                         |
+| AUD20-02              | `READY_FOR_NEXT_STEP` | Corpus canonico/digest e threshold declarado endurecidos; aguarda novo selo e critica fresca     |
+| AUD20-03              | `BLOCKED`             | Libera somente apos `PACKAGE_READY`; lineage/concorrencia e negativos N03/N04                  |
 | AUD20-04..12          | `BLOCKED`             | Dependem da sequência e do DAG técnico após AUD20-03                                           |
 | AUD20-13..15          | `BLOCKED`             | Opção A registrada; faltam inputs, owners, ambiente e gates anteriores                         |
 | AUD19-01..06,08,09,11 | `BLOCKED`             | Claims de conclusão supersedidos; remediação mapeada ao DAG AUD20                              |
@@ -58,10 +58,13 @@
 - P1 local de branches de módulos críticos: fechado com testes de comportamento e gate versionado (`docs/03_build/tracking/aud19-critical-coverage.json`): kernel `97,09%`, approval `98,72%`, policy `97,87%`, journal `98,15%`, canal `97,41%`, RLS `100%`; piso mantido em `>=95%`.
 - Task success de evals: `>=97%` (fonte operacional `scripts/lib/eval-contract.mjs`);
   `53/56 = 94,64%` é negativo conhecido e deve falhar.
+- Corpus de eval: `core-v1`, `56` cenarios, `14` adversariais e digest
+  `1bc94f831b4ac6ae4511b26c91c2decc77aa765a3ac709268a2efa9d4af389cb`; qualquer
+  contagem, cobertura adversarial ou digest divergente falha fechado.
 - Oito gates externos/humanos continuam sem validação: provider, canal,
   identidade externa, RAG institucional, RPO/RTO, piloto, rollback e sign-off.
 - A Opção A autoriza iniciar a preparação da qualificação externa, mas não fornece ambiente, janela, owners, credenciais, dossiês nem autorização de produção.
 
 ## Próxima ação
 
-- Próxima ação: obter crítica independente fresca do pacote corrigido; se `PACKAGE_READY`, executar `AUD20-03` com RED/GREEN de lineage/concorrência e negativos `AUD20-N03/N04`; não iniciar qualificação externa.
+- Próxima ação: regenerar manifesto/receipts candidate-bound no candidato apos este registro e obter critica independente fresca; somente com `PACKAGE_READY` iniciar AUD20-03 com RED/GREEN de lineage/concorrencia e negativos `AUD20-N03/N04`.

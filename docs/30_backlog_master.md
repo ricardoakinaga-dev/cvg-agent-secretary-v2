@@ -1858,3 +1858,12 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 - **Limitações:** functions coverage global `89,55%` e gates de denominador/coverage final ainda não fechados; `certification/current.json` continua histórico/stale; nenhum PostgreSQL, Docker, Playwright, sistema externo, staging ou produção foi usado.
 - **Próxima ação:** `AUD20-03` — RED/GREEN de lineage/concorrência com negativos `AUD20-N03/N04`; manter AUD20-04..15, staging e produção bloqueados.
 - **Evidência corrente:** `docs/04_audit/evidence/AUD20/AUD20-02-candidate-manifest.json`, `docs/04_audit/evidence/AUD20/AUD20-02-command-receipt.json`, `docs/04_audit/evidence/AUD20/AUD20-02-candidate-receipt.json`, `docs/04_audit/evidence/AUD20/AUD20-02-red-green-report.md` e `certification/agent-eval-report.json`.
+
+## AUD20-02 — remediacao pos-critica do contrato
+
+- **Status:** `READY_FOR_NEXT_STEP`; BUILD local controlado concluido; critica independente fresca pendente antes de liberar AUD20-03.
+- **Entrega:** commit `1f4dd3c` vincula `runEvalSuite` ao corpus canonico `core-v1` (`56` cenarios, `14` adversariais, digest SHA-256), faz denominador adversarial vazio falhar fechado e endurece `evalContractViolations` contra metrica fora do threshold declarado.
+- **Negativos:** corpus reduzido nao vazio, contagem/digest divergentes, ausencia de cenarios adversariais e `PASS` abaixo do threshold declarado agora falham no runner, certificador e verifier.
+- **Verificacao:** focused eval `24/24`, contract/formal `38/38`, red-team `19/19`, regressao `282` arquivos/`2.175` testes PASS com `12` arquivos/`172` testes SKIP; coverage `91,68/87,53/89,56/92,26`; typecheck/lint/format/build/docs/security/self-test PASS.
+- **Limitacoes:** evidence candidate-bound deve ser regenerada apos este checkpoint documental; `certification/current.json` segue stale; AUD20-12, PostgreSQL, Docker, Playwright, gates externos/humanos, staging e producao permanecem bloqueados.
+- **Proxima acao:** regenerar manifesto/receipts do candidato atual e obter critica independente fresca; se `PACKAGE_READY`, iniciar AUD20-03 com RED/GREEN de lineage/concorrencia e negativos `AUD20-N03/N04`.

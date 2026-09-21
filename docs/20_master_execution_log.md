@@ -5809,3 +5809,13 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - evidence: manifesto, command receipt, task receipt e RED/GREEN report em `docs/04_audit/evidence/AUD20/`; o relatório sintético `certification/agent-eval-report.json` permanece com `56/56`, `verdict=PASS`, threshold `0,97` e `thresholdFailures=[]`.
 - decision: `AUD20-02=COMPLETED` somente em BUILD local controlado; aguardar crítica fresca `PACKAGE_READY` antes de iniciar `AUD20-03`; staging, produção, externos e `certification/current.json` permanecem `NO_GO`/stale.
 - next_action: crítica independente fresca do pacote corrente; então, se aprovada, executar `AUD20-03` com RED/GREEN de lineage/concorrência e negativos `AUD20-N03/N04`.
+
+# AUD20-02-EVAL-CORPUS-20260920 — remediacao pos-critica
+
+- timestamp: `2026-09-20T22:51:17-03:00`; pipeline `BUILD -> AUDIT`; atividade `FIX_RETEST`; task corrente `AUD20-02`; status `READY_FOR_NEXT_STEP`.
+- action: a critica fresca encontrou dois P1: corpus reduzido podia fabricar PASS e o caminho `evalContractBlockers` nao comparava metricas com thresholds declarados. O commit `1f4dd3c` adicionou binding canonico `core-v1` com `56` cenarios, `14` adversariais e digest SHA-256, taxa sem denominador `0` e rejeicao direta de metricas fora do threshold declarado.
+- RED/GREEN: foram adicionados negativos para corpus nao vazio reduzido, digest/count mismatch, taxa adversarial sem denominador e `PASS` abaixo do threshold declarado; focused eval `24/24`, contract/formal `38/38` e red-team `19/19` passaram.
+- verification: Node `22.23.2`; typecheck, lint, format, build, docs, security e Phase 10 self-test PASS; `npm test` `282` arquivos PASS/`12` SKIP, `2.175` testes PASS/`172` SKIP; coverage `91,68%` statements, `87,53%` branches, `89,56%` functions, `92,26%` lines. AUD20-12 continua responsavel pelo gate final de coverage/denominador.
+- decision: `AUD20-02` aguarda somente novo selo candidate-bound e critica independente; `AUD20-03..12` continuam bloqueadas pelo DAG; staging, producao, externos, humanos e `certification/current.json` permanecem `NO_GO`/stale.
+- next_action: gerar evidence candidate-bound no candidato apos este registro e solicitar critica fresca; somente `PACKAGE_READY` libera AUD20-03.
+- evidence: `1f4dd3c`, `certification/agent-eval-report.json`, `certification/negative-validation.json` e `docs/04_audit/evidence/AUD20/`.
