@@ -163,6 +163,20 @@ humano foi iniciada; nenhum candidato limpo ou pacote humano foi produzido. Ver 
 [relatório BUILD](../04_audit/evidence/AUD20/AUD20-19-FU1-build-report-20260924.md)
 e os [recibos de teste](../04_audit/evidence/AUD20/AUD20-19-FU1-verify-20260924.log).
 
+## Gate aprovado AUD20-10 / próxima fatia C02/C04/C05 — 2026-09-25
+
+`SPEC_APPROVED_CONTROLLED_BUILD` para a próxima fatia de
+[AUD20-10](aud20_10_operational_observability_20260922.md) (latência real de
+approval; alertas + delivery ledger local append-only; exercício fechando o
+ciclo), derivada do hash aprovado
+`83130cdf8930fa3639a116cc63ab4c2e0c3486ff40a349105d3423f44c91b685`. A decisão
+está no
+[recibo humano](../04_audit/evidence/AUD20/AUD20-10-next-slice-human-approval-20260925.md),
+vinculada ao [pedido](../04_audit/evidence/AUD20/AUD20-10-next-slice-admission-request-20260925.md)
+(`dc123bbe…`) com allowlist congelada. Sem owner/SLO inventados, rede/OTLP,
+PostgreSQL, dados reais, staging ou produção. C01–C07 seguem abertos até os
+gates da fatia.
+
 ## Gate aprovado AUD20-10 / IMP50-09 — 2026-09-23
 
 `SPEC_APPROVED_CONTROLLED_BUILD` para o hash exato

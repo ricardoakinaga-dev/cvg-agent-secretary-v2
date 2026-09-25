@@ -497,9 +497,9 @@ da próxima ação primária AUD20-17.
 
 ## Próxima ação
 
-- Próxima ação: obter decisão humana para executar o reseal Phase 11 (regenerar pacote com critic/mutation report no candidato congelado) e para a próxima fatia de `AUD20-10` (alertas/delivery ledger) e a sessão humana de `AUD20-19`; manter 141 vínculos IMP50-49 sem adjudicação e staging/produção `NO_GO`.
+- Próxima ação: manter `AUD20-10` com as fatias IMP50-09 e C02/C04/C05 aceitas no BUILD local e C01–C07 abertos (owner/SLO e demais itens exigem decisão humana); reconciliar o pin do manifesto de mutantes no reseal aprovado; `AUD20-19` sem sessão autorizada; 141 vínculos IMP50-49 sem adjudicação; staging/produção `NO_GO`.
 
-- Preflight do reseal executado (read-only): `certification:verify:phase11` FAIL fail-closed (25 falhas; pacote stale + critic/mutation ausentes) e `promotion:check` `eligible:false` com 8 bloqueios externos; candidato atual `05150f34…@3ed938df`. Ver [preflight](04_audit/evidence/AUD20/AUD20-reseal-preflight-report-20260925.md).
+- `AUD20-10` fatia C02/C04/C05 **aceita**: latência real de approval com nome estável, ledger de entrega append-only com cadeia de hash e exercício lendo batches reais; crítica delta `PASS`; suíte `2.657`/192 skips, coverage 4/4 ≥90%, mutation `26/26`. Ver [aceite](04_audit/evidence/AUD20/AUD20-10-alerts-ledger-slice-acceptance-20260925.md).
 
 - `AUD20-10/IMP50-09`: BUILD local executado e **slice aceito** (crítica delta fresh-context `PASS`; suíte final `2.647 PASS`/192 skips; coverage 4/4 ≥90%; mutation dirigida `22/22` na árvore final). C01–C07 permanecem abertos; ver [aceite](04_audit/evidence/AUD20/AUD20-10-imp50-09-slice-acceptance-20260925.md) e [relatório](04_audit/evidence/AUD20/AUD20-10-composition-build-report-20260925.md).
 - `AUD20-19`: R2 `PASS` do harness; sessão humana sem autorização (adiada); nenhum aceite de produto.

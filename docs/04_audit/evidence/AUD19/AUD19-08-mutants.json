@@ -3,7 +3,7 @@
   "kind": "aud19-critical-mutants",
   "program": "AUD19-REM",
   "task": "AUD19-08",
-  "version": 2,
+  "version": 3,
   "frozenAt": "2026-09-20",
   "selection": {
     "rule": "Pre-selected guards where a single mutation silently grants authority, crosses a tenant boundary, ignores a fence/reservation, bypasses approval, corrupts the effect journal, lowers the eval contract, or weakens certification. Every mutant names the focused test that must fail when the guard is broken.",
@@ -309,6 +309,66 @@
       "rationale": "Disabling the finally block would skip flush/close of the worker collector even on failure. Added for the AUD20-10 composition slice.",
       "addedAt": "2026-09-25",
       "batch": "AUD20-10"
+    },
+    {
+      "id": "MUT-A10-LEDGER-01",
+      "category": "aud20-10-alerts-ledger",
+      "target": "packages/observability/src/alert-delivery-ledger.ts",
+      "find": "if (previousRecord.status !== expectedFrom) {",
+      "replace": "if (false) {",
+      "test": {
+        "files": [
+          "tests/aud20-10-alerts-ledger.test.ts"
+        ]
+      },
+      "rationale": "Removing the transition-order guard lets close run from detected and breaks the required detected->acknowledged->closed chain. Added for the AUD20-10 alerts/ledger slice.",
+      "addedAt": "2026-09-25",
+      "batch": "AUD20-10-alerts-ledger"
+    },
+    {
+      "id": "MUT-A10-LEDGER-02",
+      "category": "aud20-10-alerts-ledger",
+      "target": "packages/observability/src/alert-delivery-ledger.ts",
+      "find": "if (atMs < previousMs) {",
+      "replace": "if (false) {",
+      "test": {
+        "files": [
+          "tests/aud20-10-alerts-ledger.test.ts"
+        ]
+      },
+      "rationale": "Removing the timestamp ordering guard accepts out-of-order delivery cycles. Added for the AUD20-10 alerts/ledger slice.",
+      "addedAt": "2026-09-25",
+      "batch": "AUD20-10-alerts-ledger"
+    },
+    {
+      "id": "MUT-A10-DELIVERY-01",
+      "category": "aud20-10-alerts-ledger",
+      "target": "packages/observability/src/alert-delivery-ledger.ts",
+      "find": "throw new Error('Alert delivery acknowledgement is missing')",
+      "replace": "void 0",
+      "test": {
+        "files": [
+          "tests/aud20-10-alerts-ledger.test.ts"
+        ]
+      },
+      "rationale": "Removing the missing-ack failure lets an incomplete alert cycle be reported as delivered. Added for the AUD20-10 alerts/ledger slice.",
+      "addedAt": "2026-09-25",
+      "batch": "AUD20-10-alerts-ledger"
+    },
+    {
+      "id": "MUT-A10-ENGINE-01",
+      "category": "aud20-10-approval-latency",
+      "target": "packages/approval-engine/src/engine.ts",
+      "find": "if (value < 0) return",
+      "replace": "if (false) return",
+      "test": {
+        "files": [
+          "tests/aud20-10-alerts-ledger.test.ts"
+        ]
+      },
+      "rationale": "Removing the negative-latency guard emits an invalid approval latency sample. Added for the AUD20-10 alerts/ledger slice.",
+      "addedAt": "2026-09-25",
+      "batch": "AUD20-10-alerts-ledger"
     }
   ],
   "lastExtendedAt": "2026-09-25"

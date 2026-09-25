@@ -1,0 +1,519 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud19-mutation-sentinel",
+  "program": "AUD19-REM",
+  "task": "AUD19-08",
+  "generatedAt": "2026-09-25T13:35:53.503Z",
+  "node": "22.23.2",
+  "manifest": "docs/04_audit/evidence/AUD19/AUD19-08-mutants.json",
+  "status": "PASS",
+  "summary": {
+    "total": 26,
+    "detected": 26,
+    "notDetected": 0,
+    "notApplicable": 0,
+    "sandbox": null
+  },
+  "results": [
+    {
+      "id": "MUT-AUTH-01",
+      "category": "authority",
+      "target": "packages/policy-engine/src/engine.ts",
+      "rationale": "Inverting the resource-tenant mismatch guard lets a cross-tenant resource reach the grant/policy path instead of failing closed.",
+      "focusedTests": [
+        "packages/policy-engine/src/__tests__/capability-scope.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 15,
+        "passed": 1,
+        "failed": 14,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-AUTH-02",
+      "category": "authority",
+      "target": "packages/policy-engine/src/engine.ts",
+      "rationale": "Inverting the operator role ceiling either grants forbidden capabilities or denies allowed ones; the role matrix test must fail.",
+      "focusedTests": [
+        "packages/policy-engine/src/__tests__/policy-engine.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 14,
+        "passed": 6,
+        "failed": 8,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-TENANT-01",
+      "category": "tenant",
+      "target": "apps/api/src/server/request-context.ts",
+      "rationale": "Inverting the trusted-identity tenant scope comparison breaks tenant isolation at the API boundary. Refreshed 2026-09-25 (admitted): guard moved verbatim from server.ts to request-context.ts:293 during query-parser/request-context extraction (indent 2→4).",
+      "focusedTests": [
+        "apps/api/src/__tests__/identity-trusted-resolver.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 7,
+        "passed": 6,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-FENCE-01",
+      "category": "fencing",
+      "target": "packages/approval-engine/src/engine.ts",
+      "rationale": "Inverting the reservation/fence comparison accepts a stale reservation token instead of rejecting it.",
+      "focusedTests": [
+        "packages/approval-engine/src/__tests__/approval-coverage-closure.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 14,
+        "passed": 13,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-APPROVAL-01",
+      "category": "approvals",
+      "target": "packages/approval-engine/src/engine.ts",
+      "rationale": "Inverting the self-approval comparison either permits self-approval or blocks independent approvers.",
+      "focusedTests": [
+        "packages/approval-engine/src/__tests__/approval-engine.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 10,
+        "passed": 2,
+        "failed": 8,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-JOURNAL-01",
+      "category": "journal",
+      "target": "packages/agent-runtime/src/effect-journal.ts",
+      "rationale": "Inverting the idempotency-key reuse guard either reuses a key with a different proposal or rejects a legitimate replay.",
+      "focusedTests": [
+        "packages/agent-runtime/src/__tests__/effect-journal.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 41,
+        "passed": 17,
+        "failed": 24,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-EVAL-01",
+      "category": "eval-threshold",
+      "target": "scripts/lib/eval-contract.mjs",
+      "rationale": "Lowering the frozen task-success threshold to 0.85 reintroduces the exact P1-EVAL-01 bypass; the contract test asserts 0.97.",
+      "focusedTests": [
+        "tests/phase11-eval-contract.test.js"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 24,
+        "passed": 20,
+        "failed": 4,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-EVAL-02",
+      "category": "eval-boundary",
+      "target": "packages/agent-evals/src/runner.ts",
+      "rationale": "Inverting the integrated identity guard would allow an isolated deterministic baseline to qualify the holdout or reject the real integrated adapter.",
+      "focusedTests": [
+        "packages/agent-evals/src/__tests__/integrated-holdout.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 6,
+        "passed": 4,
+        "failed": 2,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-EVAL-03",
+      "category": "eval-category",
+      "target": "packages/agent-evals/src/runner.ts",
+      "rationale": "Weakening the missing-category guard would let an omitted holdout category avoid explicit fail-closed reporting.",
+      "focusedTests": [
+        "packages/agent-evals/src/__tests__/integrated-holdout.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 6,
+        "passed": 5,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-EVAL-04",
+      "category": "eval-binding",
+      "target": "packages/agent-evals/src/runner.ts",
+      "rationale": "Inverting the seed binding would accept a drifted holdout seed or reject the frozen seed.",
+      "focusedTests": [
+        "packages/agent-evals/src/__tests__/integrated-holdout.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 6,
+        "passed": 4,
+        "failed": 2,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-EVAL-05",
+      "category": "eval-binding",
+      "target": "packages/agent-evals/src/runner.ts",
+      "rationale": "Inverting candidate identity would permit a report from different bytes to qualify the current candidate.",
+      "focusedTests": [
+        "packages/agent-evals/src/__tests__/integrated-holdout.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 6,
+        "passed": 4,
+        "failed": 2,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-EVAL-06",
+      "category": "eval-safety",
+      "target": "packages/agent-evals/src/runner.ts",
+      "rationale": "Disabling the observed-effect guard would qualify a synthetic run that attempted a real-world effect.",
+      "focusedTests": [
+        "packages/agent-evals/src/__tests__/integrated-holdout.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 6,
+        "passed": 5,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-EVAL-07",
+      "category": "eval-binding",
+      "target": "packages/agent-evals/src/runner.ts",
+      "rationale": "Inverting corpus digest validation would accept modified holdout bytes or reject the sealed corpus.",
+      "focusedTests": [
+        "packages/agent-evals/src/__tests__/integrated-holdout.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 6,
+        "passed": 4,
+        "failed": 2,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-EVAL-08",
+      "category": "eval-product-boundary",
+      "target": "packages/agent-core/src/commands/classify-inbound-behavior.ts",
+      "rationale": "Bypassing the product-side semantic classifier must break the integrated holdout, proving the lane does not obtain its outcomes from the deterministic eval baseline.",
+      "focusedTests": [
+        "packages/agent-evals/src/__tests__/integrated-holdout.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 6,
+        "passed": 5,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-CERT-01",
+      "category": "certification",
+      "target": "scripts/lib/certification-rules.mjs",
+      "rationale": "Silencing the required-skip enforcement lets a required skip pass the gate with only a free-text justification.",
+      "focusedTests": [
+        "tests/aud19-certification-guards.test.js"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 9,
+        "passed": 8,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-CERT-02",
+      "category": "certification",
+      "target": "scripts/lib/certification-rules.mjs",
+      "rationale": "Removing P1 from the NO_GO calculus would certify a candidate with open P1 findings.",
+      "focusedTests": [
+        "tests/aud19-certification-guards.test.js"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 9,
+        "passed": 8,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-A10-FACTORY-01",
+      "category": "aud20-10-factory",
+      "target": "packages/observability/src/collector.ts",
+      "rationale": "Removing the harness-profile guard would accept a foreign profile while keeping the happy path green; only the negative fixture detects it. Added for the AUD20-10 composition slice.",
+      "focusedTests": [
+        "tests/aud20-10-composition.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 13,
+        "passed": 12,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-A10-FACTORY-02",
+      "category": "aud20-10-factory",
+      "target": "packages/observability/src/collector.ts",
+      "rationale": "Removing the temporary-root containment guard would accept a root outside the exclusive temp directory; only the negative fixture detects it. Added for the AUD20-10 composition slice.",
+      "focusedTests": [
+        "tests/aud20-10-composition.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 13,
+        "passed": 12,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-A10-FACTORY-03",
+      "category": "aud20-10-factory",
+      "target": "packages/observability/src/collector.ts",
+      "rationale": "Dropping the bounded-buffer capacity check would let the sink grow past its limit without counting drops. Added for the AUD20-10 composition slice.",
+      "focusedTests": [
+        "tests/aud20-10-composition.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 13,
+        "passed": 11,
+        "failed": 2,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-A10-FACTORY-04",
+      "category": "aud20-10-factory",
+      "target": "packages/observability/src/collector.ts",
+      "rationale": "Removing the post-close seal would buffer records received after close instead of counting them as dropped. Added for the AUD20-10 composition slice.",
+      "focusedTests": [
+        "tests/aud20-10-composition.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 13,
+        "passed": 11,
+        "failed": 2,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-A10-API-01",
+      "category": "aud20-10-projection",
+      "target": "apps/api/src/server.ts",
+      "rationale": "Replacing the projected correlation ID would break the API-to-worker correlation carried by the composition. Added for the AUD20-10 composition slice.",
+      "focusedTests": [
+        "tests/aud20-10-composition.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 13,
+        "passed": 11,
+        "failed": 2,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-A10-WORKER-01",
+      "category": "aud20-10-lifecycle",
+      "target": "apps/worker/src/controlled-memory-runtime.ts",
+      "rationale": "Disabling the finally block would skip flush/close of the worker collector even on failure. Added for the AUD20-10 composition slice.",
+      "focusedTests": [
+        "tests/aud20-10-composition.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 13,
+        "passed": 9,
+        "failed": 4,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-A10-LEDGER-01",
+      "category": "aud20-10-alerts-ledger",
+      "target": "packages/observability/src/alert-delivery-ledger.ts",
+      "rationale": "Removing the transition-order guard lets close run from detected and breaks the required detected->acknowledged->closed chain. Added for the AUD20-10 alerts/ledger slice.",
+      "focusedTests": [
+        "tests/aud20-10-alerts-ledger.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 10,
+        "passed": 9,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-A10-LEDGER-02",
+      "category": "aud20-10-alerts-ledger",
+      "target": "packages/observability/src/alert-delivery-ledger.ts",
+      "rationale": "Removing the timestamp ordering guard accepts out-of-order delivery cycles. Added for the AUD20-10 alerts/ledger slice.",
+      "focusedTests": [
+        "tests/aud20-10-alerts-ledger.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 10,
+        "passed": 8,
+        "failed": 2,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-A10-DELIVERY-01",
+      "category": "aud20-10-alerts-ledger",
+      "target": "packages/observability/src/alert-delivery-ledger.ts",
+      "rationale": "Removing the missing-ack failure lets an incomplete alert cycle be reported as delivered. Added for the AUD20-10 alerts/ledger slice.",
+      "focusedTests": [
+        "tests/aud20-10-alerts-ledger.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 10,
+        "passed": 9,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-A10-ENGINE-01",
+      "category": "aud20-10-approval-latency",
+      "target": "packages/approval-engine/src/engine.ts",
+      "rationale": "Removing the negative-latency guard emits an invalid approval latency sample. Added for the AUD20-10 alerts/ledger slice.",
+      "focusedTests": [
+        "tests/aud20-10-alerts-ledger.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 10,
+        "passed": 9,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-yv6aEG/.mutation-report.json\n\n"
+    }
+  ],
+  "candidate": {
+    "candidateId": "209978ab38743d0c30fdaaada1178fc63fd48b238168d01ec39477d3e5850813",
+    "commit": "8f97e14602f8ddf07952b2013c54ea4323ab8662",
+    "treeHash": "f608ba2d127bb8161b8f7517ee2700238a55900a4801302dccbb78b65d709c74"
+  },
+  "manifestSha256": "f6a2b7e9e144ac51ca31ee6e53910e9b7505251c9b42d16ab0c98c5c500ce039"
+}

@@ -5063,3 +5063,12 @@ PASS`; suíte integral `289 PASS` arquivos/12 skipped e `2.256 PASS`
 - next_action: obter decisão humana para executar o reseal Phase 11 (regenerar pacote com critic/mutation report no candidato congelado) e para a próxima fatia de `AUD20-10` (alertas/delivery ledger) e a sessão humana de `AUD20-19`; manter 141 vínculos IMP50-49 sem adjudicação e staging/produção `NO_GO`.
 - evidence: [preflight](04_audit/evidence/AUD20/AUD20-reseal-preflight-report-20260925.md), [verify](04_audit/evidence/AUD20/AUD20-reseal-preflight-certification-20260925.log) (`401da0b2…`), [promotion](04_audit/evidence/AUD20/AUD20-reseal-preflight-promotion-20260925.log) (`1e494abf…`).
 - verification: somente leitura; nenhum artefato de certificação escrito, nenhum dado real, push ou deploy.
+
+# AUD20-10 C02/C04/C05 BUILD aceito (crítica delta PASS) — 2026-09-25
+
+- current_engine: `AUDIT -> BUILD`; `AUD20-10` com fatias IMP50-09 e C02/C04/C05 aceitas no BUILD local; C01–C07 abertos; staging/produção `NO_GO`.
+- last_completed_action: executar a fatia admitida (latência real de approval com nome estável; ledger de entrega append-only com cadeia de hash; exercício lendo batches reais e fechando o ciclo), remediar a crítica v1 (`CONDITIONAL`: F1 nome da métrica, F3 formatação repo-wide, F4 verificação de adulteração; F2/F5/F6 declarados) e obter a crítica delta `PASS`; registrar o aceite.
+- progress: gates da fatia PASS (suíte `2.657`/192 skips; coverage 4/4 ≥90%; mutation dirigida `26/26`; typecheck/lint/Prettier/docs/diff); pin canônico do manifesto de mutantes obsoleto, a reconciliar no reseal; owner/SLO pendentes.
+- next_action: manter `AUD20-10` com as fatias IMP50-09 e C02/C04/C05 aceitas no BUILD local e C01–C07 abertos (owner/SLO e demais itens exigem decisão humana); reconciliar o pin do manifesto de mutantes no reseal aprovado; `AUD20-19` sem sessão autorizada; 141 vínculos IMP50-49 sem adjudicação; staging/produção `NO_GO`.
+- evidence: [aceite](04_audit/evidence/AUD20/AUD20-10-alerts-ledger-slice-acceptance-20260925.md), [relatório](04_audit/evidence/AUD20/AUD20-10-alerts-ledger-build-report-20260925.md), [coverage v2](04_audit/evidence/AUD20/AUD20-10-alerts-ledger-coverage-v2-20260925.log) (`20d180f4…`), [mutation](04_audit/evidence/AUD20/AUD20-10-alerts-ledger-mutation-20260925.json) (`69c2f982…`).
+- verification: nenhum dado real, push ou deploy; formatação repo-wide corrigida (13 arquivos de teste, format-only).

@@ -8,6 +8,11 @@
 - [x] 3 pedidos preparados (coverage, mutante, desbloqueio) — `WAITING_HUMAN_APPROVAL`.
 - [ ] Aguardar decisões. Staging/produção `NO_GO`.
 
+# AUD20-10 C02/C04/C05 aceito — 2026-09-25
+
+- [x] Latência real + ledger de entrega + exercício fechando ciclo; crítica delta `PASS`; gates verdes (mutation `26/26`).
+- [ ] C01–C07 abertos (owner/SLO); pin do manifesto a reconciliar no reseal. Staging/produção `NO_GO`.
+
 # Preflight do reseal executado — 2026-09-25
 
 - [x] Read-only: verify FAIL fail-closed (25 falhas) e promotion inelegível (8 gates externos); delta registrado.

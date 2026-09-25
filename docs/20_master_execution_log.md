@@ -6,6 +6,10 @@
 
 - R2 de FU1 SOLICITADO; sessão humana ADIADA; gate PostgreSQL ADMITIDO (descartável+teardown); mutation ADMITIDA (pisos intactos); fluxos de re-selo/8 gates APROVADOS como plano. Recibo hash-bound registrado. Próximo: executar R2 → mutation → PostgreSQL. Staging/produção `NO_GO`.
 
+# AUD20-10 C02/C04/C05 aceito — 2026-09-25
+
+- Fatia executada e remediada (F1 nome estável da métrica, F3 formatação repo-wide, F4 verificação de adulteração; F2/F5/F6 declarados); crítica delta `PASS`. Suíte `2.657`/192 skips, coverage 4/4 ≥90%, mutation `26/26`, typecheck/lint/Prettier/docs/diff PASS. Aceite registrado; C01–C07 abertos; pin do manifesto a reconciliar no reseal. Staging/produção `NO_GO`.
+
 # Preflight do reseal — 2026-09-25
 
 - Read-only no candidato selado: `certification:verify:phase11` FAIL (25 falhas; pacote stale, critic/mutation ausentes, scope drift) e `promotion:check` `eligible:false` (8 bloqueios externos), `noProductionEffect`. Candidato atual `05150f34…@3ed938df`. Reseal exige regenerar pacote + admissão própria. Staging/produção `NO_GO`.
