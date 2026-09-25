@@ -2,627 +2,330 @@
   "criteria": [
     {
       "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
+        "actual": "NQP-03 is the current next action; multiple implementation and human/external gates remain open.",
         "status": "NOT_RUN"
       },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Revalidar achados e fixar baseline",
-      "evidence_method": "registro REM-01 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-01",
-      "license_notes": "Project-owned plan",
+      "conditions": "IMP50 and NQP overlap is one deliverable where their acceptance is identical; distinct gates remain distinct.",
+      "dimension": "program completeness and dependency integrity",
+      "evidence_method": "Audit every numbered item against 0340/0341/0342/0343 and official task state in 0337; verify exact task evidence, dependencies, current hashes, test outputs and gate status. No plan or aggregate percentage substitutes for item evidence.",
+      "id": "GOAL-01",
+      "license_notes": "Internal repository work.",
+      "priority": "critical",
+      "required": true,
+      "snapshot_sha256": null,
+      "source": "pasted-text-1.txt; 0340/0341/0342/0343",
+      "source_type": "USER",
+      "target": "All IMP50-01..50 and NQP-01..12 deliverables are completed once, in dependency order, with current item-level evidence and required gates. The overall goal cannot PASS while a required task, acceptance, human decision, or external gate remains pending.",
+      "validity_notes": "The gate fails if any numbered item is missing, duplicated, out of order, supported only by stale evidence, or falsely declared complete.",
+      "version": "IMP50-NQP-20260923-v1"
+    },
+    {
+      "baseline": {
+        "actual": "Current reviewed work is local and synthetic; staging and production are NO_GO.",
+        "status": "PASS"
+      },
+      "conditions": "A later explicit user authorization is required for any excluded action; this bar does not grant it.",
+      "dimension": "authorization, privacy and operational safety",
+      "evidence_method": "Inspect changed files, test fixtures, commands, runtime configuration, logs and external-effect traces at each slice; confirm no real-data or external-effect path was exercised.",
+      "id": "SAFETY-01",
+      "license_notes": "User and repository operational rules.",
+      "priority": "critical",
+      "required": true,
+      "snapshot_sha256": "3a8a63a4dd42eff48d8dbc1dcfa53de45a7bcf997f25f2304b2836f68355e52f",
+      "source": "pasted-text-1.txt; AGENTS.md; docs/07_agents/AGENTS.md",
+      "source_type": "USER",
+      "target": "Use synthetic local data only; no real clinical, financial, record, appointment, RAG, external integration, staging, production, publish, commit or push action without its explicit separate authority. Sensitive actions require approval or handoff.",
+      "validity_notes": "Any forbidden action or real-data use immediately fails this criterion regardless of local tests.",
+      "version": "user-current"
+    },
+    {
+      "baseline": {
+        "actual": "The prior v1 report records PASS; this NQP-03 review has not adjudicated current evidence.",
+        "status": "NOT_RUN"
+      },
+      "conditions": "Do not infer first-slice acceptance from the query-parser verdict.",
+      "dimension": "ownership and dependency direction",
+      "evidence_method": "Inspect current server/context modules and architecture assertions; run the approved focused architecture test and independently compare both v1 and integrated scope.",
+      "id": "NQP03-C01",
+      "license_notes": "Repository specification.",
       "priority": "high",
       "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-01",
+      "snapshot_sha256": "a3c200e7323db28245b98dc8b35f120fcf6b8e961e570664044c62f2cd329d37",
+      "source": "aud20_17_hotspot_decomposition_20260922.md; 0337 request-context task",
       "source_type": "REPO",
-      "target": "Três reproduções documentadas; distinguir snapshot obsoleto de corrida HTTP; lista de regressões do próximo gate definida.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
+      "target": "The ten request-context helpers have one owner in request-context.ts; dependency direction is acyclic, allowed and explicitly injected; no duplicate helper remains in server.ts.",
+      "validity_notes": "Architecture checks must fail on duplicate ownership, forbidden import direction or cycles.",
+      "version": "SPEC SHA-256 a3c200e7323db28245b98dc8b35f120fcf6b8e961e570664044c62f2cd329d37"
     },
     {
       "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
+        "actual": "Request-context v1 server.ts=4745 (>4708); integrated candidate server.ts=4622 after the separate query-parser slice.",
+        "status": "FAIL"
       },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Conciliar PRD, SPEC e autoridade documental",
-      "evidence_method": "registro REM-02 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-02",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
+      "conditions": "If acceptance relies on a combined candidate or changed attribution, require the SPEC amendment/decision specified by the user before accepting this criterion.",
+      "dimension": "measurable size and caps",
+      "evidence_method": "Recompute line counts from exact candidate-bound files and bind them to the v1 build report and FU1 candidate manifest; determine scope from the approved specifications and human decisions.",
+      "id": "NQP03-C02",
+      "license_notes": "Repository specification.",
+      "priority": "critical",
       "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-02",
+      "snapshot_sha256": "a3c200e7323db28245b98dc8b35f120fcf6b8e961e570664044c62f2cd329d37",
+      "source": "aud20_17_hotspot_decomposition_20260922.md; approved IMP50-40 request-context adendum",
       "source_type": "REPO",
-      "target": "Decisão de RF-011 registrada e validada pelo responsável; matriz dos 39 RF atualizada; cada assunto possui fonte vigente; decisão não implica reescrita automática.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
+      "target": "For the request-context v1 candidate, server.ts <=4708 and request-context.ts <=450 with measurable reduction. Report the integrated candidate's server.ts=4622 separately; do not transfer that separate query-parser reduction to v1 without an explicit SPEC/authority disposition.",
+      "validity_notes": "The line-count harness rejects a cap violation; scope is independently reviewed so a later slice cannot silently rewrite the first-slice result.",
+      "version": "SPEC SHA-256 a3c200e7323db28245b98dc8b35f120fcf6b8e961e570664044c62f2cd329d37"
     },
     {
       "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
+        "actual": "The v1 report and prior critic describe PASS; current NQP-03 verification is pending.",
         "status": "NOT_RUN"
       },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Detalhar e submeter contratos das três correções",
-      "evidence_method": "registro REM-03 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-03",
-      "license_notes": "Project-owned plan",
+      "conditions": "No real tenant or identity data.",
+      "dimension": "identity, tenant and default-deny invariants",
+      "evidence_method": "Run direct request-context tests plus approved identity, tenant, replay and production-boundary regression tests; inspect code at the API boundary.",
+      "id": "NQP03-C03",
+      "license_notes": "Repository specification.",
+      "priority": "critical",
+      "required": true,
+      "snapshot_sha256": "a3c200e7323db28245b98dc8b35f120fcf6b8e961e570664044c62f2cd329d37",
+      "source": "aud20_17_hotspot_decomposition_20260922.md; request-context tests",
+      "source_type": "REPO",
+      "target": "Trusted mode without resolver/tenant denies; identity bounds tenant; memoization is request-object scoped; permission and platform-scope checks preserve approved behavior.",
+      "validity_notes": "Required negative cases must be observed to deny, not only exercise successful requests.",
+      "version": "SPEC SHA-256 a3c200e7323db28245b98dc8b35f120fcf6b8e961e570664044c62f2cd329d37"
+    },
+    {
+      "baseline": {
+        "actual": "The v1 report and prior critic describe PASS; current NQP-03 verification is pending.",
+        "status": "NOT_RUN"
+      },
+      "conditions": "Query-parser route changes are assessed under their own approved SPEC and do not substitute for context-specific checks.",
+      "dimension": "HTTP and public-export compatibility",
+      "evidence_method": "Run the SPEC-named boundary/route tests, directly inspect public exports and compare exact route error responses against the saved candidate evidence.",
+      "id": "NQP03-C04",
+      "license_notes": "Repository specification.",
+      "priority": "critical",
+      "required": true,
+      "snapshot_sha256": "a3c200e7323db28245b98dc8b35f120fcf6b8e961e570664044c62f2cd329d37",
+      "source": "aud20_17_hotspot_decomposition_20260922.md; request-context route contract tests",
+      "source_type": "REPO",
+      "target": "Request-context extraction changes no public methods, paths, schemas, status, headers, error code/message, response shape or export contract.",
+      "validity_notes": "Exact response and export assertions reject compatible-looking but contract-breaking changes.",
+      "version": "SPEC SHA-256 a3c200e7323db28245b98dc8b35f120fcf6b8e961e570664044c62f2cd329d37"
+    },
+    {
+      "baseline": {
+        "actual": "The v1 report and prior critic describe PASS; current NQP-03 verification is pending.",
+        "status": "NOT_RUN"
+      },
+      "conditions": "Do not weaken assertions or alter their denominators.",
+      "dimension": "negative and architecture behavior",
+      "evidence_method": "Inspect assertions and run focused negative tests for the current candidate; tie each result to exact candidate hashes.",
+      "id": "NQP03-C05",
+      "license_notes": "Repository specification.",
       "priority": "high",
       "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-03",
+      "snapshot_sha256": "a3c200e7323db28245b98dc8b35f120fcf6b8e961e570664044c62f2cd329d37",
+      "source": "aud20_17_hotspot_decomposition_20260922.md; tests/architecture.test.js",
       "source_type": "REPO",
-      "target": "Discovery/PRD/SPEC aprovados pelos respectivos gates e revisão humana de BUILD registrada; sem aprovação, tarefas de código ficam bloqueadas.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
+      "target": "The named identity, tenant, channel, permissions, memoization, import, duplicate-owner, environment and cap negatives fail closed as specified.",
+      "validity_notes": "Known-bad dependency and security-boundary examples must fail; success-only tests are insufficient.",
+      "version": "SPEC SHA-256 a3c200e7323db28245b98dc8b35f120fcf6b8e961e570664044c62f2cd329d37"
     },
     {
       "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
+        "actual": "Integrated query-parser receipts report 89.25% functions (2101/2354), below the >=90% contract floor; the request-context v1 coverage command failed its C02 assertion.",
+        "status": "FAIL"
+      },
+      "conditions": "NQP-01 may close the repository coverage gap later, but does not rewrite a failed historical v1 result.",
+      "dimension": "regression and coverage",
+      "evidence_method": "Run `npm test` and `npm run test:coverage` on the same candidate, capture denominators, classify skips, compare a valid pre-change baseline, and check the AAA contract thresholds without exclusions.",
+      "id": "NQP03-C06",
+      "license_notes": "Repository specification and quality contract.",
+      "priority": "critical",
+      "required": true,
+      "snapshot_sha256": "aec324018513c43a3e949663e41769f2d59180c6812d7430bd5980fb4a357097",
+      "source": "aud20_17_hotspot_decomposition_20260922.md; aaa_quality_contract.md §9.1",
+      "source_type": "REPO",
+      "target": "The exact candidate passes the required regression/coverage checks without reducing coverage; the repository functions floor remains >=90%, with all other configured floors maintained.",
+      "validity_notes": "Exit status alone is invalid when the configured 80% threshold is lower than the contractual 90% functions floor; baseline and same-candidate denominators are required.",
+      "version": "SPEC SHA-256 a3c200e7323db28245b98dc8b35f120fcf6b8e961e570664044c62f2cd329d37; AAA quality contract worktree 2026-09-23"
+    },
+    {
+      "baseline": {
+        "actual": "The v1 critic did not accept the slice; the FU1 query-parser critic scoped its PASS to AC01–AC06 of the separate query-parser PRD.",
+        "status": "FAIL"
+      },
+      "conditions": "Any acceptance changing the first-slice scope still needs the explicit human/spec decision applicable to that change.",
+      "dimension": "independent review and scope attribution",
+      "evidence_method": "Commission a new non-inherited-context critic with a sealed packet, fingerprint the repository before/after and inspect its criterion-level report; verify the critic did not modify files.",
+      "id": "NQP03-C07",
+      "license_notes": "Internal review packet; exclude unrelated and sensitive repository content.",
+      "priority": "critical",
+      "required": true,
+      "snapshot_sha256": null,
+      "source": "pasted-text-1.txt; request-context human approval receipt; Gauntlet critic rules",
+      "source_type": "USER",
+      "target": "A fresh read-only critic approves the exact request-context candidate against C01–C07 and explicitly distinguishes the first-slice v1 from the integrated query-parser candidate; the query-parser PASS alone cannot satisfy C07 for request-context.",
+      "validity_notes": "A builder's own review or a critic scoped only to query-parser cannot pass request-context C07.",
+      "version": "user-current and Gauntlet Loop v1.0"
+    },
+    {
+      "baseline": {
+        "actual": "Task is admitted and queued; no new BUILD has run.",
         "status": "NOT_RUN"
       },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Separar risco da intenção administrativa",
-      "evidence_method": "registro REM-04 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-04",
-      "license_notes": "Project-owned plan",
+      "conditions": "Do not set an owner or SLO by inference; preserve pending authority as an explicit condition. NQP-03 must release the DAG first.",
+      "dimension": "synthetic API-to-worker observability",
+      "evidence_method": "Use the SPEC's exact local harness and tests; prove API injection, shared in-memory outbox, controlled-memory worker, sink redaction/flush/close and negative paths on the exact candidate.",
+      "id": "NQP04-01",
+      "license_notes": "Repository specification; synthetic fixtures only.",
       "priority": "high",
       "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-04",
+      "snapshot_sha256": "83130cdf8930fa3639a116cc63ab4c2e0c3486ff40a349105d3423f44c91b685",
+      "source": "AUD20-10/IMP50-09 approved SPEC SHA-256 83130cdf8930fa3639a116cc63ab4c2e0c3486ff40a349105d3423f44c91b685; 0342/0343",
       "source_type": "REPO",
-      "target": "Consulta+sangue gera handoff high e nenhuma tool; casos de medicamento continuam bloqueados; corpus benigno não sofre regressão indevida; justificativa de risco no trace.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
+      "target": "If Q1 releases the DAG, execute only the admitted AUD20-10 local synthetic collector slice in its frozen allowlist; correlated redacted signals reach the controlled worker path and negative PII, missing-correlation and delivery-failure cases fail the gate.",
+      "validity_notes": "A direct logger unit test cannot prove the API-to-worker shared path; induced negatives must reject unsafe output and broken correlation.",
+      "version": "SPEC SHA-256 83130cdf8930fa3639a116cc63ab4c2e0c3486ff40a349105d3423f44c91b685"
     },
     {
       "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
+        "actual": "89.25% functions (2101/2354) in the recorded query-parser candidate.",
+        "status": "FAIL"
       },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Ampliar preflight e regressões de risco",
-      "evidence_method": "registro REM-05 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-05",
-      "license_notes": "Project-owned plan",
+      "conditions": "Any threshold or inclusion change is a separate material quality-bar decision and is not authorized here.",
+      "dimension": "coverage quality floor",
+      "evidence_method": "Inspect denominator/configuration, run the full coverage command, record exact percentages and denominators, and run the full relevant test suite for that same candidate.",
+      "id": "NQP01-01",
+      "license_notes": "Repository quality contract.",
       "priority": "high",
       "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-05",
+      "snapshot_sha256": "aec324018513c43a3e949663e41769f2d59180c6812d7430bd5980fb4a357097",
+      "source": "aaa_quality_contract.md §9.1; NQP-01 in 0343",
       "source_type": "REPO",
-      "target": "Todos os casos críticos do corpus aprovado passam; regressão de risco impede publish/rollback; nenhum caso crítico planeja tool; evidência de API e handler worker.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
+      "target": "On the final applicable candidate, functions coverage is >=90% and every other repository coverage floor remains satisfied; no code is excluded and no threshold is reduced.",
+      "validity_notes": "The repository's lower Vitest threshold cannot substitute for the 90% contractual floor.",
+      "version": "AAA quality contract worktree 2026-09-23"
     },
     {
       "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
+        "actual": "12 files/192 tests skipped in the saved run; PostgreSQL was not configured.",
         "status": "NOT_RUN"
       },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Corrigir dependência e confiança no proxy",
-      "evidence_method": "registro REM-06 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-06",
-      "license_notes": "Project-owned plan",
-      "priority": "high",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-06",
-      "source_type": "REPO",
-      "target": "Origem não confiável com X-Forwarded-Proto=https recebe rejeição; proxy permitido funciona; CORS/HTTPS e configuração legada cobertos; audit atual e impacto da atualização registrados.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Tornar decisão de atendimento atômica",
-      "evidence_method": "registro REM-07 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-07",
-      "license_notes": "Project-owned plan",
-      "priority": "high",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-07",
-      "source_type": "REPO",
-      "target": "Snapshots A/B: exatamente uma transição vence; a segunda recebe conflito e não sobrescreve; barreira de leitura força corrida em PostgreSQL; ator/data/audit consistentes; capability approval preservada.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Auditar fechamento da estabilização",
-      "evidence_method": "registro REM-08 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-08",
-      "license_notes": "Project-owned plan",
-      "priority": "high",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-08",
-      "source_type": "REPO",
-      "target": "F01/F05/F07 fechados por evidência específica; zero P0/P1 aberto no escopo; ressalvas e ausência de revisão independente declaradas; produção continua NO-GO.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Especificar processamento durável",
-      "evidence_method": "registro REM-09 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-09",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-09",
-      "source_type": "REPO",
-      "target": "SPEC/gate aprovados; matriz crash antes/depois do commit/efeito/ack; política explícita para entrega at-least-once e deduplicação; sem promessa de exactly-once externo.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Implementar outbox e consumidor controlados",
-      "evidence_method": "registro REM-10 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-10",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-10",
-      "source_type": "REPO",
-      "target": "Reinício recupera pendentes; dois consumidores não processam simultaneamente o mesmo lease válido; expiração recuperável; estado processed exige resultado durável, não retorno de stub.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Integrar aceite inbound e execução assíncrona",
-      "evidence_method": "registro REM-11 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-11",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-11",
-      "source_type": "REPO",
-      "target": "Mensagem aceita permanece investigável após crash; retry não duplica efeito controlado; continuidade usa versão pinned; takeover impede resposta mesmo com job já enfileirado.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Provar recuperação, replay e falhas de entrega",
-      "evidence_method": "registro REM-12 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-12",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-12",
-      "source_type": "REPO",
-      "target": "Zero perda e zero efeito duplicado na matriz controlada; dead-letter/reprocessamento auditáveis; desligamento e recuperação documentados; gate R2 auditado.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Especificar domínio tutor/pet/agenda e jornadas",
-      "evidence_method": "registro REM-13 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-13",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-13",
-      "source_type": "REPO",
-      "target": "PRD/SPEC/gate aprovados; drafts não equivalem a cadastro definitivo ou consulta confirmada; critérios de confiança e decisão humana explícitos.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Persistir busca e drafts de tutor/pet",
-      "evidence_method": "registro REM-14 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-14",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-14",
-      "source_type": "REPO",
-      "target": "Criar, reiniciar e recuperar drafts; busca por identificador sintético; isolamento cross-tenant; nenhum vínculo quando ambíguo; vínculo autorizado rastreável à conversa.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Construir coleta estruturada e handoff completo",
-      "evidence_method": "registro REM-15 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-15",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-15",
-      "source_type": "REPO",
-      "target": "Retomada mantém dados; risco prevalece sobre coleta; resumo contém intenção, dados disponíveis, risco, pendências e próximo passo; operador assume e bot silencia.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Persistir sugestões e drafts de agenda",
-      "evidence_method": "registro REM-16 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-16",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-16",
-      "source_type": "REPO",
-      "target": "Sem slots fixos vencidos; draft recuperável após reinício; conflito/expiração tratados; aprovação não executa confirmação/cancelamento/reagendamento real.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Completar tarefa e UX da jornada operacional",
-      "evidence_method": "registro REM-17 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-17",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-17",
-      "source_type": "REPO",
-      "target": "Browser cobre identificar→triagem→draft→approval/handoff→tarefa; teclado e foco nos fluxos críticos verificados; referências pessoais redigidas; nenhuma ação sensível implícita.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Auditar secretária completa em fixtures",
-      "evidence_method": "registro REM-18 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-18",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-18",
-      "source_type": "REPO",
-      "target": "Matriz indica entregue/parcial/ausente sem contar stub como integração; retomada, ambiguidade, erro de agenda e takeover passam; corpus safety sem regressão; gate R3 fechado.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Definir identidade, privacidade e contratos externos",
-      "evidence_method": "registro REM-19 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-19",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-19",
-      "source_type": "REPO",
-      "target": "Decisões de arquitetura/negócio e SPEC registradas; gate externo separado do BUILD local; responsável por fonte e operação definido; nenhuma credencial material em docs.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Implementar identidade e gestão de secrets",
-      "evidence_method": "registro REM-20 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-20",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-20",
-      "source_type": "REPO",
-      "target": "Headers autoafirmados não autenticam; cross-tenant/role negativa bloqueados; logout/expiração tratados na UI; rotação testada sem vazamento; IdP externo exige autorização separada.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Implementar adapter de modelo com avaliação",
-      "evidence_method": "registro REM-21 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-21",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-21",
-      "source_type": "REPO",
-      "target": "Simulador local cobre timeout/erro/saída maliciosa; nenhum modelo concede permissão; sandbox externo só após gate; avaliação separa fixture de inferência efetiva e mede qualidade do corpus.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Implementar canal e entrega humana controlados",
-      "evidence_method": "registro REM-22 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-22",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-22",
-      "source_type": "REPO",
-      "target": "Replay/timeout/crash não duplicam efeito no mock; decisão humana registra ator; takeover impede envio tardio; sandbox real, destinatários e teto de tráfego dependem de gate externo.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Implementar ciclo de conteúdo institucional",
-      "evidence_method": "registro REM-23 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-23",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-23",
-      "source_type": "REPO",
-      "target": "Sem fonte válida há handoff; resposta cita fonte/versão; revogação e mudança invalidam uso; conteúdo recuperado não altera policy; fonte institucional real exige aprovação do responsável antes de ingestão/resposta.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Implementar observabilidade e retenção",
-      "evidence_method": "registro REM-24 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-24",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-24",
-      "source_type": "REPO",
-      "target": "Alerta disparado por falha injetada; correlação fim a fim sem payload sensível; purge atende política aprovada; limiter/replay ensaiados entre duas instâncias; trilha necessária preservada.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Preparar artefato, restore e rollback",
-      "evidence_method": "registro REM-25 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-25",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-25",
-      "source_type": "REPO",
-      "target": "Restore e rollback executados com integridade/tenant conferidos; RPO/RTO medidos versus metas aprovadas; nenhuma migration real feita; scan só é declarado após artefato existir.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Auditar integrações e operação em ambiente sintético",
-      "evidence_method": "registro REM-26 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-26",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-26",
-      "source_type": "REPO",
-      "target": "Gate R4 diferencia integração local, sandbox aprovado e operação real; segredos/redaction/isolamento/falhas passam; mocks não contam como readiness externa.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Medir carga, disponibilidade e SLAs",
-      "evidence_method": "registro REM-27 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-27",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-27",
-      "source_type": "REPO",
-      "target": "p95 persistência ≤2s e resposta ≤10s sob condições registradas; meta externa só validada com provider saudável autorizado; zero perda/dupla decisão no ensaio; RPO/RTO atendidos ou gap registrado.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Validar operação humana e acessibilidade",
-      "evidence_method": "registro REM-28 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-28",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-28",
-      "source_type": "REPO",
-      "target": "Operador consegue assumir, decidir, investigar e recuperar erro; nenhum bloqueio grave de acessibilidade no escopo declarado; falhas viram backlog; não alegar certificação integral sem avaliação correspondente.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Emitir parecer de qualificação e decisão de piloto",
-      "evidence_method": "registro REM-29 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-29",
-      "license_notes": "Project-owned plan",
-      "priority": "high",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-29",
-      "source_type": "REPO",
-      "target": "Sem P0/P1 e sem F05/F07 abertos; gates de dados/fonte/canal/identidade aprovados para qualquer piloto real; decisão humana registrada. Se negar ou faltar evidência, manter NO-GO e backlog explícito.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Audit reports gaps; live criterion validation pending.",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Synthetic isolated data; production/pilot excluded. External and human acceptance kept pending if unavailable.",
-      "dimension": "Refatorar hotspots conforme evidência de manutenção",
-      "evidence_method": "registro REM-30 em `docs/04_audit/` ou seção identificável da evidência da onda, com resultados e limitações; atualizar task, runtime state e execution log após execução. Inspect current implementation and exercise real public boundary; derive tests from acceptance, never count stubs as external integration.",
-      "id": "REM-30",
-      "license_notes": "Project-owned plan",
-      "priority": "medium",
-      "required": true,
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
-      "source": "docs/03_build/0313_backlog_pos_auditoria.md#REM-30",
-      "source_type": "REPO",
-      "target": "Diff limitado, contratos e regressão preservados; benefício demonstrado em revisão; não há reescrita ampla nem substituição automática da arquitetura.",
-      "validity_notes": "Require observed behavior at criterion scope; negative control or pre-change failure plus integrated regression. Human decisions cannot be generated as approval.",
-      "version": "REM-0539-v1"
-    },
-    {
-      "baseline": {
-        "actual": "Not yet proven",
-        "status": "NOT_RUN"
-      },
-      "conditions": "Declared workload, synthetic dataset, browser and host; human signoff remains explicit.",
-      "dimension": "integrated quality",
-      "evidence_method": "Verify, PostgreSQL, E2E, measured load/recovery and rendered interaction checks; fresh final I1+ critic on exact artifact with mutation sentinel.",
-      "id": "AAA-QUALITY",
-      "license_notes": "User goal",
+      "conditions": "No real or shared database; do not convert a required skip into acceptance.",
+      "dimension": "skip integrity and PostgreSQL integration",
+      "evidence_method": "Inventory exact skip conditions, run each required lane and relevant migration/integration suite on a dedicated disposable PostgreSQL instance, record startup, test and teardown receipts, then verify no residual service/resource.",
+      "id": "NQP02-01",
+      "license_notes": "Synthetic fixtures only.",
       "priority": "high",
       "required": true,
       "snapshot_sha256": null,
-      "source": "State of Art, Triplo AAA",
+      "source": "pasted-text-1.txt; NQP-02 in 0343; 0342 Q3",
       "source_type": "USER",
-      "target": "All plan acceptance met; no unresolved material safety/integrity gap; current integrated verification and fresh final independent critic approve. UI exercised at 390/768/1440px with keyboard, error and recovery; quality is not a decorative score.",
-      "validity_notes": "No aggregate score can override failed required acceptance.",
-      "version": "user-current"
+      "target": "All 12 skipped files/192 skipped tests are individually classified; required tests execute with zero required skip; applicable PostgreSQL tests pass against a disposable synthetic database that is removed after use.",
+      "validity_notes": "Suite exit 0 with conditional skips does not prove zero required skips or PostgreSQL behavior.",
+      "version": "repository/user-current 2026-09-23"
+    },
+    {
+      "baseline": {
+        "actual": "Current Phase 11 certification is stale for the dirty worktree; no new images/SBOM/re-seal on the current candidate.",
+        "status": "NOT_RUN"
+      },
+      "conditions": "All prior gates and human session dependencies remain mandatory; this criterion grants no release authority.",
+      "dimension": "single-candidate integration, image and supply-chain evidence",
+      "evidence_method": "Build and inspect image digests, compose disposable API+worker+PostgreSQL, run relevant tests, generate SBOM/scans, freeze file/tree/config hashes, then independently verify the seal after the last write.",
+      "id": "NQP05-01",
+      "license_notes": "Local synthetic build only; no publication.",
+      "priority": "critical",
+      "required": true,
+      "snapshot_sha256": null,
+      "source": "0340 R4-R6; 0341 IMP50-01..08; 0342 Q4; 0343 NQP-05",
+      "source_type": "REPO",
+      "target": "After all predecessor gates, API/worker/web images, composition, SBOM, scans, tests, critic/mutation and Phase 11 seal bind to one frozen candidate; a separate verifier passes that exact candidate.",
+      "validity_notes": "Any post-freeze applicable write invalidates the manifest; matching labels without matching digests fail.",
+      "version": "0340/0341/0342/0343 worktree 2026-09-23"
+    },
+    {
+      "baseline": {
+        "actual": "AUD20-19 session and owner/SLO/external gates are pending; IMP50-49's 141 remain unadjudicated.",
+        "status": "NOT_RUN"
+      },
+      "conditions": "Independent local work may continue when it does not depend on the missing authority.",
+      "dimension": "human and operational decisions",
+      "evidence_method": "Compare every human/external claim to a hash-/scope-bound authority receipt with actor and evidence; keep missing approvals explicit and stop only their dependent lanes.",
+      "id": "HUMAN-01",
+      "license_notes": "User decision boundary.",
+      "priority": "critical",
+      "required": true,
+      "snapshot_sha256": "3a8a63a4dd42eff48d8dbc1dcfa53de45a7bcf997f25f2304b2836f68355e52f",
+      "source": "pasted-text-1.txt; AUD20-19/IMP50-18 and IMP50-10/23 records",
+      "source_type": "USER",
+      "target": "No accessibility session, owner/SLO, lineage classification, integration, pilot, or release is inferred from this prompt. Each such action awaits its exact authorized decision, consent, participant/equipment, owner or environment as applicable.",
+      "validity_notes": "A note, plan or inferred role is not approval evidence.",
+      "version": "user-current 2026-09-23"
+    },
+    {
+      "baseline": {
+        "actual": "Prior NQP-06/NQP-11 reconciliation passed docs:check; the live task pointer is NQP-03.",
+        "status": "PASS"
+      },
+      "conditions": "Historical records may be appended or labeled, not silently rewritten.",
+      "dimension": "state and evidence integrity",
+      "evidence_method": "Run docs:check, Prettier for touched documentation, git diff --check and inspect current pointers against task status and fresh evidence; verify inventory/map hashes remain unchanged unless explicitly authorized.",
+      "id": "DOC-01",
+      "license_notes": "Repository documentation.",
+      "priority": "high",
+      "required": true,
+      "snapshot_sha256": null,
+      "source": "AGENTS.md; docs/07_agents/AGENTS.md; NQP-06/NQP-11 in 0343",
+      "source_type": "REPO",
+      "target": "After every round, update relevant evidence, 0337/0343 disposition, execution log, runtime state and CURRENT; preserve append-only history, unaccepted findings, existing changes and all IMP50-49 snapshots/classes.",
+      "validity_notes": "The checker detects broken links/state pointers; direct inspection detects semantic drift it does not encode.",
+      "version": "repository rules read 2026-09-23"
     }
   ],
-  "frozen_at": "2026-09-05T10:31:37.226253+00:00",
-  "goal": "$gauntlet-loop $orchestrate implemente todo o conteudo do plano: \n  1. Plano executivo (docs/03_build/0311_plano_executivo_pos_auditoria.md) — objetivos, recursos, indicadores, riscos e decisões.\n  2. Roadmap (docs/03_build/0312_roadmap_pos_auditoria.md) — seis ondas, dependências e gates.\n  3. Backlog (docs/03_build/0313_backlog_pos_auditoria.md) — 30 tarefas, com prioridades, responsáveis sugeridos e critérios de aceite.\n\n  A sequência proposta é: corrigir segurança e integridade → garantir processamento durável → completar jornadas → preparar integrações\n  e operação → qualificar para decisão de piloto.\n\n  Horizonte preliminar: 14–20 semanas, condicionado à equipe e aos gates. A execução de piloto real está fora dessa estimativa. Quero um agente State of Art, Triplo AAA de qualidade. Comece agora e só pare quando tiver terminado tudo.",
+  "frozen_at": "2026-09-23T23:40:30Z",
+  "goal": "Execute as melhorias IMP50-01..50 e NQP-01..12 pela sequência autorizada e dependências do repositório, sem duplicar sobreposições, sem encerrar com aceite ou gate pendente e sem ultrapassar os limites de segurança e autoridade do usuário.",
   "revision_log": [],
   "schema_version": 1,
   "sources": [
     {
-      "license_notes": "User authorized local implementation; no real-data or production authority inferred.",
-      "location": "current implementation instruction",
-      "snapshot_sha256": null,
+      "license_notes": "User-provided instruction; do not redistribute.",
+      "location": "/home/ricardo/.codex/attachments/60f5382d-d8df-4c29-ae78-9074d3f0cadb/pasted-text-1.txt",
+      "snapshot_sha256": "3a8a63a4dd42eff48d8dbc1dcfa53de45a7bcf997f25f2304b2836f68355e52f",
       "type": "USER",
-      "version": "user-current"
+      "version": "user request, 2026-09-23"
     },
     {
-      "license_notes": "Local project plan; retain original requirements.",
-      "location": "docs/03_build/0311_plano_executivo_pos_auditoria.md",
-      "snapshot_sha256": "9e100b398b7529b55acb8b4da8a617f4a14c1235a598ebdba0c029395d79531f",
+      "license_notes": "Repository specification.",
+      "location": "docs/02_spec/aud20_17_hotspot_decomposition_20260922.md#adendo-proposto--imp50-40--primeira-fatia",
+      "snapshot_sha256": "a3c200e7323db28245b98dc8b35f120fcf6b8e961e570664044c62f2cd329d37",
       "type": "REPO",
-      "version": "2026-09-05 baseline"
+      "version": "approved request-context SPEC SHA-256 a3c200e7323db28245b98dc8b35f120fcf6b8e961e570664044c62f2cd329d37"
     },
     {
-      "license_notes": "Local project plan; retain original requirements.",
-      "location": "docs/03_build/0312_roadmap_pos_auditoria.md",
-      "snapshot_sha256": "75f29a2cd5e55424366e5c504be516080fa45b1219fcffe3cc4449dc4b77d778",
+      "license_notes": "Repository specification.",
+      "location": "docs/02_spec/aud20_17_imp50_40_query_parsers_20260923.md",
+      "snapshot_sha256": "fec5dcf0ea25e98ccf87e7b80e3b442b0c006521247d6e1137cbfd0f7c79e348",
       "type": "REPO",
-      "version": "2026-09-05 baseline"
+      "version": "approved query-parser SPEC SHA-256 fec5dcf0ea25e98ccf87e7b80e3b442b0c006521247d6e1137cbfd0f7c79e348"
     },
     {
-      "license_notes": "Local project plan; retain original requirements.",
-      "location": "docs/03_build/0313_backlog_pos_auditoria.md",
-      "snapshot_sha256": "e74f94684d81986f9dc1ea8ce30fa5bb1d094910e6147d695df199b5f35fec81",
+      "license_notes": "Repository task and dependency records; 0337 owns official AUD20 task status.",
+      "location": "docs/03_build/0340_plan50_roadmap_20260923.md; docs/03_build/0341_plan50_backlog_20260923.md; docs/03_build/0342_post_query_roadmap_20260923.md; docs/03_build/0343_post_query_backlog_20260923.md; docs/03_build/0337_aud20260921_backlog.md",
+      "snapshot_sha256": null,
       "type": "REPO",
-      "version": "2026-09-05 baseline"
+      "version": "repository worktree read on 2026-09-23"
+    },
+    {
+      "license_notes": "Repository quality contract.",
+      "location": "docs/02_spec/aaa_quality_contract.md#9.1",
+      "snapshot_sha256": "aec324018513c43a3e949663e41769f2d59180c6812d7430bd5980fb4a357097",
+      "type": "REPO",
+      "version": "repository worktree read on 2026-09-23; functions floor >=90%"
     }
   ],
-  "version": "REM-0539-v1"
+  "version": "IMP50-NQP-20260923-v1"
 }
