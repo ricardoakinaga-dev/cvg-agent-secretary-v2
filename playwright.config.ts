@@ -7,6 +7,9 @@ const consoleOrigin = `http://127.0.0.1:${webPort}`
 export default defineConfig({
   testDir: './tests/e2e',
   testMatch: '**/*.spec.ts',
+  // The AUD20-19 human-session harness has its own config/profile
+  // (playwright.aud20-19-human-session.config.ts) and must not run here.
+  testIgnore: ['**/aud20-19-human-session-harness.spec.ts'],
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
