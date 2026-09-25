@@ -56,7 +56,13 @@ function goodReport(root) {
       freshContext: true,
       builderIdentity: 'builder.agent',
       independence: {
-        criteria: ['fresh-context', 'no-worktree-write', 'artifact-only-input'],
+        criteria: [
+          'fresh-context',
+          'separate-identity',
+          'artifact-only-input',
+          'no-worktree-write',
+          'no-builder-justification'
+        ],
         builderJustificationIncluded: false,
         builderConclusionReused: false,
         writeAccessToWorktree: false
@@ -122,6 +128,16 @@ describe('AUD19-08 behavioral independent-critic verification', () => {
     expect(result.pass).toBe(false)
     expect(result.failures).toContainEqual(
       expect.stringContaining('CRITIC:schema')
+    )
+  })
+
+  it('rejects a critic that declares the builder identity', () => {
+    const root = fixture()
+    const report = goodReport(root)
+    report.critic.identity = report.critic.builderIdentity
+    const result = verifyCriticReport({ report, root })
+    expect(result.failures).toContainEqual(
+      expect.stringContaining('CRITIC:identity')
     )
   })
 

@@ -195,7 +195,7 @@ export function verifyCriticReport({
   expectedReportSha256 = null,
   currentCandidate = null,
   currentFingerprint = null,
-  requiredCriteria = ['fresh-context', 'no-worktree-write']
+  requiredCriteria = CRITIC_IDENTITY_CRITERIA
 }) {
   const checks = []
   const failures = []
@@ -290,6 +290,11 @@ export function verifyCriticReport({
   const missing = requiredCriteria.filter(
     (criterion) => !criteria.includes(criterion)
   )
+  if (value.critic.identity === value.critic.builderIdentity) {
+    fail('CRITIC:identity', 'critic identity equals builder identity')
+  } else {
+    checks.push(check('CRITIC:identity', true, value.critic.identity))
+  }
   if (unknown.length > 0) {
     fail('CRITIC:independence', `unknown criteria: ${unknown.join(', ')}`)
   } else if (missing.length > 0) {

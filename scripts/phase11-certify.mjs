@@ -42,6 +42,11 @@ import {
   evaluateGlobalCoverage,
   loadCriticalCoverageManifest
 } from './aud19-critical-coverage.mjs'
+import {
+  MUTATION_MANIFEST_PATH,
+  verifyMutationReport
+} from './lib/mutation-sentinel.mjs'
+import { CRITIC_REPORT_PATH, readCriticReport } from './lib/critic-evidence.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const certificationDir = path.join(root, 'certification')
@@ -117,6 +122,10 @@ const commandEntries = [
   ['evidence_reports', 'node scripts/phase11-2-evidence-check.mjs --reports'],
   ['independent_critic', 'node scripts/phase11-2-evidence-check.mjs --critic'],
   [
+    'mutation_sentinel',
+    'node scripts/mutation-sentinel.mjs --fail-on-gaps --out=certification/phase11/mutation-raw-report.json'
+  ],
+  [
     'trace_lineage',
     'npm test -- --run apps/api/src/__tests__/orchestration-observability.test.ts packages/observability/src/__tests__/observability.test.ts'
   ],
@@ -144,7 +153,8 @@ const sourceReports = {
   evals: 'certification/agent-eval-report.json',
   chaos: 'certification/chaos-report.json',
   load: 'certification/load-report.json',
-  supply_chain: 'certification/license-report.json'
+  supply_chain: 'certification/license-report.json',
+  mutation_sentinel: 'certification/phase11/mutation-raw-report.json'
 }
 
 const reportTargets = {
@@ -157,7 +167,9 @@ const reportTargets = {
   production_preflight: 'certification/phase11/preflight-report.json',
   certification_redteam: 'certification/phase11/redteam-report.json',
   trace_lineage: 'certification/phase11/trace-report.json',
-  adversarial_proof: 'certification/phase11/adversarial-report.json'
+  adversarial_proof: 'certification/phase11/adversarial-report.json',
+  independent_critic: 'certification/phase11/critic-report.json',
+  mutation_sentinel: 'certification/phase11/mutation-report.json'
 }
 
 const requiredPackageFiles = [
@@ -181,7 +193,10 @@ const requiredPackageFiles = [
   'certification/phase11/preflight-report.json',
   'certification/phase11/redteam-report.json',
   'certification/phase11/trace-report.json',
-  'certification/phase11/adversarial-report.json'
+  'certification/phase11/adversarial-report.json',
+  'certification/phase11/critic-report.json',
+  'certification/phase11/mutation-raw-report.json',
+  'certification/phase11/mutation-report.json'
 ]
 
 const evidenceSourceFiles = [
@@ -348,7 +363,9 @@ Object.assign(implementationMap, {
   'P11.2-CANONICAL': [
     '.gitignore',
     'scripts/lib/certification-rules.mjs',
+    'scripts/lib/mutation-sentinel.mjs',
     'scripts/lib/phase11-rules.mjs',
+    'scripts/mutation-sentinel.mjs',
     'scripts/phase11-certify.mjs',
     'scripts/phase11-verify.mjs'
   ],
@@ -428,7 +445,9 @@ Object.assign(testMap, {
   'P11.2-CANONICAL': [
     'tests/phase11-certification.test.js',
     'tests/phase11-formal-certification.test.js',
-    'tests/phase11-2-certification.test.js'
+    'tests/phase11-2-certification.test.js',
+    'tests/critic-evidence.test.js',
+    'tests/mutation-sentinel.test.js'
   ],
   'P11.2-CALCULUS': [
     'scripts/phase11-2-redteam.mjs',
@@ -481,6 +500,8 @@ Object.assign(gateMap, {
   'P11.2-CANONICAL': [
     'certification_self_test',
     'evidence_graph',
+    'independent_critic',
+    'mutation_sentinel',
     'clone_verify'
   ],
   'P11.2-CALCULUS': ['certification_self_test', 'certification_redteam'],
@@ -738,6 +759,34 @@ gates.push(
     engine.status === 'PASS' ? undefined : 'node_target_mismatch'
   )
 )
+
+const mutationGate = gates.find((entry) => entry.id === 'mutation_sentinel')
+if (mutationGate?.status === 'PASS') {
+  const mutationManifestPath = MUTATION_MANIFEST_PATH
+  const mutationManifest = readJson(mutationManifestPath)
+  const mutationRaw = readJson(sourceReports.mutation_sentinel)
+  const mutationRawBytes = fs.existsSync(sourceReports.mutation_sentinel)
+    ? fs.readFileSync(sourceReports.mutation_sentinel)
+    : null
+  const mutationExecutionLog = mutationGate.log
+    ? fs.readFileSync(path.join(root, mutationGate.log), 'utf8')
+    : null
+  const mutationVerification = verifyMutationReport({
+    report: mutationRaw,
+    manifest: mutationManifest,
+    manifestSha256: artifactRecord(root, mutationManifestPath).sha256,
+    reportBytes: mutationRawBytes,
+    executionLog: mutationExecutionLog,
+    gateExitCode: mutationGate.exitCode,
+    currentCandidate: candidate,
+    minGeneratedAt: candidate.createdAt
+  })
+  if (mutationVerification.status !== 'PASS') {
+    mutationGate.status = 'FAIL'
+    mutationGate.exitCode = 1
+    mutationGate.blocker = mutationVerification.failures.join('|')
+  }
+}
 
 function upsertGate(id, value) {
   const index = gates.findIndex((gate) => gate.id === id)
@@ -1204,6 +1253,14 @@ const adversarialReport = sourceReport(
   'adversarial_proof',
   reportByGate.get('adversarial_proof')
 )
+const criticReport = readCriticReport({
+  root,
+  relativePath: CRITIC_REPORT_PATH
+})?.report
+const mutationReport = sourceReport(
+  'mutation_sentinel',
+  reportByGate.get('mutation_sentinel')
+)
 
 const rawExternal = readJson('certification/external-gates.json') ?? {}
 const externalGates = normalizeExternalGates(rawExternal)
@@ -1285,6 +1342,8 @@ function writeOperationalReports() {
   writeJson(reportTargets.certification_redteam, redteamReport)
   writeJson(reportTargets.trace_lineage, traceReport)
   writeJson(reportTargets.adversarial_proof, adversarialReport)
+  writeJson(reportTargets.independent_critic, criticReport)
+  writeJson(reportTargets.mutation_sentinel, mutationReport)
   writeJson('certification/phase11/integration-report.json', integrationReport)
   writeJson('certification/phase11/integrations/status.json', integrationReport)
   const negativeGate = reportByGate.get('certification_self_test')

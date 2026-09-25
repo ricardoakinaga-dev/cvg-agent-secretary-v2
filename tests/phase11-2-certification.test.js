@@ -82,12 +82,34 @@ describe('Phase 11.2 formal closure', () => {
   it('requires the complete Phase 11.2 gate and invariant contract', () => {
     expect(PHASE11_2_REQUIRED_GATES).toContain('PHASE11_FORMAL_CLOSURE')
     expect(PHASE11_2_REQUIRED_GATES).toContain('production_preflight')
+    expect(PHASE11_2_REQUIRED_GATES).toContain('mutation_sentinel')
     expect(PHASE11_REQUIRED_INVARIANTS).toEqual(
       Array.from(
         { length: 16 },
         (_, index) => `INV-${String(index + 1).padStart(3, '0')}`
       )
     )
+  })
+
+  it('wires critic and mutation reports into certifier and verifier fail-closed', () => {
+    const certify = fs.readFileSync(
+      path.join(repositoryRoot, 'scripts/phase11-certify.mjs'),
+      'utf8'
+    )
+    const verify = fs.readFileSync(
+      path.join(repositoryRoot, 'scripts/phase11-verify.mjs'),
+      'utf8'
+    )
+
+    expect(certify).toContain(
+      'scripts/mutation-sentinel.mjs --fail-on-gaps --out=certification/phase11/mutation-raw-report.json'
+    )
+    for (const artifact of ['critic-report.json', 'mutation-report.json']) {
+      expect(certify).toContain(artifact)
+      expect(verify).toContain(artifact)
+    }
+    expect(verify).toContain('verifyCriticReport')
+    expect(verify).toContain('verifyMutationReport')
   })
 
   it('materializes the requirement-to-invariant evidence chain and runtime stages', () => {

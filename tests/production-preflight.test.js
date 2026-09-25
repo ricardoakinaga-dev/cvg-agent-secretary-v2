@@ -312,6 +312,26 @@ describe('production preflight', () => {
     expect(result.externalAttestation.reason).toMatch(/config_digest/)
   })
 
+  it('binds replay-store selection and operator key-ring bytes into the configuration digest', () => {
+    const env = baseProductionEnv()
+    const baseline = computeExternalAttestationConfigDigest(env)
+
+    expect(
+      computeExternalAttestationConfigDigest({
+        ...env,
+        CVG_OPERATOR_REPLAY_STORE: 'memory'
+      })
+    ).not.toBe(baseline)
+    expect(
+      computeExternalAttestationConfigDigest({
+        ...env,
+        CVG_OPERATOR_IDENTITY_KEYRING: JSON.stringify({
+          current: { keyId: 'rotated-fixture', secret: 'r'.repeat(32) }
+        })
+      })
+    ).not.toBe(baseline)
+  })
+
   it('rejects an attestation issued for another environment', () => {
     const env = validProductionEnv({ environment: 'STAGING' })
     const result = evaluateProductionBootstrap({ env, root: repositoryRoot })

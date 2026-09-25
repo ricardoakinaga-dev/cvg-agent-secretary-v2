@@ -2,14 +2,12 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import {
+  checkRepositoryState,
+  OFFICIAL_STATES
+} from './lib/docs-state-check.mjs'
 
-export const OFFICIAL_STATES = Object.freeze([
-  'IN_PROGRESS',
-  'READY_FOR_NEXT_STEP',
-  'BLOCKED',
-  'WAITING_HUMAN_APPROVAL',
-  'COMPLETED'
-])
+export { OFFICIAL_STATES }
 
 const SKIPPED_DIRECTORIES = new Set([
   'node_modules',
@@ -193,11 +191,13 @@ export function runDocumentationCheck(root) {
   const json = checkJsonFiles(root)
   const states = checkOfficialStates(root)
   const nextAction = checkCurrentNextAction(root)
+  const semantic = checkRepositoryState(root)
   const valid =
     links.broken.length === 0 &&
     json.invalid.length === 0 &&
     states.unexpected.length === 0 &&
-    nextAction.valid
+    nextAction.valid &&
+    semantic.valid
   return {
     schemaVersion: 1,
     kind: 'aud19-documentation-check',
@@ -205,7 +205,8 @@ export function runDocumentationCheck(root) {
     links,
     json,
     states,
-    nextAction
+    nextAction,
+    semantic
   }
 }
 

@@ -624,3 +624,144 @@ export async function installSyntheticA11yRoutes(
     await fulfillJson(route, envelope({ accepted: true }))
   })
 }
+
+export interface SyntheticA11ySessionRouteOptions {
+  conversationGate?: {
+    state: string
+    wait: () => Promise<unknown>
+  }
+}
+
+function sessionEnvelope(data: unknown): string {
+  return JSON.stringify({ success: true, data, error: null })
+}
+
+function sessionEmptyPage(limit: number, offset = 0): string {
+  return sessionEnvelope({
+    items: [],
+    pageInfo: { limit, offset, total: 0, hasNextPage: false }
+  })
+}
+
+export async function installSyntheticA11ySessionRoutes(
+  page: Page,
+  options: SyntheticA11ySessionRouteOptions = {}
+): Promise<void> {
+  await page.route('**/health', async (route) => {
+    const request = route.request()
+    const url = new URL(request.url())
+    if (
+      request.method() !== 'GET' ||
+      url.pathname !== '/health' ||
+      url.search !== ''
+    ) {
+      await route.abort('blockedbyclient')
+      return
+    }
+    await fulfillJson(route, sessionEnvelope({ status: 'ok', synthetic: true }))
+  })
+
+  await page.route('**/v1/**', async (route) => {
+    const request = route.request()
+    const url = new URL(request.url())
+    const literal = `${url.pathname}${url.search}`
+    const method = request.method().toUpperCase()
+
+    if (method === 'GET' && literal === '/v1/conversations?limit=25&offset=0') {
+      if (options.conversationGate) {
+        if (options.conversationGate.state !== 'WAITING') {
+          await route.abort('blockedbyclient')
+          return
+        }
+        try {
+          await options.conversationGate.wait()
+        } catch {
+          await route.abort('blockedbyclient')
+          return
+        }
+      }
+      await fulfillJson(
+        route,
+        sessionEnvelope({
+          items: [SYNTHETIC_CONVERSATION],
+          pageInfo: { limit: 25, offset: 0, total: 1, hasNextPage: false }
+        })
+      )
+      return
+    }
+
+    const responses: Record<string, unknown> = {
+      '/v1/conversations/synthetic_conversation_1/timeline': {
+        messages: SYNTHETIC_TIMELINE
+      },
+      '/v1/approvals': [],
+      '/v1/tasks': [],
+      '/v1/outbox/dead-letters': [],
+      '/v1/orchestration/goals?limit=25': {
+        items: [],
+        pageInfo: { limit: 25, total: 0, hasNextPage: false }
+      },
+      '/v1/audit/sessions/synthetic_session_1': { events: [] },
+      '/v1/observability/audit-evidence?sessionId=synthetic_session_1&limit=10&offset=0':
+        {
+          items: [],
+          pageInfo: { limit: 10, offset: 0, total: 0, hasNextPage: false }
+        },
+      '/v1/observability/audit-evidence/checkpoints': { checkpoints: [] },
+      '/v1/admin/agents': [],
+      '/v1/admin/agents/synthetic_agent_1/versions': [],
+      '/v1/admin/test-lab/runs?limit=10': sessionEmptyPage(10),
+      '/v1/admin/execution-traces?limit=10': sessionEmptyPage(10),
+      '/v1/journeys/owner-drafts': [],
+      '/v1/journeys/patient-drafts': { drafts: [] },
+      '/v1/journeys/slots': { slots: [] },
+      '/v1/journeys/appointment-drafts': { drafts: [] }
+    }
+
+    if (method === 'GET' && Object.hasOwn(responses, literal)) {
+      const payload = responses[literal]
+      if (typeof payload === 'string') {
+        await fulfillJson(route, payload)
+      } else {
+        await fulfillJson(route, sessionEnvelope(payload))
+      }
+      return
+    }
+
+    if (
+      method === 'GET' &&
+      /^\/v1\/orchestration\/goals\/(?:synthetic_goal_executing|synthetic_goal_approval|synthetic_goal_handoff|synthetic_goal_uncertain|synthetic_goal_failed)$/.test(
+        literal
+      )
+    ) {
+      const goalId = url.pathname.split('/').at(-1) ?? ''
+      const goal = SYNTHETIC_GOALS.find((item) => item.id === goalId)
+      if (goal) {
+        const detail = makeSyntheticGoalDetail(goal, {
+          uncertain: goal.status === 'UNCERTAIN'
+        })
+        await fulfillJson(route, sessionEnvelope(detail))
+        return
+      }
+    }
+
+    if (
+      method === 'POST' &&
+      literal === '/v1/approvals/synthetic_approval_1/decision'
+    ) {
+      const body = request.postData() ?? ''
+      if (
+        body === '{"decision":"approved","note":"controlled_console_action"}'
+      ) {
+        await fulfillJson(route, sessionEnvelope({ status: 'approved' }))
+        return
+      }
+      if (body === '{"decision":"assumed","note":"controlled_handoff_only"}') {
+        await fulfillJson(route, sessionEnvelope({ status: 'assumed' }))
+        return
+      }
+    }
+
+    await route.abort('blockedbyclient')
+  })
+}

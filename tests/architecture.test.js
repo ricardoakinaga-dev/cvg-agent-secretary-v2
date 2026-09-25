@@ -16,13 +16,14 @@ const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
 /** `wc -l` at task start; extracted hotspots may shrink but never grow. */
 const HOTSPOT_BASELINES = {
-  'apps/api/src/server.ts': 6215,
-  'packages/persistence/src/postgres.ts': 4221
+  'apps/api/src/server.ts': 4958,
+  'packages/persistence/src/postgres.ts': 3441
 }
 
 /** Modules extracted by AUD19-07; each must declare a single responsibility. */
 const EXTRACTED_MODULES = [
   'apps/api/src/server/tenant-isolation.ts',
+  'apps/api/src/server/request-context.ts',
   'apps/api/src/server/postgres-role-checks.ts',
   'apps/api/src/server/bootstrap-persistence.ts',
   'packages/persistence/src/postgres/types.ts',
@@ -247,6 +248,159 @@ function findCycles(graph) {
 }
 
 describe('architecture boundaries (AUD19-07)', () => {
+  it('owns request-context helpers in an injected API boundary', () => {
+    const modulePath = 'apps/api/src/server/request-context.ts'
+    const moduleFile = path.join(rootDir, modulePath)
+    const moduleSource = fs.readFileSync(moduleFile, 'utf8')
+    const serverPath = 'apps/api/src/server.ts'
+    const serverSource = fs.readFileSync(path.join(rootDir, serverPath), 'utf8')
+    const helperNames = [
+      'installRequestMetricsHooks',
+      'installRawBodyParser',
+      'bindOperatorAuthorization',
+      'parseInboundChannel',
+      'resolveInboundTenant',
+      'resolveDataPlaneTenant',
+      'journeyAuditContext',
+      'resolveOptionalRequestTenant',
+      'requireOperatorIdentity',
+      'requireAnyOperatorPermission',
+      'requirePlatformScope',
+      'resolveOperatorIdentity',
+      'createEffectiveOperatorIdentityResolver'
+    ]
+    const forbiddenModuleImport =
+      /^(?:\.\.\/server(?:\.ts)?|fastify|@cvg\/(?:persistence|agent-core|approval-engine)|pg)$/
+
+    expect(lineCountOf(modulePath)).toBeLessThanOrEqual(450)
+    expect(
+      readImports(moduleFile)
+        .map(({ specifier }) => specifier)
+        .sort()
+    ).toEqual([
+      '../http-request-boundary.ts',
+      '../request-metrics.ts',
+      '@cvg/platform',
+      '@cvg/shared'
+    ])
+    expect(
+      readImports(moduleFile).filter(({ specifier }) =>
+        forbiddenModuleImport.test(specifier)
+      )
+    ).toEqual([])
+    expect(moduleSource).not.toMatch(/\bprocess\s*\.\s*env\b/)
+    expect(moduleSource).toMatch(/requiresAuthenticatedMutations:/)
+    expect(
+      readImports(moduleFile).filter(
+        ({ specifier }) => specifier === '../request-metrics.ts'
+      )
+    ).toEqual([{ specifier: '../request-metrics.ts', typeOnly: true }])
+    expect(serverSource).toMatch(/installRequestMetricsHooks\(app,/)
+    expect(serverSource).toMatch(/installRawBodyParser\(app\)/)
+    expect(serverSource).toMatch(/bindOperatorAuthorization:\s*bindAuth/)
+    expect(serverSource).toMatch(
+      /authRequired\(identityMode, mutationOverride\)/
+    )
+    expect(serverSource).not.toMatch(/requestStartedAt|rawBodyByRequest/)
+    expect(moduleSource).toMatch(/export\s+type\s+InboundTenantResolver\b/)
+    expect(serverSource).toMatch(
+      /export\s+type\s*\{\s*InboundTenantResolver\s*\}\s*from\s*['"]\.\/server\/request-context\.ts['"]/m
+    )
+    expect(serverSource).toMatch(/createRequestContext/)
+    for (const helperName of helperNames) {
+      const declaration = new RegExp(
+        `^\\s*(?:export\\s+)?(?:(?:async\\s+)?function|(?:const|let|var))\\s+${helperName}\\b`,
+        'm'
+      )
+      expect(moduleSource, `${helperName} belongs to the new module`).toMatch(
+        declaration
+      )
+      expect(
+        serverSource,
+        `${helperName} is not duplicated in server.ts`
+      ).not.toMatch(declaration)
+    }
+    expect(lineCountOf(serverPath)).toBeLessThanOrEqual(4708)
+    expect(
+      lineCountOf(serverPath) +
+        lineCountOf(modulePath) +
+        lineCountOf('apps/api/src/server/request-query.ts')
+    ).toBeLessThanOrEqual(5050)
+    const registrationOrder = [
+      serverSource.indexOf(
+        "app.addHook('onRequest', async (request, reply) => {"
+      ),
+      serverSource.indexOf('installHttpSecurityHooks(app, httpSecurity)'),
+      serverSource.indexOf('installResponseCorrelationHook(app)'),
+      serverSource.indexOf('installRequestMetricsHooks(app, requestMetrics,'),
+      serverSource.indexOf('installRawBodyParser(app)'),
+      serverSource.indexOf('const rateLimiter = new InMemoryRateLimiter()')
+    ]
+    expect(registrationOrder.every((position) => position >= 0)).toBe(true)
+    expect(registrationOrder).toEqual(
+      [...registrationOrder].sort((a, b) => a - b)
+    )
+  })
+
+  it('owns query parsers in a bounded internal module', () => {
+    const modulePath = 'apps/api/src/server/request-query.ts'
+    const moduleFile = path.join(rootDir, modulePath)
+    const moduleSource = fs.readFileSync(moduleFile, 'utf8')
+    const serverPath = 'apps/api/src/server.ts'
+    const serverSource = fs.readFileSync(path.join(rootDir, serverPath), 'utf8')
+    const contextPath = 'apps/api/src/server/request-context.ts'
+    const moduleImports = readImports(moduleFile)
+    const parserNames = [
+      'parsePagination',
+      'parseTraceLimit',
+      'OrchestrationGoalQuerySchema',
+      'parseOrchestrationGoalQuery',
+      'auditEventTypes',
+      'parseAuditEvidenceQuery',
+      'parseOptionalAuditFilter'
+    ]
+
+    expect(lineCountOf(modulePath)).toBeLessThanOrEqual(160)
+    expect(moduleImports.map(({ specifier }) => specifier).sort()).toEqual(
+      [
+        '../audit-filter-duplicate-boundary.ts',
+        '../pagination-boundary.ts',
+        '@cvg/agent-runtime',
+        '@cvg/persistence',
+        '@cvg/shared',
+        'zod'
+      ].sort()
+    )
+    expect(
+      moduleImports.filter(({ specifier }) => specifier === '@cvg/persistence')
+    ).toEqual([{ specifier: '@cvg/persistence', typeOnly: true }])
+    expect(moduleSource).not.toMatch(/\bprocess\s*\.\s*env\b/)
+    expect(serverSource).toMatch(
+      /from\s+['"]\.\/server\/request-query\.ts['"]/m
+    )
+
+    for (const parserName of parserNames) {
+      const declaration = new RegExp(
+        `^\\s*(?:export\\s+)?(?:(?:async\\s+)?function|(?:const|let|var))\\s+${parserName}\\b`,
+        'm'
+      )
+      expect(moduleSource, `${parserName} belongs to request-query`).toMatch(
+        declaration
+      )
+      expect(
+        serverSource,
+        `${parserName} is not duplicated in server.ts`
+      ).not.toMatch(declaration)
+    }
+
+    expect(lineCountOf(serverPath)).toBeLessThanOrEqual(4708)
+    expect(
+      lineCountOf(serverPath) +
+        lineCountOf(contextPath) +
+        lineCountOf(modulePath)
+    ).toBeLessThanOrEqual(5050)
+  })
+
   it('keeps langgraph imports behind the ADR 0001 composition boundary', () => {
     const violations = []
     for (const workspace of listWorkspaces()) {

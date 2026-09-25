@@ -25,6 +25,16 @@ import {
   verifyEvidenceGraph,
   verifyPromptIntegrity
 } from './lib/phase11-rules.mjs'
+import {
+  CRITIC_REPORT_PATH,
+  candidateFingerprint,
+  readCriticReport,
+  verifyCriticReport
+} from './lib/critic-evidence.mjs'
+import {
+  MUTATION_MANIFEST_PATH,
+  verifyMutationReport
+} from './lib/mutation-sentinel.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const evidenceOnly = process.argv.includes('--evidence-only')
@@ -49,7 +59,10 @@ const requiredPackageFiles = [
   'certification/phase11/postgres-report.json',
   'certification/phase11/integration-report.json',
   'certification/phase11/integrations/status.json',
-  'certification/phase11/prompt-integrity.json'
+  'certification/phase11/prompt-integrity.json',
+  'certification/phase11/critic-report.json',
+  'certification/phase11/mutation-raw-report.json',
+  'certification/phase11/mutation-report.json'
 ]
 const failures = []
 function fail(code, detail = '') {
@@ -159,6 +172,60 @@ if (manifestRaw) {
 }
 
 const liveCandidate = buildPhase11Candidate(root)
+const criticInput = readCriticReport({ root, relativePath: CRITIC_REPORT_PATH })
+const packagedCritic = readJson('certification/phase11/critic-report.json')
+if (!criticInput) fail('independent_critic_input_missing')
+else {
+  const criticVerification = verifyCriticReport({
+    report: criticInput.report,
+    reportBytes: criticInput.bytes,
+    reportPath: criticInput.path,
+    root,
+    currentCandidate: liveCandidate,
+    currentFingerprint: candidateFingerprint(root, {
+      excludePaths: [CRITIC_REPORT_PATH]
+    })
+  })
+  if (!criticVerification.pass) {
+    fail('independent_critic_invalid', criticVerification.failures.join('|'))
+  }
+  if (JSON.stringify(packagedCritic) !== JSON.stringify(criticInput.report)) {
+    fail('independent_critic_package_mismatch')
+  }
+}
+
+const mutationPackage = readJson('certification/phase11/mutation-report.json')
+const mutationRawPath = 'certification/phase11/mutation-raw-report.json'
+const mutationRawBytes = exists(mutationRawPath)
+  ? fs.readFileSync(absolute(mutationRawPath))
+  : null
+const mutationManifestPath = MUTATION_MANIFEST_PATH
+const mutationManifest = readJson(mutationManifestPath)
+if (!mutationPackage?.raw || !mutationManifest) {
+  fail('mutation_report_missing_or_invalid')
+} else {
+  const mutationGate = resultRaw?.gates?.find(
+    (gate) => gate.id === 'mutation_sentinel'
+  )
+  const mutationExecutionLog =
+    mutationGate?.log && exists(mutationGate.log)
+      ? fs.readFileSync(absolute(mutationGate.log), 'utf8')
+      : null
+  const mutationVerification = verifyMutationReport({
+    report: mutationPackage.raw,
+    manifest: mutationManifest,
+    manifestSha256: artifactRecord(root, mutationManifestPath).sha256,
+    reportBytes: mutationRawBytes,
+    executionLog: mutationExecutionLog,
+    gateExitCode: mutationGate?.exitCode,
+    currentCandidate: liveCandidate,
+    minGeneratedAt: resultRaw?.candidate?.createdAt,
+    maxGeneratedAt: resultRaw?.timestamp
+  })
+  if (mutationVerification.status !== 'PASS') {
+    fail('mutation_report_invalid', mutationVerification.failures.join('|'))
+  }
+}
 if (result && manifest && pointer) {
   if (result.phase !== '11') fail('result_not_phase11')
   const anchorCommit = result.commit

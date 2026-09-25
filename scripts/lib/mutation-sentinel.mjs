@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
@@ -24,6 +25,11 @@ export const MUTATION_EXCLUDED_TOP_LEVEL = Object.freeze([
   '.opencode',
   'apps/web/dist'
 ])
+
+export const MUTATION_MANIFEST_PATH =
+  'docs/04_audit/evidence/AUD19/AUD19-08-mutants.json'
+export const MUTATION_MANIFEST_SHA256 =
+  '545ba85fc299ad2e5ad499bf1f4aa23439237ec14bdecd653400de0e54b6bea9'
 
 export function copyRepositoryToSandbox(root, sandboxRoot) {
   fs.mkdirSync(sandboxRoot, { recursive: true })
@@ -145,9 +151,111 @@ export function loadMutationManifest(root, manifestPath) {
   return manifest
 }
 
+export function verifyMutationReport({
+  report,
+  manifest,
+  manifestSha256,
+  expectedManifestSha256 = MUTATION_MANIFEST_SHA256,
+  reportBytes,
+  executionLog,
+  gateExitCode,
+  currentCandidate,
+  minGeneratedAt,
+  maxGeneratedAt
+}) {
+  const failures = []
+  if (
+    !report ||
+    report.schemaVersion !== 1 ||
+    report.kind !== 'aud19-mutation-sentinel'
+  ) {
+    failures.push('mutation_report_shape_invalid')
+    return { status: 'FAIL', failures }
+  }
+  if (report.status !== 'PASS') failures.push('mutation_report_not_pass')
+  const observedReportSha256 = reportBytes
+    ? createHash('sha256').update(reportBytes).digest('hex')
+    : null
+  if (
+    gateExitCode !== 0 ||
+    !observedReportSha256 ||
+    typeof executionLog !== 'string' ||
+    !executionLog.includes(`[mutation] reportSha256=${observedReportSha256}`)
+  ) {
+    failures.push('mutation_execution_receipt_invalid')
+  }
+  if (report.manifestSha256 !== manifestSha256) {
+    failures.push('mutation_manifest_digest_mismatch')
+  }
+  if (manifestSha256 !== expectedManifestSha256) {
+    failures.push('mutation_manifest_not_canonical')
+  }
+  for (const key of ['candidateId', 'commit', 'treeHash']) {
+    if (report.candidate?.[key] !== currentCandidate?.[key]) {
+      failures.push(`mutation_candidate_${key}_mismatch`)
+    }
+  }
+  const generatedAt = Date.parse(report.generatedAt)
+  if (!Number.isFinite(generatedAt))
+    failures.push('mutation_generated_at_invalid')
+  if (minGeneratedAt && generatedAt < Date.parse(minGeneratedAt)) {
+    failures.push('mutation_report_stale')
+  }
+  if (maxGeneratedAt && generatedAt > Date.parse(maxGeneratedAt)) {
+    failures.push('mutation_report_from_future')
+  }
+  const expectedIds = new Set(
+    (manifest?.mutants ?? []).map((entry) => entry.id)
+  )
+  const observedIds = new Set((report.results ?? []).map((entry) => entry.id))
+  const summary = report.summary ?? {}
+  if (
+    expectedIds.size === 0 ||
+    summary.total !== expectedIds.size ||
+    summary.detected !== expectedIds.size ||
+    summary.notDetected !== 0 ||
+    summary.notApplicable !== 0 ||
+    report.results?.length !== expectedIds.size ||
+    [...expectedIds].some((id) => !observedIds.has(id)) ||
+    report.results?.some((entry) => entry.status !== 'detected')
+  ) {
+    failures.push('mutation_results_incomplete_or_gapped')
+  }
+  const manifestById = new Map(
+    (manifest?.mutants ?? []).map((entry) => [entry.id, entry])
+  )
+  for (const result of report.results ?? []) {
+    const expected = manifestById.get(result.id)
+    const executionDetected =
+      result.timedOut === true ||
+      (Number.isInteger(result.tests?.failed) && result.tests.failed > 0)
+    const testEvidenceValid =
+      result.timedOut === true ||
+      (result.tests &&
+        ['total', 'passed', 'failed', 'pending'].every((key) =>
+          Number.isInteger(result.tests[key])
+        ))
+    if (
+      !expected ||
+      result.target !== expected.target ||
+      JSON.stringify(result.focusedTests) !==
+        JSON.stringify(expected.test?.files) ||
+      typeof result.timedOut !== 'boolean' ||
+      !Number.isInteger(result.exitCode) ||
+      !testEvidenceValid ||
+      typeof result.outputTail !== 'string' ||
+      result.outputTail.length === 0 ||
+      !executionDetected
+    ) {
+      failures.push(`mutation_execution_evidence_invalid:${result.id}`)
+    }
+  }
+  return { status: failures.length === 0 ? 'PASS' : 'FAIL', failures }
+}
+
 export function runMutationSentinel({
   root,
-  manifestPath = 'docs/04_audit/evidence/AUD19/AUD19-08-mutants.json',
+  manifestPath = MUTATION_MANIFEST_PATH,
   only = null,
   max = null,
   timeoutMs = 180_000,
@@ -239,12 +347,15 @@ export function runMutationSentinel({
   return {
     schemaVersion: 1,
     kind: 'aud19-mutation-sentinel',
-    program: 'AUD19-REM',
-    task: 'AUD19-08',
+    program: manifest.program ?? 'AUD19-REM',
+    task: manifest.task ?? 'AUD19-08',
     generatedAt: new Date().toISOString(),
     node: process.versions.node,
     manifest: manifestPath,
-    status: summary.detected === summary.total ? 'PASS' : 'GAPS_FOUND',
+    status:
+      summary.total > 0 && summary.detected === summary.total
+        ? 'PASS'
+        : 'GAPS_FOUND',
     summary,
     results
   }

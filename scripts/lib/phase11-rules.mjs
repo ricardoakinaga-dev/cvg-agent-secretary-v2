@@ -48,6 +48,7 @@ export const PHASE11_2_REQUIRED_GATES = [
   'production_preflight',
   'evidence_reports',
   'independent_critic',
+  'mutation_sentinel',
   'trace_lineage',
   'governance_redteam',
   'tenant_redteam',
