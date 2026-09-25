@@ -5054,3 +5054,12 @@ PASS`; suíte integral `289 PASS` arquivos/12 skipped e `2.256 PASS`
 - next_action: executar o preflight read-only do reseal (certification:verify:phase11 e promotion:check) sobre o candidato selado `25c8222` e registrar o delta; manter `AUD20-10` com C01–C07 abertos (próximas fatias exigem decisão), `AUD20-19` sem sessão autorizada, 141 vínculos IMP50-49 sem adjudicação e staging/produção `NO_GO`.
 - evidence: [selagem v3](04_audit/evidence/AUD-20260925-REPO/b25-01-seal-report-v3-20260925.md), [manifesto v3](04_audit/evidence/AUD-20260925-REPO/b25-01-candidate-manifest-v3-20260925.json), [plano de consolidação](04_audit/evidence/AUD-20260925-REPO/b25-01-consolidation-plan-20260925.md).
 - verification: commits locais sem push; nenhum dado real, deploy ou efeito externo.
+
+# Preflight do reseal (R4): FAIL fail-closed, delta registrado — 2026-09-25
+
+- current_engine: `AUDIT -> PLAN`; task corrente `AUD20-10` (slice IMP50-09 aceito; C01–C07 abertos); staging/produção `NO_GO`.
+- last_completed_action: executar o preflight read-only do reseal no candidato selado: `certification:verify:phase11` FAIL com 25 falhas (pacote stale, critic/mutation ausentes, scope drift) e `promotion:check` `eligible:false` com 8 bloqueios externos; candidato atual identificado `05150f34…@3ed938df`/tree `3ebdab3e…`.
+- progress: R0/R1/R2/R3 com evidência; reseal (R4) exige regenerar pacote e admissão própria, além de pré-requisitos R2/R3/H e `AUD20-07/11/12`; pin canônico do manifesto a reconciliar no reseal; sessão humana adiada.
+- next_action: obter decisão humana para executar o reseal Phase 11 (regenerar pacote com critic/mutation report no candidato congelado) e para a próxima fatia de `AUD20-10` (alertas/delivery ledger) e a sessão humana de `AUD20-19`; manter 141 vínculos IMP50-49 sem adjudicação e staging/produção `NO_GO`.
+- evidence: [preflight](04_audit/evidence/AUD20/AUD20-reseal-preflight-report-20260925.md), [verify](04_audit/evidence/AUD20/AUD20-reseal-preflight-certification-20260925.log) (`401da0b2…`), [promotion](04_audit/evidence/AUD20/AUD20-reseal-preflight-promotion-20260925.log) (`1e494abf…`).
+- verification: somente leitura; nenhum artefato de certificação escrito, nenhum dado real, push ou deploy.

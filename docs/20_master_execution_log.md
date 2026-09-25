@@ -6,6 +6,10 @@
 
 - R2 de FU1 SOLICITADO; sessão humana ADIADA; gate PostgreSQL ADMITIDO (descartável+teardown); mutation ADMITIDA (pisos intactos); fluxos de re-selo/8 gates APROVADOS como plano. Recibo hash-bound registrado. Próximo: executar R2 → mutation → PostgreSQL. Staging/produção `NO_GO`.
 
+# Preflight do reseal — 2026-09-25
+
+- Read-only no candidato selado: `certification:verify:phase11` FAIL (25 falhas; pacote stale, critic/mutation ausentes, scope drift) e `promotion:check` `eligible:false` (8 bloqueios externos), `noProductionEffect`. Candidato atual `05150f34…@3ed938df`. Reseal exige regenerar pacote + admissão própria. Staging/produção `NO_GO`.
+
 # R0: worktree consolidado e selado — 2026-09-25
 
 - Consolidação autorizada em 4 lotes (produto, tooling, docs, governança), incluindo 5 deleções de `.gauntlet`; worktree `0/0/0` e B25-01 **SEALED** em `25c8222` (v3). Gates revalidados. Nenhum push. Próximo: preflight read-only do reseal. Staging/produção `NO_GO`.

@@ -8,6 +8,11 @@
 - [x] 3 pedidos preparados (coverage, mutante, desbloqueio) — `WAITING_HUMAN_APPROVAL`.
 - [ ] Aguardar decisões. Staging/produção `NO_GO`.
 
+# Preflight do reseal executado — 2026-09-25
+
+- [x] Read-only: verify FAIL fail-closed (25 falhas) e promotion inelegível (8 gates externos); delta registrado.
+- [ ] Decisão humana para reseal/regeneração do pacote; demais frentes aguardam decisão. Staging/produção `NO_GO`.
+
 # R0 concluído — 2026-09-25
 
 - [x] Worktree consolidado em 4 commits; 5 deleções de `.gauntlet` commitadas; **SEALED** em `25c8222` (v3).
