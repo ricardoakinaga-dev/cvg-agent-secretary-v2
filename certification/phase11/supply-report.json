@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "kind": "phase11-supply_chain-report",
-  "certificationId": "phase11-fbca3d2b66326053-mua77vjl",
-  "candidateCommit": "fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6",
-  "generatedAt": "2026-09-20T19:46:50.210Z",
+  "certificationId": "phase11-06e1477ebe76b2f5-muh112ux",
+  "candidateCommit": "98a9636db6d545487c8ae97eb8c75e2b805855de",
+  "generatedAt": "2026-09-25T14:34:56.520Z",
   "gateId": "supply_chain",
   "status": "PASS",
   "command": "npm run sbom && npm run licenses:check",

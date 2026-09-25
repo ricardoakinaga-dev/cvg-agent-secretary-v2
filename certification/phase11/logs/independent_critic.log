@@ -1,26 +1,26 @@
 $ node scripts/phase11-2-evidence-check.mjs --critic
-# certificationId=phase11-fbca3d2b66326053-mua77vjl
-# candidateId=fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89
-# commit=fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6
-# treeHash=69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23
+# certificationId=phase11-06e1477ebe76b2f5-muh112ux
+# candidateId=06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed
+# commit=98a9636db6d545487c8ae97eb8c75e2b805855de
+# treeHash=04069c1754257642b64691da8e1d95ff414ba76a61e8b876e502aa61194439c3
 # gate=independent_critic
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=298
+# exitCode=1 durationMs=316
 
 {
   "schemaVersion": 1,
   "kind": "phase11-2-evidence-check",
   "mode": "critic",
-  "status": "PASS",
+  "status": "FAIL",
   "syntheticOnly": true,
   "sideEffects": false,
   "checks": [
     {
       "id": "CRITIC:environment",
       "status": "PASS",
-      "detail": "live candidate fbca3d2b6632@fa78f92e8dd0"
+      "detail": "live candidate 06e1477ebe76@98a9636db6d5"
     },
     {
       "id": "CRITIC:schema",
@@ -29,13 +29,18 @@ $ node scripts/phase11-2-evidence-check.mjs --critic
     },
     {
       "id": "CRITIC:binding",
-      "status": "PASS",
-      "detail": "fbca3d2b6632"
+      "status": "FAIL",
+      "detail": "candidateId=fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89!=06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed, commit=fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6!=98a9636db6d545487c8ae97eb8c75e2b805855de, treeHash=69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23!=04069c1754257642b64691da8e1d95ff414ba76a61e8b876e502aa61194439c3"
     },
     {
       "id": "CRITIC:fingerprint",
+      "status": "FAIL",
+      "detail": "worktree changed after review: reported 71ec54729c917e202438f0ae166b7217723e49fd26f865b899429e64436405a8, current f4fa2e130900bc40cb43db6e0c9272a35f5a456a83945b65c31c209c4322282e"
+    },
+    {
+      "id": "CRITIC:identity",
       "status": "PASS",
-      "detail": "71ec54729c91"
+      "detail": "critic.agent.aud19-exec-fresh-20260920-1900"
     },
     {
       "id": "CRITIC:independence",
@@ -49,8 +54,23 @@ $ node scripts/phase11-2-evidence-check.mjs --critic
     },
     {
       "id": "CRITIC:artifacts",
-      "status": "PASS",
-      "detail": "11 artifact digest(s) verified"
+      "status": "FAIL",
+      "detail": "digest mismatch: docs/CURRENT.md (declared 602f147fd850cc0330614be15e0097698ceb0a014199555f6a177781b96a4f0b)"
+    },
+    {
+      "id": "CRITIC:artifacts",
+      "status": "FAIL",
+      "detail": "digest mismatch: docs/03_build/0332_aud20260919_backlog.md (declared 9172d944cb6280d9ad82c9b3da2dbc315ad8d6d7c36930f774e5e607dc806081)"
+    },
+    {
+      "id": "CRITIC:artifacts",
+      "status": "FAIL",
+      "detail": "digest mismatch: docs/04_audit/evidence/AUD19/AUD19-08-mutants.json (declared 38de2e672bd2c7087e02096f2f30cb655363284a950b4ed8194a0a576fe93168)"
+    },
+    {
+      "id": "CRITIC:artifacts",
+      "status": "FAIL",
+      "detail": "digest mismatch: docs/04_audit/evidence/AUD19/AUD19-12-final-seal-outcome.md (declared 300c1250e10d6b987b137c679bde6f2cb91a3e5b3f7b35c7130fb2b8ef1abf8e)"
     },
     {
       "id": "CRITIC:check_evidence",
@@ -63,7 +83,14 @@ $ node scripts/phase11-2-evidence-check.mjs --critic
       "detail": "PASS derived from checks"
     }
   ],
-  "failures": []
+  "failures": [
+    "CRITIC:binding:candidateId=fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89!=06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed, commit=fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6!=98a9636db6d545487c8ae97eb8c75e2b805855de, treeHash=69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23!=04069c1754257642b64691da8e1d95ff414ba76a61e8b876e502aa61194439c3",
+    "CRITIC:fingerprint:worktree changed after review: reported 71ec54729c917e202438f0ae166b7217723e49fd26f865b899429e64436405a8, current f4fa2e130900bc40cb43db6e0c9272a35f5a456a83945b65c31c209c4322282e",
+    "CRITIC:artifacts:digest mismatch: docs/CURRENT.md (declared 602f147fd850cc0330614be15e0097698ceb0a014199555f6a177781b96a4f0b)",
+    "CRITIC:artifacts:digest mismatch: docs/03_build/0332_aud20260919_backlog.md (declared 9172d944cb6280d9ad82c9b3da2dbc315ad8d6d7c36930f774e5e607dc806081)",
+    "CRITIC:artifacts:digest mismatch: docs/04_audit/evidence/AUD19/AUD19-08-mutants.json (declared 38de2e672bd2c7087e02096f2f30cb655363284a950b4ed8194a0a576fe93168)",
+    "CRITIC:artifacts:digest mismatch: docs/04_audit/evidence/AUD19/AUD19-12-final-seal-outcome.md (declared 300c1250e10d6b987b137c679bde6f2cb91a3e5b3f7b35c7130fb2b8ef1abf8e)"
+  ]
 }
 
 

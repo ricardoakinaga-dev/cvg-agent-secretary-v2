@@ -3,7 +3,7 @@
   "evidenceChain": true,
   "nodes": [
     {
-      "id": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "id": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "kind": "candidate"
     },
     {
@@ -68,7 +68,7 @@
     {
       "id": "requirement:P11.2-CANONICAL",
       "kind": "requirement",
-      "status": "PASS"
+      "status": "PARTIAL"
     },
     {
       "id": "implementation:.gitignore",
@@ -79,7 +79,15 @@
       "kind": "implementation"
     },
     {
+      "id": "implementation:scripts/lib/mutation-sentinel.mjs",
+      "kind": "implementation"
+    },
+    {
       "id": "implementation:scripts/lib/phase11-rules.mjs",
+      "kind": "implementation"
+    },
+    {
+      "id": "implementation:scripts/mutation-sentinel.mjs",
       "kind": "implementation"
     },
     {
@@ -115,6 +123,22 @@
       "kind": "execution"
     },
     {
+      "id": "test:tests/critic-evidence.test.js",
+      "kind": "test"
+    },
+    {
+      "id": "execution:tests/critic-evidence.test.js",
+      "kind": "execution"
+    },
+    {
+      "id": "test:tests/mutation-sentinel.test.js",
+      "kind": "test"
+    },
+    {
+      "id": "execution:tests/mutation-sentinel.test.js",
+      "kind": "execution"
+    },
+    {
       "id": "evidence:current/evidence verifier and package manifest",
       "kind": "evidence"
     },
@@ -128,6 +152,14 @@
     },
     {
       "id": "gate:evidence_graph",
+      "kind": "gate"
+    },
+    {
+      "id": "gate:independent_critic",
+      "kind": "gate"
+    },
+    {
+      "id": "gate:mutation_sentinel",
       "kind": "gate"
     },
     {
@@ -263,7 +295,7 @@
     {
       "id": "requirement:P11.2-FENCING",
       "kind": "requirement",
-      "status": "PASS"
+      "status": "PARTIAL"
     },
     {
       "id": "implementation:packages/persistence/migrations/0018_outbox_lease_fencing.sql",
@@ -304,7 +336,7 @@
     {
       "id": "requirement:P11.2-EFFECT",
       "kind": "requirement",
-      "status": "PASS"
+      "status": "PARTIAL"
     },
     {
       "id": "implementation:packages/persistence/src/effect-journal-postgres.ts",
@@ -357,7 +389,7 @@
     {
       "id": "requirement:P11.2-LINEAGE",
       "kind": "requirement",
-      "status": "PASS"
+      "status": "PARTIAL"
     },
     {
       "id": "implementation:packages/observability/src",
@@ -443,7 +475,7 @@
     {
       "id": "requirement:P11.2-POSTGRES",
       "kind": "requirement",
-      "status": "PASS"
+      "status": "PARTIAL"
     },
     {
       "id": "implementation:packages/persistence/migrations/0019_orchestrator_state.sql",
@@ -472,7 +504,7 @@
     {
       "id": "requirement:P11.2-CONSOLE",
       "kind": "requirement",
-      "status": "PASS"
+      "status": "PARTIAL"
     },
     {
       "id": "implementation:apps/web/src/features/orchestration/index.tsx",
@@ -509,10 +541,6 @@
     {
       "id": "artifact:Playwright matrix, screenshots and independent critic",
       "kind": "artifact"
-    },
-    {
-      "id": "gate:independent_critic",
-      "kind": "gate"
     },
     {
       "id": "requirement:P11.2-PREFLIGHT",
@@ -694,7 +722,7 @@
     {
       "id": "gate:coverage",
       "kind": "gate",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "gate:worker_startup",
@@ -724,7 +752,7 @@
     {
       "id": "gate:PHASE11_FORMAL_CLOSURE",
       "kind": "gate",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "stage:inbound",
@@ -849,7 +877,7 @@
     {
       "id": "invariant:INV-007",
       "kind": "invariant",
-      "status": "PASS"
+      "status": "NOT_RUN"
     },
     {
       "id": "evidence:certification/phase11/postgres-report.json",
@@ -858,7 +886,7 @@
     {
       "id": "invariant:INV-008",
       "kind": "invariant",
-      "status": "PASS"
+      "status": "NOT_RUN"
     },
     {
       "id": "evidence:certification/phase11/evidence-graph.json",
@@ -867,7 +895,7 @@
     {
       "id": "invariant:INV-009",
       "kind": "invariant",
-      "status": "PASS"
+      "status": "NOT_RUN"
     },
     {
       "id": "evidence:certification/phase11/chaos-report.json",
@@ -876,7 +904,7 @@
     {
       "id": "invariant:INV-010",
       "kind": "invariant",
-      "status": "PASS"
+      "status": "NOT_RUN"
     },
     {
       "id": "invariant:INV-011",
@@ -900,7 +928,7 @@
     {
       "id": "invariant:INV-014",
       "kind": "invariant",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "evidence:certification/phase11/logs/e2e.log",
@@ -940,36 +968,36 @@
   "edges": [
     {
       "from": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-1.txt",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "scope_for"
     },
     {
       "from": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-2.txt",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "scope_for"
     },
     {
       "from": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-3.txt",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "scope_for"
     },
     {
       "from": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-4.txt",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "scope_for"
     },
     {
       "from": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-5.txt",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "scope_for"
     },
     {
       "from": "source:docs/11_phase11/prompt-master/20260916-triple-aaa/source/pasted-text-6.txt",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "scope_for"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "requirement:P11.2-PROMPT",
       "relation": "evaluates"
     },
@@ -1019,7 +1047,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "requirement:P11.2-CANONICAL",
       "relation": "evaluates"
     },
@@ -1035,7 +1063,17 @@
     },
     {
       "from": "requirement:P11.2-CANONICAL",
+      "to": "implementation:scripts/lib/mutation-sentinel.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-CANONICAL",
       "to": "implementation:scripts/lib/phase11-rules.mjs",
+      "relation": "implemented_by"
+    },
+    {
+      "from": "requirement:P11.2-CANONICAL",
+      "to": "implementation:scripts/mutation-sentinel.mjs",
       "relation": "implemented_by"
     },
     {
@@ -1080,6 +1118,26 @@
     },
     {
       "from": "requirement:P11.2-CANONICAL",
+      "to": "test:tests/critic-evidence.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:tests/critic-evidence.test.js",
+      "to": "execution:tests/critic-evidence.test.js",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-CANONICAL",
+      "to": "test:tests/mutation-sentinel.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "test:tests/mutation-sentinel.test.js",
+      "to": "execution:tests/mutation-sentinel.test.js",
+      "relation": "executed_as"
+    },
+    {
+      "from": "requirement:P11.2-CANONICAL",
       "to": "evidence:current/evidence verifier and package manifest",
       "relation": "evidenced_by"
     },
@@ -1100,6 +1158,16 @@
     },
     {
       "from": "requirement:P11.2-CANONICAL",
+      "to": "gate:independent_critic",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-CANONICAL",
+      "to": "gate:mutation_sentinel",
+      "relation": "gated_by"
+    },
+    {
+      "from": "requirement:P11.2-CANONICAL",
       "to": "gate:clone_verify",
       "relation": "gated_by"
     },
@@ -1119,6 +1187,16 @@
       "relation": "verified_by"
     },
     {
+      "from": "implementation:.gitignore",
+      "to": "test:tests/critic-evidence.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:.gitignore",
+      "to": "test:tests/mutation-sentinel.test.js",
+      "relation": "verified_by"
+    },
+    {
       "from": "implementation:scripts/lib/certification-rules.mjs",
       "to": "test:tests/phase11-certification.test.js",
       "relation": "verified_by"
@@ -1131,6 +1209,41 @@
     {
       "from": "implementation:scripts/lib/certification-rules.mjs",
       "to": "test:tests/phase11-2-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/lib/certification-rules.mjs",
+      "to": "test:tests/critic-evidence.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/lib/certification-rules.mjs",
+      "to": "test:tests/mutation-sentinel.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/lib/mutation-sentinel.mjs",
+      "to": "test:tests/phase11-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/lib/mutation-sentinel.mjs",
+      "to": "test:tests/phase11-formal-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/lib/mutation-sentinel.mjs",
+      "to": "test:tests/phase11-2-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/lib/mutation-sentinel.mjs",
+      "to": "test:tests/critic-evidence.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/lib/mutation-sentinel.mjs",
+      "to": "test:tests/mutation-sentinel.test.js",
       "relation": "verified_by"
     },
     {
@@ -1149,6 +1262,41 @@
       "relation": "verified_by"
     },
     {
+      "from": "implementation:scripts/lib/phase11-rules.mjs",
+      "to": "test:tests/critic-evidence.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/lib/phase11-rules.mjs",
+      "to": "test:tests/mutation-sentinel.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/mutation-sentinel.mjs",
+      "to": "test:tests/phase11-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/mutation-sentinel.mjs",
+      "to": "test:tests/phase11-formal-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/mutation-sentinel.mjs",
+      "to": "test:tests/phase11-2-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/mutation-sentinel.mjs",
+      "to": "test:tests/critic-evidence.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/mutation-sentinel.mjs",
+      "to": "test:tests/mutation-sentinel.test.js",
+      "relation": "verified_by"
+    },
+    {
       "from": "implementation:scripts/phase11-certify.mjs",
       "to": "test:tests/phase11-certification.test.js",
       "relation": "verified_by"
@@ -1164,6 +1312,16 @@
       "relation": "verified_by"
     },
     {
+      "from": "implementation:scripts/phase11-certify.mjs",
+      "to": "test:tests/critic-evidence.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-certify.mjs",
+      "to": "test:tests/mutation-sentinel.test.js",
+      "relation": "verified_by"
+    },
+    {
       "from": "implementation:scripts/phase11-verify.mjs",
       "to": "test:tests/phase11-certification.test.js",
       "relation": "verified_by"
@@ -1176,6 +1334,16 @@
     {
       "from": "implementation:scripts/phase11-verify.mjs",
       "to": "test:tests/phase11-2-certification.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-verify.mjs",
+      "to": "test:tests/critic-evidence.test.js",
+      "relation": "verified_by"
+    },
+    {
+      "from": "implementation:scripts/phase11-verify.mjs",
+      "to": "test:tests/mutation-sentinel.test.js",
       "relation": "verified_by"
     },
     {
@@ -1194,6 +1362,16 @@
       "relation": "produced"
     },
     {
+      "from": "execution:tests/critic-evidence.test.js",
+      "to": "artifact:current/evidence verifier and package manifest",
+      "relation": "produced"
+    },
+    {
+      "from": "execution:tests/mutation-sentinel.test.js",
+      "to": "artifact:current/evidence verifier and package manifest",
+      "relation": "produced"
+    },
+    {
       "from": "artifact:current/evidence verifier and package manifest",
       "to": "gate:certification_self_test",
       "relation": "evaluated_by"
@@ -1205,11 +1383,21 @@
     },
     {
       "from": "artifact:current/evidence verifier and package manifest",
+      "to": "gate:independent_critic",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:current/evidence verifier and package manifest",
+      "to": "gate:mutation_sentinel",
+      "relation": "evaluated_by"
+    },
+    {
+      "from": "artifact:current/evidence verifier and package manifest",
       "to": "gate:clone_verify",
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "requirement:P11.2-CALCULUS",
       "relation": "evaluates"
     },
@@ -1389,7 +1577,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "requirement:P11.2-ORCHESTRATION",
       "relation": "evaluates"
     },
@@ -1609,7 +1797,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "requirement:P11.2-FENCING",
       "relation": "evaluates"
     },
@@ -1714,7 +1902,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "requirement:P11.2-EFFECT",
       "relation": "evaluates"
     },
@@ -1914,7 +2102,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "requirement:P11.2-LINEAGE",
       "relation": "evaluates"
     },
@@ -2049,7 +2237,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "requirement:P11.2-REDTEAM",
       "relation": "evaluates"
     },
@@ -2239,7 +2427,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "requirement:P11.2-POSTGRES",
       "relation": "evaluates"
     },
@@ -2349,7 +2537,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "requirement:P11.2-CONSOLE",
       "relation": "evaluates"
     },
@@ -2469,7 +2657,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "requirement:P11.2-PREFLIGHT",
       "relation": "evaluates"
     },
@@ -2539,7 +2727,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "requirement:P11.2-SUPPLY",
       "relation": "evaluates"
     },
@@ -2709,7 +2897,7 @@
       "relation": "evaluated_by"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "requirement:P11.2-EXTERNAL",
       "relation": "evaluates"
     },
@@ -2729,7 +2917,7 @@
       "relation": "materialized_as"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "requirement:P11.2-NO-PRODUCTION-EFFECT",
       "relation": "evaluates"
     },
@@ -2850,181 +3038,186 @@
     },
     {
       "from": "gate:prompt_integrity",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:verify",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:format",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:typecheck",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:lint",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:build",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:unit",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:coverage",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:security",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:supply_chain",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:worker_startup",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:postgres",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:e2e",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:evals",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:chaos",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:load",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:recovery",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:bypass_audit",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:certification_self_test",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:phase10_historical_verification",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:production_preflight",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:evidence_reports",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:independent_critic",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
+      "relation": "binds_to"
+    },
+    {
+      "from": "gate:mutation_sentinel",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:trace_lineage",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:governance_redteam",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:tenant_redteam",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:certification_redteam",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:adversarial_proof",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:outbox_replay",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:clone_verify",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:candidate_clean",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:node_target",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:evidence_graph",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
       "from": "gate:PHASE11_FORMAL_CLOSURE",
-      "to": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "to": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "relation": "binds_to"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "stage:inbound",
       "relation": "observes"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "stage:observation",
       "relation": "observes"
     },
@@ -3034,7 +3227,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "stage:understand",
       "relation": "observes"
     },
@@ -3044,7 +3237,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "stage:goal",
       "relation": "observes"
     },
@@ -3054,7 +3247,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "stage:plan",
       "relation": "observes"
     },
@@ -3064,7 +3257,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "stage:govern",
       "relation": "observes"
     },
@@ -3074,7 +3267,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "stage:step",
       "relation": "observes"
     },
@@ -3084,7 +3277,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "stage:attempt",
       "relation": "observes"
     },
@@ -3094,7 +3287,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "stage:outbox",
       "relation": "observes"
     },
@@ -3104,7 +3297,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "stage:effect",
       "relation": "observes"
     },
@@ -3114,7 +3307,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "stage:observed_result",
       "relation": "observes"
     },
@@ -3124,7 +3317,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "stage:evaluation",
       "relation": "observes"
     },
@@ -3134,7 +3327,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "stage:replan",
       "relation": "observes"
     },
@@ -3144,7 +3337,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "stage:response",
       "relation": "observes"
     },
@@ -3154,7 +3347,7 @@
       "relation": "follows"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "invariant:INV-001",
       "relation": "proves"
     },
@@ -3164,7 +3357,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "invariant:INV-002",
       "relation": "proves"
     },
@@ -3179,7 +3372,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "invariant:INV-003",
       "relation": "proves"
     },
@@ -3189,7 +3382,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "invariant:INV-004",
       "relation": "proves"
     },
@@ -3199,7 +3392,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "invariant:INV-005",
       "relation": "proves"
     },
@@ -3209,7 +3402,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "invariant:INV-006",
       "relation": "proves"
     },
@@ -3219,7 +3412,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "invariant:INV-007",
       "relation": "proves"
     },
@@ -3229,7 +3422,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "invariant:INV-008",
       "relation": "proves"
     },
@@ -3244,7 +3437,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "invariant:INV-009",
       "relation": "proves"
     },
@@ -3259,7 +3452,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "invariant:INV-010",
       "relation": "proves"
     },
@@ -3274,7 +3467,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "invariant:INV-011",
       "relation": "proves"
     },
@@ -3289,7 +3482,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "invariant:INV-012",
       "relation": "proves"
     },
@@ -3304,7 +3497,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "invariant:INV-013",
       "relation": "proves"
     },
@@ -3314,7 +3507,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "invariant:INV-014",
       "relation": "proves"
     },
@@ -3329,7 +3522,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "invariant:INV-015",
       "relation": "proves"
     },
@@ -3349,7 +3542,7 @@
       "relation": "supports"
     },
     {
-      "from": "candidate:fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+      "from": "candidate:06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed",
       "to": "invariant:INV-016",
       "relation": "proves"
     },
@@ -3559,6 +3752,11 @@
       "relation": "contributes_to"
     },
     {
+      "from": "gate:mutation_sentinel",
+      "to": "decision:phase11",
+      "relation": "contributes_to"
+    },
+    {
       "from": "gate:trace_lineage",
       "to": "decision:phase11",
       "relation": "contributes_to"
@@ -3729,6 +3927,11 @@
       "relation": "proves"
     },
     {
+      "from": "gate:mutation_sentinel",
+      "to": "invariant:INV-001",
+      "relation": "proves"
+    },
+    {
       "from": "gate:trace_lineage",
       "to": "invariant:INV-001",
       "relation": "proves"
@@ -3899,6 +4102,11 @@
       "relation": "proves"
     },
     {
+      "from": "gate:mutation_sentinel",
+      "to": "invariant:INV-002",
+      "relation": "proves"
+    },
+    {
       "from": "gate:trace_lineage",
       "to": "invariant:INV-002",
       "relation": "proves"
@@ -4069,6 +4277,11 @@
       "relation": "proves"
     },
     {
+      "from": "gate:mutation_sentinel",
+      "to": "invariant:INV-003",
+      "relation": "proves"
+    },
+    {
       "from": "gate:trace_lineage",
       "to": "invariant:INV-003",
       "relation": "proves"
@@ -4239,6 +4452,11 @@
       "relation": "proves"
     },
     {
+      "from": "gate:mutation_sentinel",
+      "to": "invariant:INV-004",
+      "relation": "proves"
+    },
+    {
       "from": "gate:trace_lineage",
       "to": "invariant:INV-004",
       "relation": "proves"
@@ -4409,6 +4627,11 @@
       "relation": "proves"
     },
     {
+      "from": "gate:mutation_sentinel",
+      "to": "invariant:INV-005",
+      "relation": "proves"
+    },
+    {
       "from": "gate:trace_lineage",
       "to": "invariant:INV-005",
       "relation": "proves"
@@ -4579,6 +4802,11 @@
       "relation": "proves"
     },
     {
+      "from": "gate:mutation_sentinel",
+      "to": "invariant:INV-006",
+      "relation": "proves"
+    },
+    {
       "from": "gate:trace_lineage",
       "to": "invariant:INV-006",
       "relation": "proves"
@@ -4749,6 +4977,11 @@
       "relation": "proves"
     },
     {
+      "from": "gate:mutation_sentinel",
+      "to": "invariant:INV-007",
+      "relation": "proves"
+    },
+    {
       "from": "gate:trace_lineage",
       "to": "invariant:INV-007",
       "relation": "proves"
@@ -4919,6 +5152,11 @@
       "relation": "proves"
     },
     {
+      "from": "gate:mutation_sentinel",
+      "to": "invariant:INV-008",
+      "relation": "proves"
+    },
+    {
       "from": "gate:trace_lineage",
       "to": "invariant:INV-008",
       "relation": "proves"
@@ -5089,6 +5327,11 @@
       "relation": "proves"
     },
     {
+      "from": "gate:mutation_sentinel",
+      "to": "invariant:INV-009",
+      "relation": "proves"
+    },
+    {
       "from": "gate:trace_lineage",
       "to": "invariant:INV-009",
       "relation": "proves"
@@ -5259,6 +5502,11 @@
       "relation": "proves"
     },
     {
+      "from": "gate:mutation_sentinel",
+      "to": "invariant:INV-010",
+      "relation": "proves"
+    },
+    {
       "from": "gate:trace_lineage",
       "to": "invariant:INV-010",
       "relation": "proves"
@@ -5429,6 +5677,11 @@
       "relation": "proves"
     },
     {
+      "from": "gate:mutation_sentinel",
+      "to": "invariant:INV-011",
+      "relation": "proves"
+    },
+    {
       "from": "gate:trace_lineage",
       "to": "invariant:INV-011",
       "relation": "proves"
@@ -5599,6 +5852,11 @@
       "relation": "proves"
     },
     {
+      "from": "gate:mutation_sentinel",
+      "to": "invariant:INV-012",
+      "relation": "proves"
+    },
+    {
       "from": "gate:trace_lineage",
       "to": "invariant:INV-012",
       "relation": "proves"
@@ -5769,6 +6027,11 @@
       "relation": "proves"
     },
     {
+      "from": "gate:mutation_sentinel",
+      "to": "invariant:INV-013",
+      "relation": "proves"
+    },
+    {
       "from": "gate:trace_lineage",
       "to": "invariant:INV-013",
       "relation": "proves"
@@ -5939,6 +6202,11 @@
       "relation": "proves"
     },
     {
+      "from": "gate:mutation_sentinel",
+      "to": "invariant:INV-014",
+      "relation": "proves"
+    },
+    {
       "from": "gate:trace_lineage",
       "to": "invariant:INV-014",
       "relation": "proves"
@@ -6109,6 +6377,11 @@
       "relation": "proves"
     },
     {
+      "from": "gate:mutation_sentinel",
+      "to": "invariant:INV-015",
+      "relation": "proves"
+    },
+    {
       "from": "gate:trace_lineage",
       "to": "invariant:INV-015",
       "relation": "proves"
@@ -6275,6 +6548,11 @@
     },
     {
       "from": "gate:independent_critic",
+      "to": "invariant:INV-016",
+      "relation": "proves"
+    },
+    {
+      "from": "gate:mutation_sentinel",
       "to": "invariant:INV-016",
       "relation": "proves"
     },
@@ -6334,6 +6612,6 @@
       "relation": "proves"
     }
   ],
-  "certificationId": "phase11-fbca3d2b66326053-mua77vjl",
-  "candidateCommit": "fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6"
+  "certificationId": "phase11-06e1477ebe76b2f5-muh112ux",
+  "candidateCommit": "98a9636db6d545487c8ae97eb8c75e2b805855de"
 }

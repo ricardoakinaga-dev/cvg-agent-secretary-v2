@@ -1,0 +1,41 @@
+$ node scripts/mutation-sentinel.mjs --fail-on-gaps --out=certification/phase11/mutation-raw-report.json
+# certificationId=phase11-06e1477ebe76b2f5-muh112ux
+# candidateId=06e1477ebe76b2f5365120e7dbd380b3adc254dd6d35fc3d6f3ff7559a0dd8ed
+# commit=98a9636db6d545487c8ae97eb8c75e2b805855de
+# treeHash=04069c1754257642b64691da8e1d95ff414ba76a61e8b876e502aa61194439c3
+# gate=mutation_sentinel
+# profile=CONTROLLED_LOCAL
+# databaseConfigured=false
+# realEffects=disabled
+# exitCode=0 durationMs=48189
+
+[mutation] detected       MUT-AUTH-01 packages/policy-engine/src/engine.ts
+[mutation] detected       MUT-AUTH-02 packages/policy-engine/src/engine.ts
+[mutation] detected       MUT-TENANT-01 apps/api/src/server/request-context.ts
+[mutation] detected       MUT-FENCE-01 packages/approval-engine/src/engine.ts
+[mutation] detected       MUT-APPROVAL-01 packages/approval-engine/src/engine.ts
+[mutation] detected       MUT-JOURNAL-01 packages/agent-runtime/src/effect-journal.ts
+[mutation] detected       MUT-EVAL-01 scripts/lib/eval-contract.mjs
+[mutation] detected       MUT-EVAL-02 packages/agent-evals/src/runner.ts
+[mutation] detected       MUT-EVAL-03 packages/agent-evals/src/runner.ts
+[mutation] detected       MUT-EVAL-04 packages/agent-evals/src/runner.ts
+[mutation] detected       MUT-EVAL-05 packages/agent-evals/src/runner.ts
+[mutation] detected       MUT-EVAL-06 packages/agent-evals/src/runner.ts
+[mutation] detected       MUT-EVAL-07 packages/agent-evals/src/runner.ts
+[mutation] detected       MUT-EVAL-08 packages/agent-core/src/commands/classify-inbound-behavior.ts
+[mutation] detected       MUT-CERT-01 scripts/lib/certification-rules.mjs
+[mutation] detected       MUT-CERT-02 scripts/lib/certification-rules.mjs
+[mutation] detected       MUT-A10-FACTORY-01 packages/observability/src/collector.ts
+[mutation] detected       MUT-A10-FACTORY-02 packages/observability/src/collector.ts
+[mutation] detected       MUT-A10-FACTORY-03 packages/observability/src/collector.ts
+[mutation] detected       MUT-A10-FACTORY-04 packages/observability/src/collector.ts
+[mutation] detected       MUT-A10-API-01 apps/api/src/server.ts
+[mutation] detected       MUT-A10-WORKER-01 apps/worker/src/controlled-memory-runtime.ts
+[mutation] detected       MUT-A10-LEDGER-01 packages/observability/src/alert-delivery-ledger.ts
+[mutation] detected       MUT-A10-LEDGER-02 packages/observability/src/alert-delivery-ledger.ts
+[mutation] detected       MUT-A10-DELIVERY-01 packages/observability/src/alert-delivery-ledger.ts
+[mutation] detected       MUT-A10-ENGINE-01 packages/approval-engine/src/engine.ts
+[mutation] status=PASS detected=26/26 notDetected=0 notApplicable=0
+[mutation] reportSha256=85dc5a0cfc3ca8c18904ff05c5e5bbf56d439267276b01341ff10ed7b3ec04c7
+
+

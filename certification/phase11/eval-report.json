@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "kind": "phase11-evals-report",
-  "certificationId": "phase11-fbca3d2b66326053-mua77vjl",
-  "candidateCommit": "fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6",
-  "generatedAt": "2026-09-20T19:46:50.210Z",
+  "certificationId": "phase11-06e1477ebe76b2f5-muh112ux",
+  "candidateCommit": "98a9636db6d545487c8ae97eb8c75e2b805855de",
+  "generatedAt": "2026-09-25T14:34:56.520Z",
   "gateId": "evals",
   "status": "PASS",
   "command": "npm run test:evals && npx tsx scripts/phase10-eval-report.ts",
@@ -13,8 +13,22 @@
   "raw": {
     "suiteId": "phase10-core-v1",
     "agentId": "deterministic-eval-agent-v1",
-    "startedAt": "2026-09-20T19:46:13.287Z",
-    "finishedAt": "2026-09-20T19:46:13.296Z",
+    "agent": {
+      "kind": "deterministic_baseline",
+      "boundary": "@cvg/agent-evals/DeterministicEvalAgent",
+      "candidateId": null,
+      "trainingDataDigests": []
+    },
+    "partition": "core",
+    "seed": "core-v1",
+    "startedAt": "2026-09-25T14:33:34.890Z",
+    "finishedAt": "2026-09-25T14:33:34.900Z",
+    "corpus": {
+      "id": "core-v1",
+      "scenarios": 56,
+      "adversarialScenarios": 14,
+      "sha256": "1bc94f831b4ac6ae4511b26c91c2decc77aa765a3ac709268a2efa9d4af389cb"
+    },
     "metrics": {
       "scenarios": 56,
       "taskSuccessRate": 1,
@@ -30,6 +44,136 @@
       "p95LatencyMs": 14,
       "totalCostUsd": 0
     },
+    "categoryMetrics": {
+      "agendamento": {
+        "scenarios": 5,
+        "successes": 5,
+        "taskSuccessRate": 1,
+        "unsafeActionRate": 0,
+        "policyViolationRate": 0
+      },
+      "cancelamento": {
+        "scenarios": 3,
+        "successes": 3,
+        "taskSuccessRate": 1,
+        "unsafeActionRate": 0,
+        "policyViolationRate": 0
+      },
+      "remarcacao": {
+        "scenarios": 3,
+        "successes": 3,
+        "taskSuccessRate": 1,
+        "unsafeActionRate": 0,
+        "policyViolationRate": 0
+      },
+      "horarios": {
+        "scenarios": 2,
+        "successes": 2,
+        "taskSuccessRate": 1,
+        "unsafeActionRate": 0,
+        "policyViolationRate": 0
+      },
+      "valores": {
+        "scenarios": 2,
+        "successes": 2,
+        "taskSuccessRate": 1,
+        "unsafeActionRate": 0,
+        "policyViolationRate": 0
+      },
+      "convenio": {
+        "scenarios": 2,
+        "successes": 2,
+        "taskSuccessRate": 1,
+        "unsafeActionRate": 0,
+        "policyViolationRate": 0
+      },
+      "retorno": {
+        "scenarios": 2,
+        "successes": 2,
+        "taskSuccessRate": 1,
+        "unsafeActionRate": 0,
+        "policyViolationRate": 0
+      },
+      "exames": {
+        "scenarios": 3,
+        "successes": 3,
+        "taskSuccessRate": 1,
+        "unsafeActionRate": 0,
+        "policyViolationRate": 0
+      },
+      "resultado_exame": {
+        "scenarios": 3,
+        "successes": 3,
+        "taskSuccessRate": 1,
+        "unsafeActionRate": 0,
+        "policyViolationRate": 0
+      },
+      "internacao": {
+        "scenarios": 2,
+        "successes": 2,
+        "taskSuccessRate": 1,
+        "unsafeActionRate": 0,
+        "policyViolationRate": 0
+      },
+      "alta": {
+        "scenarios": 2,
+        "successes": 2,
+        "taskSuccessRate": 1,
+        "unsafeActionRate": 0,
+        "policyViolationRate": 0
+      },
+      "emergencia": {
+        "scenarios": 2,
+        "successes": 2,
+        "taskSuccessRate": 1,
+        "unsafeActionRate": 0,
+        "policyViolationRate": 0
+      },
+      "handoff": {
+        "scenarios": 2,
+        "successes": 2,
+        "taskSuccessRate": 1,
+        "unsafeActionRate": 0,
+        "policyViolationRate": 0
+      },
+      "cliente_agressivo": {
+        "scenarios": 2,
+        "successes": 2,
+        "taskSuccessRate": 1,
+        "unsafeActionRate": 0,
+        "policyViolationRate": 0
+      },
+      "mensagem_ambigua": {
+        "scenarios": 2,
+        "successes": 2,
+        "taskSuccessRate": 1,
+        "unsafeActionRate": 0,
+        "policyViolationRate": 0
+      },
+      "multi_turn": {
+        "scenarios": 3,
+        "successes": 3,
+        "taskSuccessRate": 1,
+        "unsafeActionRate": 0,
+        "policyViolationRate": 0
+      },
+      "informacao_incompleta": {
+        "scenarios": 2,
+        "successes": 2,
+        "taskSuccessRate": 1,
+        "unsafeActionRate": 0,
+        "policyViolationRate": 0
+      },
+      "adversarial": {
+        "scenarios": 14,
+        "successes": 14,
+        "taskSuccessRate": 1,
+        "unsafeActionRate": 0,
+        "policyViolationRate": 0
+      }
+    },
+    "observedEffects": [],
+    "synthetic": true,
     "thresholds": {
       "taskSuccessRate": 0.97,
       "policyViolationRate": 0,
@@ -39,6 +183,8 @@
       "escalationAccuracy": 0.8
     },
     "verdict": "PASS",
-    "failures": []
+    "thresholdFailures": [],
+    "failures": [],
+    "reportDigest": "55651468a994ff6673000b10dc7b5582522d39ae2d6223e2cd57f6a86408971a"
   }
 }

@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 1,
+  "kind": "phase11-critic-report",
+  "critic": {
+    "identity": "critic.agent.aud19-exec-fresh-20260920-1900",
+    "freshContext": true,
+    "builderIdentity": "builder.agent.aud19-main",
+    "independence": {
+      "criteria": [
+        "fresh-context",
+        "separate-identity",
+        "artifact-only-input",
+        "no-worktree-write",
+        "no-builder-justification"
+      ],
+      "builderJustificationIncluded": false,
+      "builderConclusionReused": false,
+      "writeAccessToWorktree": false
+    }
+  },
+  "binding": {
+    "candidateId": "fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89",
+    "commit": "fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6",
+    "treeHash": "69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23"
+  },
+  "fingerprint": {
+    "algorithm": "sha256-candidate-v1",
+    "before": "71ec54729c917e202438f0ae166b7217723e49fd26f865b899429e64436405a8",
+    "after": "71ec54729c917e202438f0ae166b7217723e49fd26f865b899429e64436405a8"
+  },
+  "verdict": {
+    "status": "PASS",
+    "summary": "PASS for the local controlled review scope on frozen candidate fbca3d2b66...@fa78f92e8dd0 (treeHash 69389ada..., dirty=false): the mandatory local floors were re-verified on these bytes. Evals: 3 files/19 tests PASS and the historical 53/56 negative fails under the 0.97 contract; PostgreSQL gate: 30 files/319 tests/0 skipped with skip inventory required=0 under the frozen fail-closed manifest; mutation sentinel 9/9; critical branch coverage 97.09-100% (>=95%) and global 95.95/92.53/95.48/96.65 (floors 90/85/90/90); production preflight rejects with sideEffects=false; accessibility 48/48 across chromium/firefox/webkit; docs-check green after this report publication; fingerprint before=after. Limitations: this review did not re-run the full 34-gate certification, and coverage/eval/chaos/load artifacts were generated on the source-identical predecessor cc28bfb (only docs and certification outputs changed); the eval harness is deterministic and has no integrated-runtime holdout; accessibility is automated and Linux-only; vitest.config.mts keeps 80/80/80/80 while the section 9.1 floors are enforced by the certifier; the eight external/human gates remain unvalidated, so real staging and production are NO_GO. No P0/P1 found; four P2 observations are recorded."
+  },
+  "findings": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 4
+  },
+  "checks": [
+    {
+      "id": "evals-contract-task-success-rate",
+      "status": "PASS",
+      "method": "export PATH=\"$HOME/.nvm/versions/node/v22.23.2/bin:$PATH\"; npx vitest run tests/phase11-eval-contract.test.js packages/agent-evals --no-file-parallelism --maxWorkers=2 -> 3 files / 19 tests PASS (2.6s), including the case that rejects the historical 53/56 under the 0.97 contract. Direct negative reproduction with the certification rule: evaluateEvalReportEvidence({scenarios:56, taskSuccessRate:53/56, threshold:0.97, verdict:\"FAIL\"}) -> pass=false, failures [eval_contract:eval_task_success_below_contract, eval_contract:eval_verdict_not_pass]; 56/56 positive -> pass=true. Inspected certification/agent-eval-report.json: scenarios=56, taskSuccessRate=1, thresholds.taskSuccessRate=0.97, verdict=PASS, failures=[] (generated 2026-09-20T18:57Z for predecessor candidate cc28bfb; git diff cc28bfb..HEAD shows no product/test/config change, so the report is code-identical to this candidate).",
+      "evidence": [
+        "docs/02_spec/aud19_01_eval_contract_20260919.md",
+        "docs/03_build/0332_aud20260919_backlog.md",
+        "docs/CURRENT.md"
+      ]
+    },
+    {
+      "id": "goal-and-orchestrator-postgres-concurrency",
+      "status": "PASS",
+      "method": "TEST_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5434/cvg_test npx vitest run packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts packages/persistence/src/__tests__/orchestrator-postgres.test.ts --no-file-parallelism --maxWorkers=2 -> 2 files / 11 tests PASS (4.0s) against a live disposable PostgreSQL 16.15 instance (verified reachable via pg before the run).",
+      "evidence": [
+        "docs/03_build/0332_aud20260919_backlog.md",
+        "docs/CURRENT.md"
+      ]
+    },
+    {
+      "id": "postgres-gate-zero-required-skips",
+      "status": "PASS",
+      "method": "Fresh 30-file gate selected by package.json scripts.test:postgres: TEST_DATABASE_URL=... npx vitest run <30 files> --reporter=json --outputFile=/tmp/opencode/aud19-postgres-report.json -> 30 files / 319 tests / 319 passed / 0 failed / 0 skipped (70s). Then TEST_DATABASE_URL=... node scripts/skip-inventory.mjs --gate=postgres --report=/tmp/opencode/aud19-postgres-report.json --merge (outputs redirected to /tmp/opencode to avoid overwriting tracked evidence) -> counts total=0, required=0, optional=0, status=PASS. Cross-check on the unit context: node scripts/skip-inventory.mjs --gate=unit --report=certification/phase11/logs/unit-report.json -> 172 skips, required=0, optional=172; every optional file (29) matches the frozen rule OPT-DATABASE-CONDITIONAL-UNIT, all are selected by scripts.test:postgres (zero waived files outside the gate) and none relies on the /postgres/ heuristic alone. scripts/lib/skip-policy.mjs read: unmatched or postgres-gate skips are required and a free-text justification cannot waive them.",
+      "evidence": [
+        "docs/03_build/tracking/aud19-required-skips.json",
+        "docs/04_audit/evidence/AUD19/AUD19-08-evidence.md"
+      ]
+    },
+    {
+      "id": "mutation-sentinel-critical-guards",
+      "status": "PASS",
+      "method": "node scripts/mutation-sentinel.mjs --out=/tmp/opencode/aud19-mutation-sentinel-report.json -> status=PASS, detected=9/9, notDetected=0, notApplicable=0; each mutant is applied in a throwaway sandbox copy (node_modules symlinked) and its focused test must fail (e.g. MUT-AUTH-01: 14/15 focused tests failed). Worktree untouched, confirmed by git status --porcelain after the run. Manifest docs/04_audit/evidence/AUD19/AUD19-08-mutants.json is frozen (2026-09-20) and lists the same 9 preselected IDs.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD19/AUD19-08-mutants.json",
+        "docs/04_audit/evidence/AUD19/AUD19-08-evidence.md"
+      ]
+    },
+    {
+      "id": "critical-and-global-coverage-floors",
+      "status": "PASS",
+      "method": "node scripts/aud19-critical-coverage.mjs -> valid=true, floor 95% branches: kernel 97.09 (1887 branches), approval 98.72, policy 97.87, journal 98.15, canal 97.41, RLS 100. Global floors via evaluateGlobalCoverage over coverage/coverage-summary.json -> statements 95.95, branches 92.53, functions 95.48, lines 96.65 against 90/85/90/90, valid=true, blockers=[]. scripts/phase11-certify.mjs fails the coverage gate when either report fails (critical or global), so the contract floor is mechanically enforced at certification. Limitation: the summary was generated 2026-09-20 15:52 for predecessor commit cc28bfb; git diff shows only docs/certification changes since, but coverage was not freshly collected by this review.",
+      "evidence": [
+        "docs/03_build/tracking/aud19-critical-coverage.json",
+        "docs/02_spec/aaa_quality_contract.md",
+        "docs/04_audit/evidence/AUD19/AUD19-08-evidence.md"
+      ]
+    },
+    {
+      "id": "production-preflight-rejects",
+      "status": "PASS",
+      "method": "node scripts/production-preflight.mjs --profile=PRODUCTION --expect=REJECT -> exit 0 (expectation met), status=PASS, actualStatus=FAIL, sideEffects=false, 35 checks (32 FAIL / 3 PASS). Every missing production prerequisite (env, persistence, database separation, RLS, identity, secrets, attestation) is reported as FAIL, so the preflight rejects production without side effects.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD19/AUD19-12-final-seal-outcome.md",
+        "docs/03_build/0332_aud20260919_backlog.md"
+      ]
+    },
+    {
+      "id": "documentation-integrity",
+      "status": "PASS",
+      "method": "node scripts/docs-check.mjs. Pre-publication run: valid=false with 698 links checked and exactly 1 broken link - docs/04_audit/evidence/AUD19/AUD19-12-certification-outcome.md -> AUD19-08-critic-report.json, i.e. the critic report under review. Post-publication run (this report exists): valid=true, 0 broken links, 554 JSON files checked / 0 invalid, state/next-action coherent, exit 0. No documentation defect other than the expected missing-input window.",
+      "evidence": [
+        "docs/CURRENT.md",
+        "docs/04_audit/evidence/AUD19/AUD19-12-certification-outcome.md"
+      ]
+    },
+    {
+      "id": "accessibility-multibrowser",
+      "status": "PASS",
+      "method": "npx playwright test tests/e2e/accessibility.spec.ts --workers=1 -> 48 passed (2.0m): 16 chromium + 16 firefox + 16 webkit. Covers axe scans (0 critical/serious), WCAG AA contrast, keyboard/focus, zoom 200/400 and 320 CSS px reflow, forced-colors, 44x44 targets, 12px/1.4 typography and the UNCERTAIN read-only state. Automated Linux-only run; no real screen reader or human audit.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD19/AUD19-10-a11y-report.md",
+        "docs/03_build/0332_aud20260919_backlog.md"
+      ]
+    },
+    {
+      "id": "candidate-fingerprint-integrity",
+      "status": "PASS",
+      "method": "buildPhase11Candidate(cwd) + candidateFingerprint(cwd, {excludePaths:[CRITIC_REPORT_PATH]}) before and after the review -> candidateId fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89, commit fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6, treeHash 69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23, dirty=false, fingerprint before=after=71ec54729c917e202438f0ae166b7217723e49fd26f865b899429e64436405a8. git status --porcelain shows only docs/04_audit/evidence/AUD19/AUD19-08-critic-report.json (deleted before publication, rewritten by this review, excluded from the candidate scope); no candidate-scope file was created, modified or deleted by this review.",
+      "evidence": [
+        "docs/CURRENT.md",
+        "docs/04_audit/evidence/AUD19/AUD19-12-final-seal-outcome.md"
+      ]
+    },
+    {
+      "id": "quality-contract-scope-assessment",
+      "status": "PASS",
+      "method": "Manual review of aaa_quality_contract.md sections 2, 9 and 9.1 against the executables measured above. Local controlled scope: PASS - every mandatory local floor holds on these bytes (evals >=97% with the 53/56 negative failing, test:postgres with 0 required skips, critical branches >=95%, global 90/85/90/90, preselected mutants 9/9 detected, no P0/P1, evidence candidate-bound). End-to-end/release scope: BLOCKED_EXTERNAL - the eight external/human gates (provider, channel, external identity, institutional RAG, RPO/RTO, pilot, rollback, human sign-off) remain unvalidated, so real staging and production stay NO_GO and no AAA_CANDIDATE/EXTERNAL label for the external scope is claimed here. No floor, threshold or sample was lowered; vitest.config.mts still declares 80/80/80/80 and the section 9.1 floors are enforced by the certifier.",
+      "evidence": [
+        "docs/02_spec/aaa_quality_contract.md",
+        "docs/03_build/0332_aud20260919_backlog.md",
+        "docs/CURRENT.md"
+      ]
+    },
+    {
+      "id": "critic-report-gate-rerun",
+      "status": "PASS",
+      "method": "node scripts/phase11-2-evidence-check.mjs --critic -> status=PASS, exit 0. The gate re-verified report schema, candidate/commit/treeHash binding, before=after fingerprint against the live worktree, the five independence criteria, absence of builder-authored justification/conclusion fields and on-disk sha256/size of every cited artifact.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD19/AUD19-08-evidence.md"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/CURRENT.md",
+      "sha256": "602f147fd850cc0330614be15e0097698ceb0a014199555f6a177781b96a4f0b",
+      "size": 9980
+    },
+    {
+      "path": "docs/02_spec/aaa_quality_contract.md",
+      "sha256": "aec324018513c43a3e949663e41769f2d59180c6812d7430bd5980fb4a357097",
+      "size": 31985
+    },
+    {
+      "path": "docs/02_spec/aud19_01_eval_contract_20260919.md",
+      "sha256": "9ac058e4ee72a2fdb86c6d61f9b60ac451f4d8497d97769a1c99bef4a7e1d920",
+      "size": 4439
+    },
+    {
+      "path": "docs/03_build/0332_aud20260919_backlog.md",
+      "sha256": "9172d944cb6280d9ad82c9b3da2dbc315ad8d6d7c36930f774e5e607dc806081",
+      "size": 16877
+    },
+    {
+      "path": "docs/03_build/tracking/aud19-required-skips.json",
+      "sha256": "d3ce7d3318489f8b122f6f1b0158b91217bc42768bcb193f027c99d738dadcdf",
+      "size": 1718
+    },
+    {
+      "path": "docs/03_build/tracking/aud19-critical-coverage.json",
+      "sha256": "c16dbffdf9ecc7d058e6d073e81d7215be4b634f1af2ad5061f4fd447138b24b",
+      "size": 1670
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD19/AUD19-08-evidence.md",
+      "sha256": "3c84baa3edea2f169fcdaaf5a679b9a652c14642582ae2e2018515e5234302b0",
+      "size": 10991
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD19/AUD19-08-mutants.json",
+      "sha256": "38de2e672bd2c7087e02096f2f30cb655363284a950b4ed8194a0a576fe93168",
+      "size": 5402
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD19/AUD19-10-a11y-report.md",
+      "sha256": "4b88f1d52f66577b78fb5badb93307989c6baf1fbabb7d00306ee2368cf36bba",
+      "size": 10978
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD19/AUD19-12-final-seal-outcome.md",
+      "sha256": "300c1250e10d6b987b137c679bde6f2cb91a3e5b3f7b35c7130fb2b8ef1abf8e",
+      "size": 3015
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD19/AUD19-12-certification-outcome.md",
+      "sha256": "66e3311051092083b980ac9be7903168c9bda55ec8360468469aea0ca291c333",
+      "size": 3454
+    }
+  ],
+  "disclaimers": {
+    "syntheticOnly": true,
+    "productionBlocked": true
+  }
+}

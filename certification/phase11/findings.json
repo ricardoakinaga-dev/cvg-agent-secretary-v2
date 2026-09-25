@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "kind": "phase11-findings",
-  "certificationId": "phase11-fbca3d2b66326053-mua77vjl",
-  "candidateCommit": "fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6",
-  "generatedAt": "2026-09-20T19:46:50.354Z",
+  "certificationId": "phase11-06e1477ebe76b2f5-muh112ux",
+  "candidateCommit": "98a9636db6d545487c8ae97eb8c75e2b805855de",
+  "generatedAt": "2026-09-25T14:34:56.651Z",
   "findings": {
     "P0": [],
     "P1": [
@@ -121,7 +121,7 @@
         "id": "AUD-11-05",
         "title": "Stale worker and distributed fencing",
         "description": "A worker that loses its lease must not settle current work.",
-        "status": "CLOSED",
+        "status": "PARTIAL",
         "severity": "P2",
         "blocking": true,
         "rootCause": "Distributed claims require lease versions and compare-and-swap settlement.",
@@ -142,13 +142,13 @@
           "certification/phase11/postgres-report.json",
           "certification/phase11/recovery-report.json"
         ],
-        "remainingRisk": "No known residual risk in the controlled scope."
+        "remainingRisk": "An untested driver or database isolation change could weaken fencing."
       },
       {
         "id": "AUD-11-06",
         "title": "Crash-after-effect and unknown-effect reconciliation",
         "description": "Ambiguous external effects must remain unresolved until reconciled and never blindly retry.",
-        "status": "CLOSED",
+        "status": "PARTIAL",
         "severity": "P2",
         "blocking": true,
         "rootCause": "A process crash can occur after the provider effect and before acknowledgement.",
@@ -169,13 +169,13 @@
           "certification/phase11/postgres-report.json",
           "certification/phase11/chaos-report.json"
         ],
-        "remainingRisk": "No known residual risk in the controlled scope."
+        "remainingRisk": "Real provider semantics remain external and are not validated locally."
       },
       {
         "id": "AUD-11-07",
         "title": "End-to-end trace and evidence lineage",
         "description": "Inbound through response must be reconstructable with redacted safe attributes.",
-        "status": "CLOSED",
+        "status": "PARTIAL",
         "severity": "P2",
         "blocking": true,
         "rootCause": "Operator evidence needs an explicit stage graph in addition to source references.",
@@ -196,7 +196,7 @@
           "certification/phase11/evidence-graph.json",
           "certification/phase11/trace-report.json"
         ],
-        "remainingRisk": "No known residual risk in the controlled scope."
+        "remainingRisk": "Hosted telemetry exporters remain a CI/operations integration boundary."
       }
     ],
     "external": [
