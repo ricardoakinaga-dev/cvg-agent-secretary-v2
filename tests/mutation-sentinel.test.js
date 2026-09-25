@@ -5,6 +5,8 @@ import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { afterAll, describe, expect, it } from 'vitest'
 import {
+  MUTATION_MANIFEST_PATH,
+  MUTATION_MANIFEST_SHA256,
   runMutationSentinel,
   verifyMutationReport
 } from '../scripts/lib/mutation-sentinel.mjs'
@@ -29,6 +31,15 @@ afterAll(() => {
 })
 
 describe('AUD19-08 mutation sentinel harness', () => {
+  it('keeps the canonical manifest pin in sync with the manifest on disk', () => {
+    const manifestBytes = fs.readFileSync(
+      path.join(repositoryRoot, MUTATION_MANIFEST_PATH)
+    )
+    expect(createHash('sha256').update(manifestBytes).digest('hex')).toBe(
+      MUTATION_MANIFEST_SHA256
+    )
+  })
+
   it('rejects gaps, stale bindings and an empty catalog at the certification boundary', () => {
     const candidate = {
       candidateId: 'a'.repeat(64),

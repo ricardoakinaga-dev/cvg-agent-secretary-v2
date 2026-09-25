@@ -29,7 +29,7 @@ export const MUTATION_EXCLUDED_TOP_LEVEL = Object.freeze([
 export const MUTATION_MANIFEST_PATH =
   'docs/04_audit/evidence/AUD19/AUD19-08-mutants.json'
 export const MUTATION_MANIFEST_SHA256 =
-  '545ba85fc299ad2e5ad499bf1f4aa23439237ec14bdecd653400de0e54b6bea9'
+  'f6a2b7e9e144ac51ca31ee6e53910e9b7505251c9b42d16ab0c98c5c500ce039'
 
 export function copyRepositoryToSandbox(root, sandboxRoot) {
   fs.mkdirSync(sandboxRoot, { recursive: true })
