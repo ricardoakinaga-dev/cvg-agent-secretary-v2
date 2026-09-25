@@ -286,8 +286,7 @@ describe('collector branch-b coverage', () => {
     const healthy = spans.find((item) => item.spanId === 'span_ok')!
     expect(healthy.status).toEqual({ code: 1 })
     expect(healthy.parentSpanId).toBeUndefined()
-    const metrics =
-      payload.resourceMetrics[0]!.scopeMetrics[0]!.metrics
+    const metrics = payload.resourceMetrics[0]!.scopeMetrics[0]!.metrics
     expect(metrics).toHaveLength(1)
     expect(metrics[0]!.gauge.dataPoints[0]!.timeUnixNano).toBe('0')
     expect(metrics[0]!.gauge.dataPoints[0]!.attributes).toEqual(

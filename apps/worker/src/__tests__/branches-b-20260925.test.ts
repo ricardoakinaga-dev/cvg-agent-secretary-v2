@@ -114,9 +114,9 @@ describe('branches-b worker runtime selection guards', () => {
     expect(resolveWorkerRuntimeKind({ [WORKER_RUNTIME_ENV]: '   ' })).toBe(
       'kernel'
     )
-    expect(resolveWorkerRuntimeKind({ [WORKER_RUNTIME_ENV]: '  kernel  ' })).toBe(
-      'kernel'
-    )
+    expect(
+      resolveWorkerRuntimeKind({ [WORKER_RUNTIME_ENV]: '  kernel  ' })
+    ).toBe('kernel')
     expect(
       resolveWorkerRuntimeKind({
         [WORKER_RUNTIME_ENV]: '  published-agent  '
@@ -283,9 +283,7 @@ describe('branches-b controlled kernel constants', () => {
     expect(
       CONTROLLED_KERNEL_PAYLOAD_SCHEMA.safeParse({ text: 7 }).success
     ).toBe(false)
-    expect(
-      CONTROLLED_KERNEL_PAYLOAD_SCHEMA.safeParse({}).success
-    ).toBe(false)
+    expect(CONTROLLED_KERNEL_PAYLOAD_SCHEMA.safeParse({}).success).toBe(false)
     expect(
       CONTROLLED_KERNEL_PAYLOAD_SCHEMA.parse({ text: 'x', extra: 1 })
     ).toEqual({ text: 'x' })
@@ -758,10 +756,7 @@ function prerequisitePool(
   const client = {
     query: async (text: string) => {
       onQuery?.(text)
-      if (
-        typeof text === 'string' &&
-        text.includes('FROM schema_migrations')
-      ) {
+      if (typeof text === 'string' && text.includes('FROM schema_migrations')) {
         return { rows: migrationVersions.map((version) => ({ version })) }
       }
       if (text === 'SHOW search_path') {
@@ -1095,7 +1090,9 @@ describe('branches-b kernel handler construction guards', () => {
   })
 
   it('accepts matching agent ids from either environment variable', () => {
-    const { runtime } = fakeKernelRuntime({ findInboundRuntimeContext: vi.fn() })
+    const { runtime } = fakeKernelRuntime({
+      findInboundRuntimeContext: vi.fn()
+    })
     expect(() =>
       createPostgresKernelHandlers({ CVG_WORKER_AGENT_ID: AGENT }, runtime)
     ).not.toThrow()
@@ -1117,7 +1114,9 @@ describe('branches-b kernel handler construction guards', () => {
   })
 
   it('rejects mismatched or malformed agent ids', () => {
-    const { runtime } = fakeKernelRuntime({ findInboundRuntimeContext: vi.fn() })
+    const { runtime } = fakeKernelRuntime({
+      findInboundRuntimeContext: vi.fn()
+    })
     for (const env of [
       { CVG_WORKER_AGENT_ID: OTHER_AGENT },
       { INBOUND_AGENT_ID: OTHER_AGENT }
@@ -1135,12 +1134,17 @@ describe('branches-b kernel handler construction guards', () => {
       }
     }
     expect(() =>
-      createPostgresKernelHandlers({ CVG_WORKER_AGENT_ID: 'not-an-agent' }, runtime)
+      createPostgresKernelHandlers(
+        { CVG_WORKER_AGENT_ID: 'not-an-agent' },
+        runtime
+      )
     ).toThrow()
   })
 
   it('enforces the production durable kernel guard on handler creation', () => {
-    const { runtime } = fakeKernelRuntime({ findInboundRuntimeContext: vi.fn() })
+    const { runtime } = fakeKernelRuntime({
+      findInboundRuntimeContext: vi.fn()
+    })
     expect(() =>
       createPostgresKernelHandlers({ NODE_ENV: 'production' }, runtime)
     ).toThrow(/CVG_DURABLE_KERNEL_ORCHESTRATOR=true/)
@@ -1176,10 +1180,7 @@ describe('branches-b kernel handler construction guards', () => {
     )
     expect('recoverDurableGoals' in enabledWithoutHook).toBe(false)
 
-    const disabled = createPostgresKernelHandlers(
-      {},
-      withRecovery.runtime
-    )
+    const disabled = createPostgresKernelHandlers({}, withRecovery.runtime)
     expect('recoverDurableGoals' in disabled).toBe(false)
   })
 })
@@ -1232,9 +1233,7 @@ describe('branches-b kernel inbound guard branches', () => {
 
     await expect(
       handlers.inboundProcess(kernelInboundEvent({ tenantId: OTHER_TENANT }))
-    ).rejects.toThrow(
-      /does not match the configured kernel worker tenant/
-    )
+    ).rejects.toThrow(/does not match the configured kernel worker tenant/)
     expect(findInboundRuntimeContext).not.toHaveBeenCalled()
     expect(runTurn).not.toHaveBeenCalled()
   })
@@ -1246,9 +1245,9 @@ describe('branches-b kernel inbound guard branches', () => {
     })
     const handlers = createPostgresKernelHandlers({}, runtime)
 
-    await expect(
-      handlers.inboundProcess(kernelInboundEvent())
-    ).rejects.toThrow(/Inbound runtime context was not found/)
+    await expect(handlers.inboundProcess(kernelInboundEvent())).rejects.toThrow(
+      /Inbound runtime context was not found/
+    )
     expect(runTurn).not.toHaveBeenCalled()
   })
 
@@ -1265,9 +1264,9 @@ describe('branches-b kernel inbound guard branches', () => {
     })
     const handlers = createPostgresKernelHandlers({}, runtime)
 
-    await expect(
-      handlers.inboundProcess(kernelInboundEvent())
-    ).rejects.toThrow(/does not match the persisted conversation/)
+    await expect(handlers.inboundProcess(kernelInboundEvent())).rejects.toThrow(
+      /does not match the persisted conversation/
+    )
     expect(runTurn).not.toHaveBeenCalled()
   })
 
@@ -1287,9 +1286,9 @@ describe('branches-b kernel inbound guard branches', () => {
     })
     const handlers = createPostgresKernelHandlers({}, runtime)
 
-    await expect(
-      handlers.inboundProcess(kernelInboundEvent())
-    ).rejects.toThrow(/trace does not match the persisted conversation/)
+    await expect(handlers.inboundProcess(kernelInboundEvent())).rejects.toThrow(
+      /trace does not match the persisted conversation/
+    )
     expect(runTurn).not.toHaveBeenCalled()
   })
 })
@@ -1372,11 +1371,12 @@ describe('branches-b continuous worker settings', () => {
       parseContinuousWorkerSettings({ CVG_WORKER_CONCURRENCY: '1' }).concurrency
     ).toBe(1)
     expect(
-      parseContinuousWorkerSettings({ CVG_WORKER_CONCURRENCY: '10' }).concurrency
+      parseContinuousWorkerSettings({ CVG_WORKER_CONCURRENCY: '10' })
+        .concurrency
     ).toBe(10)
-    expect(parseContinuousWorkerSettings({ CVG_WORKER_DRAIN_MS: '0' }).drainMs).toBe(
-      0
-    )
+    expect(
+      parseContinuousWorkerSettings({ CVG_WORKER_DRAIN_MS: '0' }).drainMs
+    ).toBe(0)
     expect(
       parseContinuousWorkerSettings({ CVG_WORKER_DRAIN_MS: '600000' }).drainMs
     ).toBe(600_000)
@@ -1447,9 +1447,9 @@ describe('branches-b continuous worker settings', () => {
 describe('branches-b continuous worker construction guards', () => {
   it('requires a worker id and valid handlers', () => {
     for (const workerId of ['', '   ']) {
-      expect(() =>
-        createContinuousWorker(workerOptions({ workerId }))
-      ).toThrow(/worker id is required/)
+      expect(() => createContinuousWorker(workerOptions({ workerId }))).toThrow(
+        /worker id is required/
+      )
     }
     expect(() =>
       createContinuousWorker({
@@ -1470,24 +1470,24 @@ describe('branches-b continuous worker construction guards', () => {
   })
 
   it('rejects out-of-range numeric options before starting', () => {
-    expect(() => createContinuousWorker(workerOptions({ concurrency: 0 }))).toThrow(
-      /concurrency must be an integer between 1 and 10/
-    )
-    expect(() => createContinuousWorker(workerOptions({ concurrency: 11 }))).toThrow(
-      /concurrency must be an integer between 1 and 10/
-    )
-    expect(() => createContinuousWorker(workerOptions({ leaseMs: 999 }))).toThrow(
-      /leaseMs must be an integer between/
-    )
-    expect(() => createContinuousWorker(workerOptions({ leaseMs: 3_600_001 }))).toThrow(
-      /leaseMs must be an integer between/
-    )
-    expect(() => createContinuousWorker(workerOptions({ drainMs: -1 }))).toThrow(
-      /drainMs must be an integer between/
-    )
-    expect(() => createContinuousWorker(workerOptions({ drainMs: 600_001 }))).toThrow(
-      /drainMs must be an integer between/
-    )
+    expect(() =>
+      createContinuousWorker(workerOptions({ concurrency: 0 }))
+    ).toThrow(/concurrency must be an integer between 1 and 10/)
+    expect(() =>
+      createContinuousWorker(workerOptions({ concurrency: 11 }))
+    ).toThrow(/concurrency must be an integer between 1 and 10/)
+    expect(() =>
+      createContinuousWorker(workerOptions({ leaseMs: 999 }))
+    ).toThrow(/leaseMs must be an integer between/)
+    expect(() =>
+      createContinuousWorker(workerOptions({ leaseMs: 3_600_001 }))
+    ).toThrow(/leaseMs must be an integer between/)
+    expect(() =>
+      createContinuousWorker(workerOptions({ drainMs: -1 }))
+    ).toThrow(/drainMs must be an integer between/)
+    expect(() =>
+      createContinuousWorker(workerOptions({ drainMs: 600_001 }))
+    ).toThrow(/drainMs must be an integer between/)
     expect(() =>
       createContinuousWorker(workerOptions({ pollIntervalMs: 0 }))
     ).toThrow(/pollIntervalMs must be a positive integer/)
@@ -1763,9 +1763,7 @@ describe('branches-b controlled outbox revalidation', () => {
           payload: { externalEffects: true }
         })
       )
-    ).rejects.toThrow(
-      /controlled outbound event requests an external effect/
-    )
+    ).rejects.toThrow(/controlled outbound event requests an external effect/)
   })
 
   it('rejects uncontrolled event types', async () => {
@@ -1793,7 +1791,10 @@ describe('branches-b controlled outbox revalidation', () => {
     ).rejects.toThrow(/missing runtime identifiers/)
     await expect(
       revalidate(
-        revalidationEvent({ conversationId: CONVERSATION, inboundMessageId: null })
+        revalidationEvent({
+          conversationId: CONVERSATION,
+          inboundMessageId: null
+        })
       )
     ).rejects.toThrow(/missing runtime identifiers/)
     await expect(
@@ -1845,7 +1846,9 @@ describe('branches-b controlled outbox revalidation', () => {
   it('rejects correlations that differ from the persisted context', async () => {
     const findInboundRuntimeContext = vi
       .fn()
-      .mockResolvedValue(revalidationContext({ correlationId: OTHER_CORRELATION }))
+      .mockResolvedValue(
+        revalidationContext({ correlationId: OTHER_CORRELATION })
+      )
     const revalidate = createControlledOutboxRevalidator(
       { findInboundRuntimeContext },
       TENANT
@@ -1859,7 +1862,9 @@ describe('branches-b controlled outbox revalidation', () => {
   it('skips the correlation check when the event carries none', async () => {
     const findInboundRuntimeContext = vi
       .fn()
-      .mockResolvedValue(revalidationContext({ correlationId: OTHER_CORRELATION }))
+      .mockResolvedValue(
+        revalidationContext({ correlationId: OTHER_CORRELATION })
+      )
     const revalidate = createControlledOutboxRevalidator(
       { findInboundRuntimeContext },
       TENANT

@@ -31,7 +31,10 @@ const CORRELATION = 'corr_00000000-0000-4000-8000-0000000000c3'
 const TRACE = 'abcdef0123456789abcdef0123456789'
 const CREATED_AT = '2026-09-16T12:00:00.000Z'
 
-function governedBase(outcome: string, overrides: Record<string, unknown> = {}) {
+function governedBase(
+  outcome: string,
+  overrides: Record<string, unknown> = {}
+) {
   return {
     outcome,
     reason: `synthetic_${outcome}`,
@@ -70,9 +73,9 @@ describe('kernel runtime selection without database', () => {
     expect(resolveWorkerRuntimeKind({ [WORKER_RUNTIME_ENV]: '' })).toBe(
       'kernel'
     )
-    expect(
-      resolveWorkerRuntimeKind({ [WORKER_RUNTIME_ENV]: 'kernel' })
-    ).toBe('kernel')
+    expect(resolveWorkerRuntimeKind({ [WORKER_RUNTIME_ENV]: 'kernel' })).toBe(
+      'kernel'
+    )
     expect(
       resolveWorkerRuntimeKind({ [WORKER_RUNTIME_ENV]: '  kernel  ' })
     ).toBe('kernel')
@@ -181,9 +184,7 @@ describe('kernel controlled constants without database', () => {
     expect(
       CONTROLLED_KERNEL_PAYLOAD_SCHEMA.safeParse({ text: 42 }).success
     ).toBe(false)
-    expect(
-      CONTROLLED_KERNEL_PAYLOAD_SCHEMA.safeParse({}).success
-    ).toBe(false)
+    expect(CONTROLLED_KERNEL_PAYLOAD_SCHEMA.safeParse({}).success).toBe(false)
   })
 })
 
@@ -330,9 +331,7 @@ describe('kernel durable turn mapping without database', () => {
       modelCalls: 1
     })
 
-    const withoutEvidence = durableTurnResult(
-      governedBase('approval_required')
-    )
+    const withoutEvidence = durableTurnResult(governedBase('approval_required'))
     expect(withoutEvidence).toMatchObject({
       outcome: 'approval_required',
       toolCalls: 0,
@@ -432,9 +431,7 @@ describe('kernel durable turn mapping without database', () => {
     )
 
     expect(mapped).toMatchObject({ outcome: 'succeeded' })
-    expect(
-      (mapped as { evidence: unknown[] }).evidence
-    ).toEqual([])
+    expect((mapped as { evidence: unknown[] }).evidence).toEqual([])
   })
 })
 

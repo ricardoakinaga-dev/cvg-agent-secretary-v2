@@ -374,9 +374,7 @@ describe('server pure routes without database', () => {
     })
     await app.close()
     expect(goals.statusCode).toBe(400)
-    expect((goals.json() as Envelope<never>).error?.code).toBe(
-      'invalid_action'
-    )
+    expect((goals.json() as Envelope<never>).error?.code).toBe('invalid_action')
     expect(goalDetail.statusCode).toBe(400)
   })
 
@@ -669,18 +667,19 @@ describe('http security pure parsers without network', () => {
     expect(() =>
       parseAllowedOrigins('https://a.example.test,,https://b.example.test')
     ).toThrow(/empty origin/)
-    expect(() => parseAllowedOrigins('https://a.example.test, not-a-url')).toThrow(
-      /origin/i
-    )
+    expect(() =>
+      parseAllowedOrigins('https://a.example.test, not-a-url')
+    ).toThrow(/origin/i)
   })
 
   it('parses trusted proxy env values without network', () => {
     expect(parseTrustedProxyAddresses(undefined)).toEqual([])
     expect(parseTrustedProxyAddresses('')).toEqual([])
     expect(parseTrustedProxyAddresses('   ')).toEqual([])
-    expect(
-      parseTrustedProxyAddresses('127.0.0.1, ::1, 127.0.0.1')
-    ).toEqual(['127.0.0.1', '::1'])
+    expect(parseTrustedProxyAddresses('127.0.0.1, ::1, 127.0.0.1')).toEqual([
+      '127.0.0.1',
+      '::1'
+    ])
     expect(() => parseTrustedProxyAddresses(42 as never)).toThrow(
       /trusted proxy address/i
     )
@@ -753,9 +752,9 @@ describe('http security pure parsers without network', () => {
     expect(() =>
       normalizeHttpSecurityOptions({ hstsMaxAgeSeconds: 300 })
     ).not.toThrow()
-    expect(() =>
-      normalizeHttpSecurityOptions({ trustedProxyHops: 1 })
-    ).toThrow(/trusted|proxy|hop/i)
+    expect(() => normalizeHttpSecurityOptions({ trustedProxyHops: 1 })).toThrow(
+      /trusted|proxy|hop/i
+    )
     expect(() =>
       normalizeHttpSecurityOptions({ trustedProxyAddresses: ['not-an-ip'] })
     ).toThrow(/trusted proxy address/i)
@@ -1032,9 +1031,7 @@ describe('operator identity branches without network', () => {
     })
     expect(revoked.keysAt(nowSeconds)).toEqual([])
     expect(ring.keysAt(Number.NaN)).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ keyId: 'key-active' })
-      ])
+      expect.arrayContaining([expect.objectContaining({ keyId: 'key-active' })])
     )
   })
 
@@ -1048,7 +1045,9 @@ describe('operator identity branches without network', () => {
         })
       })
     ).toBeUndefined()
-    expect(createConfiguredOperatorIdentityResolver({ NODE_ENV: 'test' })).toBeUndefined()
+    expect(
+      createConfiguredOperatorIdentityResolver({ NODE_ENV: 'test' })
+    ).toBeUndefined()
     expect(() =>
       createConfiguredOperatorIdentityResolver({
         NODE_ENV: 'test',
@@ -1089,9 +1088,9 @@ describe('operator identity branches without network', () => {
       keyRing: otherRing,
       now: () => nowMs
     })
-    expect(() =>
-      otherResolve({ 'x-cvg-operator-token': token })
-    ).toThrow(/not active/)
+    expect(() => otherResolve({ 'x-cvg-operator-token': token })).toThrow(
+      /not active/
+    )
 
     const noKid = createTrustedOperatorIdentityToken(
       IDENTITY,
@@ -1135,9 +1134,9 @@ describe('operator identity branches without network', () => {
       120
     )
     await direct({ 'x-cvg-operator-token': token })
-    await expect(
-      direct({ 'x-cvg-operator-token': token })
-    ).rejects.toThrow(/replay/)
+    await expect(direct({ 'x-cvg-operator-token': token })).rejects.toThrow(
+      /replay/
+    )
 
     const failingStore = {
       claim: async () => {
@@ -1167,13 +1166,25 @@ describe('operator replay store in-memory branches without database', () => {
     const store = new InMemoryOperatorReplayStore({ now: () => nowMs })
     const expiresAtSeconds = Math.floor(nowMs / 1000) + 300
     expect(
-      await store.claim({ issuer: 'cvg-api', jti: 'branches-b-1', expiresAtSeconds })
+      await store.claim({
+        issuer: 'cvg-api',
+        jti: 'branches-b-1',
+        expiresAtSeconds
+      })
     ).toBe(true)
     expect(
-      await store.claim({ issuer: 'cvg-api', jti: 'branches-b-1', expiresAtSeconds })
+      await store.claim({
+        issuer: 'cvg-api',
+        jti: 'branches-b-1',
+        expiresAtSeconds
+      })
     ).toBe(false)
     expect(
-      await store.claim({ issuer: 'other', jti: 'branches-b-1', expiresAtSeconds })
+      await store.claim({
+        issuer: 'other',
+        jti: 'branches-b-1',
+        expiresAtSeconds
+      })
     ).toBe(true)
     expect(
       await store.claim({
@@ -1186,9 +1197,13 @@ describe('operator replay store in-memory branches without database', () => {
     nowMs = (expiresAtSeconds + 10) * 1000
     expect(await store.purgeExpired()).toBe(2)
     expect(
-      await store.claim({ issuer: 'cvg-api', jti: 'branches-b-1', expiresAtSeconds: expiresAtSeconds + 100 })
+      await store.claim({
+        issuer: 'cvg-api',
+        jti: 'branches-b-1',
+        expiresAtSeconds: expiresAtSeconds + 100
+      })
     ).toBe(true)
-    expect(await store.purgeExpired((expiresAtSeconds + 200))).toBe(1)
+    expect(await store.purgeExpired(expiresAtSeconds + 200)).toBe(1)
   })
 
   it('rejects invalid claim shapes without database', async () => {
@@ -1203,7 +1218,11 @@ describe('operator replay store in-memory branches without database', () => {
       store.claim({ issuer: 'cvg-api', jti: '', expiresAtSeconds: 100 })
     ).rejects.toThrow(/token id/)
     await expect(
-      store.claim({ issuer: 'cvg-api', jti: 'y'.repeat(161), expiresAtSeconds: 100 })
+      store.claim({
+        issuer: 'cvg-api',
+        jti: 'y'.repeat(161),
+        expiresAtSeconds: 100
+      })
     ).rejects.toThrow(/token id/)
     await expect(
       store.claim({ issuer: 'cvg-api', jti: 'x', expiresAtSeconds: 0 })
@@ -1216,7 +1235,9 @@ describe('operator replay store in-memory branches without database', () => {
   it('selects stores from env without database', () => {
     expect(createOperatorReplayStoreFromEnv({})).toBeUndefined()
     expect(
-      createOperatorReplayStoreFromEnv({ [OPERATOR_REPLAY_STORE_ENV]: 'memory' })
+      createOperatorReplayStoreFromEnv({
+        [OPERATOR_REPLAY_STORE_ENV]: 'memory'
+      })
     ).toBeInstanceOf(InMemoryOperatorReplayStore)
     expect(
       createOperatorReplayStoreFromEnv({
@@ -1245,14 +1266,20 @@ describe('operator replay store in-memory branches without database', () => {
   })
 
   it('validates postgres constructor bounds without connecting', () => {
-    expect(() => new PostgresOperatorReplayStore(fakePool(), { purgeIntervalMs: -1 })).toThrow(
-      /purge interval/
-    )
     expect(
-      () => new PostgresOperatorReplayStore(fakePool(), { purgeIntervalMs: 3600001 })
+      () => new PostgresOperatorReplayStore(fakePool(), { purgeIntervalMs: -1 })
     ).toThrow(/purge interval/)
     expect(
-      () => new PostgresOperatorReplayStore(fakePool(), { purgeIntervalMs: Number.NaN })
+      () =>
+        new PostgresOperatorReplayStore(fakePool(), {
+          purgeIntervalMs: 3600001
+        })
+    ).toThrow(/purge interval/)
+    expect(
+      () =>
+        new PostgresOperatorReplayStore(fakePool(), {
+          purgeIntervalMs: Number.NaN
+        })
     ).toThrow(/purge interval/)
     expect(
       new PostgresOperatorReplayStore(fakePool(), { purgeIntervalMs: 0 })
@@ -1260,7 +1287,9 @@ describe('operator replay store in-memory branches without database', () => {
   })
 
   it('asserts production replay configuration without database', () => {
-    expect(assertProductionReplayConfiguration({ NODE_ENV: 'test' })).toBeUndefined()
+    expect(
+      assertProductionReplayConfiguration({ NODE_ENV: 'test' })
+    ).toBeUndefined()
     expect(
       assertProductionReplayConfiguration({
         NODE_ENV: 'production',

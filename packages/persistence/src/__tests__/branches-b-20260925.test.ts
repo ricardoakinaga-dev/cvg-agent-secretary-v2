@@ -358,12 +358,10 @@ describe('journey repository branch-b coverage', () => {
       idempotencyKey: 'branch-b-appointment-fresh'
     })
     const listed = repository.listAppointmentDrafts(tenantA)
-    expect(
-      listed.find((item) => item.id === stale.id)?.status
-    ).toBe('expired')
-    expect(
-      listed.find((item) => item.id === fresh.id)?.status
-    ).toBe('awaiting_approval')
+    expect(listed.find((item) => item.id === stale.id)?.status).toBe('expired')
+    expect(listed.find((item) => item.id === fresh.id)?.status).toBe(
+      'awaiting_approval'
+    )
   })
 
   it('rejects patient work bound to an expired owner draft', () => {
@@ -401,7 +399,8 @@ describe('journey repository branch-b coverage', () => {
     ).toThrow(/expired/)
   })
 
-  it('rejects links to unknown patient drafts', () => {    const { repository } = setup()
+  it('rejects links to unknown patient drafts', () => {
+    const { repository } = setup()
     expect(() =>
       repository.linkPatient({
         tenantId: tenantA,
@@ -499,7 +498,10 @@ describe('journey repository branch-b coverage', () => {
   it('validates the caller-supplied journey audit context', () => {
     expect(() =>
       normalizeJourneyAuditContext(
-        { actorType: 'Visitor', actorId: 'visitor-1' } as unknown as JourneyAuditContext,
+        {
+          actorType: 'Visitor',
+          actorId: 'visitor-1'
+        } as unknown as JourneyAuditContext,
         'resource_branch_b_1'
       )
     ).toThrow(/actor type is invalid/)

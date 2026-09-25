@@ -122,7 +122,9 @@ function makeStep(overrides: Partial<PlanStep> = {}): PlanStep {
   } as unknown as PlanStep
 }
 
-function makeObservation(overrides: Partial<ObservationRecord> = {}): ObservationRecord {
+function makeObservation(
+  overrides: Partial<ObservationRecord> = {}
+): ObservationRecord {
   return {
     id: 'observation_branch_20260925',
     tenantId: TENANT,
@@ -137,7 +139,9 @@ function makeObservation(overrides: Partial<ObservationRecord> = {}): Observatio
   } as ObservationRecord
 }
 
-function makeEvaluation(overrides: Partial<EvaluationRecord> = {}): EvaluationRecord {
+function makeEvaluation(
+  overrides: Partial<EvaluationRecord> = {}
+): EvaluationRecord {
   return {
     id: 'evaluation_branch_20260925',
     tenantId: TENANT,
@@ -375,7 +379,12 @@ describe('orchestration observability branch coverage 20260925', () => {
             expected: 'ready',
             source: 'operational_state'
           },
-          { kind: 'FACT', key: 'branch-fact', expected: true, source: 'human_record' },
+          {
+            kind: 'FACT',
+            key: 'branch-fact',
+            expected: true,
+            source: 'human_record'
+          },
           {
             kind: 'SEMANTIC',
             description: 'branch semantic',
@@ -540,7 +549,9 @@ describe('orchestration observability branch coverage 20260925', () => {
         deadline: new Date('2099-01-01T00:00:00.000Z')
       }),
       plans: [plan],
-      stepsByPlan: new Map([[plan.id, [makeStep({ planId: plan.id, status: 'READY' })]]]),
+      stepsByPlan: new Map([
+        [plan.id, [makeStep({ planId: plan.id, status: 'READY' })]]
+      ]),
       observations: [],
       evaluations: [],
       attemptsByStep: new Map()
@@ -569,7 +580,9 @@ describe('orchestration observability branch coverage 20260925', () => {
           ]
         })
       ],
-      evaluations: [makeEvaluation({ result: 'blocked', reason: 'branch blocked' })],
+      evaluations: [
+        makeEvaluation({ result: 'blocked', reason: 'branch blocked' })
+      ],
       attemptsByStep: new Map()
     })
 

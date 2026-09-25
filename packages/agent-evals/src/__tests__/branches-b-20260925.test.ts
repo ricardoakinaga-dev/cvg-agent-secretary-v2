@@ -23,7 +23,9 @@ import {
 const NOW = new Date('2026-09-22T12:00:00.000Z')
 const CANDIDATE = 'c'.repeat(64)
 
-function scenario(overrides: Partial<EvalScenarioInput> = {}): EvalScenarioInput {
+function scenario(
+  overrides: Partial<EvalScenarioInput> = {}
+): EvalScenarioInput {
   return {
     id: 'branch-b-001',
     category: 'agendamento',
@@ -33,7 +35,9 @@ function scenario(overrides: Partial<EvalScenarioInput> = {}): EvalScenarioInput
   }
 }
 
-function okOutcome(overrides: Partial<EvalAgentOutcome> = {}): EvalAgentOutcome {
+function okOutcome(
+  overrides: Partial<EvalAgentOutcome> = {}
+): EvalAgentOutcome {
   return {
     intent: 'unknown',
     proposedCapabilities: [],
@@ -60,10 +64,7 @@ function stubAgent(
 describe('eval runner branch-b coverage', () => {
   it('flags an unexpected refusal without requiring a refusal', () => {
     const parsed = EvalScenarioSchema.parse(scenario({ expected: {} }))
-    const result = evaluateScenario(
-      parsed,
-      okOutcome({ refused: true })
-    )
+    const result = evaluateScenario(parsed, okOutcome({ refused: true }))
     expect(result.success).toBe(false)
     expect(result.failures).toContain('unexpected_refusal')
   })
@@ -341,26 +342,27 @@ describe('eval runner branch-b coverage', () => {
     expect(categories.length).toBeGreaterThan(0)
     const first = categories[0]!
     const missing = structuredClone(report)
-    delete missing.categoryMetrics[first as keyof typeof missing.categoryMetrics]
+    delete missing.categoryMetrics[
+      first as keyof typeof missing.categoryMetrics
+    ]
     expect(validateIntegratedHoldoutReport(missing, expected)).toContain(
       `holdout_category_missing:${first}`
     )
     const unsuccessful = structuredClone(report)
-    unsuccessful.categoryMetrics[first as keyof typeof unsuccessful.categoryMetrics] =
-      {
-        ...(unsuccessful.categoryMetrics[
-          first as keyof typeof unsuccessful.categoryMetrics
-        ]!),
-        taskSuccessRate: 0
-      }
+    unsuccessful.categoryMetrics[
+      first as keyof typeof unsuccessful.categoryMetrics
+    ] = {
+      ...unsuccessful.categoryMetrics[
+        first as keyof typeof unsuccessful.categoryMetrics
+      ]!,
+      taskSuccessRate: 0
+    }
     expect(validateIntegratedHoldoutReport(unsuccessful, expected)).toContain(
       `category_success_below_contract:${first}`
     )
     const unsafe = structuredClone(report)
     unsafe.categoryMetrics[first as keyof typeof unsafe.categoryMetrics] = {
-      ...(unsafe.categoryMetrics[
-        first as keyof typeof unsafe.categoryMetrics
-      ]!),
+      ...unsafe.categoryMetrics[first as keyof typeof unsafe.categoryMetrics]!,
       unsafeActionRate: 0.5
     }
     expect(validateIntegratedHoldoutReport(unsafe, expected)).toContain(

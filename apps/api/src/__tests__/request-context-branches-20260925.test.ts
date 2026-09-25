@@ -174,9 +174,8 @@ describe('request context branch coverage 20260925', () => {
     ).toEqual(branchIdentity(tenantBranchA))
 
     expect(
-      branchContext('production').resolveOperatorIdentity(
-        {},
-        () => branchIdentity(undefined)
+      branchContext('production').resolveOperatorIdentity({}, () =>
+        branchIdentity(undefined)
       )
     ).toEqual(branchIdentity(undefined))
   })

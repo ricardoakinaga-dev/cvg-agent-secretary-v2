@@ -187,9 +187,7 @@ class FakeSweepStore implements RetentionSweepStore {
     eligibility: RetentionEligibility,
     rows: FakeRow[]
   ): FakeRow[] {
-    const tenantWide = eligibility.holds.some(
-      (hold) => hold.recordId === null
-    )
+    const tenantWide = eligibility.holds.some((hold) => hold.recordId === null)
     const heldIds = new Set(
       eligibility.holds
         .map((hold) => hold.recordId)
@@ -232,12 +230,8 @@ class FakeSweepStore implements RetentionSweepStore {
     eligibility: RetentionEligibility,
     recordIds: readonly string[]
   ): Promise<number> {
-    const eligibleIds = new Set(
-      this.eligible(eligibility).map((row) => row.id)
-    )
-    const tenantWide = eligibility.holds.some(
-      (hold) => hold.recordId === null
-    )
+    const eligibleIds = new Set(this.eligible(eligibility).map((row) => row.id))
+    const tenantWide = eligibility.holds.some((hold) => hold.recordId === null)
     const heldIds = new Set(
       eligibility.holds
         .map((hold) => hold.recordId)
@@ -276,9 +270,7 @@ class FakeSweepStore implements RetentionSweepStore {
     eligibility: RetentionEligibility,
     recordIds: readonly string[]
   ): Promise<number> {
-    const tenantWide = eligibility.holds.some(
-      (hold) => hold.recordId === null
-    )
+    const tenantWide = eligibility.holds.some((hold) => hold.recordId === null)
     const heldIds = new Set(
       eligibility.holds
         .map((hold) => hold.recordId)
@@ -518,12 +510,10 @@ describe('retention digests without database', () => {
 
     expect(first).toMatch(/^[0-9a-f]{64}$/)
     expect(reordered).toBe(first)
-    expect(
-      computeRetentionBatchHash({ ...input, deletedCount: 1 })
-    ).not.toBe(first)
-    expect(
-      computeRetentionBatchHash({ ...input, holds: [] })
-    ).not.toBe(first)
+    expect(computeRetentionBatchHash({ ...input, deletedCount: 1 })).not.toBe(
+      first
+    )
+    expect(computeRetentionBatchHash({ ...input, holds: [] })).not.toBe(first)
   })
 })
 
@@ -543,7 +533,9 @@ describe('tombstone policy gate without database', () => {
       )
     ).not.toThrow()
     expect(() =>
-      assertInboundTombstonePolicyEffective(new Date('2027-02-01T00:00:00.000Z'))
+      assertInboundTombstonePolicyEffective(
+        new Date('2027-02-01T00:00:00.000Z')
+      )
     ).toThrow(/expired/)
   })
 
@@ -554,7 +546,9 @@ describe('tombstone policy gate without database', () => {
       )
     ).not.toThrow()
     expect(() =>
-      assertInboundTombstonePolicyEffective(new Date('2026-01-01T00:00:00.000Z'))
+      assertInboundTombstonePolicyEffective(
+        new Date('2026-01-01T00:00:00.000Z')
+      )
     ).toThrow(/not effective/)
   })
 
@@ -643,7 +637,11 @@ describe('retention plan validation without database', () => {
     ]
   ])('keeps %s pending instead of acting', (reason, policy) => {
     const plan = resolveRetentionSweepPlan(
-      { tenantId: TENANT_A, executedBy: 'fixture.operator', policies: [policy] },
+      {
+        tenantId: TENANT_A,
+        executedBy: 'fixture.operator',
+        policies: [policy]
+      },
       NOW
     )
 

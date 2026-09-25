@@ -81,6 +81,22 @@ export interface ApprovalEngineOptions {
   reservationTtlMs?: number
   allowSelfApproval?: boolean
   onEvent?: (event: ApprovalEvent) => void
+  /**
+   * Local latency seam. Receives the decision latency only when both
+   * `requestedAt` and the decision timestamp are valid and ordered; the
+   * sample carries no identifiers or payload content.
+   */
+  onApprovalLatency?: (sample: ApprovalLatencySample) => void
+}
+
+export interface ApprovalLatencySample {
+  metric: 'approval_latency_ms'
+  value: number
+  attributes: {
+    decision: 'approved' | 'rejected'
+    outcome: 'decided'
+    operation: 'approval.decision'
+  }
 }
 
 export interface ApprovalConsumption {
@@ -113,6 +129,7 @@ export class ApprovalEngine {
   readonly #reservationTtlMs: number
   readonly #allowSelfApproval: boolean
   readonly #onEvent?: (event: ApprovalEvent) => void
+  readonly #onApprovalLatency?: (sample: ApprovalLatencySample) => void
 
   constructor(options: ApprovalEngineOptions = {}) {
     this.#store = options.store ?? new InMemoryApprovalStore()
@@ -123,6 +140,31 @@ export class ApprovalEngine {
       options.reservationTtlMs ?? DEFAULT_RESERVATION_TTL_MS
     this.#allowSelfApproval = options.allowSelfApproval ?? false
     if (options.onEvent) this.#onEvent = options.onEvent
+    if (options.onApprovalLatency) {
+      this.#onApprovalLatency = options.onApprovalLatency
+    }
+  }
+
+  #emitApprovalLatency(
+    record: ApprovalRecord,
+    decision: 'approved' | 'rejected',
+    decidedAt: string | undefined
+  ): void {
+    if (!this.#onApprovalLatency || decidedAt === undefined) return
+    const requestedMs = Date.parse(record.requestedAt)
+    const decidedMs = Date.parse(decidedAt)
+    if (!Number.isFinite(requestedMs) || !Number.isFinite(decidedMs)) return
+    const value = decidedMs - requestedMs
+    if (value < 0) return
+    this.#onApprovalLatency({
+      metric: 'approval_latency_ms',
+      value,
+      attributes: {
+        decision,
+        outcome: 'decided',
+        operation: 'approval.decision'
+      }
+    })
   }
 
   request(input: ApprovalRequestInput): ApprovalRecord {
@@ -266,6 +308,7 @@ export class ApprovalEngine {
       correlationId: updated.correlationId,
       actorId: input.approverId
     })
+    this.#emitApprovalLatency(updated, 'approved', updated.approvedAt)
     return cloneRecord(updated)
   }
 
@@ -301,6 +344,7 @@ export class ApprovalEngine {
       correlationId: updated.correlationId,
       actorId: input.approverId
     })
+    this.#emitApprovalLatency(updated, 'rejected', updated.rejectedAt)
     return cloneRecord(updated)
   }
 

@@ -120,8 +120,7 @@ function validTrace(): TestRunTrace {
     traceId: createTraceId(),
     tenantId: TENANT,
     agentId: 'agent_00000000-0000-4000-8000-000000000911' as AgentId,
-    versionId:
-      'agent_version_00000000-0000-4000-8000-000000000911' as never,
+    versionId: 'agent_version_00000000-0000-4000-8000-000000000911' as never,
     input: { message: 'Hello fixture', historySize: 0 },
     intent: { name: 'unknown', confidence: 0.32 },
     policy: [],
@@ -191,7 +190,9 @@ describe('control plane store branches without database', () => {
       agentConfig(),
       'admin.branches-b'
     )
-    expect(await store.getVersion({ tenantId: TENANT }, version.id)).toMatchObject({
+    expect(
+      await store.getVersion({ tenantId: TENANT }, version.id)
+    ).toMatchObject({
       id: version.id
     })
     expect(
@@ -254,7 +255,11 @@ describe('control plane store branches without database', () => {
 
     const candidate = await store.createReleaseCandidate(
       { tenantId: TENANT },
-      { agentId: agent.id, versionId: version.id, gateResults: [...GATE_RESULTS] },
+      {
+        agentId: agent.id,
+        versionId: version.id,
+        gateResults: [...GATE_RESULTS]
+      },
       'admin.branches-b'
     )
     await store.transitionReleaseCandidate(
@@ -329,12 +334,11 @@ describe('control plane store branches without database', () => {
       )
     ).rejects.toMatchObject({ code: 'invalid_action' })
     expect(
-      await store.getKnowledgeSource(
-        { tenantId: OTHER_TENANT },
-        created.id
-      )
+      await store.getKnowledgeSource({ tenantId: OTHER_TENANT }, created.id)
     ).toBeNull()
-    expect(await store.listKnowledgeSources({ tenantId: TENANT })).toHaveLength(1)
+    expect(await store.listKnowledgeSources({ tenantId: TENANT })).toHaveLength(
+      1
+    )
     await expect(
       store.transitionKnowledgeSource(
         { tenantId: TENANT },
@@ -384,13 +388,21 @@ describe('control plane store branches without database', () => {
     )
     const candidate = await store.createReleaseCandidate(
       { tenantId: TENANT },
-      { agentId: agent.id, versionId: version.id, gateResults: [...GATE_RESULTS] },
+      {
+        agentId: agent.id,
+        versionId: version.id,
+        gateResults: [...GATE_RESULTS]
+      },
       'admin.branches-b'
     )
     await expect(
       store.createReleaseCandidate(
         { tenantId: TENANT },
-        { agentId: agent.id, versionId: version.id, gateResults: [...GATE_RESULTS] },
+        {
+          agentId: agent.id,
+          versionId: version.id,
+          gateResults: [...GATE_RESULTS]
+        },
         'admin.branches-b'
       )
     ).rejects.toMatchObject({ code: 'invalid_action' })
@@ -470,9 +482,20 @@ describe('control plane store branches without database', () => {
       )
     ).rejects.toMatchObject({ code: 'invalid_action' })
     await expect(
-      store.transitionPluginCatalogEntry(scope, draft.id, 'ARCHIVED', 'admin.branches-b', 'APPROVED')
+      store.transitionPluginCatalogEntry(
+        scope,
+        draft.id,
+        'ARCHIVED',
+        'admin.branches-b',
+        'APPROVED'
+      )
     ).rejects.toMatchObject({ code: 'conflict' })
-    await store.transitionPluginCatalogEntry(scope, draft.id, 'APPROVED', 'approver.branches-b')
+    await store.transitionPluginCatalogEntry(
+      scope,
+      draft.id,
+      'APPROVED',
+      'approver.branches-b'
+    )
     expect(
       await store.resolveApprovedPlugin(scope, 'branches.calendar', '1.0.0')
     ).toMatchObject({ version: '1.0.0' })
@@ -488,7 +511,12 @@ describe('control plane store branches without database', () => {
       { manifest: pluginManifest('1.0.1') },
       'admin.branches-b'
     )
-    await store.transitionPluginCatalogEntry(scope, numeric.id, 'APPROVED', 'approver.branches-b')
+    await store.transitionPluginCatalogEntry(
+      scope,
+      numeric.id,
+      'APPROVED',
+      'approver.branches-b'
+    )
     expect(
       (await store.resolveApprovedPlugin(scope, 'branches.calendar'))?.version
     ).toBe('1.0.1')
@@ -498,8 +526,15 @@ describe('control plane store branches without database', () => {
       { manifest: pluginManifest('beta') },
       'admin.branches-b'
     )
-    await store.transitionPluginCatalogEntry(scope, opaque.id, 'APPROVED', 'approver.branches-b')
-    expect(await store.resolveApprovedPlugin(scope, 'branches.calendar')).toBeDefined()
+    await store.transitionPluginCatalogEntry(
+      scope,
+      opaque.id,
+      'APPROVED',
+      'approver.branches-b'
+    )
+    expect(
+      await store.resolveApprovedPlugin(scope, 'branches.calendar')
+    ).toBeDefined()
   })
 
   it('validates trace persistence scope and limits without database', async () => {
@@ -528,11 +563,17 @@ describe('control plane store branches without database', () => {
     await expect(
       store.recordTestRun(
         { tenantId: TENANT },
-        { ...trace, agentId: 'agent_00000000-0000-4000-8000-000000000912' as AgentId }
+        {
+          ...trace,
+          agentId: 'agent_00000000-0000-4000-8000-000000000912' as AgentId
+        }
       )
     ).rejects.toMatchObject({ code: 'invalid_action' })
 
-    const execution = await store.recordExecutionTrace({ tenantId: TENANT }, trace)
+    const execution = await store.recordExecutionTrace(
+      { tenantId: TENANT },
+      trace
+    )
     expect(execution.traceId).toBe(trace.traceId)
     await expect(
       store.recordExecutionTrace({ tenantId: OTHER_TENANT }, trace)
@@ -540,7 +581,9 @@ describe('control plane store branches without database', () => {
 
     expect(await store.listTestRuns({ tenantId: TENANT }, 0)).toHaveLength(1)
     expect(await store.listTestRuns({ tenantId: TENANT }, 1000)).toHaveLength(1)
-    expect(await store.listExecutionTraces({ tenantId: TENANT }, 0)).toHaveLength(1)
+    expect(
+      await store.listExecutionTraces({ tenantId: TENANT }, 0)
+    ).toHaveLength(1)
     expect(await store.listTestRuns({ tenantId: OTHER_TENANT })).toEqual([])
   })
 
@@ -588,7 +631,9 @@ describe('control plane store branches without database', () => {
         'admin.branches-b'
       )
     ).rejects.toMatchObject({ code: 'invalid_action' })
-    expect(await store.getTestSuite({ tenantId: OTHER_TENANT }, suite.id)).toBeNull()
+    expect(
+      await store.getTestSuite({ tenantId: OTHER_TENANT }, suite.id)
+    ).toBeNull()
     expect(await store.listTestSuites({ tenantId: OTHER_TENANT })).toEqual([])
     await expect(
       store.listTestSuites(
@@ -606,7 +651,11 @@ describe('control plane store branches without database', () => {
     expect(clone.version).toBe(2)
     expect(clone.previousSuiteId).toBe(suite.id)
 
-    const evaluated = await store.listTestSuiteRuns({ tenantId: TENANT }, suite.id, 0)
+    const evaluated = await store.listTestSuiteRuns(
+      { tenantId: TENANT },
+      suite.id,
+      0
+    )
     expect(evaluated).toEqual([])
 
     const trace = {
@@ -745,7 +794,9 @@ describe('control plane store branches without database', () => {
 describe('trace governance branches without database', () => {
   it('accepts a minimal valid trace and strips unknown fields', () => {
     const sanitized = sanitizeTraceForPersistence(validTrace())
-    expect(sanitized.traceId).toBe(validTrace().traceId.slice(0, 0) + sanitized.traceId)
+    expect(sanitized.traceId).toBe(
+      validTrace().traceId.slice(0, 0) + sanitized.traceId
+    )
     const polluted = sanitizeTraceForPersistence({
       ...validTrace(),
       extra: 'stripped'
@@ -783,7 +834,10 @@ describe('trace governance branches without database', () => {
       } as unknown as TestRunTrace)
     ).toThrowError(expect.objectContaining({ code: 'validation_failed' }))
     expect(() =>
-      sanitizeTraceForPersistence({ ...validTrace(), latencyMs: 999 } as unknown as TestRunTrace)
+      sanitizeTraceForPersistence({
+        ...validTrace(),
+        latencyMs: 999
+      } as unknown as TestRunTrace)
     ).toThrowError(expect.objectContaining({ code: 'validation_failed' }))
   })
 
@@ -799,7 +853,9 @@ describe('trace governance branches without database', () => {
       sanitizeTraceForPersistence({
         ...validTrace(),
         tools: [{ name: 'tool-a', status: 'succeeded' }],
-        toolResults: [{ name: 'tool-b', status: 'succeeded', output: { redacted: true } }]
+        toolResults: [
+          { name: 'tool-b', status: 'succeeded', output: { redacted: true } }
+        ]
       } as unknown as TestRunTrace)
     ).toThrowError(expect.objectContaining({ code: 'validation_failed' }))
     expect(() =>
@@ -813,7 +869,9 @@ describe('trace governance branches without database', () => {
       sanitizeTraceForPersistence({
         ...validTrace(),
         tools: [{ name: 'tool-a', status: 'blocked' }],
-        toolResults: [{ name: 'tool-a', status: 'blocked', output: { redacted: true } }]
+        toolResults: [
+          { name: 'tool-a', status: 'blocked', output: { redacted: true } }
+        ]
       } as unknown as TestRunTrace)
     ).toThrowError(expect.objectContaining({ code: 'validation_failed' }))
   })
@@ -1089,7 +1147,11 @@ describe('test lab branches without database', () => {
         versionId: version.id,
         message: 'Hello',
         history: ['x'.repeat(4001)],
-        approvedKnowledge: { source: 'bad', version: 'v1', answer: 'x' } as never
+        approvedKnowledge: {
+          source: 'bad',
+          version: 'v1',
+          answer: 'x'
+        } as never
       })
     ).rejects.toMatchObject({ code: 'validation_failed' })
   })
@@ -1113,11 +1175,17 @@ describe('test lab branches without database', () => {
       versionId: version.id,
       history: []
     }
-    const medication = await runTestLab({ ...base, message: 'Preciso de dipirona agora' })
+    const medication = await runTestLab({
+      ...base,
+      message: 'Preciso de dipirona agora'
+    })
     expect(medication.handoff.requested).toBe(true)
     expect(medication.response.mode).toBe('handoff')
 
-    const scheduling = await runTestLab({ ...base, message: 'Quero agendar uma consulta' })
+    const scheduling = await runTestLab({
+      ...base,
+      message: 'Quero agendar uma consulta'
+    })
     expect(scheduling.intent.name).toBe('scheduling')
 
     const institutional = await runTestLab({
@@ -1170,7 +1238,9 @@ describe('plugin gateway branches without database', () => {
     z.object({ ok: z.boolean().optional() }).strict()
   ])
 
-  function fixturePlugin(overrides: Partial<RegisteredPlugin> = {}): RegisteredPlugin {
+  function fixturePlugin(
+    overrides: Partial<RegisteredPlugin> = {}
+  ): RegisteredPlugin {
     const manifest = {
       name: 'branches.gateway',
       version: '1.0.0',
@@ -1243,7 +1313,9 @@ describe('plugin gateway branches without database', () => {
     })
   }
 
-  function executionInput(overrides: Partial<CapabilityExecutionInput> = {}): CapabilityExecutionInput {
+  function executionInput(
+    overrides: Partial<CapabilityExecutionInput> = {}
+  ): CapabilityExecutionInput {
     return {
       tenantId: TENANT,
       agentId: 'agent_00000000-0000-4000-8000-000000000911' as AgentId,
@@ -1251,7 +1323,11 @@ describe('plugin gateway branches without database', () => {
       config: fixtureConfig(),
       toolName: 'read',
       input: { value: 'controlled' },
-      actor: { id: 'operator.gateway', role: 'Operator', permissions: ['branches:read'] },
+      actor: {
+        id: 'operator.gateway',
+        role: 'Operator',
+        permissions: ['branches:read']
+      },
       policy: { decision: 'allowed', reason: 'controlled' },
       dryRun: true,
       ...overrides
@@ -1283,13 +1359,17 @@ describe('plugin gateway branches without database', () => {
       })
     )
     expect(extended.list()).toHaveLength(2)
-    expect(() =>
-      extended.register(fixturePlugin())
-    ).toThrow(/already registered/)
+    expect(() => extended.register(fixturePlugin())).toThrow(
+      /already registered/
+    )
     expect(registry.get('missing.plugin', '1.0.0')).toBeNull()
     expect(registry.getLatest('missing.plugin')).toBeNull()
-    expect(registry.getLatest('branches.gateway')?.manifest.version).toBe('1.0.0')
-    expect(extended.getLatest('branches.gateway')?.manifest.version).toBe('1.0.1')
+    expect(registry.getLatest('branches.gateway')?.manifest.version).toBe(
+      '1.0.0'
+    )
+    expect(extended.getLatest('branches.gateway')?.manifest.version).toBe(
+      '1.0.1'
+    )
   })
 
   it('resolves tool bindings and validator gaps without database', () => {
@@ -1341,13 +1421,18 @@ describe('plugin gateway branches without database', () => {
     expect(gateway.permissionForConfiguredTool(fixtureConfig(), 'read')).toBe(
       'branches:read'
     )
-    expect(gateway.permissionForConfiguredTool(fixtureConfig([]), 'read')).toBeNull()
+    expect(
+      gateway.permissionForConfiguredTool(fixtureConfig([]), 'read')
+    ).toBeNull()
   })
 
   it('blocks malformed execution shapes without side effects', async () => {
-    const gateway = new CapabilityGateway(new PluginRegistry([fixturePlugin()]), {
-      actorAuthorizer: ({ requiredPermission }) => [requiredPermission]
-    })
+    const gateway = new CapabilityGateway(
+      new PluginRegistry([fixturePlugin()]),
+      {
+        actorAuthorizer: ({ requiredPermission }) => [requiredPermission]
+      }
+    )
     await expect(
       gateway.execute('not-a-record' as never)
     ).resolves.toMatchObject({
@@ -1365,21 +1450,28 @@ describe('plugin gateway branches without database', () => {
     ).resolves.toMatchObject({ status: 'blocked', reason: 'invalid_scope_id' })
     await expect(
       gateway.execute(
-        executionInput({ actor: { id: 'x', role: 'Operator', permissions: [] } })
+        executionInput({
+          actor: { id: 'x', role: 'Operator', permissions: [] }
+        })
       )
     ).resolves.toMatchObject({ status: 'blocked', reason: 'invalid_actor' })
     await expect(
       gateway.execute(executionInput({ input: {} }))
-    ).resolves.toMatchObject({ status: 'blocked', reason: 'tool_input_invalid' })
+    ).resolves.toMatchObject({
+      status: 'blocked',
+      reason: 'tool_input_invalid'
+    })
   })
 
   it('enforces authorization, policy and approval branches without database', async () => {
     const registry = new PluginRegistry([fixturePlugin()])
     const noAuthorizer = new CapabilityGateway(registry)
-    await expect(noAuthorizer.execute(executionInput())).resolves.toMatchObject({
-      status: 'blocked',
-      reason: 'actor_authorization_unavailable'
-    })
+    await expect(noAuthorizer.execute(executionInput())).resolves.toMatchObject(
+      {
+        status: 'blocked',
+        reason: 'actor_authorization_unavailable'
+      }
+    )
     const denied = new CapabilityGateway(registry, {
       actorAuthorizer: () => null
     })
@@ -1408,7 +1500,8 @@ describe('plugin gateway branches without database', () => {
             id: 'approval_00000000-0000-4000-8000-000000000911',
             tenantId: TENANT,
             agentId: 'agent_00000000-0000-4000-8000-000000000911' as AgentId,
-            versionId: 'agent_version_00000000-0000-4000-8000-000000000911' as never,
+            versionId:
+              'agent_version_00000000-0000-4000-8000-000000000911' as never,
             toolName: 'read',
             actorId: 'operator.gateway',
             expiresAt: new Date(Date.now() + 60000)
@@ -1420,9 +1513,12 @@ describe('plugin gateway branches without database', () => {
 
   it('executes handlers and reports audit availability without database', async () => {
     const onAudit = vi.fn()
-    const gateway = new CapabilityGateway(new PluginRegistry([fixturePlugin()]), {
-      actorAuthorizer: ({ requiredPermission }) => [requiredPermission]
-    })
+    const gateway = new CapabilityGateway(
+      new PluginRegistry([fixturePlugin()]),
+      {
+        actorAuthorizer: ({ requiredPermission }) => [requiredPermission]
+      }
+    )
     const ok = await gateway.execute(executionInput({ onAudit }))
     expect(ok.status).toBe('succeeded')
     expect(onAudit).toHaveBeenCalledWith(
@@ -1483,7 +1579,8 @@ describe('plugin gateway branches without database', () => {
           id: issued.id,
           tenantId: TENANT,
           agentId: 'agent_00000000-0000-4000-8000-000000000911' as AgentId,
-          versionId: 'agent_version_00000000-0000-4000-8000-000000000911' as never,
+          versionId:
+            'agent_version_00000000-0000-4000-8000-000000000911' as never,
           toolName: 'read',
           actorId: 'operator.gateway',
           expiresAt: new Date(Date.now() + 60000)

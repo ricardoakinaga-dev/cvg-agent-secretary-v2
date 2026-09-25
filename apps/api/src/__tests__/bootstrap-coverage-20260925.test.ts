@@ -186,15 +186,12 @@ describe('bootstrap capability and knowledge defaults without database', () => {
   it('leaves knowledge resolution untouched without a resolver', () => {
     expect(withDefaultKnowledgeResolver(undefined, undefined)).toBeUndefined()
     const runtime = { resolveAgentId: () => null }
-    expect(
-      withDefaultKnowledgeResolver(runtime as never, undefined)
-    ).toBe(runtime)
+    expect(withDefaultKnowledgeResolver(runtime as never, undefined)).toBe(
+      runtime
+    )
     const withResolver = { resolveApprovedKnowledge: vi.fn() }
     expect(
-      withDefaultKnowledgeResolver(
-        withResolver as never,
-        vi.fn() as never
-      )
+      withDefaultKnowledgeResolver(withResolver as never, vi.fn() as never)
     ).toBe(withResolver)
   })
 
@@ -212,9 +209,9 @@ describe('bootstrap capability and knowledge defaults without database', () => {
   it('prefers a configured capability authority without touching pools', () => {
     const configured = { kind: 'configured-authority' } as never
 
-    expect(
-      createCapabilityApprovalAuthority(configured, undefined)
-    ).toBe(configured)
+    expect(createCapabilityApprovalAuthority(configured, undefined)).toBe(
+      configured
+    )
     expect(
       createCapabilityApprovalAuthority(configured, {
         kind: 'postgres-pool',
@@ -249,9 +246,9 @@ describe('bootstrap inbound completion without database', () => {
   it('leaves non-pool runtimes untouched without connecting', () => {
     expect(withDefaultInboundCompletion(undefined, undefined)).toBeUndefined()
     const runtime = { resolveAgentId: () => null }
-    expect(
-      withDefaultInboundCompletion(runtime as never, undefined)
-    ).toBe(runtime)
+    expect(withDefaultInboundCompletion(runtime as never, undefined)).toBe(
+      runtime
+    )
     expect(
       withDefaultInboundCompletion(runtime as never, { kind: 'memory' })
     ).toBe(runtime)

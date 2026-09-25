@@ -5,6 +5,11 @@ import {
   type AlertSample
 } from './alerts.ts'
 import {
+  createInMemoryAlertDeliveryLedger,
+  deliverAlertCycles,
+  type AlertDeliveryCycleRecord
+} from './alert-delivery-ledger.ts'
+import {
   collectorTelemetryHooks,
   InProcessCollector,
   type CollectorRedactionReport
@@ -102,6 +107,15 @@ export interface ObservabilityExerciseReport {
     recoverySustained: ExerciseAlertCheckpoint
     detectedFault: string
     clearedAfterRecovery: boolean
+  }
+  delivery: {
+    rules: string[]
+    firing: string[]
+    noData: string[]
+    cycles: AlertDeliveryCycleRecord[]
+    ledgerEntries: number
+    ledgerValid: boolean
+    status: 'PASS' | 'FAIL'
   }
   recovery: {
     startedAt: string
@@ -499,12 +513,56 @@ export async function runObservabilityExercise(
   ].join('\n')
   const canaryHits = scanTargets.includes(canary) ? 1 : 0
 
+  // Alert delivery reads the real collector batches (metrics only) and closes
+  // the detected -> acknowledged -> closed cycle on the injected clock. The
+  // evaluation time is the detection checkpoint so fault samples are still
+  // inside their windows; `no_data` rules are treated as OK.
+  const deliverySamples: AlertSample[] = [
+    ...apiExport.metrics,
+    ...workerExport.metrics
+  ].map((metric) => ({
+    metric: metric.name,
+    value: metric.value,
+    timestamp: metric.timestamp,
+    ...(Object.keys(metric.attributes).length > 0
+      ? { attributes: metric.attributes }
+      : {})
+  }))
+  const deliveryEvaluationTime = new Date(Date.parse(phaseDetectionEnd))
+  const deliveryEvaluations = evaluateAlertRules(
+    DEFAULT_ALERT_RULES,
+    deliverySamples,
+    deliveryEvaluationTime
+  )
+  const deliveryLedger = createInMemoryAlertDeliveryLedger()
+  const acknowledgeAt = new Date(
+    deliveryEvaluationTime.getTime() + 5_000
+  ).toISOString()
+  const closeAt = new Date(
+    deliveryEvaluationTime.getTime() + 10_000
+  ).toISOString()
+  const delivery = deliverAlertCycles({
+    evaluations: deliveryEvaluations,
+    ledger: deliveryLedger,
+    acknowledgeAt,
+    closeAt,
+    correlationId
+  })
+  const ledgerVerification = deliveryLedger.verify()
+  const deliveryStatus: 'PASS' | 'FAIL' =
+    ledgerVerification.valid &&
+    delivery.firingRules.length > 0 &&
+    delivery.cycles.length === delivery.firingRules.length
+      ? 'PASS'
+      : 'FAIL'
+
   const traceIds = new Set(hops.map((hop) => hop.traceId))
   const status: 'PASS' | 'FAIL' =
     canaryHits === 0 &&
     detection.firing.length > 0 &&
     recoverySustained.firing.length === 0 &&
-    traceIds.size === 1
+    traceIds.size === 1 &&
+    deliveryStatus === 'PASS'
       ? 'PASS'
       : 'FAIL'
 
@@ -543,6 +601,15 @@ export async function runObservabilityExercise(
       clearedAfterRecovery:
         detection.firing.length > 0 && recoverySustained.firing.length === 0
     },
+    delivery: {
+      rules: DEFAULT_ALERT_RULES.map((alertRule) => alertRule.id),
+      firing: delivery.firingRules,
+      noData: delivery.noDataRules,
+      cycles: delivery.cycles,
+      ledgerEntries: deliveryLedger.entries().length,
+      ledgerValid: ledgerVerification.valid,
+      status: deliveryStatus
+    },
     recovery: {
       startedAt: phaseRecoveryStart,
       recoveredAt,
@@ -572,7 +639,7 @@ export async function runObservabilityExercise(
     limitations: [
       'No hosted collector, dashboard, pager or external sink: exports are in-process or opt-in JSONL/OTLP-shaped files.',
       'SLOs remain PROPOSED_NOT_APPROVED; no operational owner has approved objectives or thresholds.',
-      'Approval latency requires the proposed approval_latency_ms instrumentation; the exercise injects synthetic samples.',
+      'Approval latency instrumentation lives in the approval engine; the exercise uses synthetic samples for its deterministic timeline.',
       'Recovery is proven for the controlled-local process; physical RPO/RTO and production alert delivery are out of scope.',
       'The exercise uses synthetic IDs, synthetic tenant and no real data or external effect.'
     ]

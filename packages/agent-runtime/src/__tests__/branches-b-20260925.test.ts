@@ -111,12 +111,8 @@ describe('orchestration branch-b coverage', () => {
   it('keeps an uncloneable planner context by reference instead of failing', async () => {
     const store = new InMemoryGoalPlanStore({ clock: () => NOW })
     const hook = () => 'synthetic'
-    const goal = await store.createGoal(
-      goalInput({ plannerContext: { hook } })
-    )
-    expect(
-      (goal.plannerContext as { hook: unknown }).hook
-    ).toBe(hook)
+    const goal = await store.createGoal(goalInput({ plannerContext: { hook } }))
+    expect((goal.plannerContext as { hook: unknown }).hook).toBe(hook)
   })
 
   it('rejects goal reuse when the incoming planner context is an array', async () => {
@@ -238,7 +234,10 @@ describe('orchestration branch-b coverage', () => {
       })
     )
     expect(first.id).not.toBe(second.id)
-    const found = await store.getGoalByInboundMessage(TENANT, 'msg_branch_b6dup')
+    const found = await store.getGoalByInboundMessage(
+      TENANT,
+      'msg_branch_b6dup'
+    )
     expect(found?.id).toBe(second.id)
   })
 
@@ -332,16 +331,14 @@ describe('orchestration branch-b coverage', () => {
   it('runs with the default clock when none is configured', async () => {
     const store = new InMemoryGoalPlanStore({ clock: () => NOW })
     let goal = await store.createGoal(goalInput())
-    for (
-      const target of [
-        'PLANNING',
-        'GOVERNING',
-        'EXECUTING',
-        'OBSERVING_RESULT',
-        'EVALUATING',
-        'COMPLETED'
-      ] as const
-    ) {
+    for (const target of [
+      'PLANNING',
+      'GOVERNING',
+      'EXECUTING',
+      'OBSERVING_RESULT',
+      'EVALUATING',
+      'COMPLETED'
+    ] as const) {
       goal = await store.transitionGoal({
         tenantId: TENANT,
         goalId: goal.id,

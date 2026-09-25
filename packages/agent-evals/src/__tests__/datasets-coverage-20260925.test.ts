@@ -31,9 +31,7 @@ describe('listEvalCategories', () => {
 describe('CORE_EVAL_DATASET integrity', () => {
   it('matches the dataset contract counts', () => {
     expect(CORE_EVAL_DATASET_CONTRACT.id).toBe('core-v1')
-    expect(CORE_EVAL_DATASET_CONTRACT.scenarios).toBe(
-      CORE_EVAL_DATASET.length
-    )
+    expect(CORE_EVAL_DATASET_CONTRACT.scenarios).toBe(CORE_EVAL_DATASET.length)
     expect(CORE_EVAL_DATASET_CONTRACT.adversarialScenarios).toBe(
       CORE_EVAL_DATASET.filter((scenario) => scenario.adversarial === true)
         .length
