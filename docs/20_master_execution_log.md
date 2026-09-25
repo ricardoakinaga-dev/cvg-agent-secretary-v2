@@ -6,6 +6,10 @@
 
 - R2 de FU1 SOLICITADO; sessão humana ADIADA; gate PostgreSQL ADMITIDO (descartável+teardown); mutation ADMITIDA (pisos intactos); fluxos de re-selo/8 gates APROVADOS como plano. Recibo hash-bound registrado. Próximo: executar R2 → mutation → PostgreSQL. Staging/produção `NO_GO`.
 
+# Reseal AAA: CONDITIONAL_GO / AAA_CANDIDATE — 2026-09-25
+
+- Três correções aplicadas (e2e gating `d45b319`; pin `f66a022`; critic report fresh validado) e reseal reexecutado com PostgreSQL descartável autorizado: `phase11-7c74e336cda9b19b-muh54c90`, **todos os gates locais/invariantes PASS**, verify PASS no snapshot `45629f1`; promoção inelegível apenas pelos 8 gates externos/humanos. Limitação HEAD-anchored registrada; 12 papéis de teste sem DROP ROLE (contêiner removido). Staging/produção `NO_GO`.
+
 # Reseal Phase 11: NO_GO fail-closed — 2026-09-25
 
 - Pin do manifesto corrigido (`f66a022`, teste anti-drift) e reseal executado no candidato `98a9636d`: pacote novo `phase11-06e1477ebe76b2f5-muh112ux`, `decision=NO_GO`. Gates não-PASS: coverage (pisos críticos sem PostgreSQL), postgres (não autorizado), e2e (harness AUD20-19 no suite padrão), independent_critic (report stale), closure. Verify pós FAIL (artefatos não rastreados + critic stale); promoção inelegível. Remediação em 3 itens com admissões próprias. Staging/produção `NO_GO`.

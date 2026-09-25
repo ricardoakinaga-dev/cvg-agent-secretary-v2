@@ -8,6 +8,11 @@
 - [x] 3 pedidos preparados (coverage, mutante, desbloqueio) — `WAITING_HUMAN_APPROVAL`.
 - [ ] Aguardar decisões. Staging/produção `NO_GO`.
 
+# Reseal AAA concluído — 2026-09-25
+
+- [x] Correções aplicadas (e2e, pin, critic fresh); reseal com PostgreSQL: `CONDITIONAL_GO`/`AAA_CANDIDATE`, todos os gates locais PASS; verify PASS no snapshot.
+- [ ] Decidir rota de release: binding HEAD-anchored, dossiês externos/sign-off ou owner/SLO. Staging/produção `NO_GO`.
+
 # Reseal executado — 2026-09-25
 
 - [x] Pin do manifesto corrigido; pacote novo `phase11-06e1477ebe76b2f5-muh112ux` (`NO_GO` fail-closed) substitui o stale.

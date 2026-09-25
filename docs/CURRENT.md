@@ -497,9 +497,9 @@ da próxima ação primária AUD20-17.
 
 ## Próxima ação
 
-- Próxima ação: executar a remediação do reseal: (1) gatear o harness AUD20-19 fora do e2e padrão, (2) gerar critic report Phase 11 fresh-context do candidato congelado e (3) reexecutar o certify com PostgreSQL descartável autorizado; manter owner/SLO adiados, `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.
+- Próxima ação: decidir a rota de fechamento do release: (a) remediação do binding HEAD-anchored para re-verificação estável do pacote `CONDITIONAL_GO/AAA_CANDIDATE`, (b) dossiês/owners dos 8 gates externos e sign-off humano, ou (c) owner/SLO de `AUD20-10`; manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.
 
-- Reseal Phase 11 executado (`phase11-06e1477ebe76b2f5-muh112ux`): pacote stale substituído; `decision=NO_GO` fail-closed com causas mapeadas (coverage sem PostgreSQL, postgres não autorizado, e2e do harness AUD20-19, critic stale, closure). Ver [relatório](04_audit/evidence/AUD20/AUD20-reseal-execution-report-20260925.md).
+- Reseal AAA concluído: `CONDITIONAL_GO`/`AAA_CANDIDATE` (`phase11-7c74e336cda9b19b-muh54c90`), todos os gates locais PASS, verify PASS no snapshot `45629f1`; promoção barrada apenas pelos 8 gates externos/humanos. Limitação HEAD-anchored registrada. Ver [relatório](04_audit/evidence/AUD20/AUD20-reseal-execution-report-20260925.md).
 
 - `AUD20-10/IMP50-09`: BUILD local executado e **slice aceito** (crítica delta fresh-context `PASS`; suíte final `2.647 PASS`/192 skips; coverage 4/4 ≥90%; mutation dirigida `22/22` na árvore final). C01–C07 permanecem abertos; ver [aceite](04_audit/evidence/AUD20/AUD20-10-imp50-09-slice-acceptance-20260925.md) e [relatório](04_audit/evidence/AUD20/AUD20-10-composition-build-report-20260925.md).
 - `AUD20-19`: R2 `PASS` do harness; sessão humana sem autorização (adiada); nenhum aceite de produto.

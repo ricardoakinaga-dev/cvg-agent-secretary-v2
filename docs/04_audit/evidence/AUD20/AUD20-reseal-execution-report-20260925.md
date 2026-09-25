@@ -25,6 +25,18 @@ Admissão no [recibo nº 3](AUD20-20250925-human-decisions-3-20260925.md). Candi
 
 O reseal cumpriu o objetivo de **substituir o pacote stale por um pacote do candidato atual**, com resultado honesto `NO_GO` e lista de remediação acionável. Nenhum gate foi afrouxado; nenhuma promoção, deploy, staging ou produção.
 
+## Resultado final (reseal com PostgreSQL e remediações)
+
+- Correções aplicadas: harness AUD20-19 fora do e2e padrão (`d45b319`), pin canônico do manifesto (`f66a022`), critic report Phase 11 fresh-context validado (binding `45629f1`).
+- Reseal v2 com PostgreSQL descartável autorizado: **`decision=CONDITIONAL_GO`, `certification=AAA_CANDIDATE`**, `certificationId phase11-7c74e336cda9b19b-muh54c90`; **todos os gates locais e invariantes PASS**; restam apenas os **8 gates externos/humanos**. Log: [reseal v2](AUD20-reseal-certify-pg-v2-20260925.log).
+- `certification:verify:phase11` no snapshot certificado `45629f1`: **PASS (0 falhas)** — [log](AUD20-reseal-verify-post-v2-20260925.log).
+- `promotion:check`: `verifier: PASS`, `eligible:false`, `reason: production_assurance_incomplete`, 8 externos, `noProductionEffect:true` — [log](AUD20-reseal-promotion-post-v2-20260925.log).
+- Higiene P2: o gate PostgreSQL deixou 12 papéis de teste sem `DROP ROLE` (contêiner descartado em seguida; sem resíduo na máquina).
+
+### Limitação conhecida (HEAD-anchored)
+
+O selo é ancorado em HEAD: após os commits de registro (`93c575d`, `ea2371c`), `certification:verify:phase11` acusa 2 falhas de commit (`CRITIC:binding` e `mutation_candidate_commit_mismatch`) enquanto `candidateId`/`treeHash` permanecem válidos — evidência e saídas de certificação são excluídas do candidato por design, mas o campo `commit` compara com o HEAD vivo. **Remediação proposta (admissão própria):** comparar contra o candidato do pacote quando `candidateId`/`treeHash` conferem, ou selar o report/mutation no mesmo commit do pacote.
+
 ## Próximos passos recomendados (cada um exige admissão própria)
 
 1. **Gatear o harness AUD20-19 fora do e2e padrão** (corrige `e2e`).

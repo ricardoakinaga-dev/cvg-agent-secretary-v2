@@ -1,0 +1,17 @@
+
+> cvg-agent-secretary-v2@1.0.0 certification:verify:phase11
+> node scripts/phase11-verify.mjs
+
+{
+  "schemaVersion": 1,
+  "kind": "phase11-verification",
+  "mode": "current",
+  "status": "FAIL",
+  "currentPointer": "certification/current.json",
+  "result": "certification/phase11/phase11-result.json",
+  "manifest": "certification/phase11/manifest.json",
+  "failures": [
+    "independent_critic_invalid:CRITIC:binding:commit=45629f11da702b4240ef2bc59048c73415c9953f!=ea2371c691c632448c6ad6009b8b06ce2e2e3935",
+    "mutation_report_invalid:mutation_candidate_commit_mismatch"
+  ]
+}
