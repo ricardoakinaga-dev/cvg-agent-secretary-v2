@@ -13,6 +13,27 @@ interface Envelope<T> {
 }
 
 describe('buildServerFromEnv boundaries', () => {
+  it('requires the PostgreSQL replay adapter in production before opening a database connection', async () => {
+    await expect(
+      buildServerFromEnv(
+        {
+          NODE_ENV: 'production',
+          API_PERSISTENCE_MODE: 'postgres',
+          DATABASE_URL: 'postgresql://synthetic.invalid/runtime',
+          POSTGRES_RLS_ENFORCEMENT: 'true',
+          OUTBOX_DURABLE_INBOUND: 'true',
+          INBOUND_TENANT_ID: tenantId,
+          INBOUND_AGENT_ID: agentId
+        },
+        {
+          operatorIdentityResolver: () => ({
+            operatorId: 'fixture',
+            role: 'Supervisor'
+          })
+        }
+      )
+    ).rejects.toThrow(/replay store.*postgres/i)
+  })
   it('requires an explicit NODE_ENV and valid persistence mode', async () => {
     await expect(
       buildServerFromEnv({ API_PERSISTENCE_MODE: 'memory' })

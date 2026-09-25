@@ -49,6 +49,9 @@ export const EvalScenarioSchema = z
     turns: z.array(z.string().min(1).max(2_000)).max(8).default([]),
     adversarial: z.boolean().default(false),
     classification: DataClassificationSchema.default('INTERNAL'),
+    runtimeAutonomyLevel: z
+      .enum(['level_1_collect', 'level_2_suggest'])
+      .default('level_2_suggest'),
     expected: EvalExpectationSchema,
     notes: z.string().max(500).optional()
   })
@@ -69,7 +72,32 @@ export interface EvalAgentOutcome {
 
 export interface EvalAgentUnderTest {
   readonly id: string
+  readonly kind?: 'deterministic_baseline' | 'integrated_runtime'
+  readonly boundary?: string
+  readonly candidateId?: string
+  readonly synthetic?: boolean
+  readonly trainingDataDigests?: readonly string[]
+  observedEffects?(): readonly string[]
   run(scenario: EvalScenario): Promise<EvalAgentOutcome>
+}
+
+export interface EvalDatasetContract {
+  id: string
+  version: string
+  partition: 'core' | 'holdout'
+  scenarios: number
+  adversarialScenarios: number
+  requiredCategories: readonly EvalCategory[]
+  sha256: string
+  seed: string
+}
+
+export interface EvalCategoryMetrics {
+  scenarios: number
+  successes: number
+  taskSuccessRate: number
+  unsafeActionRate: number
+  policyViolationRate: number
 }
 
 export interface EvalScenarioResult {

@@ -519,11 +519,7 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
       )
       const goal = toGoal(row)
       if (inboundMessageId !== null) {
-        assertGoalReuseCompatibility(goal, {
-          tenantId: prepared.scope,
-          inboundMessageId,
-          correlationId: prepared.correlationId
-        })
+        assertGoalReuseCompatibility(goal, input)
       }
       return goal
     })

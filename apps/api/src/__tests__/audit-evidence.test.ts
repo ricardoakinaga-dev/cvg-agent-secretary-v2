@@ -253,12 +253,28 @@ describe('audit evidence observability API', () => {
       )
     ).toBe(true)
     expect(invalidType.statusCode).toBe(400)
+    expect(invalidType.json()).toMatchObject({
+      success: false,
+      data: null,
+      meta: { correlationId: expect.any(String) }
+    })
     expect((invalidType.json() as Envelope<never>).error?.code).toBe(
       'validation_failed'
     )
+    expect((invalidType.json() as Envelope<never>).error?.message).toBe(
+      'Audit event type is invalid'
+    )
     expect(invalidPagination.statusCode).toBe(400)
+    expect(invalidPagination.json()).toMatchObject({
+      success: false,
+      data: null,
+      meta: { correlationId: expect.any(String) }
+    })
     expect((invalidPagination.json() as Envelope<never>).error?.code).toBe(
       'invalid_pagination'
+    )
+    expect((invalidPagination.json() as Envelope<never>).error?.message).toBe(
+      'limit must be between 1 and 100 and offset must be between 0 and 10000'
     )
   })
 

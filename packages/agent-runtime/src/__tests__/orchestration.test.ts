@@ -892,10 +892,13 @@ describe('durable Goal/Plan/Step orchestration', () => {
     ])
     expect(new Set(deliveries.map((goal) => goal.id)).size).toBe(1)
 
-    const redelivered = await store.getOrCreateGoal({
-      ...input,
-      objective: 'Synthetic redelivery must not overwrite the canonical Goal'
-    })
+    await expect(
+      store.getOrCreateGoal({
+        ...input,
+        objective: 'Synthetic redelivery must not overwrite the canonical Goal'
+      })
+    ).rejects.toMatchObject({ code: 'conflict' })
+    const redelivered = await store.getOrCreateGoal(input)
     expect(redelivered.id).toBe(deliveries[0]!.id)
     expect(redelivered.objective).toBe(input.objective)
     expect(redelivered.plannerContext).toEqual({

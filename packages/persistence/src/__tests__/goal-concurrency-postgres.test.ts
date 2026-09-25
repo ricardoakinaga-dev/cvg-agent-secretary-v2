@@ -266,10 +266,13 @@ describeWithPostgres('Goal get-or-create concurrency over PostgreSQL', () => {
       plannerContext: { messageId: inboundMessageId, envelope: 'winner' }
     })
     const first = await storeA.getOrCreateGoal(input)
-    const redelivered = await storeB.getOrCreateGoal({
-      ...input,
-      objective: 'Synthetic redelivery must not overwrite the canonical Goal'
-    })
+    await expect(
+      storeB.getOrCreateGoal({
+        ...input,
+        objective: 'Synthetic redelivery must not overwrite the canonical Goal'
+      })
+    ).rejects.toMatchObject({ code: 'conflict' })
+    const redelivered = await storeB.getOrCreateGoal(input)
     expect(redelivered.id).toBe(first.id)
     expect(redelivered.objective).toBe(input.objective)
     expect(redelivered.plannerContext).toEqual({
@@ -335,6 +338,111 @@ describeWithPostgres('Goal get-or-create concurrency over PostgreSQL', () => {
       correlation_id: CORRELATION,
       objective: input.objective,
       planner_context: { messageId: inboundMessageId }
+    })
+  })
+
+  it('rejects every divergent canonical lineage field without changing the winner', async () => {
+    const inboundMessageId = 'msg_goal_concurrency_complete_lineage'
+    const plannerContext = {
+      messageId: inboundMessageId,
+      sessionId: 'session_goal_lineage_a',
+      envelope: {
+        capability: 'schedule.read',
+        action: 'schedule.read',
+        marker: 'lineage-a',
+        approvalId: 'approval-lineage-a'
+      },
+      traceId: 'trace_goal_lineage_a',
+      runtimeMarker: 'lineage-a'
+    }
+    const input: CreateGoalInput = {
+      ...createGoalInput({ inboundMessageId }),
+      sessionId: 'session_goal_lineage_a',
+      conversationId: 'conversation_goal_lineage_a',
+      objective: 'Synthetic complete lineage fixture',
+      plannerContext,
+      executionSnapshot: {
+        agentVersion: 'agent-lineage-a',
+        promptVersion: 'prompt-lineage-a',
+        policyVersion: 'policy-lineage-a',
+        modelProfile: 'deterministic',
+        toolVersions: { synthetic: '1.0.0' },
+        runtimeMode: 'kernel',
+        runtimeVersion: 'lineage-a'
+      }
+    }
+    const winner = await storeA.getOrCreateGoal(input)
+    const variants: CreateGoalInput[] = [
+      { ...input, sessionId: 'session_goal_lineage_b' },
+      { ...input, conversationId: 'conversation_goal_lineage_b' },
+      { ...input, objective: 'Synthetic divergent objective' },
+      {
+        ...input,
+        successCriteria: [
+          {
+            kind: 'EVENT',
+            eventType: 'schedule.write.executed',
+            source: 'outbox',
+            correlationId: CORRELATION
+          }
+        ]
+      },
+      {
+        ...input,
+        executionSnapshot: {
+          ...input.executionSnapshot,
+          runtimeVersion: 'lineage-b'
+        }
+      },
+      {
+        ...input,
+        plannerContext: {
+          ...plannerContext,
+          envelope: { ...plannerContext.envelope, marker: 'lineage-b' }
+        }
+      },
+      {
+        ...input,
+        plannerContext: { ...plannerContext, traceId: 'trace_goal_lineage_b' }
+      },
+      {
+        ...input,
+        plannerContext: { ...plannerContext, runtimeMarker: 'lineage-b' }
+      }
+    ]
+
+    for (const variant of variants) {
+      await expect(storeB.getOrCreateGoal(variant)).rejects.toMatchObject({
+        code: 'conflict'
+      })
+    }
+
+    await expect(
+      storeB.getOrCreateGoal({
+        ...input,
+        plannerContext: {
+          ...plannerContext,
+          envelope: {
+            ...plannerContext.envelope,
+            approvalId: 'approval-lineage-b'
+          }
+        }
+      })
+    ).rejects.toMatchObject({ code: 'conflict' })
+
+    const reloaded = await storeA.getGoal(TENANT, winner.id)
+    expect(reloaded).toMatchObject({
+      id: winner.id,
+      sessionId: input.sessionId,
+      conversationId: input.conversationId,
+      objective: input.objective,
+      successCriteria: input.successCriteria,
+      executionSnapshot: input.executionSnapshot,
+      plannerContext
+    })
+    expect(await goalCounts(poolA, TENANT, inboundMessageId)).toMatchObject({
+      goals: 1,
+      distinct_ids: 1
     })
   })
 

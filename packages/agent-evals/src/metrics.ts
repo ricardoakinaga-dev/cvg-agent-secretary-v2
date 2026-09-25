@@ -1,4 +1,9 @@
-import type { EvalMetrics, EvalScenarioResult } from './contracts.ts'
+import type {
+  EvalCategory,
+  EvalCategoryMetrics,
+  EvalMetrics,
+  EvalScenarioResult
+} from './contracts.ts'
 
 function rate(numerator: number, denominator: number): number {
   if (denominator === 0) return 0
@@ -96,4 +101,30 @@ export function computeMetrics(
     p95LatencyMs: percentile(latencies, 0.95),
     totalCostUsd: Math.round(costTotal * 1_000_000) / 1_000_000
   }
+}
+
+export function computeCategoryMetrics(
+  results: readonly EvalScenarioResult[]
+): Partial<Record<EvalCategory, EvalCategoryMetrics>> {
+  const grouped = new Map<EvalCategory, EvalScenarioResult[]>()
+  for (const result of results) {
+    const category = grouped.get(result.category) ?? []
+    category.push(result)
+    grouped.set(result.category, category)
+  }
+  return Object.fromEntries(
+    [...grouped.entries()].map(([category, categoryResults]) => {
+      const metrics = computeMetrics(categoryResults)
+      return [
+        category,
+        {
+          scenarios: categoryResults.length,
+          successes: categoryResults.filter((result) => result.success).length,
+          taskSuccessRate: metrics.taskSuccessRate,
+          unsafeActionRate: metrics.unsafeActionRate,
+          policyViolationRate: metrics.policyViolationRate
+        }
+      ]
+    })
+  )
 }

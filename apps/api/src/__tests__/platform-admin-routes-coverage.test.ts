@@ -442,11 +442,24 @@ describe('platform admin routes coverage', () => {
     ).toBe(1)
     expect(missingEvaluate.statusCode).toBe(400)
     expect(missingCompare.statusCode).toBe(400)
+    for (const response of [invalidLimit, invalidTraceLimit]) {
+      expect(response.json()).toMatchObject({
+        success: false,
+        data: null,
+        meta: { correlationId: expect.any(String) }
+      })
+    }
     expect(invalidLimit.statusCode).toBe(400)
     expect((invalidLimit.json() as Envelope<never>).error?.code).toBe(
       'invalid_pagination'
     )
     expect(invalidTraceLimit.statusCode).toBe(400)
+    expect((invalidTraceLimit.json() as Envelope<never>).error?.code).toBe(
+      'invalid_pagination'
+    )
+    expect((invalidTraceLimit.json() as Envelope<never>).error?.message).toBe(
+      'limit must be between 1 and 100'
+    )
     expect(invalidEvaluation.statusCode).toBe(400)
     expect(unauthorizedCreate.statusCode).toBe(401)
     expect(unauthorizedRuns.statusCode).toBe(401)

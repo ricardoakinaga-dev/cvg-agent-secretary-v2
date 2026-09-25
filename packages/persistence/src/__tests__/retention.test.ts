@@ -6,6 +6,7 @@ import {
   RETENTION_TARGETS,
   RETENTION_WINDOW_START,
   computeRetentionBatchHash,
+  computeInboundTombstoneDigest,
   executeRetentionSweep,
   resolveRetentionSweepPlan,
   type RetentionEligibility,
@@ -105,9 +106,41 @@ class FakeRetentionStore implements RetentionSweepStore {
     return rows.filter((row) => heldIds.has(row.id)).length
   }
 
-  async deleteEligible(eligibility: RetentionEligibility): Promise<number> {
+  async selectEligible(
+    eligibility: RetentionEligibility,
+    mutation: 'delete' | 'tombstone' | 'redact',
+    limit: number
+  ): Promise<{ ids: string[]; hasMore: boolean }> {
     const eligible = this.eligible(eligibility)
-    const eligibleSet = new Set(eligible)
+      .filter((row) => {
+        const tenantWide = eligibility.holds.some(
+          (hold) => hold.recordId === null
+        )
+        const heldIds = new Set(
+          eligibility.holds
+            .map((hold) => hold.recordId)
+            .filter((recordId): recordId is string => recordId !== null)
+        )
+        return !tenantWide && !heldIds.has(row.id)
+      })
+      .filter(
+        (row) =>
+          mutation !== 'tombstone' || row.fields.tombstone_digest === undefined
+      )
+      .sort((left, right) => left.id.localeCompare(right.id))
+    return {
+      ids: eligible.slice(0, limit).map((row) => row.id),
+      hasMore: eligible.length > limit
+    }
+  }
+
+  async deleteEligible(
+    eligibility: RetentionEligibility,
+    recordIds: readonly string[]
+  ): Promise<number> {
+    const eligibleSet = new Set(
+      this.eligible(eligibility).filter((row) => recordIds.includes(row.id))
+    )
     const tenantWide = eligibility.holds.some((hold) => hold.recordId === null)
     const heldIds = new Set(
       eligibility.holds
@@ -125,7 +158,28 @@ class FakeRetentionStore implements RetentionSweepStore {
     return deleted
   }
 
-  async redactEligible(eligibility: RetentionEligibility): Promise<number> {
+  async tombstoneEligible(
+    eligibility: RetentionEligibility,
+    recordIds: readonly string[]
+  ): Promise<number> {
+    let tombstoned = 0
+    for (const row of this.eligible(eligibility)) {
+      if (!recordIds.includes(row.id)) continue
+      if (row.fields.tombstone_digest !== undefined) continue
+      row.fields.tombstone_digest = computeInboundTombstoneDigest(
+        eligibility.tenantId,
+        row.id
+      )
+      row.fields.tombstoned_at = eligibility.executedAt
+      tombstoned += 1
+    }
+    return tombstoned
+  }
+
+  async redactEligible(
+    eligibility: RetentionEligibility,
+    recordIds: readonly string[]
+  ): Promise<number> {
     const tenantWide = eligibility.holds.some((hold) => hold.recordId === null)
     const heldIds = new Set(
       eligibility.holds
@@ -134,6 +188,7 @@ class FakeRetentionStore implements RetentionSweepStore {
     )
     let redacted = 0
     for (const row of this.eligible(eligibility)) {
+      if (!recordIds.includes(row.id)) continue
       if (tenantWide || heldIds.has(row.id)) continue
       const stillSensitive = eligibility.target.redactionColumns.some(
         (column) =>
@@ -668,6 +723,7 @@ describe('retention sweep execution (idempotent, tenant scoped, hold aware)', ()
       expect(Object.keys(entry).sort()).toEqual([
         'action',
         'batchHash',
+        'batchNumber',
         'classification',
         'deletedCount',
         'executedAt',
@@ -683,6 +739,7 @@ describe('retention sweep execution (idempotent, tenant scoped, hold aware)', ()
         'redactedCount',
         'targetId',
         'tenantId',
+        'tombstonedCount',
         'windowEnd',
         'windowStart'
       ])

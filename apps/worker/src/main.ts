@@ -1,7 +1,7 @@
 import { TenantIdSchema } from '@cvg/platform'
 import { createDomainId, createShutdownController } from '@cvg/shared'
 import { CONTINUOUS_WORKER_RUN_MODE } from './continuous-worker.ts'
-import { createControlledWorker } from './controlled-worker.ts'
+import { runControlledMemoryRuntime } from './controlled-memory-runtime.ts'
 import {
   createPostgresContinuousWorker,
   createPostgresControlledWorker,
@@ -114,16 +114,12 @@ async function runControlledMemoryWorker(env: NodeJS.ProcessEnv) {
     })
   }
 
-  const worker = createControlledWorker({
+  const drained = await runControlledMemoryRuntime({
     tenantId,
     workerId,
     adapter,
-    handlers: {
-      inboundProcess: () => ({ status: 'controlled_noop' }),
-      messageOutbound: () => ({ status: 'controlled_noop' })
-    }
+    drainLimit: 1
   })
-  const drained = await worker.drain(1)
   console.log(
     JSON.stringify({
       event: smoke

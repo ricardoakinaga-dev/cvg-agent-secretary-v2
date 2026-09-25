@@ -730,6 +730,10 @@ export class PostgresRuntimeRepository {
         ]
       )
 
+      // Re-read the repository clock immediately before the final CAS. The
+      // handler runs outside the transaction, so the lease may expire after
+      // the initial ownership check but before the journal/event commit.
+      const commitNow = this.repositoryNow()
       const updated = await this.client.query<DurableOutboxRow>(
         `UPDATE outbox_events
          SET status = 'processed',
@@ -740,10 +744,11 @@ export class PostgresRuntimeRepository {
              last_error = NULL,
              available_at = $3
          WHERE tenant_id = $1 AND id = $2 AND status = 'processing'
-           AND lease_owner = $4
-           AND lease_token = $5
-         RETURNING ${outboxSelectColumns}`,
-        [tenantId, event.id, ackNow, workerId, leaseToken]
+            AND lease_owner = $4
+            AND lease_token = $5
+            AND lease_until > $6
+          RETURNING ${outboxSelectColumns}`,
+        [tenantId, event.id, commitNow, workerId, leaseToken, commitNow]
       )
       const updatedRow = updated.rows[0]
       if (!updatedRow)
@@ -3415,14 +3420,10 @@ function hasTenantContext(payload: unknown): boolean {
 }
 
 function readPayloadTenantId(payload: unknown): TenantId | null {
-  if (
-    typeof payload !== 'object' ||
-    payload === null ||
-    !('tenantId' in payload)
-  ) {
-    return null
-  }
-  const parsed = TenantIdSchema.safeParse(payload.tenantId)
+  if (!hasTenantContext(payload)) return null
+  const parsed = TenantIdSchema.safeParse(
+    (payload as { tenantId: unknown }).tenantId
+  )
   return parsed.success ? parsed.data : null
 }
 
@@ -3430,11 +3431,7 @@ function mergeOutboxPayload(
   payload: unknown,
   context: { conversationId: string; sessionId: string; messageId: string }
 ): unknown {
-  if (
-    typeof payload === 'object' &&
-    payload !== null &&
-    !Array.isArray(payload)
-  ) {
+  if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
     return { ...(payload as Record<string, unknown>), ...context }
   }
   return { value: payload, ...context }

@@ -3,6 +3,26 @@ import type { PostgresPoolClient, PostgresPoolLike } from '@cvg/persistence'
 export const OPERATOR_REPLAY_STORE_ENV = 'CVG_OPERATOR_REPLAY_STORE'
 export const OPERATOR_REPLAY_TABLES = ['operator_replay_events'] as const
 
+export function assertProductionReplayConfiguration(
+  env: NodeJS.ProcessEnv,
+  guardConfigured?: boolean
+): void {
+  if (env.NODE_ENV !== 'production') return
+  if (guardConfigured === undefined) {
+    if (env[OPERATOR_REPLAY_STORE_ENV]?.trim().toLowerCase() !== 'postgres') {
+      throw new Error(
+        `Production operator replay store must set ${OPERATOR_REPLAY_STORE_ENV}=postgres`
+      )
+    }
+    return
+  }
+  if (!guardConfigured) {
+    throw new Error(
+      'Production requires an operator replay guard bound to the active identity key ring'
+    )
+  }
+}
+
 /**
  * DDL for the distributed operator replay table, integrated as migration
  * `0026_operator_replay_events` in `packages/persistence/migrations/`. This
@@ -176,6 +196,92 @@ export class PostgresOperatorReplayStore implements OperatorReplayStore {
       )
       if (result.rows.length !== OPERATOR_REPLAY_TABLES.length) {
         throw new Error('PostgreSQL operator replay storage is not installed')
+      }
+      const roleResult = await client.query<{
+        rolname: string
+        rolsuper: boolean
+        rolbypassrls: boolean
+        rolcreatedb: boolean
+        rolcreaterole: boolean
+        rolreplication: boolean
+      }>(
+        `SELECT rolname, rolsuper, rolbypassrls, rolcreatedb,
+                rolcreaterole, rolreplication
+           FROM pg_roles
+          WHERE rolname = current_user
+          LIMIT 1`
+      )
+      const role = roleResult.rows[0]
+      if (
+        !role ||
+        role.rolsuper ||
+        role.rolbypassrls ||
+        role.rolcreatedb ||
+        role.rolcreaterole ||
+        role.rolreplication
+      ) {
+        throw new Error('PostgreSQL operator replay role is not minimal')
+      }
+      const posture = await client.query<{
+        membership_count: number
+        database_owner: string
+        can_database_create: boolean
+        can_schema_usage: boolean
+        can_schema_create: boolean
+        table_owner: string
+        can_select: boolean
+        can_insert: boolean
+        can_update: boolean
+        can_delete: boolean
+        can_truncate: boolean
+        can_trigger: boolean
+        can_references: boolean
+      }>(
+        `SELECT
+           (SELECT count(*)::int
+              FROM pg_auth_members AS membership
+              JOIN pg_roles AS member ON member.oid = membership.member
+             WHERE member.rolname = current_user) AS membership_count,
+           (SELECT pg_get_userbyid(datdba)
+              FROM pg_database WHERE datname = current_database()) AS database_owner,
+           has_database_privilege(current_user, current_database(), 'CREATE')
+             AS can_database_create,
+           has_schema_privilege(current_user, current_schema(), 'USAGE') AS can_schema_usage,
+           has_schema_privilege(current_user, current_schema(), 'CREATE') AS can_schema_create,
+           pg_get_userbyid(c.relowner) AS table_owner,
+           has_table_privilege(current_user, c.oid, 'SELECT') AS can_select,
+           has_table_privilege(current_user, c.oid, 'INSERT') AS can_insert,
+           has_table_privilege(current_user, c.oid, 'UPDATE') AS can_update,
+           has_table_privilege(current_user, c.oid, 'DELETE') AS can_delete,
+           has_table_privilege(current_user, c.oid, 'TRUNCATE') AS can_truncate,
+           has_table_privilege(current_user, c.oid, 'TRIGGER') AS can_trigger,
+           has_table_privilege(current_user, c.oid, 'REFERENCES') AS can_references
+          FROM pg_class AS c
+          JOIN pg_namespace AS n ON n.oid = c.relnamespace
+         WHERE n.nspname = current_schema()
+           AND c.relname = 'operator_replay_events'
+           AND c.relkind = 'r'`
+      )
+      const observed = posture.rows[0]
+      if (
+        !observed ||
+        observed.membership_count !== 0 ||
+        observed.database_owner === role.rolname ||
+        observed.can_database_create ||
+        observed.table_owner === role.rolname ||
+        !observed.can_schema_usage ||
+        observed.can_schema_create ||
+        !observed.can_select ||
+        !observed.can_insert ||
+        !observed.can_update ||
+        !observed.can_delete ||
+        observed.can_truncate ||
+        observed.can_trigger ||
+        observed.can_references
+      ) {
+        throw new Error(
+          'PostgreSQL operator replay grants, ownership or role privileges are unsafe'
+        )
       }
     } finally {
       client.release()

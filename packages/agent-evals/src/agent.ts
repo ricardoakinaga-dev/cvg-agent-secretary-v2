@@ -196,19 +196,27 @@ function normalize(text: string): string {
  */
 export class DeterministicEvalAgent implements EvalAgentUnderTest {
   readonly id = 'deterministic-eval-agent-v1'
+  readonly kind = 'deterministic_baseline' as const
+  readonly boundary = '@cvg/agent-evals/DeterministicEvalAgent'
+  readonly synthetic = true
+  readonly trainingDataDigests: readonly string[] = []
 
   async run(scenario: EvalScenario): Promise<EvalAgentOutcome> {
-    const text = normalize([scenario.message, ...scenario.turns].join('\n'))
-    const matched = RULES.find((rule) => rule.pattern.test(text))
-    return {
-      intent: matched?.intent ?? 'unknown',
-      proposedCapabilities: matched?.capabilities ?? [],
-      escalation: matched?.escalation ?? 'handoff',
-      refused: matched?.refused ?? false,
-      structuredValid: true,
-      latencyMs: 5 + (scenario.message.length % 10),
-      costUsd: 0
-    }
+    return classifySyntheticScenario(scenario)
+  }
+}
+
+function classifySyntheticScenario(scenario: EvalScenario): EvalAgentOutcome {
+  const text = normalize([scenario.message, ...scenario.turns].join('\n'))
+  const matched = RULES.find((rule) => rule.pattern.test(text))
+  return {
+    intent: matched?.intent ?? 'unknown',
+    proposedCapabilities: matched?.capabilities ?? [],
+    escalation: matched?.escalation ?? 'handoff',
+    refused: matched?.refused ?? false,
+    structuredValid: true,
+    latencyMs: 5 + (scenario.message.length % 10),
+    costUsd: 0
   }
 }
 

@@ -3,6 +3,7 @@ import { Client, Pool } from 'pg'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import {
   EXECUTION_PROPOSAL_SCHEMA_VERSION,
+  OrchestrationError,
   computeExecutionProposalHash,
   validatePlanGraph,
   type GovernedTurnInput,
@@ -31,6 +32,7 @@ import {
   assertPostgresKernelPrerequisites,
   createPostgresKernelHandlers,
   createPostgresKernelRuntime,
+  durableTurnResult,
   parseKernelTurnEnvelope,
   type PostgresKernelRuntime
 } from '../kernel-composition.ts'
@@ -903,6 +905,37 @@ describe('kernel handler audit and marker writing branches', () => {
     ).toHaveBeenCalledWith(MESSAGE, TENANT)
   })
 
+  it('maps shadowed durable outcomes and suppresses outbound effects', () => {
+    const withEvidence = durableTurnResult(
+      governedResult('shadowed', {
+        resultDigest: 'd'.repeat(64),
+        modelResult: {} as never
+      })
+    )
+    expect(withEvidence).toMatchObject({
+      outcome: 'waiting_external',
+      resultDigest: 'd'.repeat(64),
+      modelCalls: 1,
+      toolCalls: 0
+    })
+
+    const withoutEvidence = durableTurnResult(governedResult('shadowed'))
+    expect(withoutEvidence).toMatchObject({
+      outcome: 'waiting_external',
+      modelCalls: 0,
+      toolCalls: 0
+    })
+
+    const handlers = createPostgresKernelHandlers(
+      {},
+      fakeRuntime() as unknown as PostgresKernelRuntime
+    )
+    expect(handlers.messageOutbound({} as never)).toEqual({
+      status: 'controlled_outbound_suppressed',
+      externalEffects: false
+    })
+  })
+
   it('carries the effect confirmation into the durable integration audit payload', async () => {
     const runtime = fakeRuntime({
       runTurn: vi.fn().mockResolvedValue(
@@ -1072,6 +1105,30 @@ describe('kernel durable orchestrator handler branches', () => {
     const outcome = await handlers.inboundProcess(baseEvent(runtime))
 
     expect(outcome).toMatchObject({ status: 'paused_human_takeover' })
+    expect(runtime.runDurableGoal).not.toHaveBeenCalled()
+  })
+
+  it('returns approval_required_pending for durable redelivery without continuation', async () => {
+    const runtime = fakeRuntime({
+      message: {
+        runtimeStatus: 'waiting_approval',
+        runtimeApprovalId: 'appr_waiting_c3'
+      },
+      runDurableGoal: vi.fn().mockResolvedValue(durableResult())
+    })
+    const handlers = createPostgresKernelHandlers(
+      durableEnv,
+      runtime as unknown as PostgresKernelRuntime
+    )
+
+    const outcome = await handlers.inboundProcess(baseEvent(runtime))
+
+    expect(outcome).toMatchObject({
+      status: 'approval_required_pending',
+      runtimeStatus: 'approval_required',
+      approvalId: 'appr_waiting_c3',
+      externalEffects: false
+    })
     expect(runtime.runDurableGoal).not.toHaveBeenCalled()
   })
 
@@ -1569,6 +1626,42 @@ describeWithPostgres(
       )
     }
 
+    async function createCanonicalGoal(
+      input: Parameters<PostgresKernelRuntime['runDurableGoal']>[0]
+    ) {
+      return runtime.goalStore.createGoal({
+        tenantId: TENANT,
+        inboundMessageId: input.context.message.id,
+        ...(input.context.session?.id !== undefined
+          ? { sessionId: input.context.session.id }
+          : {}),
+        conversationId: input.context.message.conversationId,
+        objective: input.envelope.message,
+        successCriteria: [
+          {
+            kind: 'EVENT',
+            eventType: `${input.envelope.capability}.executed`,
+            source: 'outbox',
+            correlationId: input.correlationId
+          }
+        ],
+        correlationId: input.correlationId,
+        plannerContext: {
+          messageId: input.context.message.id,
+          sessionId: input.context.session?.id ?? null,
+          envelope: input.envelope,
+          ...(input.traceContext !== undefined
+            ? { traceId: input.traceContext.traceId }
+            : {})
+        },
+        executionSnapshot: {
+          ...DURABLE_SNAPSHOT,
+          agentVersion: input.envelope.agentVersion,
+          modelProfile: input.envelope.modelProfile
+        }
+      })
+    }
+
     async function updateApproval(
       approvalId: string,
       fields: {
@@ -1787,6 +1880,68 @@ describeWithPostgres(
       }
       return validatePlanGraph(plan, drafts).fingerprint
     }
+
+    it('rethrows an unrelated durable orchestrator error', async () => {
+      const input = goalInput({ messageId: messageId('msg_run_error') })
+      const run = vi
+        .spyOn(runtime.orchestrator, 'run')
+        .mockRejectedValue(new Error('synthetic orchestrator outage'))
+      try {
+        await expect(runtime.runDurableGoal(input)).rejects.toThrow(
+          /synthetic orchestrator outage/
+        )
+      } finally {
+        run.mockRestore()
+      }
+    })
+
+    it('does not convert a lease-lost error when the goal was deleted', async () => {
+      const input = goalInput({
+        messageId: messageId('msg_lease_lost_missing')
+      })
+      const run = vi
+        .spyOn(runtime.orchestrator, 'run')
+        .mockRejectedValue(
+          new OrchestrationError('lease_lost', 'synthetic lease lost')
+        )
+      const getGoal = vi
+        .spyOn(runtime.goalStore, 'getGoal')
+        .mockResolvedValue(null)
+      try {
+        await expect(runtime.runDurableGoal(input)).rejects.toThrow(
+          /synthetic lease lost/
+        )
+      } finally {
+        getGoal.mockRestore()
+        run.mockRestore()
+      }
+    })
+
+    it('returns a fenced result with the active plan after a conflict', async () => {
+      const input = goalInput({ messageId: messageId('msg_conflict_active') })
+      const run = vi
+        .spyOn(runtime.orchestrator, 'run')
+        .mockRejectedValue(
+          new OrchestrationError('conflict', 'synthetic conflict')
+        )
+      const activePlan = { id: 'plan_synthetic_fenced' } as never
+      const getActivePlan = vi
+        .spyOn(runtime.goalStore, 'getActivePlan')
+        .mockResolvedValue(activePlan)
+      const listSteps = vi
+        .spyOn(runtime.goalStore, 'listSteps')
+        .mockResolvedValue([])
+      try {
+        const result = await runtime.runDurableGoal(input)
+        expect(result.reason).toBe('goal_run_fenced')
+        expect(result.plan).toBe(activePlan)
+        expect(result.steps).toEqual([])
+      } finally {
+        listSteps.mockRestore()
+        getActivePlan.mockRestore()
+        run.mockRestore()
+      }
+    })
 
     beforeAll(async () => {
       if (!testDatabaseUrl) return
@@ -2038,68 +2193,61 @@ describeWithPostgres(
       expect(await stepStatus(missing.stepId)).toBe('WAITING_APPROVAL')
     })
 
-    it('rebuilds the plan from the runtime planner context when persisted context is invalid', async () => {
+    it('rejects reuse when persisted planner context has unexpected lineage fields', async () => {
       const sessionMessageId = messageId('msg_planner_runtime_session')
       const sessionCorrelation = correlationId()
       const sessionConversationId = `conv_${sessionMessageId}`
-      await runtime.goalStore.createGoal({
-        tenantId: TENANT,
-        inboundMessageId: sessionMessageId,
-        sessionId: 'sess_planner_runtime',
-        conversationId: sessionConversationId,
-        objective: 'synthetic',
-        successCriteria: [],
+      const sessionInput = goalInput({
+        messageId: sessionMessageId,
         correlationId: sessionCorrelation,
-        plannerContext: {},
-        executionSnapshot: DURABLE_SNAPSHOT
-      })
-      const sessionRun = await runtime.runDurableGoal(
-        goalInput({
-          messageId: sessionMessageId,
-          correlationId: sessionCorrelation,
+        conversationId: sessionConversationId,
+        envelope: envelope({
+          capability: 'schedule.read',
+          action: 'schedule.read'
+        }),
+        session: {
+          id: 'sess_planner_runtime',
           conversationId: sessionConversationId,
-          envelope: envelope({
-            capability: 'schedule.read',
-            action: 'schedule.read'
-          }),
-          session: {
-            id: 'sess_planner_runtime',
-            conversationId: sessionConversationId,
-            status: 'open',
-            takeoverState: 'BOT_ACTIVE',
-            createdAt: new Date('2026-09-16T12:00:00.000Z'),
-            updatedAt: new Date('2026-09-16T12:00:00.000Z')
-          }
-        })
+          status: 'open',
+          takeoverState: 'BOT_ACTIVE',
+          createdAt: new Date('2026-09-16T12:00:00.000Z'),
+          updatedAt: new Date('2026-09-16T12:00:00.000Z')
+        }
+      })
+      const sessionGoal = await createCanonicalGoal(sessionInput)
+      await pool.query(
+        `UPDATE orchestrator_goals
+            SET planner_context = planner_context || '{"unexpected":true}'::jsonb
+          WHERE tenant_id = $1 AND id = $2`,
+        [TENANT, sessionGoal.id]
       )
-      expect(sessionRun.goal.status).toBe('COMPLETED')
+      await expect(runtime.runDurableGoal(sessionInput)).rejects.toMatchObject({
+        code: 'conflict'
+      })
 
       const traceMessageId = messageId('msg_planner_runtime_trace')
       const traceCorrelation = correlationId()
       const traceConversationId = `conv_${traceMessageId}`
-      await runtime.goalStore.createGoal({
-        tenantId: TENANT,
-        inboundMessageId: traceMessageId,
-        conversationId: traceConversationId,
-        objective: 'synthetic',
-        successCriteria: [],
+      const traceInput = goalInput({
+        messageId: traceMessageId,
         correlationId: traceCorrelation,
-        plannerContext: {},
-        executionSnapshot: DURABLE_SNAPSHOT
+        conversationId: traceConversationId,
+        envelope: envelope({
+          capability: 'schedule.read',
+          action: 'schedule.read'
+        }),
+        traceId: TRACE
       })
-      const traceRun = await runtime.runDurableGoal(
-        goalInput({
-          messageId: traceMessageId,
-          correlationId: traceCorrelation,
-          conversationId: traceConversationId,
-          envelope: envelope({
-            capability: 'schedule.read',
-            action: 'schedule.read'
-          }),
-          traceId: TRACE
-        })
+      const traceGoal = await createCanonicalGoal(traceInput)
+      await pool.query(
+        `UPDATE orchestrator_goals
+            SET planner_context = planner_context || '{"unexpected":true}'::jsonb
+          WHERE tenant_id = $1 AND id = $2`,
+        [TENANT, traceGoal.id]
       )
-      expect(traceRun.goal.status).toBe('COMPLETED')
+      await expect(runtime.runDurableGoal(traceInput)).rejects.toMatchObject({
+        code: 'conflict'
+      })
     })
 
     it('fails closed when no persisted or runtime planner context exists', async () => {
@@ -2383,26 +2531,21 @@ describeWithPostgres(
       const inboundMessageId = messageId('msg_durable_no_plan')
       const correlation = correlationId()
       const conversationId = `conv_${inboundMessageId}`
-      const goal = await runtime.goalStore.createGoal({
-        tenantId: TENANT,
-        inboundMessageId,
-        conversationId,
-        objective: 'synthetic',
-        successCriteria: [],
+      const input = goalInput({
+        messageId: inboundMessageId,
         correlationId: correlation,
-        plannerContext: {},
-        executionSnapshot: DURABLE_SNAPSHOT
+        conversationId
       })
+      const goal = await createCanonicalGoal(input)
       await setGoalStatus(goal.id, 'WAITING_APPROVAL')
 
       await expect(
         runtime.runDurableGoal({
-          ...goalInput({
-            messageId: inboundMessageId,
-            correlationId: correlation,
-            conversationId
-          }),
-          envelope: envelope({ approvalId: 'appr_synthetic_missing' }),
+          ...input,
+          envelope: {
+            ...input.envelope,
+            approvalId: 'appr_synthetic_missing'
+          },
           approvalDecision: 'approve'
         })
       ).rejects.toThrow(/does not match a waiting plan step/)

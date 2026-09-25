@@ -1300,38 +1300,122 @@ export function effectiveGoalDeadline(
   )
 }
 
-function plannerContextMessageId(plannerContext: unknown): string | null {
+function normalizeExecutionSnapshot(
+  snapshot?: Partial<ExecutionSnapshot>
+): ExecutionSnapshot {
+  return {
+    agentVersion: snapshot?.agentVersion ?? null,
+    promptVersion: snapshot?.promptVersion ?? null,
+    policyVersion: snapshot?.policyVersion ?? null,
+    modelProfile: snapshot?.modelProfile ?? null,
+    toolVersions: { ...(snapshot?.toolVersions ?? {}) },
+    ...(snapshot?.runtimeMode !== undefined
+      ? { runtimeMode: snapshot.runtimeMode }
+      : {}),
+    ...(snapshot?.runtimeVersion !== undefined
+      ? { runtimeVersion: snapshot.runtimeVersion }
+      : {})
+  }
+}
+
+interface PlannerContextLineage {
+  valid: boolean
+  value: unknown
+}
+
+function plannerContextLineage(
+  plannerContext: unknown,
+  expectedMessageId?: string | null
+): PlannerContextLineage {
   if (
     plannerContext === null ||
     plannerContext === undefined ||
     typeof plannerContext !== 'object'
   ) {
-    return null
+    return {
+      valid: plannerContext === null || plannerContext === undefined,
+      value: plannerContext ?? null
+    }
   }
-  const messageId = (plannerContext as { messageId?: unknown }).messageId
-  return typeof messageId === 'string' ? messageId : null
+
+  if (Array.isArray(plannerContext)) {
+    return { valid: false, value: plannerContext }
+  }
+
+  const context = plannerContext as Record<string, unknown>
+  const messageId = context.messageId
+  const sessionId = context.sessionId
+  const traceId = context.traceId
+  const valid =
+    (messageId === undefined ||
+      (typeof messageId === 'string' &&
+        expectedMessageId !== undefined &&
+        expectedMessageId !== null &&
+        messageId === expectedMessageId)) &&
+    (sessionId === undefined ||
+      sessionId === null ||
+      typeof sessionId === 'string') &&
+    (traceId === undefined || traceId === null || typeof traceId === 'string')
+
+  const value = { ...context }
+  return { valid, value }
+}
+
+function goalReuseLineageFingerprint(input: {
+  inboundMessageId?: string | null
+  sessionId?: string | null
+  conversationId?: string | null
+  objective: string
+  successCriteria: SuccessCriterion[]
+  executionSnapshot?: Partial<ExecutionSnapshot>
+  plannerContext?: unknown
+}): { valid: boolean; fingerprint: string } {
+  const planner = plannerContextLineage(
+    input.plannerContext,
+    input.inboundMessageId
+  )
+  return {
+    valid: planner.valid,
+    fingerprint: canonicalizeJson({
+      sessionId: input.sessionId ?? null,
+      conversationId: input.conversationId ?? null,
+      objective: input.objective,
+      successCriteria: input.successCriteria,
+      executionSnapshot: normalizeExecutionSnapshot(input.executionSnapshot),
+      plannerContext: planner.value
+    })
+  }
 }
 
 /**
  * Shared reuse contract: a Goal already bound to the same tenant-scoped
- * inbound message may only be adopted when its correlation lineage and
- * planner context agree with the incoming delivery. The error never echoes
- * stored values, so a mismatched caller cannot read another context.
+ * inbound message may only be adopted when the complete canonical lineage
+ * agrees with the incoming delivery. The error never echoes stored values, so
+ * a mismatched caller cannot read another context.
  */
 export function assertGoalReuseCompatibility(
   existing: Goal,
-  input: Pick<
-    CreateGoalInput,
-    'tenantId' | 'inboundMessageId' | 'correlationId'
-  >
+  input: CreateGoalInput
 ): void {
-  const contextMessageId = plannerContextMessageId(existing.plannerContext)
+  let lineageCompatible = false
+  try {
+    const existingLineage = goalReuseLineageFingerprint(existing)
+    const incomingLineage = goalReuseLineageFingerprint(input)
+    lineageCompatible =
+      existingLineage.valid &&
+      incomingLineage.valid &&
+      existingLineage.fingerprint === incomingLineage.fingerprint
+  } catch {
+    // Invalid or non-canonical persisted context must fail closed without
+    // exposing the stored value through an implementation error.
+    lineageCompatible = false
+  }
   if (
     existing.tenantId !== input.tenantId ||
     existing.inboundMessageId === null ||
     existing.inboundMessageId !== input.inboundMessageId ||
     existing.correlationId !== input.correlationId ||
-    (contextMessageId !== null && contextMessageId !== input.inboundMessageId)
+    !lineageCompatible
   ) {
     throw new OrchestrationError(
       'conflict',
@@ -1371,19 +1455,9 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
     }
     const createdAt = this.clock()
     const budget = createExecutionBudget(input.budget)
-    const executionSnapshot: ExecutionSnapshot = {
-      agentVersion: input.executionSnapshot?.agentVersion ?? null,
-      promptVersion: input.executionSnapshot?.promptVersion ?? null,
-      policyVersion: input.executionSnapshot?.policyVersion ?? null,
-      modelProfile: input.executionSnapshot?.modelProfile ?? null,
-      toolVersions: { ...(input.executionSnapshot?.toolVersions ?? {}) },
-      ...(input.executionSnapshot?.runtimeMode !== undefined
-        ? { runtimeMode: input.executionSnapshot.runtimeMode }
-        : {}),
-      ...(input.executionSnapshot?.runtimeVersion !== undefined
-        ? { runtimeVersion: input.executionSnapshot.runtimeVersion }
-        : {})
-    }
+    const executionSnapshot = normalizeExecutionSnapshot(
+      input.executionSnapshot
+    )
     const goal: Goal = {
       id: createDomainId('goal'),
       tenantId,

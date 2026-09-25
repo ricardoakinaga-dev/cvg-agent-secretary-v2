@@ -691,14 +691,38 @@ describe('InMemoryGoalPlanStore branch hardening', () => {
     ).rejects.toMatchObject({ code: 'invalid_plan' })
   })
 
-  it('reuses a Goal whose planner context carries a non-string message id', async () => {
+  it('fails closed for a malformed planner context, even on exact replay', async () => {
     const store = new InMemoryGoalPlanStore({ clock: () => NOW })
     const inboundMessageId = 'msg_synthetic_non_string_context'
     const created = await store.createGoal(
       goalInput({ inboundMessageId, plannerContext: { messageId: 42 } })
     )
-    const reused = await store.getOrCreateGoal(goalInput({ inboundMessageId }))
-    expect(reused.id).toBe(created.id)
+    await expect(
+      store.getOrCreateGoal(goalInput({ inboundMessageId }))
+    ).rejects.toMatchObject({ code: 'conflict' })
+    await expect(
+      store.getOrCreateGoal(
+        goalInput({ inboundMessageId, plannerContext: { messageId: 42 } })
+      )
+    ).rejects.toMatchObject({ code: 'conflict' })
+    expect(created.plannerContext).toEqual({ messageId: 42 })
+  })
+
+  it('fails closed when planner message identity disagrees with the Goal', async () => {
+    const store = new InMemoryGoalPlanStore({ clock: () => NOW })
+    const inboundMessageId = 'msg_synthetic_context_identity'
+    const plannerContext = { messageId: 'msg_synthetic_other_identity' }
+    const created = await store.createGoal(
+      goalInput({ inboundMessageId, plannerContext })
+    )
+
+    await expect(
+      store.getOrCreateGoal(goalInput({ inboundMessageId }))
+    ).rejects.toMatchObject({ code: 'conflict' })
+    await expect(
+      store.getOrCreateGoal(goalInput({ inboundMessageId, plannerContext }))
+    ).rejects.toMatchObject({ code: 'conflict' })
+    expect(created.plannerContext).toEqual(plannerContext)
   })
 
   it('reuses a Goal that has no planner context for the same inbound message', async () => {

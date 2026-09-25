@@ -2,7 +2,6 @@ import { randomBytes } from 'node:crypto'
 import { performance } from 'node:perf_hooks'
 import Fastify from 'fastify'
 import type { ApprovalAuthority, ApprovalRecord } from '@cvg/approval-engine'
-import { GoalStatusSchema, type GoalStatus } from '@cvg/agent-runtime'
 import {
   auditEvidenceGovernance,
   createCorrelationId,
@@ -11,9 +10,7 @@ import {
   IDENTITY_MODE_ENV,
   ok,
   parseIdentityMode,
-  parseOperatorIdentity,
   redactSensitiveText,
-  roleHasPermission,
   ResolveApprovalSchema,
   sanitizeAuditEvidencePayload,
   TaskStatusSchema,
@@ -75,9 +72,6 @@ import {
 } from '@cvg/platform'
 import {
   type AtomicRuntimeApprovalDecisionInput,
-  type AuditEventType,
-  type AuditEvidenceFilters,
-  type AuditEvidenceQuery,
   type OutboxEventRecord,
   AuditEvidenceCheckpointCreateInputSchema,
   AuditEvidenceCheckpointIdSchema,
@@ -100,6 +94,7 @@ import {
   receiveInboundMessage,
   requestHumanApproval
 } from '@cvg/agent-core'
+import type { ObservabilityCollectorPort } from '@cvg/observability'
 import { Pool } from 'pg'
 import { z } from 'zod'
 import {
@@ -114,9 +109,19 @@ import {
   type OperatorReplayGuard
 } from './operator-identity.ts'
 import {
+  assertProductionReplayConfiguration,
   createOperatorReplayStoreFromEnv,
   type OperatorReplayStore
 } from './operator-replay-store.ts'
+import { createRequestContext } from './server/request-context.ts'
+import type { InboundTenantResolver } from './server/request-context.ts'
+import {
+  parseAuditEvidenceQuery,
+  parseOrchestrationGoalQuery,
+  parsePagination,
+  parseTraceLimit
+} from './server/request-query.ts'
+export type { InboundTenantResolver } from './server/request-context.ts'
 import { ControlledRequestMetrics } from './request-metrics.ts'
 import { installResponseCorrelationHook } from './response-correlation.ts'
 import { healthRoute, liveRoute, readyRoute } from './routes/health.ts'
@@ -126,18 +131,13 @@ import {
 } from './readiness.ts'
 import {
   classifyHttpRequestError,
-  createInvalidJsonBodyError,
   HTTP_REQUEST_BODY_LIMIT_BYTES
 } from './http-request-boundary.ts'
 import {
   classifyHttpRequestTarget,
   HTTP_REQUEST_MAX_PARAM_LENGTH
 } from './http-target-boundary.ts'
-import {
-  classifyPaginationOffset,
-  PAGINATION_OFFSET_ERROR_MESSAGE
-} from './pagination-boundary.ts'
-import { classifyAuditFilterValue } from './audit-filter-duplicate-boundary.ts'
+import { PAGINATION_OFFSET_ERROR_MESSAGE } from './pagination-boundary.ts'
 import {
   HmacWebhookVerifier,
   PostgresWebhookReplayStore,
@@ -209,12 +209,6 @@ export type WebhookVerifier = (input: {
   rawBody?: string
 }) => WebhookVerification | Promise<WebhookVerification>
 
-export type InboundTenantResolver = (input: {
-  headers: Record<string, unknown>
-  body: unknown
-  channel: Channel
-}) => TenantId | Promise<TenantId>
-
 const CONTROLLED_CAPABILITY_PERMISSION = 'scheduling:read'
 const serverCapabilityActorAuthorizer: CapabilityActorAuthorizer = ({
   actor,
@@ -237,16 +231,9 @@ export interface BuildServerOptions {
     | { kind: 'postgres-pool'; pool: PostgresPoolLike }
   platform?: ControlPlaneStore
   operatorIdentityResolver?: OperatorIdentityResolver
-  /**
-   * Distributed operator JTI replay guard. Absent keeps the resolver's
-   * process-local replay cache; configuring a store without the guard leaves
-   * cross-instance replay unblocked.
-   */
+  /** Distributed operator JTI replay guard; absent keeps the local cache. */
   operatorReplayGuard?: OperatorReplayGuard
-  /**
-   * Explicit identity mode. Defaults to `simulation` only for `NODE_ENV=test`;
-   * every other environment defaults to `trusted` and must inject a resolver.
-   */
+  /** Explicit identity mode; defaults to `simulation` only for `NODE_ENV=test`. */
   identityMode?: IdentityMode
   webhookVerifier?: WebhookVerifier
   inboundTenantResolver?: InboundTenantResolver
@@ -257,28 +244,18 @@ export interface BuildServerOptions {
   httpSecurity?: HttpSecurityOptions
   requestMetrics?: ControlledRequestMetrics
   requestMetricsEnabled?: boolean
-  /**
-   * Queue inbound work for the durable worker contract. Inline execution stays
-   * the default for existing controlled fixtures until this flag is enabled.
-   */
+  /** Queue inbound work for the durable worker contract; inline stays default. */
   durableInbound?: boolean
   /** Explicit adapter override, useful for deterministic controlled tests. */
   outbox?: DurableOutboxAdapter
-  /**
-   * Extra bounded readiness probes (for example the consumer heartbeat wired
-   * by the integrated composition). The database probe is built from
-   * `persistence` and needs no injection.
-   */
+  /** Extra bounded readiness probes (the database probe needs no injection). */
   readinessProbes?: readonly ReadinessProbe[]
-  /**
-   * Explicit journey persistence override. Omitted: memory uses the in-memory
-   * repository and PostgreSQL constructs PostgresJourneyRepository or fails
-   * startup. `null` keeps the journey routes fail-closed because no journey
-   * adapter is available.
-   */
+  /** Explicit journey persistence override; `null` keeps routes fail-closed. */
   journeyRepository?: JourneyRepositoryPort | null
   /** Canonical governed-kernel approval authority (distinct from legacy approvals). */
   runtimeApprovalAuthority?: ApprovalAuthority
+  /** Harness-only collector injection; `app.close()` awaits flush and close. */
+  runtimeCollector?: ObservabilityCollectorPort
 }
 
 export type BuildServerFromEnvOptions = Omit<
@@ -291,6 +268,23 @@ export type BuildServerFromEnvOptions = Omit<
 }
 
 export function buildServer(options: BuildServerOptions = {}) {
+  const requestContext = createRequestContext({
+    nodeEnv: process.env.NODE_ENV,
+    controlledTenantId: CONTROLLED_TENANT_ID
+  })
+  const {
+    createEffectiveOperatorIdentityResolver,
+    bindOperatorAuthorization: bindAuth,
+    installRequestMetricsHooks,
+    journeyAuditContext,
+    parseInboundChannel,
+    requirePlatformScope,
+    resolveDataPlaneTenant,
+    resolveInboundTenant,
+    resolveOperatorIdentity,
+    resolveOptionalRequestTenant,
+    requiresAuthenticatedMutations: authRequired
+  } = requestContext
   const identityMode =
     options.identityMode === undefined
       ? parseIdentityMode(process.env[IDENTITY_MODE_ENV], process.env.NODE_ENV)
@@ -369,7 +363,6 @@ export function buildServer(options: BuildServerOptions = {}) {
     (process.env.NODE_ENV === 'test' ||
       process.env.NODE_ENV === 'development') &&
     options.requestMetricsEnabled !== false
-  const requestStartedAt = new WeakMap<object, number>()
   const app = Object.assign(
     Fastify({
       logger: false,
@@ -417,34 +410,8 @@ export function buildServer(options: BuildServerOptions = {}) {
   })
   installHttpSecurityHooks(app, httpSecurity)
   installResponseCorrelationHook(app)
-  app.addHook('onRequest', async (request) => {
-    requestStartedAt.set(request, performance.now())
-  })
-  app.addHook('onResponse', async (request, reply) => {
-    const startedAt = requestStartedAt.get(request) ?? performance.now()
-    requestMetrics.record({
-      method: request.method,
-      routeTemplate: request.routeOptions.url,
-      statusCode: reply.statusCode,
-      latencyMs: Math.max(0, performance.now() - startedAt)
-    })
-    requestStartedAt.delete(request)
-  })
-  const rawBodyByRequest = new WeakMap<object, string>()
-  app.removeContentTypeParser('application/json')
-  app.addContentTypeParser(
-    'application/json',
-    { parseAs: 'string' },
-    (request, body, done) => {
-      const rawBody = typeof body === 'string' ? body : body.toString('utf8')
-      rawBodyByRequest.set(request, rawBody)
-      try {
-        done(null, JSON.parse(rawBody))
-      } catch {
-        done(createInvalidJsonBodyError())
-      }
-    }
-  )
+  installRequestMetricsHooks(app, requestMetrics, () => performance.now())
+  const getRawBody = requestContext.installRawBodyParser(app)
   const rateLimiter = new InMemoryRateLimiter()
   app.addHook('onRequest', async (request, reply) => {
     const limit = rateLimiter.check(`ip:${request.ip}`, {
@@ -492,22 +459,23 @@ export function buildServer(options: BuildServerOptions = {}) {
     approvalAuthority: capabilityApprovalAuthority,
     actorAuthorizer: serverCapabilityActorAuthorizer
   })
-  const emitRuntimeLog = (entry: RuntimeLogEntry) =>
+  const emitRuntimeLog = (entry: RuntimeLogEntry) => {
     options.runtimeLogger?.(entry)
-  const requireIdentity = (
-    headers: Record<string, unknown>,
-    permission: string
-  ) => requireOperatorIdentity(headers, permission, operatorIdentityResolver)
-  const requireAnyIdentity = (
-    headers: Record<string, unknown>,
-    permissions: string[]
-  ) =>
-    requireAnyOperatorPermission(headers, permissions, operatorIdentityResolver)
-  const requireAuthenticatedMutations =
-    process.env.NODE_ENV === 'test' && identityMode === 'simulation'
-      ? (options.requireAuthenticatedMutations ?? false)
-      : true
-
+    options.runtimeCollector?.recordLog({
+      level: entry.status === 'error' ? 'error' : 'info',
+      message: entry.event,
+      fields: {
+        correlationId: entry.correlationId,
+        operation: 'runtime',
+        outcome: entry.status
+      },
+      timestamp: new Date().toISOString()
+    })
+  }
+  const auth = bindAuth(operatorIdentityResolver)
+  const { requireIdentity, requireAnyIdentity } = auth
+  const { requireAuthenticatedMutations: mutationOverride } = options
+  const authMutations = authRequired(identityMode, mutationOverride)
   app.get(healthRoute, async () =>
     ok({ status: 'ok', runtime: 'api' }, createCorrelationId())
   )
@@ -585,8 +553,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       try {
         const params = request.params as { channel: string }
         if (options.webhookVerifier) {
-          const rawBody =
-            rawBodyByRequest.get(request.raw) ?? rawBodyByRequest.get(request)
+          const rawBody = getRawBody(request.raw) ?? getRawBody(request)
           const verified = await options.webhookVerifier({
             headers: request.headers,
             body: request.body,
@@ -896,7 +863,7 @@ export function buildServer(options: BuildServerOptions = {}) {
   app.post('/v1/journeys/owner-drafts', async (request, reply) => {
     const correlationId = createCorrelationId()
     try {
-      const identity = requireAuthenticatedMutations
+      const identity = authMutations
         ? requireIdentity(request.headers, 'conversation:update')
         : null
       const tenantId = identity
@@ -949,7 +916,7 @@ export function buildServer(options: BuildServerOptions = {}) {
   app.post('/v1/journeys/patient-drafts', async (request, reply) => {
     const correlationId = createCorrelationId()
     try {
-      const identity = requireAuthenticatedMutations
+      const identity = authMutations
         ? requireIdentity(request.headers, 'conversation:update')
         : null
       const tenantId = identity
@@ -1004,7 +971,7 @@ export function buildServer(options: BuildServerOptions = {}) {
     async (request, reply) => {
       const correlationId = createCorrelationId()
       try {
-        const identity = requireAuthenticatedMutations
+        const identity = authMutations
           ? requireIdentity(request.headers, 'conversation:update')
           : null
         const tenantId = identity
@@ -1064,7 +1031,7 @@ export function buildServer(options: BuildServerOptions = {}) {
   app.post('/v1/journeys/appointment-drafts', async (request, reply) => {
     const correlationId = createCorrelationId()
     try {
-      const identity = requireAuthenticatedMutations
+      const identity = authMutations
         ? requireIdentity(request.headers, 'conversation:update')
         : null
       const tenantId = identity
@@ -1119,7 +1086,7 @@ export function buildServer(options: BuildServerOptions = {}) {
   app.post('/v1/journeys/tasks', async (request, reply) => {
     const correlationId = createCorrelationId()
     try {
-      const identity = requireAuthenticatedMutations
+      const identity = authMutations
         ? requireIdentity(request.headers, 'task:update')
         : null
       const tenantId = identity
@@ -1149,7 +1116,7 @@ export function buildServer(options: BuildServerOptions = {}) {
   app.post('/v1/tasks', async (request, reply) => {
     const correlationId = createCorrelationId()
     try {
-      const identity = requireAuthenticatedMutations
+      const identity = authMutations
         ? requireIdentity(request.headers, 'task:update')
         : null
       const tenantId = identity
@@ -1276,7 +1243,7 @@ export function buildServer(options: BuildServerOptions = {}) {
   app.post('/v1/approvals', async (request, reply) => {
     const correlationId = createCorrelationId()
     try {
-      const identity = requireAuthenticatedMutations
+      const identity = authMutations
         ? requireIdentity(request.headers, 'approval:view')
         : null
       const tenantId = identity
@@ -3560,9 +3527,15 @@ export function buildServer(options: BuildServerOptions = {}) {
     }
   })
 
+  if (options.runtimeCollector) {
+    const collector = options.runtimeCollector
+    app.addHook('onClose', () =>
+      collector.flush().finally(() => collector.close())
+    )
+  }
+
   return app
 }
-
 const CONTROLLED_TENANT_ID = TenantIdSchema.parse(
   'tenant_00000000-0000-4000-8000-000000000001'
 )
@@ -3898,141 +3871,6 @@ async function executeInboundRuntime(input: {
   return result
 }
 
-function parseInboundChannel(rawChannel: string): Channel {
-  const parsed = z.enum(['whatsapp', 'web', 'internal']).safeParse(rawChannel)
-  if (!parsed.success) {
-    throw new DomainError('validation_failed', 'Channel is invalid')
-  }
-  return parsed.data
-}
-
-async function resolveInboundTenant(
-  input: Parameters<InboundTenantResolver>[0],
-  resolver?: InboundTenantResolver
-): Promise<TenantId> {
-  if (resolver) return TenantIdSchema.parse(await resolver(input))
-  if (process.env.NODE_ENV !== 'test') {
-    throw new DomainError(
-      'unauthorized',
-      'A trusted inbound tenant resolver is required in production'
-    )
-  }
-  const rawHeader = input.headers['x-tenant-id']
-  const candidate = Array.isArray(rawHeader) ? rawHeader[0] : rawHeader
-  const parsed = TenantIdSchema.safeParse(candidate)
-  return parsed.success ? parsed.data : CONTROLLED_TENANT_ID
-}
-
-function resolveDataPlaneTenant(
-  headers: Record<string, unknown>,
-  identity: OperatorIdentity
-): TenantId {
-  const rawHeader = headers['x-tenant-id']
-  const candidate = Array.isArray(rawHeader) ? rawHeader[0] : rawHeader
-  const parsedHeader = TenantIdSchema.safeParse(candidate)
-  if (
-    identity.tenantId &&
-    parsedHeader.success &&
-    identity.tenantId !== parsedHeader.data
-  ) {
-    throw new DomainError(
-      'forbidden',
-      'Operator identity cannot access this tenant scope'
-    )
-  }
-  if (process.env.NODE_ENV !== 'test' && !identity.tenantId) {
-    throw new DomainError(
-      'unauthorized',
-      'Trusted operator tenant scope is required in production'
-    )
-  }
-  return (
-    identity.tenantId ??
-    (parsedHeader.success ? parsedHeader.data : CONTROLLED_TENANT_ID)
-  )
-}
-
-function journeyAuditContext(
-  identity: OperatorIdentity | null,
-  correlationId: string
-): {
-  actorType: 'Operator' | 'System'
-  actorId: string
-  correlationId: string
-} {
-  if (!identity) {
-    return {
-      actorType: 'System',
-      actorId: 'system.journey-repository',
-      correlationId
-    }
-  }
-  return {
-    actorType: 'Operator',
-    actorId: identity.operatorId,
-    correlationId
-  }
-}
-
-function resolveOptionalRequestTenant(
-  headers: Record<string, unknown>
-): TenantId {
-  const rawHeader = headers['x-tenant-id']
-  const candidate = Array.isArray(rawHeader) ? rawHeader[0] : rawHeader
-  const parsed = TenantIdSchema.safeParse(candidate)
-  if (process.env.NODE_ENV !== 'test' && !parsed.success) {
-    throw new DomainError(
-      'unauthorized',
-      'Trusted tenant scope is required for this mutation'
-    )
-  }
-  return parsed.success ? parsed.data : CONTROLLED_TENANT_ID
-}
-
-function requireOperatorIdentity(
-  headers: Record<string, unknown>,
-  permission: string,
-  resolver?: OperatorIdentityResolver
-): OperatorIdentity {
-  try {
-    const identity = resolveOperatorIdentity(headers, resolver)
-    if (!roleHasPermission(identity.role, permission)) {
-      throw new DomainError('forbidden', `Role cannot perform ${permission}`)
-    }
-    return identity
-  } catch (error) {
-    if (error instanceof DomainError) throw error
-    throw new DomainError(
-      'unauthorized',
-      'Valid operator identity headers are required'
-    )
-  }
-}
-
-function requireAnyOperatorPermission(
-  headers: Record<string, unknown>,
-  permissions: string[],
-  resolver?: OperatorIdentityResolver
-): OperatorIdentity {
-  try {
-    const identity = resolveOperatorIdentity(headers, resolver)
-    if (
-      !permissions.some((permission) =>
-        roleHasPermission(identity.role, permission)
-      )
-    ) {
-      throw new DomainError('forbidden', 'Role cannot access this resource')
-    }
-    return identity
-  } catch (error) {
-    if (error instanceof DomainError) throw error
-    throw new DomainError(
-      'unauthorized',
-      'Valid operator identity headers are required'
-    )
-  }
-}
-
 const TestLabRequestSchema = z
   .object({
     agentId: AgentIdSchema,
@@ -4127,37 +3965,6 @@ const CapabilityApprovalExecutionRequestSchema = z
   })
   .strict()
 
-function requirePlatformScope(
-  headers: Record<string, unknown>,
-  permission: string,
-  resolver?: OperatorIdentityResolver
-): { tenantId: z.infer<typeof TenantIdSchema> } {
-  const identity = requireOperatorIdentity(headers, permission, resolver)
-  const rawTenant = Array.isArray(headers['x-tenant-id'])
-    ? headers['x-tenant-id'][0]
-    : headers['x-tenant-id']
-  const tenant = TenantIdSchema.safeParse(rawTenant)
-  if (!tenant.success) {
-    throw new DomainError(
-      'unauthorized',
-      'Valid tenant scope headers are required'
-    )
-  }
-  if (identity.tenantId && identity.tenantId !== tenant.data) {
-    throw new DomainError(
-      'forbidden',
-      'Operator identity cannot access this tenant scope'
-    )
-  }
-  if (process.env.NODE_ENV !== 'test' && !identity.tenantId) {
-    throw new DomainError(
-      'unauthorized',
-      'Trusted operator tenant scope is required in production'
-    )
-  }
-  return { tenantId: tenant.data }
-}
-
 function capabilityApprovalReference(
   record: CapabilityApprovalRecord
 ): CapabilityApproval {
@@ -4169,64 +3976,6 @@ function capabilityApprovalReference(
     toolName: record.toolName,
     actorId: record.actorId,
     expiresAt: new Date(record.expiresAt.getTime())
-  }
-}
-
-function resolveOperatorIdentity(
-  headers: Record<string, unknown>,
-  resolver?: OperatorIdentityResolver
-): OperatorIdentity {
-  if (resolver) return resolver(headers)
-  if (process.env.NODE_ENV !== 'test') {
-    throw new DomainError(
-      'unauthorized',
-      'A trusted operator identity resolver is required in production'
-    )
-  }
-  return parseOperatorIdentity(headers)
-}
-
-/**
- * Trusted mode never falls back to simulation headers: without a resolver it
- * fails closed, and resolver identities must be tenant-bound so a
- * self-asserted tenant header can never widen scope. Simulation mode keeps the
- * controlled header flow, delegating to an injected resolver when present.
- */
-function createEffectiveOperatorIdentityResolver(
-  identityMode: IdentityMode,
-  resolver: OperatorIdentityResolver | undefined
-): OperatorIdentityResolver | undefined {
-  if (!resolver) {
-    if (identityMode === 'trusted') {
-      return () => {
-        throw new DomainError(
-          'unauthorized',
-          'A trusted operator identity resolver is required in production'
-        )
-      }
-    }
-    return undefined
-  }
-  if (identityMode === 'simulation') return resolver
-  /**
-   * Trusted resolvers enforce replay protection per token. Some platform/admin
-   * routes resolve the identity more than once for the same request, so the
-   * effective resolver memoizes per headers object: a replay is rejected only
-   * when the same token is presented in a different request.
-   */
-  const memo = new WeakMap<object, OperatorIdentity>()
-  return (headers) => {
-    const cached = memo.get(headers)
-    if (cached) return cached
-    const identity = resolver(headers)
-    if (!identity.tenantId) {
-      throw new DomainError(
-        'unauthorized',
-        'Trusted operator identity must be tenant-bound'
-      )
-    }
-    memo.set(headers, identity)
-    return identity
   }
 }
 
@@ -4392,127 +4141,6 @@ function assertTaskTransition(
   }
 }
 
-function parsePagination(
-  query: unknown
-): { limit: number; offset: number } | null {
-  const params = query as { limit?: unknown; offset?: unknown }
-  const limit = params.limit === undefined ? 25 : Number(params.limit)
-  const rawOffset = params.offset === undefined ? 0 : params.offset
-  const offsetFailure = classifyPaginationOffset(rawOffset)
-
-  if (!Number.isInteger(limit) || limit < 1 || limit > 100 || offsetFailure) {
-    return null
-  }
-
-  const offset = Number(rawOffset)
-  return { limit, offset }
-}
-
-function parseTraceLimit(query: unknown): number {
-  const parsed = z
-    .object({
-      limit: z.coerce.number().int().min(1).max(100).default(25)
-    })
-    .strict()
-    .safeParse(query)
-  if (!parsed.success) {
-    throw new DomainError(
-      'invalid_pagination',
-      'limit must be between 1 and 100'
-    )
-  }
-  return parsed.data.limit
-}
-
-const OrchestrationGoalQuerySchema = z
-  .object({
-    limit: z.coerce.number().int().min(1).max(50).default(25),
-    status: GoalStatusSchema.optional()
-  })
-  .strict()
-
-function parseOrchestrationGoalQuery(query: unknown): {
-  limit: number
-  status?: GoalStatus
-} {
-  const parsed = OrchestrationGoalQuerySchema.safeParse(query)
-  if (!parsed.success) {
-    throw new DomainError(
-      'invalid_pagination',
-      'limit must be between 1 and 50 and status must be a valid Goal state'
-    )
-  }
-  return parsed.data.status === undefined
-    ? { limit: parsed.data.limit }
-    : { limit: parsed.data.limit, status: parsed.data.status }
-}
-
-const auditEventTypes: AuditEventType[] = [
-  'tool_call',
-  'safety_event',
-  'integration_event',
-  'policy_decision',
-  'approval_decision',
-  'handoff'
-]
-
-function parseAuditEvidenceQuery(query: unknown): {
-  query: AuditEvidenceQuery
-  filters: AuditEvidenceFilters
-} {
-  const pagination = parsePagination(query)
-  if (!pagination) {
-    throw new DomainError(
-      'invalid_pagination',
-      `limit must be between 1 and 100 and ${PAGINATION_OFFSET_ERROR_MESSAGE}`
-    )
-  }
-  const params = query as Record<string, unknown>
-  const filters: AuditEvidenceFilters = {}
-  const sessionId = parseOptionalAuditFilter(params.sessionId)
-  const correlationId = parseOptionalAuditFilter(params.correlationId)
-  const actorId = parseOptionalAuditFilter(params.actorId)
-  const type = parseOptionalAuditFilter(params.type)
-
-  if (sessionId) filters.sessionId = sessionId
-  if (correlationId) filters.correlationId = correlationId
-  if (actorId) filters.actorId = actorId
-  if (type) {
-    if (!auditEventTypes.includes(type as AuditEventType)) {
-      throw new DomainError('validation_failed', 'Audit event type is invalid')
-    }
-    filters.type = type as AuditEventType
-  }
-
-  return { query: { ...pagination, ...filters }, filters }
-}
-
-function parseOptionalAuditFilter(value: unknown): string | undefined {
-  if (value === undefined) return undefined
-  const duplicateFailure = classifyAuditFilterValue(value)
-  if (duplicateFailure) {
-    throw new DomainError(duplicateFailure.code, duplicateFailure.message)
-  }
-  if (typeof value !== 'string') {
-    throw new DomainError(
-      'validation_failed',
-      'Audit evidence filters must be strings'
-    )
-  }
-  const trimmed = value.trim()
-  if (
-    trimmed.length === 0 ||
-    trimmed.length > 120 ||
-    !/^[A-Za-z0-9._:-]+$/.test(trimmed)
-  ) {
-    throw new DomainError(
-      'validation_failed',
-      'Audit evidence filter is invalid'
-    )
-  }
-  return trimmed
-}
-
 async function decideRuntimeApproval(input: {
   authority: ApprovalAuthority
   current: ApprovalRecord
@@ -4571,7 +4199,6 @@ function toDeadLetterView(event: OutboxEventRecord) {
     deadLetteredAt: event.deadLetteredAt?.toISOString() ?? null
   }
 }
-
 export async function buildServerFromEnv(
   env: NodeJS.ProcessEnv = process.env,
   options: BuildServerFromEnvOptions = {}
@@ -4696,7 +4323,6 @@ export async function buildServerFromEnv(
       'Production requires OUTBOX_DURABLE_INBOUND=true; inline inbound execution is forbidden'
     )
   }
-
   const configuredInboundTenantResolver = createConfiguredInboundTenantResolver(
     env,
     buildOptions.inboundTenantResolver
@@ -4722,11 +4348,11 @@ export async function buildServerFromEnv(
       'Production requires an injected operator identity resolver'
     )
   }
+  assertProductionReplayConfiguration(env)
   const configuredHttpSecurity = parseHttpSecurityEnv(
     env,
     buildOptions.httpSecurity
   )
-
   const schemaName = env.POSTGRES_SCHEMA?.trim() || undefined
   assertSafeRuntimeSchemaName(schemaName)
   const pool = createPostgresPool(env.DATABASE_URL, schemaName)
@@ -4737,7 +4363,6 @@ export async function buildServerFromEnv(
     if (migrationPool !== pool) await migrationPool.end()
     await pool.end()
   }
-
   let configuredWebhookVerifier: WebhookVerifier | undefined
   let operatorReplayGuard: OperatorReplayGuard | undefined
   try {
@@ -4760,6 +4385,7 @@ export async function buildServerFromEnv(
         operatorReplayStore
       )
     }
+    assertProductionReplayConfiguration(env, Boolean(operatorReplayGuard))
     let migrationRoleName: string | undefined
     let runtimeRoleName: string | undefined
     if (env.POSTGRES_RLS_ENFORCEMENT === 'true') {

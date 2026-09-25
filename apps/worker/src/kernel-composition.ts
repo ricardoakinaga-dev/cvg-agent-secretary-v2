@@ -5,6 +5,7 @@ import {
   GoalPlanOrchestrator,
   MAX_GOVERNED_TURN_MODEL_CALLS,
   MAX_GOVERNED_TURN_TOOL_CALLS,
+  OrchestrationError,
   resolveWorkflowCoordinator,
   toGovernedTurnInput,
   type EffectScope,
@@ -242,6 +243,14 @@ const DurablePlannerContextSchema = z
   .strict()
 
 type DurablePlannerContext = z.output<typeof DurablePlannerContextSchema>
+
+function plannerLineageEnvelope(
+  envelope: KernelTurnEnvelope
+): KernelTurnEnvelope {
+  const lineageEnvelope = { ...envelope }
+  delete lineageEnvelope.approvalId
+  return lineageEnvelope
+}
 
 function assertControlledKernelSnapshot(
   snapshot: {
@@ -867,7 +876,7 @@ export function createPostgresKernelRuntime(
       plannerContext: {
         messageId: goalInput.context.message.id,
         sessionId: goalInput.context.session?.id ?? null,
-        envelope: goalInput.envelope,
+        envelope: plannerLineageEnvelope(goalInput.envelope),
         ...(goalInput.traceContext !== undefined
           ? { traceId: goalInput.traceContext.traceId }
           : {})
@@ -946,7 +955,35 @@ export function createPostgresKernelRuntime(
           })
         }
       }
-      return await orchestrator.run(tenantId, goal.id)
+      try {
+        return await orchestrator.run(tenantId, goal.id)
+      } catch (error) {
+        if (
+          !(
+            error instanceof OrchestrationError &&
+            (error.code === 'conflict' || error.code === 'lease_lost')
+          )
+        ) {
+          throw error
+        }
+        const current = await goalStore.getGoal(tenantId, goal.id)
+        if (current === null) throw error
+        const activePlan = await goalStore.getActivePlan(tenantId, goal.id)
+        const steps = activePlan
+          ? await goalStore.listSteps(tenantId, activePlan.id)
+          : []
+        telemetry.recordMetric('orchestrator_goal_run_total', 1, {
+          operation: 'goal_run',
+          outcome: 'fenced'
+        })
+        return {
+          goal: current,
+          plan: activePlan,
+          steps,
+          reason: 'goal_run_fenced',
+          executedStepIds: []
+        }
+      }
     } finally {
       durableContexts.delete(goal.id)
     }
@@ -1237,7 +1274,10 @@ function durableStepDraft(input: {
   }
 }
 
-function durableTurnResult(result: GovernedTurnResult): StepExecutionResult {
+/** Internal durable mapping kept exported for focused branch verification. */
+export function durableTurnResult(
+  result: GovernedTurnResult
+): StepExecutionResult {
   if (result.outcome === 'approval_required') {
     return {
       outcome: 'approval_required',
@@ -1493,13 +1533,22 @@ export function createPostgresKernelHandlers(
         if (context.session && !canBotRespond(context.session.takeoverState)) {
           return { status: 'paused_human_takeover', externalEffects: false }
         }
-        if (
-          context.message.runtimeStatus === 'waiting_approval' &&
-          context.message.runtimeApprovalId !== continuation?.approvalId
-        ) {
-          throw new Error(
-            'Durable orchestrator approval continuation does not match the inbound waiting marker'
-          )
+        if (context.message.runtimeStatus === 'waiting_approval') {
+          if (!continuation) {
+            return {
+              status: 'approval_required_pending',
+              runtimeStatus: 'approval_required',
+              approvalId: context.message.runtimeApprovalId,
+              externalEffects: false,
+              traceId,
+              correlationId
+            }
+          }
+          if (context.message.runtimeApprovalId !== continuation.approvalId) {
+            throw new Error(
+              'Durable orchestrator approval continuation does not match the inbound waiting marker'
+            )
+          }
         }
         const parsedEnvelope = parseKernelTurnEnvelope(context.message.body)
         const envelope = continuation

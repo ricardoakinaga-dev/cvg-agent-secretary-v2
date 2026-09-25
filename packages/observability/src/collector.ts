@@ -1,5 +1,6 @@
-import { appendFileSync, mkdirSync } from 'node:fs'
-import { dirname } from 'node:path'
+import { appendFileSync, lstatSync, mkdirSync, realpathSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { dirname, isAbsolute, join, sep } from 'node:path'
 import { redactSensitiveText } from '@cvg/shared'
 import type {
   AttributeValue,
@@ -236,35 +237,64 @@ function emptyRedactionReport(): CollectorRedactionReport {
 /**
  * Shared sanitizer/buffer used by every adapter. Records are only handed to an
  * adapter through `take()`; when the collector is disabled records are counted
- * and discarded (fail-closed) rather than exported.
+ * and discarded (fail-closed) rather than exported. Bounded limits are opt-in:
+ * the in-process, file and OTLP adapters keep their unbounded behavior, while
+ * the controlled-local factory caps both the buffer and every flushed batch.
  */
 class CollectorBuffer {
   readonly #clock: () => Date
   readonly #enabled: boolean
   readonly #resource: CollectorResource
+  readonly #maxRecords: number
+  readonly #maxBatchRecords: number
   readonly #state: CollectorBufferState = {
     spans: [],
     metrics: [],
     logs: []
   }
   readonly #report = emptyRedactionReport()
+  #sealed = false
 
   constructor(
     enabled: boolean,
     resource: CollectorResource,
-    clock: () => Date
+    clock: () => Date,
+    limits: { maxRecords?: number; maxBatchRecords?: number } = {}
   ) {
     this.#enabled = enabled
     this.#resource = resource
     this.#clock = clock
+    this.#maxRecords = limits.maxRecords ?? Number.POSITIVE_INFINITY
+    this.#maxBatchRecords = limits.maxBatchRecords ?? Number.POSITIVE_INFINITY
   }
 
   get enabled(): boolean {
     return this.#enabled
   }
 
+  get size(): number {
+    return (
+      this.#state.spans.length +
+      this.#state.metrics.length +
+      this.#state.logs.length
+    )
+  }
+
+  /**
+   * Stop accepting records without dropping what is already buffered. A sealed
+   * buffer still drains through `take()` so `close()` can flush the bounded
+   * remainder before the sink is released.
+   */
+  seal(): void {
+    this.#sealed = true
+  }
+
+  #acceptsRecords(): boolean {
+    return this.#enabled && !this.#sealed && this.size < this.#maxRecords
+  }
+
   recordSpan(span: RecordedSpan): void {
-    if (!this.#enabled) {
+    if (!this.#acceptsRecords()) {
       this.#report.droppedRecords += 1
       return
     }
@@ -298,7 +328,7 @@ class CollectorBuffer {
   }
 
   recordMetric(metric: RecordedMetric): void {
-    if (!this.#enabled) {
+    if (!this.#acceptsRecords()) {
       this.#report.droppedRecords += 1
       return
     }
@@ -317,7 +347,7 @@ class CollectorBuffer {
   }
 
   recordLog(log: RecordedLog): void {
-    if (!this.#enabled) {
+    if (!this.#acceptsRecords()) {
       this.#report.droppedRecords += 1
       return
     }
@@ -349,10 +379,27 @@ class CollectorBuffer {
     })
   }
 
-  take(): CollectorExport {
-    const spans = this.#state.spans.splice(0, this.#state.spans.length)
-    const metrics = this.#state.metrics.splice(0, this.#state.metrics.length)
-    const logs = this.#state.logs.splice(0, this.#state.logs.length)
+  take(limit: number = this.#maxBatchRecords): CollectorExport {
+    const spans = this.#state.spans.splice(
+      0,
+      Math.min(limit, this.#state.spans.length)
+    )
+    const remainingAfterSpans = limit - spans.length
+    const metrics =
+      remainingAfterSpans > 0
+        ? this.#state.metrics.splice(
+            0,
+            Math.min(remainingAfterSpans, this.#state.metrics.length)
+          )
+        : []
+    const remainingAfterMetrics = remainingAfterSpans - metrics.length
+    const logs =
+      remainingAfterMetrics > 0
+        ? this.#state.logs.splice(
+            0,
+            Math.min(remainingAfterMetrics, this.#state.logs.length)
+          )
+        : []
     this.#report.exportedSpans += spans.length
     this.#report.exportedMetrics += metrics.length
     this.#report.exportedLogs += logs.length
@@ -679,5 +726,195 @@ export function collectorTelemetryHooks(
     onSpan: (span) => collector.recordSpan(span),
     onMetric: (metric) => collector.recordMetric(metric),
     onLog: (log) => collector.recordLog(log)
+  }
+}
+
+/** Harness profile for the controlled local collector. Not a deployment mode. */
+export const CONTROLLED_LOCAL_SYNTHETIC_PROFILE = 'CONTROLLED_LOCAL_SYNTHETIC'
+
+/** Constant sink names; callers can never choose a file path. */
+export const CONTROLLED_LOCAL_COLLECTOR_FILE_NAMES = Object.freeze({
+  api: 'api.jsonl',
+  worker: 'worker.jsonl'
+})
+
+export const CONTROLLED_LOCAL_MAX_BUFFER_RECORDS = 512
+export const CONTROLLED_LOCAL_MAX_BATCH_RECORDS = 256
+
+export type ControlledLocalCollectorRole = 'api' | 'worker'
+export type ControlledLocalCollectorMode = 'disabled' | 'local_file'
+
+export interface ControlledLocalCollectorContext {
+  profile: typeof CONTROLLED_LOCAL_SYNTHETIC_PROFILE
+  mode: ControlledLocalCollectorMode
+  root: string
+  role: ControlledLocalCollectorRole
+}
+
+export interface ControlledLocalCollectorOptions {
+  clock?: () => Date
+  resource?: CollectorResource
+  maxBufferRecords?: number
+  maxBatchRecords?: number
+}
+
+const CONTROLLED_LOCAL_CONTEXT_KEYS = [
+  'profile',
+  'mode',
+  'root',
+  'role'
+] as const
+
+function assertControlledLocalContext(
+  context: ControlledLocalCollectorContext
+): void {
+  if (typeof context !== 'object' || context === null) {
+    throw new Error('Controlled local collector context is required')
+  }
+  const keys = Object.keys(context)
+  if (
+    keys.some((key) => !CONTROLLED_LOCAL_CONTEXT_KEYS.includes(key as never))
+  ) {
+    throw new Error(
+      'Controlled local collector rejects caller-supplied file paths or extra keys'
+    )
+  }
+  if (context.profile !== CONTROLLED_LOCAL_SYNTHETIC_PROFILE) {
+    throw new Error(
+      'Controlled local collector requires the CONTROLLED_LOCAL_SYNTHETIC profile'
+    )
+  }
+  if (context.mode !== 'disabled' && context.mode !== 'local_file') {
+    throw new Error(
+      'Controlled local collector mode must be disabled or local_file'
+    )
+  }
+  if (context.role !== 'api' && context.role !== 'worker') {
+    throw new Error('Controlled local collector role must be api or worker')
+  }
+  if (context.mode === 'local_file') {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(
+        'Controlled local collector cannot write files in production'
+      )
+    }
+    if (typeof context.root !== 'string' || context.root.trim().length === 0) {
+      throw new Error('Controlled local collector root is required')
+    }
+  }
+}
+
+/**
+ * Canonicalizes the exclusive temporary root and fails closed on any path that
+ * is not a real directory strictly inside the process temporary directory.
+ * Symlinked roots, traversal and missing directories are rejected.
+ */
+export function resolveControlledLocalRoot(root: string): string {
+  if (typeof root !== 'string' || !isAbsolute(root)) {
+    throw new Error('Controlled local collector root must be an absolute path')
+  }
+  if (root.split(/[\\/]/).includes('..')) {
+    throw new Error(
+      'Controlled local collector root must not contain traversal segments'
+    )
+  }
+  const stats = lstatSync(root)
+  if (stats.isSymbolicLink() || !stats.isDirectory()) {
+    throw new Error(
+      'Controlled local collector root must be a directory, not a symlink'
+    )
+  }
+  const canonical = realpathSync(root)
+  const temporaryBase = realpathSync(tmpdir())
+  const insideTemporary = canonical.startsWith(`${temporaryBase}${sep}`)
+  if (!insideTemporary) {
+    throw new Error(
+      'Controlled local collector root must live inside the temporary directory'
+    )
+  }
+  return canonical
+}
+
+/**
+ * Harness-only sink used by the AUD20-10 composition slice. It is created from
+ * an immutable context, writes only constant file names below an exclusive
+ * temporary root and bounds both the buffer and every flushed batch. Network
+ * transports, timers and caller-chosen paths do not exist here: `disabled`
+ * creates no file and `local_file` fails closed outside the harness profile.
+ */
+export function createControlledLocalCollector(
+  context: ControlledLocalCollectorContext,
+  options: ControlledLocalCollectorOptions = {}
+): ObservabilityCollectorPort {
+  assertControlledLocalContext(context)
+  const enabled = context.mode === 'local_file'
+  const maxBufferRecords =
+    options.maxBufferRecords ?? CONTROLLED_LOCAL_MAX_BUFFER_RECORDS
+  const maxBatchRecords =
+    options.maxBatchRecords ?? CONTROLLED_LOCAL_MAX_BATCH_RECORDS
+  if (
+    !Number.isInteger(maxBufferRecords) ||
+    maxBufferRecords < 1 ||
+    maxBufferRecords > CONTROLLED_LOCAL_MAX_BUFFER_RECORDS
+  ) {
+    throw new Error(
+      'Controlled local collector buffer limit cannot exceed the harness cap'
+    )
+  }
+  if (
+    !Number.isInteger(maxBatchRecords) ||
+    maxBatchRecords < 1 ||
+    maxBatchRecords >
+      Math.min(CONTROLLED_LOCAL_MAX_BATCH_RECORDS, maxBufferRecords)
+  ) {
+    throw new Error(
+      'Controlled local collector batch limit cannot exceed the harness cap'
+    )
+  }
+  const buffer = new CollectorBuffer(
+    enabled,
+    options.resource ?? DEFAULT_COLLECTOR_RESOURCE,
+    options.clock ?? (() => new Date()),
+    enabled ? { maxRecords: maxBufferRecords, maxBatchRecords } : {}
+  )
+  const filePath = enabled
+    ? join(
+        resolveControlledLocalRoot(context.root),
+        CONTROLLED_LOCAL_COLLECTOR_FILE_NAMES[context.role]
+      )
+    : undefined
+  let closed = false
+
+  const writeBatch = (): CollectorExport => {
+    const exported = buffer.take()
+    const total =
+      exported.spans.length + exported.metrics.length + exported.logs.length
+    if (!enabled || total === 0) return exported
+    const sinkPath = filePath as string
+    if (lstatSync(sinkPath, { throwIfNoEntry: false })?.isSymbolicLink()) {
+      throw new Error('Controlled local collector rejects symlinked sink files')
+    }
+    appendFileSync(sinkPath, `${JSON.stringify(exported)}\n`, 'utf8')
+    return exported
+  }
+
+  return {
+    kind: 'file',
+    enabled,
+    recordSpan: (span) => buffer.recordSpan(span),
+    recordMetric: (metric) => buffer.recordMetric(metric),
+    recordLog: (log) => buffer.recordLog(log),
+    async flush() {
+      return writeBatch()
+    },
+    redaction: () => buffer.redaction(),
+    async close() {
+      if (closed) return
+      closed = true
+      buffer.seal()
+      if (!enabled) return
+      writeBatch()
+      writeBatch()
+    }
   }
 }

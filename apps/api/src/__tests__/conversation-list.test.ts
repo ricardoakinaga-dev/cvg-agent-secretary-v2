@@ -108,6 +108,11 @@ describe('conversation list API', () => {
 
     expect(response.statusCode).toBe(400)
     expect(body.success).toBe(false)
+    expect(body.data).toBeNull()
+    expect(response.json()).toHaveProperty('meta.correlationId')
     expect(body.error?.code).toBe('invalid_pagination')
+    expect(body.error?.message).toBe(
+      'limit must be between 1 and 100 and offset must be between 0 and 10000'
+    )
   })
 })

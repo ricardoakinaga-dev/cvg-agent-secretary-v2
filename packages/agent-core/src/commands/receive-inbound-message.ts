@@ -188,6 +188,10 @@ export async function receiveInboundMessage(
             : {})
         }
       }
+      throw new DomainError(
+        'conflict',
+        'Inbound message identity is already reserved'
+      )
     }
     throw error
   }

@@ -123,7 +123,12 @@ describe('server boundary envelopes', () => {
     expect(invalidJson.statusCode).toBe(400)
     expect(invalidJson.json()).toMatchObject({
       success: false,
-      error: { code: 'validation_failed' }
+      data: null,
+      meta: { correlationId: expect.any(String) },
+      error: {
+        code: 'validation_failed',
+        message: 'Request body is invalid'
+      }
     })
     expect(mediaType.statusCode).toBe(415)
     expect(mediaType.json()).toMatchObject({
@@ -176,23 +181,52 @@ describe('server boundary envelopes', () => {
     })
     await app.close()
 
+    for (const response of [
+      invalidLimit,
+      invalidOffset,
+      invalidType,
+      duplicateFilter,
+      invalidFilter
+    ]) {
+      expect(response.json()).toMatchObject({
+        success: false,
+        data: null,
+        meta: { correlationId: expect.any(String) }
+      })
+    }
+
     expect(invalidLimit.statusCode).toBe(400)
     expect((invalidLimit.json() as Envelope<never>).error?.code).toBe(
       'invalid_pagination'
+    )
+    expect((invalidLimit.json() as Envelope<never>).error?.message).toBe(
+      'limit must be between 1 and 100 and offset must be between 0 and 10000'
     )
     expect(invalidOffset.statusCode).toBe(400)
     expect((invalidOffset.json() as Envelope<never>).error?.code).toBe(
       'invalid_pagination'
     )
+    expect((invalidOffset.json() as Envelope<never>).error?.message).toBe(
+      'limit must be between 1 and 100 and offset must be between 0 and 10000'
+    )
     expect(invalidType.statusCode).toBe(400)
     expect((invalidType.json() as Envelope<never>).error?.code).toBe(
       'validation_failed'
+    )
+    expect((invalidType.json() as Envelope<never>).error?.message).toBe(
+      'Audit event type is invalid'
     )
     expect(duplicateFilter.statusCode).toBe(400)
     expect((duplicateFilter.json() as Envelope<never>).error?.code).toBe(
       'validation_failed'
     )
+    expect((duplicateFilter.json() as Envelope<never>).error?.message).toBe(
+      'Audit evidence filters must be single-valued'
+    )
     expect(invalidFilter.statusCode).toBe(400)
+    expect((invalidFilter.json() as Envelope<never>).error?.message).toBe(
+      'Audit evidence filter is invalid'
+    )
     expect(unauthorized.statusCode).toBe(403)
   })
 

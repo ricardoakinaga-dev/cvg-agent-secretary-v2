@@ -1279,13 +1279,22 @@ describe('api PostgreSQL persistence mode', () => {
             INBOUND_AGENT_ID: postgresInboundAgent,
             POSTGRES_RLS_ENFORCEMENT: 'true',
             OUTBOX_DURABLE_INBOUND: 'true',
+            CVG_OPERATOR_REPLAY_STORE: 'postgres',
+            CVG_OPERATOR_IDENTITY_KEYRING: JSON.stringify({
+              current: { keyId: 'startup-fixture', secret: 'k'.repeat(32) }
+            }),
             API_ALLOWED_ORIGINS: 'https://console.example.test',
             API_REQUIRE_HTTPS: 'true',
             API_TRUSTED_PROXY_HOPS: '0'
           },
           {
             webhookVerifier: () => true,
-            operatorIdentityResolver: trustedProductionIdentity
+            operatorIdentityResolver: trustedProductionIdentity,
+            operatorReplayStore: {
+              claim: async () => true,
+              purgeExpired: async () => 0,
+              assertReady: async () => undefined
+            }
           }
         )
       ).rejects.toThrow(/non-superuser without BYPASSRLS/)
@@ -1345,7 +1354,8 @@ describe('api PostgreSQL persistence mode', () => {
         'platform_knowledge_sources',
         'platform_release_candidates',
         'audit_evidence_checkpoints',
-        'webhook_replay_events'
+        'webhook_replay_events',
+        'operator_replay_events'
       ]
 
       await admin.connect()
@@ -1378,6 +1388,9 @@ describe('api PostgreSQL persistence mode', () => {
           `GRANT DELETE ON ${schemaName}.webhook_replay_events TO ${roleName}`
         )
         await admin.query(
+          `GRANT DELETE ON ${schemaName}.operator_replay_events TO ${roleName}`
+        )
+        await admin.query(
           `ALTER ROLE ${roleName} SET search_path TO ${schemaName}`
         )
 
@@ -1392,6 +1405,10 @@ describe('api PostgreSQL persistence mode', () => {
             POSTGRES_AUTO_MIGRATE: 'true',
             POSTGRES_RLS_ENFORCEMENT: 'true',
             OUTBOX_DURABLE_INBOUND: 'true',
+            CVG_OPERATOR_REPLAY_STORE: 'postgres',
+            CVG_OPERATOR_IDENTITY_KEYRING: JSON.stringify({
+              current: { keyId: 'startup-fixture', secret: 'k'.repeat(32) }
+            }),
             API_ALLOWED_ORIGINS: 'https://console.example.test',
             API_REQUIRE_HTTPS: 'true',
             API_TRUSTED_PROXY_ADDRESSES: '127.0.0.1',

@@ -206,6 +206,188 @@ describe('durable PostgreSQL outbox', () => {
   )
 
   it.skipIf(!databaseUrl)(
+    'keeps the lease race at-least-once and relies on idempotent effects',
+    async () => {
+      const schema = `cvg_outbox_race_${Date.now()}_${randomBytes(3).toString('hex')}`
+      const firstClient = new Client({ connectionString: databaseUrl })
+      const secondClient = new Client({ connectionString: databaseUrl })
+      let clockNow = new Date('2026-01-02T00:00:00.000Z')
+      await firstClient.connect()
+      await secondClient.connect()
+      try {
+        await runPostgresMigrations(firstClient, { schemaName: schema })
+        await secondClient.query(`SET search_path TO ${schema}`)
+        await firstClient.query(
+          "SELECT set_config('cvg.tenant_id', $1, false)",
+          [tenantA]
+        )
+        await secondClient.query(
+          "SELECT set_config('cvg.tenant_id', $1, false)",
+          [tenantA]
+        )
+        const first = new PostgresRuntimeRepository(firstClient, {
+          tenantIsolation: true,
+          clock: () => clockNow
+        })
+        const second = new PostgresRuntimeRepository(secondClient, {
+          tenantIsolation: true,
+          clock: () => clockNow
+        })
+        const created = await first.enqueue({
+          tenantId: tenantA,
+          type: 'inbound.process',
+          payload: { fixture: 'lease-race' },
+          correlationId: correlationId,
+          idempotencyKey: `lease-race-${Date.now()}`,
+          createdAt: clockNow,
+          availableAt: clockNow
+        })
+        const stale = await first.claimNext({
+          tenantId: tenantA,
+          workerId: 'worker-race-stale',
+          leaseMs: 1_000
+        })
+        if (!stale) throw new Error('expected initial race claim')
+
+        let handlerCalls = 0
+        let effectiveEffects = 0
+        const applied = new Set<string>()
+        await expect(
+          first.ack({
+            tenantId: tenantA,
+            eventId: created.id,
+            workerId: 'worker-race-stale',
+            leaseToken: stale.leaseToken ?? undefined,
+            effect: async (event) => {
+              handlerCalls += 1
+              clockNow = new Date(stale.leaseUntil!.getTime() + 1)
+              const takeover = await second.claimNext({
+                tenantId: tenantA,
+                workerId: 'worker-race-fresh',
+                leaseMs: 30_000
+              })
+              if (!takeover) throw new Error('expected lease takeover')
+              const operationKey = event.idempotencyKey ?? event.id
+              if (!applied.has(operationKey)) {
+                applied.add(operationKey)
+                effectiveEffects += 1
+              }
+              return { worker: 'stale', effectiveEffects }
+            }
+          })
+        ).rejects.toMatchObject({ code: 'conflict' })
+
+        const current = await second.ack({
+          tenantId: tenantA,
+          eventId: created.id,
+          workerId: 'worker-race-fresh',
+          leaseToken:
+            (await second.findOutboxById(tenantA, created.id))?.leaseToken ??
+            undefined,
+          effect: (event) => {
+            handlerCalls += 1
+            const operationKey = event.idempotencyKey ?? event.id
+            if (!applied.has(operationKey)) {
+              applied.add(operationKey)
+              effectiveEffects += 1
+            }
+            return { worker: 'fresh', effectiveEffects }
+          }
+        })
+        expect(current.status).toBe('processed')
+        expect(handlerCalls).toBe(2)
+        expect(effectiveEffects).toBe(1)
+        expect(await second.listDeadLetters(tenantA)).toHaveLength(0)
+      } finally {
+        await firstClient.query(`DROP SCHEMA IF EXISTS ${schema} CASCADE`)
+        await Promise.all([firstClient.end(), secondClient.end()])
+      }
+    },
+    30_000
+  )
+
+  it.skipIf(!databaseUrl)(
+    'fences an ack when the lease expires before the final compare-and-swap',
+    async () => {
+      const schema = `cvg_outbox_ack_expiry_${Date.now()}_${randomBytes(3).toString('hex')}`
+      const client = new Client({ connectionString: databaseUrl })
+      const clockNow = new Date('2026-01-02T00:00:00.000Z')
+      let expireBeforeFinalCas = false
+      let finalClockReads = 0
+      await client.connect()
+      try {
+        await runPostgresMigrations(client, { schemaName: schema })
+        await client.query(`SET search_path TO ${schema}`)
+        await client.query("SELECT set_config('cvg.tenant_id', $1, false)", [
+          tenantA
+        ])
+        const repository = new PostgresRuntimeRepository(client, {
+          tenantIsolation: true,
+          clock: () => {
+            if (expireBeforeFinalCas) {
+              const read = finalClockReads++
+              if (read > 0) {
+                return new Date(clockNow.getTime() + 2_000)
+              }
+            }
+            return clockNow
+          }
+        })
+        const created = await repository.enqueue({
+          tenantId: tenantA,
+          type: 'inbound.process',
+          payload: { fixture: 'ack-expiry' },
+          correlationId,
+          idempotencyKey: `ack-expiry-${Date.now()}`,
+          createdAt: clockNow,
+          availableAt: clockNow
+        })
+        const claimed = await repository.claimNext({
+          tenantId: tenantA,
+          workerId: 'worker-ack-expiry',
+          leaseMs: 1_000
+        })
+        if (!claimed) throw new Error('expected ack-expiry claim')
+
+        let effectCalls = 0
+        await expect(
+          repository.ack({
+            tenantId: tenantA,
+            eventId: created.id,
+            workerId: 'worker-ack-expiry',
+            leaseToken: claimed.leaseToken ?? undefined,
+            effect: () => {
+              effectCalls += 1
+              expireBeforeFinalCas = true
+              finalClockReads = 0
+              return { fixture: 'expired-before-cas' }
+            }
+          })
+        ).rejects.toMatchObject({ code: 'conflict' })
+        expect(effectCalls).toBe(1)
+        expect(
+          await repository.findOutboxById(tenantA, created.id)
+        ).toMatchObject({
+          status: 'processing',
+          attempts: 1,
+          processedAt: null
+        })
+        const journal = await client.query<{ count: string }>(
+          `SELECT count(*)::text AS count
+             FROM outbox_effects
+            WHERE tenant_id = $1 AND idempotency_key = $2`,
+          [tenantA, created.idempotencyKey]
+        )
+        expect(journal.rows[0]?.count).toBe('0')
+      } finally {
+        await client.query(`DROP SCHEMA IF EXISTS ${schema} CASCADE`)
+        await client.end()
+      }
+    },
+    30_000
+  )
+
+  it.skipIf(!databaseUrl)(
     'redacts legacy rows without making routable pending work disappear',
     async () => {
       const schema = `cvg_outbox_redaction_${Date.now()}_${randomBytes(3).toString('hex')}`

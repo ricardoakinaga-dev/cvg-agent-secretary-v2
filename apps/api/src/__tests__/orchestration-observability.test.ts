@@ -200,6 +200,14 @@ describe('durable orchestration observability API', () => {
       headers: headers()
     })
     expect(response.statusCode).toBe(400)
+    expect(response.json()).toMatchObject({
+      success: false,
+      data: null,
+      meta: { correlationId: expect.any(String) }
+    })
     expect(response.json().error.code).toBe('invalid_pagination')
+    expect(response.json().error.message).toBe(
+      'limit must be between 1 and 50 and status must be a valid Goal state'
+    )
   })
 })

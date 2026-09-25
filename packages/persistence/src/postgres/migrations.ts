@@ -12,7 +12,15 @@ export interface PostgresMigrationOptions {
   schemaName?: string
   migrations?: string[]
   createSchema?: boolean
+  /** Transaction-local lock timeout for migration DDL and the advisory lock. */
+  lockTimeoutMs?: number
+  /** Transaction-local statement timeout for migration DDL. */
+  statementTimeoutMs?: number
 }
+
+const DEFAULT_MIGRATION_LOCK_TIMEOUT_MS = 5_000
+const DEFAULT_MIGRATION_STATEMENT_TIMEOUT_MS = 30_000
+const MAX_MIGRATION_TIMEOUT_MS = 300_000
 
 const migrationPath = resolve(
   process.cwd(),
@@ -49,8 +57,53 @@ const defaultPostgresMigrations = [
   '0023_orchestrator_replan_fencing',
   '0024_tenant_isolation_constraint_validation',
   '0025_retention_ledger',
-  '0026_operator_replay_events'
+  '0026_operator_replay_events',
+  '0027_inbound_idempotency_tombstones',
+  '0028_retention_batch_semantics',
+  '0029_inbound_tombstone_lifecycle'
 ]
+
+function migrationTimeoutMs(
+  value: number | undefined,
+  fallback: number,
+  label: string
+): number {
+  const resolved = value ?? fallback
+  if (
+    !Number.isSafeInteger(resolved) ||
+    resolved < 1 ||
+    resolved > MAX_MIGRATION_TIMEOUT_MS
+  ) {
+    throw new Error(
+      `${label} must be an integer between 1 and ${MAX_MIGRATION_TIMEOUT_MS}`
+    )
+  }
+  return resolved
+}
+
+async function configureMigrationTimeouts(
+  client: PostgresQueryable,
+  options: PostgresMigrationOptions
+): Promise<void> {
+  const lockTimeoutMs = migrationTimeoutMs(
+    options.lockTimeoutMs,
+    DEFAULT_MIGRATION_LOCK_TIMEOUT_MS,
+    'Migration lockTimeoutMs'
+  )
+  const statementTimeoutMs = migrationTimeoutMs(
+    options.statementTimeoutMs,
+    DEFAULT_MIGRATION_STATEMENT_TIMEOUT_MS,
+    'Migration statementTimeoutMs'
+  )
+  await client.query('SELECT set_config($1, $2, true)', [
+    'lock_timeout',
+    `${lockTimeoutMs}ms`
+  ])
+  await client.query('SELECT set_config($1, $2, true)', [
+    'statement_timeout',
+    `${statementTimeoutMs}ms`
+  ])
+}
 
 function assertSafeSchemaName(schemaName: string): void {
   if (!/^[a-z][a-z0-9_]{0,62}$/.test(schemaName)) {
@@ -83,6 +136,7 @@ export async function runInitialPostgresMigration(
 
   await client.query('BEGIN')
   try {
+    await configureMigrationTimeouts(client, options)
     if (options.schemaName) {
       if (options.createSchema !== false) {
         await client.query(`CREATE SCHEMA IF NOT EXISTS ${options.schemaName}`)
@@ -132,6 +186,7 @@ export async function runPostgresMigrations(
 
     await client.query('BEGIN')
     try {
+      await configureMigrationTimeouts(client, options)
       if (options.schemaName) {
         assertSafeSchemaName(options.schemaName)
         if (options.createSchema !== false) {

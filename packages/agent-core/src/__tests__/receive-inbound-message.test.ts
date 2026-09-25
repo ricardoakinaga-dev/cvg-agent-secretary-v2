@@ -163,6 +163,28 @@ describe('agent-core commands', () => {
     })
   })
 
+  it('rejects a late replay reserved only by a retention tombstone', async () => {
+    const conversations = {
+      findByExternalMessage: async () => null,
+      createWithSession: async () => {
+        const error = Object.assign(new Error('duplicate key'), {
+          code: '23505'
+        })
+        throw error
+      }
+    }
+
+    await expect(
+      receiveInboundMessage(
+        { conversations },
+        messageInput({ externalMessageId: 'late-replay-after-tombstone' })
+      )
+    ).rejects.toMatchObject({
+      code: 'conflict',
+      message: 'Inbound message identity is already reserved'
+    })
+  })
+
   it('runs policy-aware agent turns and approval commands', () => {
     const turn = runAgentTurn({
       sessionId: 'sess_1',

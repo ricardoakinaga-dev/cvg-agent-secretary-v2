@@ -548,12 +548,14 @@ describe('webhook HMAC API boundary', () => {
         channel
       })
     ).resolves.toBe(true)
+    const receivedRawBodies: string[] = []
+    const verifier = new HmacWebhookVerifier({ secret, now: () => now })
     const app = buildServer({
       durableInbound: true,
-      webhookVerifier: new HmacWebhookVerifier({
-        secret,
-        now: () => now
-      }).verifyWithLease,
+      webhookVerifier: (verification) => {
+        receivedRawBodies.push(verification.rawBody ?? '')
+        return verifier.verifyWithLease(verification)
+      },
       inboundTenantResolver: () => 'tenant_00000000-0000-4000-8000-000000000061'
     })
 
@@ -569,6 +571,7 @@ describe('webhook HMAC API boundary', () => {
     await app.close()
 
     expect(response.statusCode).toBe(200)
+    expect(receivedRawBodies).toEqual([rawBody])
   })
 
   it('releases a HMAC reservation after a downstream failure so the provider can retry', async () => {
