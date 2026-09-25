@@ -1,0 +1,20 @@
+
+> cvg-agent-secretary-v2@1.0.0 certify:phase11
+> node scripts/phase11-certify.mjs
+
+{
+  "certificationId": "phase11-7c74e336cda9b19b-muh3q59j",
+  "candidateId": "7c74e336cda9b19b3d8edd6864e2fce2a5296a14b0e051d5f8c70fac4ba08c85",
+  "commit": "45629f11da702b4240ef2bc59048c73415c9953f",
+  "treeHash": "2a1dc4b71349df7a68ca811166ac97d1dfcc9e546294e53803f157283eb1d953",
+  "decision": "NO_GO",
+  "certification": "NO_GO",
+  "eligibleProfile": "CONTROLLED_LOCAL",
+  "remainingBlockers": [
+    "required_gate_not_pass:independent_critic:FAIL",
+    "required_gate_not_pass:PHASE11_FORMAL_CLOSURE:FAIL"
+  ],
+  "package": "certification/phase11",
+  "currentPointer": "certification/current.json"
+}
+[phase11] decision=NO_GO certification=NO_GO certificationId=phase11-7c74e336cda9b19b-muh3q59j
