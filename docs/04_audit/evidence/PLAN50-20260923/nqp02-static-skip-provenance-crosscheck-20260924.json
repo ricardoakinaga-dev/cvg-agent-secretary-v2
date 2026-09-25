@@ -1,0 +1,46 @@
+{
+  "review_date": "2026-09-24",
+  "review_mode": "read-only static cross-check; no test, database, or service executed",
+  "v1_conditional_test_sources": 29,
+  "v1_current_source_hashes_all_match": true,
+  "postgres_gate_selected_test_files": 30,
+  "v1_sources_selected_by_postgres_gate": 29,
+  "postgres_gate_selected_paths_not_in_conditional_inventory": [
+    "packages/persistence/src/__tests__/audit-evidence-checkpoint-postgres.test.ts"
+  ],
+  "conditional_inventory_paths_not_selected_by_postgres_gate": [],
+  "additional_selected_test_source": {
+    "path": "packages/persistence/src/__tests__/audit-evidence-checkpoint-postgres.test.ts",
+    "test_declarations": 2,
+    "database_or_skip_guard_found": false,
+    "assessment": "source uses in-memory AuditCheckpointClient; the two test declarations are selected by test:postgres but are not among the 192 conditional database cases"
+  },
+  "required_skip_policy": {
+    "defaultClassification": "required",
+    "databasePresent": "required",
+    "postgresGate": "required",
+    "unitOptionalRule": "OPT-DATABASE-CONDITIONAL-UNIT"
+  },
+  "candidate_receipt": {
+    "path": "docs/04_audit/evidence/AUD20/AUD20-17-query-raw-20260923/candidate-final-audit.sha256",
+    "entry_count": 22,
+    "shared_paths_with_29_skip_sources": 0,
+    "shared_paths": []
+  },
+  "historical_full_run": {
+    "path": "docs/04_audit/evidence/AUD20/AUD20-17-query-raw-20260923/full-final-round2.log",
+    "sha256": "695ab9fe825c934355557da17c25845042232db660b17f43de5b8b262f73abb9",
+    "summary_lines": [
+      "Test Files  289 passed | 12 skipped (301)",
+      "Tests  2252 passed | 192 skipped (2444)"
+    ]
+  },
+  "attribution_limit": "The saved run reports aggregate skip counts, but its receipt has no hashes for the 29 conditional test sources. Current source hashes and source-based counts do not prove per-file attribution to that historical run.",
+  "preliminary_counts": {
+    "fully_skipped_files": 12,
+    "fully_skipped_tests": 70,
+    "partially_skipped_files": 17,
+    "partially_skipped_tests": 122,
+    "conditional_tests_total": 192
+  }
+}

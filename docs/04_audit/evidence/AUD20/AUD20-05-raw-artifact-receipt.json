@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-05-raw-artifact-receipt",
+  "task": "AUD20-05",
+  "observedAt": "2026-09-22T03:08:00Z",
+  "source": "local command streams summarized by AUD20-05-command-receipt.json",
+  "redaction": {
+    "dsn": "OMITTED",
+    "password": "OMITTED",
+    "keyMaterial": "OMITTED",
+    "payload": "OMITTED",
+    "pii": "NOT_USED"
+  },
+  "fixtures": "SYNTHETIC_ONLY",
+  "postgres": "DISPOSABLE_LOOPBACK_ONLY",
+  "externalEffects": false,
+  "releaseEligible": false
+}

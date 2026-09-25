@@ -1,0 +1,29 @@
+
+> cvg-agent-secretary-v2@1.0.0 docs:check
+> node scripts/docs-check.mjs
+
+{
+  "schemaVersion": 1,
+  "kind": "aud19-documentation-check",
+  "valid": false,
+  "links": {
+    "checked": 778,
+    "broken": []
+  },
+  "json": {
+    "checked": 582,
+    "invalid": []
+  },
+  "states": {
+    "declared": [
+      "WAITING_HUMAN_APPROVAL"
+    ],
+    "unexpected": []
+  },
+  "nextAction": {
+    "valid": false,
+    "reason": "next_action_mismatch",
+    "runtimeStateAction": "gerar logs finais depois da correção de C07, reconciliar raw/command receipts com `observedAt` posterior aos logs e, em seguida, obter decisão humana explícita para horizonte pós-tombstone, owner/review trigger; manter `AUD20-05` bloqueada e staging/produção `NO_GO`.",
+    "currentIndexAction": "obter decisão humana explícita para horizonte pós-tombstone e owner/review trigger de `AUD20-16`; depois validar SPEC e só então iniciar BUILD; manter `AUD20-05` bloqueada e staging/produção `NO_GO`."
+  }
+}

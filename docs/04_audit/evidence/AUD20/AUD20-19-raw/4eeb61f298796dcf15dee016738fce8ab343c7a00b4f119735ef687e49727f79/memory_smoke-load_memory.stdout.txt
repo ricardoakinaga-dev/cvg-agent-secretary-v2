@@ -1,0 +1,1 @@
+{"schemaVersion":1,"kind":"phase10-load-report","generatedAt":"2026-09-23T00:37:38.454Z","scope":"in-memory outbox contract; synthetic payloads; not a production benchmark","events":1000,"workers":2,"enqueueMs":53.03,"drainMs":143.21,"totalMs":196.65,"throughputPerSecond":5085.13,"processed":1000,"loss":0,"duplicates":0,"latencyMs":{"p50":0.24,"p95":0.47,"p99":0.899,"max":4.218}}

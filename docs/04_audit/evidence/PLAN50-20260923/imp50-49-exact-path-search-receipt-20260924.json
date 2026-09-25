@@ -1,0 +1,141 @@
+{
+  "task": "IMP50-49",
+  "operation": "read_only_exact_path_search",
+  "captured_at_utc": "2026-09-24T07:10:00Z",
+  "input": {
+    "target_map": "docs/04_audit/evidence/PLAN50-20260923/imp50-49-historical-reference-map-v2-20260923.jsonl",
+    "target_map_sha256": "03a077e6aa422ce6108c2570b886af105a6a592ca976ed96da92d12e6e70a3ba",
+    "unique_targets": 141
+  },
+  "search": {
+    "tool": "ripgrep 15.2.0 (rev e89fff89ac)",
+    "match_mode": "fixed-string; exact full relative-path target; only matching substrings emitted",
+    "corpus_enumeration": "rg --files --hidden, honoring default ignore rules, then suffix and path filters",
+    "included_suffixes": [".md", ".json", ".jsonl", ".txt", ".log", ".mjs", ".js", ".ts", ".yml", ".yaml", ".sh", ".csv", ".xml", ".toml"],
+    "excluded_path_parts": [".git", ".gauntlet", "node_modules", "vendor", "build", "dist", "coverage", "human-sessions", "raw"],
+    "excluded_paths": ["docs/04_audit/evidence/PLAN50-20260923/**", "files whose basename contains imp50-49"],
+    "corpus_file_count": 3245,
+    "corpus_paths_sha256": "e54c95ebd9f7c0fa54cabfbe61b06ab0b71daefcba64a43a5fe9a133fd6823df",
+    "command_shape": "rg --json --only-matching --fixed-strings -f <141-target-paths> -- <sorted-corpus-paths>"
+  },
+  "result": {
+    "literal_occurrences": 27,
+    "matched_target_paths": 13,
+    "unmatched_target_paths": 128,
+    "matches": [
+      {
+        "target": "docs/04_audit/evidence/AUD19/AUD19-11-digests.json",
+        "occurrences": 3,
+        "references": [
+          {"source": "scripts/build-digests.mjs", "line": 11},
+          {"source": "scripts/build-digests.mjs", "line": 26},
+          {"source": "scripts/phase11-certify.mjs", "line": 1397}
+        ],
+        "evidence_limit": "Source-code path declarations/readers; not a run receipt or target-file binding."
+      },
+      {
+        "target": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/fingerprint-before.json",
+        "occurrences": 2,
+        "references": [
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/aaa21-format-bound.log", "line": 218},
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/full-cert/format.log", "line": 222}
+        ]
+      },
+      {
+        "target": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/fingerprint-final.json",
+        "occurrences": 2,
+        "references": [
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/aaa21-format-bound.log", "line": 219},
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/full-cert/format.log", "line": 223}
+        ]
+      },
+      {
+        "target": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/probe-a2-timers.ts",
+        "occurrences": 2,
+        "references": [
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/aaa21-format-bound.log", "line": 220},
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/full-cert/format.log", "line": 224}
+        ]
+      },
+      {
+        "target": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/probe-c-atomicity.ts",
+        "occurrences": 2,
+        "references": [
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/aaa21-format-bound.log", "line": 221},
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/full-cert/format.log", "line": 225}
+        ]
+      },
+      {
+        "target": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/probe-d-preflight.ts",
+        "occurrences": 2,
+        "references": [
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/aaa21-format-bound.log", "line": 222},
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/full-cert/format.log", "line": 226}
+        ]
+      },
+      {
+        "target": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/probe-e-http-spoof.ts",
+        "occurrences": 2,
+        "references": [
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/aaa21-format-bound.log", "line": 223},
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/full-cert/format.log", "line": 227}
+        ]
+      },
+      {
+        "target": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave-review/ENVIRONMENT.md",
+        "occurrences": 2,
+        "references": [
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/aaa21-format-bound.log", "line": 273},
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/full-cert/format.log", "line": 277}
+        ]
+      },
+      {
+        "target": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave-review/fingerprint-after.json",
+        "occurrences": 2,
+        "references": [
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/aaa21-format-bound.log", "line": 274},
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/full-cert/format.log", "line": 278}
+        ]
+      },
+      {
+        "target": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave-review/fingerprint-before.json",
+        "occurrences": 2,
+        "references": [
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/aaa21-format-bound.log", "line": 275},
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/full-cert/format.log", "line": 279}
+        ]
+      },
+      {
+        "target": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave-review/probe-identity.ts",
+        "occurrences": 2,
+        "references": [
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/aaa21-format-bound.log", "line": 276},
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/full-cert/format.log", "line": 280}
+        ]
+      },
+      {
+        "target": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave-review/probe-regression.ts",
+        "occurrences": 2,
+        "references": [
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/aaa21-format-bound.log", "line": 277},
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/full-cert/format.log", "line": 281}
+        ]
+      },
+      {
+        "target": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave3-01-fix/probes/probe-real-socket.ts",
+        "occurrences": 2,
+        "references": [
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/aaa21-format-bound.log", "line": 281},
+          {"source": "docs/04_audit/evidence/AAA/AAA-21/checks/full-cert/format.log", "line": 285}
+        ]
+      }
+    ]
+  },
+  "disposition": {
+    "all_141_rows_remain_unadjudicated": true,
+    "snapshot_v1_remains_reference_baseline": true,
+    "snapshot_v2_remains_immutable_supplement": true,
+    "no_inventory_map_or_classification_changed": true,
+    "discovery_ready": false
+  }
+}

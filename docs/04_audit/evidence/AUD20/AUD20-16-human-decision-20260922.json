@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-16-lifecycle-human-decision",
+  "decisionId": "AUD20-16-LIFECYCLE",
+  "status": "APPROVED",
+  "policyVersion": "AUD20-16-LIFECYCLE-v1",
+  "postTombstoneHorizonDays": 30,
+  "horizonUnitAndScope": {
+    "unit": "calendar_days",
+    "startsAfterActiveTtl": true,
+    "allTenants": true,
+    "inboundReplay": true
+  },
+  "formalOwnerAndRole": {
+    "name": "Ricardo",
+    "role": "Engineering Owner"
+  },
+  "reviewTriggerCondition": [
+    "daily_growth_above_80_percent_of_forecast_for_two_windows",
+    "table_or_index_above_70_percent_of_reserved_local_capacity",
+    "retention_or_replay_p95_above_documented_slo",
+    "replay_horizon_channel_contract_or_key_classification_changed",
+    "recovery_archive_or_fail_closed_lookup_failed"
+  ],
+  "reviewWindowOrCadence": "monthly_and_on_any_trigger",
+  "reviewAuthorityAndAction": {
+    "authority": "Ricardo — Engineering Owner",
+    "action": "approve_or_reject_capacity_roll_forward_only"
+  },
+  "validUntil": "2026-12-31T23:59:59-03:00",
+  "decidedAt": "2026-09-22T01:09:10Z",
+  "authorityEvidence": "explicit_confirmation_in_active_codex_session",
+  "environmentAndEffectScope": "CONTROLLED_LOCAL_SYNTHETIC_ONLY",
+  "constraintsAndRevocation": [
+    "UNCERTAIN_never_expires_automatically",
+    "no_destructive_purge",
+    "no_staging_or_production_authorization",
+    "policy_change_or_expiry_reopens_the_gate"
+  ],
+  "releaseEligible": false
+}

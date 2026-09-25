@@ -1,0 +1,971 @@
+{
+  "schemaVersion": 1,
+  "task": "IMP50-49",
+  "operation": "read_only_git_tree_path_membership",
+  "capturedAtUtc": "2026-09-24T09:40:00Z",
+  "input": {
+    "targetMap": "docs/04_audit/evidence/PLAN50-20260923/imp50-49-historical-reference-map-v2-20260923.jsonl",
+    "targetMapSha256": "03a077e6aa422ce6108c2570b886af105a6a592ca976ed96da92d12e6e70a3ba",
+    "totalTargets": 141,
+    "subset": "AUD19/raw map paths",
+    "subsetCount": 99,
+    "sortedSubsetPathsSha256": "a1aa43e9d73bfc0467990fb8031937504167ec6552f72574e389b555757c9ab2"
+  },
+  "commit": {
+    "sha": "0bbc3ab0013e5bf25d283c4946f951b0d0275b2a",
+    "tree": "a601d9d77c40d184ea73820f0b6939f050d24ba3",
+    "parent": "94a3b1e061a5787e120b63d990ddb1a94000640b",
+    "authoredAt": "2026-09-20T03:05:03-03:00",
+    "subject": "feat(web): axe/contrast, keyboard, zoom and multibrowser accessibility (AUD19-10)",
+    "reachableFromCurrentHead": true,
+    "currentHead": "25434811334f5cec92ee0741079302271b82b7cb"
+  },
+  "result": {
+    "treeEntries": 99,
+    "exactTargetPathsPresent": true,
+    "missingPaths": [],
+    "extraPaths": [],
+    "addedInCommit": true,
+    "changeCount": 99,
+    "browserCounts": {
+      "chromium": 33,
+      "firefox": 33,
+      "webkit": 33
+    },
+    "entries": [
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--320csspx-no-horizontal-scroll-and-no-content-loss--320csspx--022.json",
+        "snapshotV1Sha256": "9f6bb556ebbe189b7d4b0874d17beaf873bd2fd85aa4e613f5b95f41908ff293",
+        "snapshotV1SizeBytes": 1394,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "355418eaa7ef5c99ff1feb91a1b5855019d76e5c",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--admin-control-center-admin-synthetic-fixtures--admin-control-center--005.json",
+        "snapshotV1Sha256": "3228c668854bf528fdce71428739041c76cc157dab2c889b1fc6ec02a89eadf1",
+        "snapshotV1SizeBytes": 431,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "3f7843031fb4720bcad52c2059d0be5cc4d85c04",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--admin-control-center-admin-synthetic-fixtures--admin-control-center--006.json",
+        "snapshotV1Sha256": "1f018c25f30ce50796f9490a426ef27a03aef19a456d875f9b51b9258a59b763",
+        "snapshotV1SizeBytes": 445,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "96af8c311401b2612890cb23183c0171ae5f4305",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--approval-decision-is-keyboard-operable-and-preserves-state--approval--015.json",
+        "snapshotV1Sha256": "b2d56c93eb00a5135b891644fd6535570d3a13ec6eb54f0131d209a8bb9acfce",
+        "snapshotV1SizeBytes": 453,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "b3a6af1b2c3142f2efb12d4284681b8833c86612",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--content-actions-and-focus-survive-forced-colors-emulation--console-forced-colors--027.json",
+        "snapshotV1Sha256": "b8218b16fa53cf9a6ebcacea6e057a47ccc11436a845eb8b74fe1c4e5abacea9",
+        "snapshotV1SizeBytes": 422,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "096a27dbaaebe413a824383876676bd7f802fc61",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--content-actions-and-focus-survive-forced-colors-emulation--console-forced-colors--028.json",
+        "snapshotV1Sha256": "624d2e0c02afbff9017fe75bf269cf87af3f0c81632b193686c1e98fc3fd7ed2",
+        "snapshotV1SizeBytes": 436,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "48314537ccdee212f1047297c878b163e432c3e5",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--content-actions-and-focus-survive-forced-colors-emulation--emulation-support--025.json",
+        "snapshotV1Sha256": "8ca74250a39f3d02c13d3a6b19a9de51815b81890f7fc2d147bd7f578a613e68",
+        "snapshotV1SizeBytes": 389,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "94078e738be490565ab3eec9a684ee855ddd10de",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--content-actions-and-focus-survive-forced-colors-emulation--selection-and-focus--026.json",
+        "snapshotV1Sha256": "87df064489b80a2c0963d9a4427bd82f55568e04e785d6478ccc45a1b539381f",
+        "snapshotV1SizeBytes": 614,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "717861185cc5a1990cd15071b89421bb68b8ce31",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--error-state-exposes-retry-and-recovers-without-data-loss--console-error-to-loaded--018.json",
+        "snapshotV1Sha256": "361695177578374c543f100fc5109bb5b77a9a041550d71acf76b929dd23b249",
+        "snapshotV1SizeBytes": 437,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "86ed1d64d712436fdee973e286ae46ca7d613f01",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--handoff-and-uncertain-remain-read-only-and-clearly-announced--console-uncertain--019.json",
+        "snapshotV1Sha256": "60ec599de126417cf56f2bf7b96e760fa312324642ab26049a87743c99222164",
+        "snapshotV1SizeBytes": 435,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "a4396dcf6aebc31f519297e7a5ce272814d0dd0d",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--handoff-and-uncertain-remain-read-only-and-clearly-announced--console-uncertain--020.json",
+        "snapshotV1Sha256": "1ba08f143c8267e13f142af88d6f9125a2d4e8f238812814f62522bee1af46ab",
+        "snapshotV1SizeBytes": 449,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "7d5230e11f9b3332326fc1a03017ede7f8e32c06",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--handoff-and-uncertain-remain-read-only-and-clearly-announced--supervisor-handoff--021.json",
+        "snapshotV1Sha256": "153d8d50e9d79df6b3ba4adc4eee331fb97047b6d3f29805bf0ddec764da135f",
+        "snapshotV1SizeBytes": 459,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "db1795673fb3e966b756afd9f02133dee4d332c2",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--interactive-controls-are-44x44-css-px--admin-control-center--030.json",
+        "snapshotV1Sha256": "84e701ccfc517662fb97098f09f385012b4b0f977ebda28de95c2b5db66cae85",
+        "snapshotV1SizeBytes": 434,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "b4043c6f963f2b1660193b976937c1f96cacad55",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--interactive-controls-are-44x44-css-px--console-full--029.json",
+        "snapshotV1Sha256": "7643a6278e082eda9746b825af76c58d76ce142f7cb5cd24594c4bc38bfa421c",
+        "snapshotV1SizeBytes": 518,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "bb56b5f5dab4c1c7748b837f7b08cd5bfd77c9cc",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--loading-state-remains-readable-and-scannable--console-loading--016.json",
+        "snapshotV1Sha256": "2e507a1bd51edceaeb7f35cd9b66fc2138bb411320bf49858ebe81f61d78dd8b",
+        "snapshotV1SizeBytes": 417,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "bf8608dc1a06847a1baa44a673326528f987da7a",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--loading-state-remains-readable-and-scannable--console-loading--017.json",
+        "snapshotV1Sha256": "d1d3b6e1c7cdf3b205e7c56670462e65fe1f118d53f7143f96c181357376ba83",
+        "snapshotV1SizeBytes": 431,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "c8be8a97dcaa3d897fb8a1f4ffdff9595868087b",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--no-color-contrast-violation-on-console-or-admin-screens--admin-control-center--013.json",
+        "snapshotV1Sha256": "3ca1b04895792d0f2d06e4f14da3dc8d734dd76965177d6904aaa185e489334f",
+        "snapshotV1SizeBytes": 398,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "ced713fc8d1a3f6c5343e1096f66f615b4815ae2",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--no-color-contrast-violation-on-console-or-admin-screens--console-full--011.json",
+        "snapshotV1Sha256": "b2e7c70c8fa71619f0e65e042f47cc7a29f6b2621eb1f1be7133ecd7dd7d45ef",
+        "snapshotV1SizeBytes": 411,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "27fae6fc72467a4d7e1d67b27f192e1497d9ec82",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--no-color-contrast-violation-on-console-or-admin-screens--console-uncertain--012.json",
+        "snapshotV1Sha256": "66d8306c32a6579e5825730c4a208a22335c781c1e1623e2318ccdbe78a0fc09",
+        "snapshotV1SizeBytes": 416,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "cc3eb1b6c94e5d7bc3c88d6502e837b982f1cb42",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--operational-typography-is-12px-with-1-4-line-height--admin-control-center--032.json",
+        "snapshotV1Sha256": "e68b80c6068a11dd0294c15ea1443b0b36d6812a2bae3c99c767d8a6bb34a42c",
+        "snapshotV1SizeBytes": 9086,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "70a9c441a8720ebc3e11ad7a20955ea5901e8ca4",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--operational-typography-is-12px-with-1-4-line-height--console-full--031.json",
+        "snapshotV1Sha256": "0fc5b7bf16d72dda51b1cd98a6a20ec19f5539f41f948c2f063baa46969c507e",
+        "snapshotV1SizeBytes": 22386,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "e2e494f43dd7d0884026c36696933af927e5e473",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--operations-console-supervisor-synthetic-fixtures--console-desktop--001.json",
+        "snapshotV1Sha256": "d537fe9988aca07c4cf28869cad259fa788091e253ea25d1ef325d354b1f68ea",
+        "snapshotV1SizeBytes": 429,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "9fcf7c6cd3658de7dcbae4edc9fd7bda87b0f311",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--operations-console-supervisor-synthetic-fixtures--console-desktop--002.json",
+        "snapshotV1Sha256": "e71c48d7d3c7da70029c098699550bb302766803397e249a7f2b88390d5e751e",
+        "snapshotV1SizeBytes": 443,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "bbbd4ac1107f7f13ac827ee35ac8e70c8d8e63ed",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--operations-console-supervisor-synthetic-fixtures--console-mobile--003.json",
+        "snapshotV1Sha256": "9cb703615711f623dfa012ecae3ae801215bddcf3dc2742d888879c78be8c738",
+        "snapshotV1SizeBytes": 428,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "85287d2dddceda34276a5e834a9b7514f998eb22",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--operations-console-supervisor-synthetic-fixtures--console-mobile--004.json",
+        "snapshotV1Sha256": "ecdaa9fafd24287825fcd230639b2050044dfab4d0c88da32cfa06bd28579624",
+        "snapshotV1SizeBytes": 442,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "81b53669fb53c2097396d92c21fe86b74377cd90",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--skip-link-complete-tab-order-visible-focus-and-activation--console-full--014.json",
+        "snapshotV1Sha256": "fb88afaa21812167386c6272b182ded5913dcc198c8af0977895679fe2956091",
+        "snapshotV1SizeBytes": 707,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "6c58fc1286cb825036738dd3de7fee7e0b03c1bd",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--synthetic-uncertain-detail-exposes-no-unsafe-automatic-retry-action--uncertain-detail--033.json",
+        "snapshotV1Sha256": "8e5c12224c954d891bb6042ec9ae45df6323d1c742f0c3f962965706bc0f47fc",
+        "snapshotV1SizeBytes": 758,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "5c7514020e0032be8845111ea36a32cf84c94d71",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--unchanged-read-only-states-empty-and-error--console-empty--007.json",
+        "snapshotV1Sha256": "3eaee58c7292f346bc487d27752ae42d7f5e1bc8e70cea26dca21403ee174744",
+        "snapshotV1SizeBytes": 419,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "ac680bc78c6fd1f4490434ae758bc94e586c9830",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--unchanged-read-only-states-empty-and-error--console-empty--008.json",
+        "snapshotV1Sha256": "35a6dc0f746e1c9b22752a753848fb275bccd12f0147895f2fd01ee1c3aaa209",
+        "snapshotV1SizeBytes": 433,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "77dd5984d5c3c817e1ff1942382d1ed0cb99cbce",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--unchanged-read-only-states-empty-and-error--console-error--009.json",
+        "snapshotV1Sha256": "2e2b436473cddd2ef1524f3247f65ef7035c20402947c68b8bc26597bbc5076a",
+        "snapshotV1SizeBytes": 419,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "4909a34fe6398279233b44ccf8c9ea7df94430e3",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--unchanged-read-only-states-empty-and-error--console-error--010.json",
+        "snapshotV1Sha256": "fe2aa5cccb7e9b3ecc7d3068afe4320ee10133a8b1a910ec10167a37289f1cca",
+        "snapshotV1SizeBytes": 433,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "7ef02cd4253e8d3d651783d3c7f5b01b4085ba91",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--zoom-200-no-horizontal-scroll-and-no-content-loss--zoom-200--023.json",
+        "snapshotV1Sha256": "43898978fef71e72af9e97550e73356b5add7a40a045fe6924353ee7fa9b14eb",
+        "snapshotV1SizeBytes": 1395,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "8be21ddb614b07658bb3c7b0fef044a66917e746",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/chromium--zoom-400-no-horizontal-scroll-and-no-content-loss--zoom-400--024.json",
+        "snapshotV1Sha256": "cb3101def5f31899a79595b80eba95af2280fa8f089eb762bfb5bb199c067d0d",
+        "snapshotV1SizeBytes": 1395,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "d671a60b0631da981698749527b9a6aa980a8f4a",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--320csspx-no-horizontal-scroll-and-no-content-loss--320csspx--022.json",
+        "snapshotV1Sha256": "eb452f2d93f4b8ae68c879112d34c60d2b54d8f08b8afdde4279f4f3aff65d5b",
+        "snapshotV1SizeBytes": 1393,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "0d75e040883f8b1b07e258cef791206a5f6d15f8",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--admin-control-center-admin-synthetic-fixtures--admin-control-center--005.json",
+        "snapshotV1Sha256": "9c3d03ea85d080fa1f24056e125ce1f70da22c712769e1aa13120e53eb41e601",
+        "snapshotV1SizeBytes": 430,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "c2003678cb4ce60b816af89b1b7312abd8cdc75c",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--admin-control-center-admin-synthetic-fixtures--admin-control-center--006.json",
+        "snapshotV1Sha256": "f584d417e3bbccd4790be9d2b40934a794329b47348ded17f2c75cf8e85202a9",
+        "snapshotV1SizeBytes": 444,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "c3dd577f69eca5de42a151c0b9509381f212e603",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--approval-decision-is-keyboard-operable-and-preserves-state--approval--015.json",
+        "snapshotV1Sha256": "a7ae1662ab17192e5e47e1daf6ccbe498cd894afe3638f0328cf83c24a7b3cdc",
+        "snapshotV1SizeBytes": 452,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "7142c86943985b52afeb410a34613a12ad6df0ad",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--content-actions-and-focus-survive-forced-colors-emulation--console-forced-colors--027.json",
+        "snapshotV1Sha256": "e1a5fe8a770b1d8bea76173fe1a400261baf6acc06f3ec416e6045980d111e92",
+        "snapshotV1SizeBytes": 421,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "7ae7dc997f87550473bae09d8a0d672eaeb1ca05",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--content-actions-and-focus-survive-forced-colors-emulation--console-forced-colors--028.json",
+        "snapshotV1Sha256": "c0bec882505231466d902d9f50dc24dc84cbff7de6f6fa77f11edf6cc2e19fe9",
+        "snapshotV1SizeBytes": 435,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "323cd23e6e62a40f241fb3195cc5c9b935bdb988",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--content-actions-and-focus-survive-forced-colors-emulation--emulation-support--025.json",
+        "snapshotV1Sha256": "d4c927d9f672090620546b7184d7d0f0235f0f4b08718a27df33ab4feb72e503",
+        "snapshotV1SizeBytes": 388,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "52739100357d274af9f7cd7900cd51695c2c19b2",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--content-actions-and-focus-survive-forced-colors-emulation--selection-and-focus--026.json",
+        "snapshotV1Sha256": "702c43bf72b86df964f3fcafaf071bf6a4287df29f0ad1bea9e652bb56f0d027",
+        "snapshotV1SizeBytes": 613,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "5f50b162e2f705c518ce5b6766417881d21f88a6",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--error-state-exposes-retry-and-recovers-without-data-loss--console-error-to-loaded--018.json",
+        "snapshotV1Sha256": "2cd8c1c8f756e60b86366f447e1030facd7c0c68ad9c92426528f1ca88527d99",
+        "snapshotV1SizeBytes": 436,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "a07da7ed7a9ce5bbf8ea6651e8177f54e581b283",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--handoff-and-uncertain-remain-read-only-and-clearly-announced--console-uncertain--019.json",
+        "snapshotV1Sha256": "02bd35549e06cd8f5937f4d2d2555f22e987c51af4a4a0dd36ac711e981b810d",
+        "snapshotV1SizeBytes": 434,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "a680de87ed558a627ac0fcad8ab216c8de82f214",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--handoff-and-uncertain-remain-read-only-and-clearly-announced--console-uncertain--020.json",
+        "snapshotV1Sha256": "1af3897697959d94bceb165073a1e64b5e9914e058ed13af71f3ed51349fe84b",
+        "snapshotV1SizeBytes": 448,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "32ccc56db8144b2c2522580eff0ab28155e66d9a",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--handoff-and-uncertain-remain-read-only-and-clearly-announced--supervisor-handoff--021.json",
+        "snapshotV1Sha256": "d2071307d21da6f3e598682fd4e3cede28955dcabb33da1460773ccecf6cfeb1",
+        "snapshotV1SizeBytes": 458,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "be3777ededa28e14b8cda2f0e037f52da789c003",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--interactive-controls-are-44x44-css-px--admin-control-center--030.json",
+        "snapshotV1Sha256": "772e449c2c6bee529aa01d231dc2771b85392b26ea38df539d80444866cc6e81",
+        "snapshotV1SizeBytes": 433,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "9e5b09ee0989eb88a4fcd6bb9f231c2d092998d9",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--interactive-controls-are-44x44-css-px--console-full--029.json",
+        "snapshotV1Sha256": "a991b1147adad1c45bf8d1485866f772531b34314533927eba8bd995409eef56",
+        "snapshotV1SizeBytes": 517,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "7981215e0018b4ecd61daf3e2d4113ca2c40733e",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--loading-state-remains-readable-and-scannable--console-loading--016.json",
+        "snapshotV1Sha256": "1797eb95b6808321bba2c7219dc0e0040fcb998aa0293fa42c40b7ebdcb729ac",
+        "snapshotV1SizeBytes": 416,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "3bee90504e0e6aabfb4b04928f31058f61114cd3",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--loading-state-remains-readable-and-scannable--console-loading--017.json",
+        "snapshotV1Sha256": "b45a7b1695e23aa5c073774d43eeba68c811d4619192903207e41c5099b18127",
+        "snapshotV1SizeBytes": 430,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "f54725164933586a4e693a4c0df3fc940fd38a0e",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--no-color-contrast-violation-on-console-or-admin-screens--admin-control-center--013.json",
+        "snapshotV1Sha256": "5eda26f32444963e4dcd75cd9a109bfa92528b1b27edfda9c8fb0b3a38ce49ff",
+        "snapshotV1SizeBytes": 397,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "57b1d7845ad91a9fde05f40dd2b54805177eee42",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--no-color-contrast-violation-on-console-or-admin-screens--console-full--011.json",
+        "snapshotV1Sha256": "a87536f685c4a8edf5590821b0e0853ffcdf26488309c8d3184b34ac16d020d5",
+        "snapshotV1SizeBytes": 410,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "d33ba4c7bdc5604e39ce071b39260e13dbb93145",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--no-color-contrast-violation-on-console-or-admin-screens--console-uncertain--012.json",
+        "snapshotV1Sha256": "0f3998b154dc6e731b2d36aa1e41331d18765cc396112fdd4255b529d277770f",
+        "snapshotV1SizeBytes": 415,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "a7a2c9bb4997436d885b191b18b060f482702b85",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--operational-typography-is-12px-with-1-4-line-height--admin-control-center--032.json",
+        "snapshotV1Sha256": "5cf10a8f784919480ffb1317f1c4abcb6403eb6b7a74c36eef14abf9cee9b71a",
+        "snapshotV1SizeBytes": 9085,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "ec7ec279516256aa95921bf6e34fb67ec0e33ee4",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--operational-typography-is-12px-with-1-4-line-height--console-full--031.json",
+        "snapshotV1Sha256": "2a5027efb1a209ab97c9d2c3e95feaeb89d1f24523479d4bf0754d508cf78007",
+        "snapshotV1SizeBytes": 22385,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "6803daf56d234ae5060b1ce0ef33751d7a61cdeb",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--operations-console-supervisor-synthetic-fixtures--console-desktop--001.json",
+        "snapshotV1Sha256": "462b1a4eed0feae5df1f5b10fa037a088d57df76be96602b728ebadbff6a50ec",
+        "snapshotV1SizeBytes": 428,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "701aba262d71425b662cbfa149eafddc5ae67fbe",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--operations-console-supervisor-synthetic-fixtures--console-desktop--002.json",
+        "snapshotV1Sha256": "8fd195e2756e59ba09bc325f66e19ca52968f404ad2d0d77a073cf864a6392fb",
+        "snapshotV1SizeBytes": 442,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "6526ed139d22b7f039571b4eb3e0bba3ffe6041e",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--operations-console-supervisor-synthetic-fixtures--console-mobile--003.json",
+        "snapshotV1Sha256": "a79bde3b353ea21c0a5d20abfcb2564f2f39966cc4826d606b33f5067b58693d",
+        "snapshotV1SizeBytes": 427,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "5c32ba45dc8e3f25ea1338bc7d51e793a755697f",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--operations-console-supervisor-synthetic-fixtures--console-mobile--004.json",
+        "snapshotV1Sha256": "2db4eb12d18a216536df00ffdb925e7fb411c501ba4d2b8bcdc2e94c55d7bc82",
+        "snapshotV1SizeBytes": 441,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "4d993ba9916a5901dea417b6b14123401b1de530",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--skip-link-complete-tab-order-visible-focus-and-activation--console-full--014.json",
+        "snapshotV1Sha256": "ae113e9465ffa36dcd79500939d576d3ca85e6466e455cc7c5853936a3f3fb66",
+        "snapshotV1SizeBytes": 706,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "390d73dce3df7c4da50cd6f306bd1517cc4e2a01",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--synthetic-uncertain-detail-exposes-no-unsafe-automatic-retry-action--uncertain-detail--033.json",
+        "snapshotV1Sha256": "34f951b93d2c47fb54854d4672c649b3b6e0521ff9f77ec442cadef4e4cd521a",
+        "snapshotV1SizeBytes": 757,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "b73b05874f678f7930cfb2cfcec4ded720ad9098",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--unchanged-read-only-states-empty-and-error--console-empty--007.json",
+        "snapshotV1Sha256": "627e3b5d84401c7da0b3397c115315ace1eab9125b52400663d26f934f6cd84f",
+        "snapshotV1SizeBytes": 418,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "ffc94ca5dc3d80820d459adb08e858565b16d01b",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--unchanged-read-only-states-empty-and-error--console-empty--008.json",
+        "snapshotV1Sha256": "ec726230ecc166cbca3c671fe1c20943122c56271d26276338e4427dde5402c8",
+        "snapshotV1SizeBytes": 432,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "ff3360a57bafb57cd6111120cb2dbcf71f49cd17",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--unchanged-read-only-states-empty-and-error--console-error--009.json",
+        "snapshotV1Sha256": "3de67ab8859d990daa6b28b057c36b682fc7055685d6e6d28a066132ff9bba82",
+        "snapshotV1SizeBytes": 418,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "665d6553e0a5acb5c5f6984e3420d9a1042f51ea",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--unchanged-read-only-states-empty-and-error--console-error--010.json",
+        "snapshotV1Sha256": "f3ff6a738294d987ba4eab62360c13aabf888c46a203a6d24682ec6090153cf9",
+        "snapshotV1SizeBytes": 432,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "d45a0ae5b2b619252fa779d48096225eea78ccbe",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--zoom-200-no-horizontal-scroll-and-no-content-loss--zoom-200--023.json",
+        "snapshotV1Sha256": "434e450cbb7fc935f554e890743b8b6c8222fdb45ed45e97383db52c538f15c4",
+        "snapshotV1SizeBytes": 1394,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "f847c1ec813e695537b4399c6391aaa1b284ebbd",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/firefox--zoom-400-no-horizontal-scroll-and-no-content-loss--zoom-400--024.json",
+        "snapshotV1Sha256": "8928d8dccf70e6fa3e22a7fbee6ab47de89203462faf4b877bd7afee21fd4d28",
+        "snapshotV1SizeBytes": 1394,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "59300f2ef5a49b43323e934ba97fb7d5273606de",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--320csspx-no-horizontal-scroll-and-no-content-loss--320csspx--022.json",
+        "snapshotV1Sha256": "dc3cd2556a88f9e69428215bf6cf964a75a77346f729b6fa74e5bf298f179a04",
+        "snapshotV1SizeBytes": 1392,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "ab52f42bcbc08e2e83d5d14ea2afced2a45eb029",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--admin-control-center-admin-synthetic-fixtures--admin-control-center--005.json",
+        "snapshotV1Sha256": "f4e6b65453f1c8ece7f337101da749bd8fb4019ea65c7b820aaa955c4b7f037f",
+        "snapshotV1SizeBytes": 429,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "433acf91a63d4bcb93edc2ce07ad7220b73155f8",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--admin-control-center-admin-synthetic-fixtures--admin-control-center--006.json",
+        "snapshotV1Sha256": "ef845c000cf285f011b2bdff674769fe827328da7449acd4d4574f2f1585c18e",
+        "snapshotV1SizeBytes": 443,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "59f944110ea0f67823cef5c24ff6531f62605681",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--approval-decision-is-keyboard-operable-and-preserves-state--approval--015.json",
+        "snapshotV1Sha256": "a929103694948009cfb470239f029b2d90ca048ff5d9ad4db824aec4204c6370",
+        "snapshotV1SizeBytes": 451,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "0aabdca1d6ad0da0ac08a5f88519411f3ffd0e51",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--content-actions-and-focus-survive-forced-colors-emulation--console-forced-colors--027.json",
+        "snapshotV1Sha256": "d1f32463ca51a7eb8e5bc66f74c273d379f18a3942e1f2d8a505af46ccf932ca",
+        "snapshotV1SizeBytes": 420,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "456edbdf92d678e8cd2aeec944b8d1488a218cd0",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--content-actions-and-focus-survive-forced-colors-emulation--console-forced-colors--028.json",
+        "snapshotV1Sha256": "b667caa4d3dff8383df9a34fc7bc3c2972c7e8ee02c5659e8309d3fa6f88775a",
+        "snapshotV1SizeBytes": 434,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "233f9aba30c09271be594dd4d4a514618b96ceca",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--content-actions-and-focus-survive-forced-colors-emulation--emulation-support--025.json",
+        "snapshotV1Sha256": "9b2953db4802a0481dbde486a05faa27c69c51d6936711a6660046b08628c15d",
+        "snapshotV1SizeBytes": 387,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "bc307bc1fe9f230dfddf45823b622718b21b59c8",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--content-actions-and-focus-survive-forced-colors-emulation--selection-and-focus--026.json",
+        "snapshotV1Sha256": "83f18dbb22526a6924c09566bcdb39fb2d3c8487ba96e86073d6afa1932d1cca",
+        "snapshotV1SizeBytes": 647,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "a7447c1eb644b33c7291350fb098afddd393f4be",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--error-state-exposes-retry-and-recovers-without-data-loss--console-error-to-loaded--018.json",
+        "snapshotV1Sha256": "6ee3f3113a12a51b7b3f25ec5ada7b599a68f91c65e3dc72c5a6b55f398644ab",
+        "snapshotV1SizeBytes": 435,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "ac2bee27303c2c9bcd6d4938994fc85d99107ae6",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--handoff-and-uncertain-remain-read-only-and-clearly-announced--console-uncertain--019.json",
+        "snapshotV1Sha256": "4039ba2506d5ea77e076c4dca07f6dc6cdb2d4457222b14e2e5cefd827be08c3",
+        "snapshotV1SizeBytes": 433,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "8008db56bf153b049c6190a576df2dfc5cc72762",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--handoff-and-uncertain-remain-read-only-and-clearly-announced--console-uncertain--020.json",
+        "snapshotV1Sha256": "c92022e98ddfcb42ebc880d10f33e8f8234792d86f51991c87bd3ba927b63dee",
+        "snapshotV1SizeBytes": 447,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "a53845c267a65a185279d714fcd7fc7121c87d70",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--handoff-and-uncertain-remain-read-only-and-clearly-announced--supervisor-handoff--021.json",
+        "snapshotV1Sha256": "ae07cb0385618ffc1ee799029d69cc10cd01ca631cc9373dd7d455661e4532da",
+        "snapshotV1SizeBytes": 457,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "8727b528c69a8b6bc21c26b73dc099f61eeb6b85",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--interactive-controls-are-44x44-css-px--admin-control-center--030.json",
+        "snapshotV1Sha256": "e79fa9090b172434bb1c7b8953c6c4189fbfe98aa935f3d64d8ff4baeaa6b9b5",
+        "snapshotV1SizeBytes": 432,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "4328bb578b23dd7f0bd9c2a28f03989c93a54e4c",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--interactive-controls-are-44x44-css-px--console-full--029.json",
+        "snapshotV1Sha256": "aa62766dce1475fa1539f999fe2b52e6524f0792176b921baa7e3fac6fd5beb7",
+        "snapshotV1SizeBytes": 516,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "7c304bd224c06d38e798c036cc79a86442f50570",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--loading-state-remains-readable-and-scannable--console-loading--016.json",
+        "snapshotV1Sha256": "cff92464f458f28cace5904185114c2b04fa87595edaeaf7d1311c88a9972dd8",
+        "snapshotV1SizeBytes": 415,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "92e0263e5fbc2450c50ada0a6a7496a82486c252",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--loading-state-remains-readable-and-scannable--console-loading--017.json",
+        "snapshotV1Sha256": "bfd7a48b52288316020a68f7d9e4207c7b5a45cd106d2702a193e1ee014c67d9",
+        "snapshotV1SizeBytes": 429,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "194cb80be11cf8ffd5092ec4e15eec0bb997e339",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--no-color-contrast-violation-on-console-or-admin-screens--admin-control-center--013.json",
+        "snapshotV1Sha256": "14a9ddacaa7076f5caee1cbbae51784e439e1dbc503d0c2f32011cce5011dd73",
+        "snapshotV1SizeBytes": 396,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "171fd394c21016f973f1143680b17beed35cb9b0",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--no-color-contrast-violation-on-console-or-admin-screens--console-full--011.json",
+        "snapshotV1Sha256": "f76136a85f0e435855c45fdb264413333ad3a5c63e8a6d4391bdacd5b7e93ceb",
+        "snapshotV1SizeBytes": 409,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "689d9ee503b15c1b129f6e70d7f3235ee05eda3a",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--no-color-contrast-violation-on-console-or-admin-screens--console-uncertain--012.json",
+        "snapshotV1Sha256": "7626e0bfaddef18f899341f8193766078fecd6da8ff9e9ea5cfea5d9869b307f",
+        "snapshotV1SizeBytes": 414,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "93eb5eee0445c272988e7c4f3d77259c80752c19",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--operational-typography-is-12px-with-1-4-line-height--admin-control-center--032.json",
+        "snapshotV1Sha256": "be74f2f31e1e27f8bb47b172b4f3ecd879061749ffef02e11d6ec6ea12a63cae",
+        "snapshotV1SizeBytes": 9264,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "2510bf8397c8fa403fa7844823936c2a603e3939",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--operational-typography-is-12px-with-1-4-line-height--console-full--031.json",
+        "snapshotV1Sha256": "666e4d0b36ddd00c931a3f8fa6fe0ff934add29a0d4c43b16f9366b751751a08",
+        "snapshotV1SizeBytes": 22969,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "e94f9ec50ce884cfc6684d538bf3180659f782ba",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--operations-console-supervisor-synthetic-fixtures--console-desktop--001.json",
+        "snapshotV1Sha256": "d5c9dd24837f6f817ee40ab7c93e06476d35c45bbc3469e49c48947852e19e6d",
+        "snapshotV1SizeBytes": 427,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "608ba393ad65e06cebf8bd43ad8f167eedb4aad5",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--operations-console-supervisor-synthetic-fixtures--console-desktop--002.json",
+        "snapshotV1Sha256": "3e41f82cc15e5eff0ddd5c2f0337c73303bd9a33c16eaf7e0ebb8e05cd31686d",
+        "snapshotV1SizeBytes": 441,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "d082638796c322d030bea5a4e2191b99f698a6c0",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--operations-console-supervisor-synthetic-fixtures--console-mobile--003.json",
+        "snapshotV1Sha256": "6538657b18d1dc21aed7775a65773810789097107e2b588e024c585976504d28",
+        "snapshotV1SizeBytes": 426,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "31951cedc77d5ce336130f755bdda8b94929246f",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--operations-console-supervisor-synthetic-fixtures--console-mobile--004.json",
+        "snapshotV1Sha256": "20d4f8ad1e7066d46535afad59733c46437f872815d587fb7cf0fbfea67f1ac4",
+        "snapshotV1SizeBytes": 440,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "3a16c7ec2fbc501bf4d53b467045019635ec3b05",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--skip-link-complete-tab-order-visible-focus-and-activation--console-full--014.json",
+        "snapshotV1Sha256": "f1a8cc4ef9352f7f2519a18da799562629f43a07a8ed37467694554247697c1f",
+        "snapshotV1SizeBytes": 705,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "4a512b3294327203f2fab4e95f5e8ae1326012e9",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--synthetic-uncertain-detail-exposes-no-unsafe-automatic-retry-action--uncertain-detail--033.json",
+        "snapshotV1Sha256": "5ca0db0d620274a7e9adfdf808ab7ed10761d844d3812c75dc1305cfdb4fac5e",
+        "snapshotV1SizeBytes": 756,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "9a2d6ff4d7adf1651a9b122d36c22727b3a82b9e",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--unchanged-read-only-states-empty-and-error--console-empty--007.json",
+        "snapshotV1Sha256": "5594917ebba44c9df0e70315a2f58d739226e6c12a4113ac01c6a5d7d3413f46",
+        "snapshotV1SizeBytes": 417,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "25b3b89839acb9f9c56b012fdbc1a1fc533ecfeb",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--unchanged-read-only-states-empty-and-error--console-empty--008.json",
+        "snapshotV1Sha256": "e7bfd859153cbfbc45879f7b907fe5d0cce7a77c4026342c57ef142f3cd378b2",
+        "snapshotV1SizeBytes": 431,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "5dc9c3649a03a354fc64050b04156a9d1957a4a0",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--unchanged-read-only-states-empty-and-error--console-error--009.json",
+        "snapshotV1Sha256": "c6296c9d795619b04da0bff6063424c34d8b4624ed0d715ee2c803c079d06626",
+        "snapshotV1SizeBytes": 417,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "5d53b744cfeeb9001b0ee95b0c72aee3233b1a9c",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--unchanged-read-only-states-empty-and-error--console-error--010.json",
+        "snapshotV1Sha256": "436d5900479a1f1758827b93942e18122d4224df8d1ddd9f9447787808be522e",
+        "snapshotV1SizeBytes": 431,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "fb72d3758d805562f00a25a435ab538dad6a3bd6",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--zoom-200-no-horizontal-scroll-and-no-content-loss--zoom-200--023.json",
+        "snapshotV1Sha256": "f3281974417d8154adc15a3aca588e7a8c8d18b6558de4553d20f37abcc6747c",
+        "snapshotV1SizeBytes": 1393,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "24e1103310c161359d4b957ac250aedb1cc45229",
+        "commitChange": "A"
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/raw/webkit--zoom-400-no-horizontal-scroll-and-no-content-loss--zoom-400--024.json",
+        "snapshotV1Sha256": "c711ffca83ecb6af166b7c893eb4314b75722e835a3cf0ba64019b57534d39ea",
+        "snapshotV1SizeBytes": 1393,
+        "gitTreeMode": "100644",
+        "gitTreeType": "blob",
+        "gitBlobOid": "0325a0edcbe224b4698fc8a27e31994a9990a209",
+        "commitChange": "A"
+      }
+    ],
+    "coLocatedArtifacts": [
+      {
+        "path": "docs/04_audit/evidence/AUD19/AUD19-10-a11y-report.md",
+        "gitBlobOid": "816ba0a89f663d8d34f906f1d892b5f087c2d47f",
+        "sizeBytes": 10978,
+        "workingTreeGitBlobOid": "816ba0a89f663d8d34f906f1d892b5f087c2d47f",
+        "workingTreeMatchesCommit": true
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/AUD19-10-a11y-results.json",
+        "gitBlobOid": "eb71c76819d46b15a71d586ece0f1df4ff4bdc86",
+        "sizeBytes": 21960,
+        "workingTreeGitBlobOid": "eb71c76819d46b15a71d586ece0f1df4ff4bdc86",
+        "workingTreeMatchesCommit": true
+      },
+      {
+        "path": "docs/04_audit/evidence/AUD19/AUD19-10-aggregate-a11y.mjs",
+        "gitBlobOid": "d936a44d16bbc4218b8d960e3f8594463b8cf002",
+        "sizeBytes": 6291,
+        "workingTreeGitBlobOid": "d936a44d16bbc4218b8d960e3f8594463b8cf002",
+        "workingTreeMatchesCommit": true
+      }
+    ]
+  },
+  "reportClaims": {
+    "source": "docs/04_audit/evidence/AUD19/AUD19-10-a11y-report.md",
+    "lines": [
+      134,
+      147
+    ],
+    "claims": [
+      "99 raw JSON files; 33 per browser; synthetic:true",
+      "aggregate script regenerates the JSON aggregate from raw/"
+    ]
+  },
+  "limits": {
+    "rawPayloadBytesRead": false,
+    "rawPayloadSha256Recomputed": false,
+    "runIdOrCandidateReceiptFound": false,
+    "gitCommitSubjectIsNotExecutionReceipt": true,
+    "mapClassesOrSnapshotsChanged": false,
+    "adjudicationMade": false
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-05-command-receipt",
+  "task": "AUD20-05",
+  "observedAt": "2026-09-22T03:08:00Z",
+  "execution": "CONTROLLED_LOCAL",
+  "redacted": true,
+  "containsCredentials": false,
+  "containsRealData": false,
+  "commands": [
+    {
+      "name": "focused-postgres-final",
+      "result": "PASS",
+      "summary": "1 file / 20 tests"
+    },
+    {
+      "name": "postgres-regression",
+      "result": "PASS",
+      "summary": "30 files / 342 tests"
+    },
+    {
+      "name": "full-regression-final",
+      "result": "PASS",
+      "summary": "285 files / 2213 tests / 192 conditional skips"
+    },
+    {
+      "name": "coverage",
+      "result": "PASS",
+      "summary": "90.83 statements / 86.87 branches / 89.16 functions / 91.42 lines"
+    },
+    {
+      "name": "static-docs-security",
+      "result": "PASS",
+      "summary": "typecheck, lint, format, architecture, docs, diff and npm audit high"
+    }
+  ],
+  "sideEffects": false,
+  "releaseEligible": false
+}

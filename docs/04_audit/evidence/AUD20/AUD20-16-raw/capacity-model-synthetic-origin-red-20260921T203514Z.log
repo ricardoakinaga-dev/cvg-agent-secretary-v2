@@ -1,0 +1,12 @@
+Command: PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH npm test -- tests/aud20-16-capacity-model.test.js
+Environment: node v22.23.2; npm v10.9.8; vitest v4.1.11
+Exit code: 1
+
+RED reproduction after adding the required synthetic-origin negative:
+
+Test Files  1 failed (1)
+Tests       1 failed | 3 passed (4)
+Failure     requires an explicit synthetic data origin
+Assertion   expected [Function] to throw an error
+
+The existing calculator ignored a missing or non-synthetic data-origin marker.

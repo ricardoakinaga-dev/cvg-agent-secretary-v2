@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud19-critical-mutants",
+  "program": "AUD20-REM-v2",
+  "task": "AUD20-19",
+  "version": 1,
+  "frozenAt": "2026-09-22",
+  "selection": {
+    "rule": "Guards whose weakening would let a skipped PostgreSQL test or an unsupported runtime qualify.",
+    "policy": "Every selected mutant must be detected by the focused AUD20-19 contract test in a throwaway sandbox."
+  },
+  "mutants": [
+    {
+      "id": "MUT-AUD20-19-SKIP-01",
+      "category": "qualification-skip",
+      "target": "scripts/lib/aud20-19-qualification.mjs",
+      "find": "    skipped.required !== 0 ||",
+      "replace": "    skipped.required < 0 ||",
+      "test": { "files": ["tests/aud20-19-qualification.test.js"] },
+      "rationale": "Weakening the required-skip guard must let a known-bad report through and therefore break the focused negative test."
+    },
+    {
+      "id": "MUT-AUD20-19-NODE-01",
+      "category": "qualification-runtime",
+      "target": "scripts/lib/aud20-19-qualification.mjs",
+      "find": "  if (report?.environment?.node !== manifest?.runtime?.node) {",
+      "replace": "  if (report?.environment?.node === manifest?.runtime?.node) {",
+      "test": { "files": ["tests/aud20-19-qualification.test.js"] },
+      "rationale": "Inverting the exact runtime binding must be detected by the supported/unsupported Node cases."
+    },
+    {
+      "id": "MUT-AUD20-19-CANDIDATE-01",
+      "category": "qualification-binding",
+      "target": "scripts/lib/aud20-19-qualification.mjs",
+      "find": "  if (!expectedCandidateId || report?.candidateId !== expectedCandidateId) {",
+      "replace": "  if (!expectedCandidateId || report?.candidateId === expectedCandidateId) {",
+      "test": { "files": ["tests/aud20-19-qualification.test.js"] },
+      "rationale": "Inverting candidate equality must make the stale-candidate negative test fail."
+    },
+    {
+      "id": "MUT-AUD20-19-METRICS-01",
+      "category": "qualification-metrics",
+      "target": "scripts/lib/aud20-19-qualification.mjs",
+      "find": "      metrics.cleanup !== 'PASS'",
+      "replace": "      metrics.cleanup === 'PASS'",
+      "test": { "files": ["tests/aud20-19-qualification.test.js"] },
+      "rationale": "Inverting cleanup qualification must be caught by the invalid PostgreSQL metrics fixture."
+    }
+  ]
+}

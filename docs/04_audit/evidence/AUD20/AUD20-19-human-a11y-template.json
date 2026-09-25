@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-19-human-accessibility-evidence",
+  "task": "AUD20-19",
+  "status": "PENDING_HUMAN_SESSION",
+  "synthetic": true,
+  "consentConfirmed": false,
+  "participantRole": null,
+  "assistiveTechnology": { "name": null, "version": null, "os": null },
+  "startedAt": null,
+  "finishedAt": null,
+  "steps": [],
+  "issues": [],
+  "releaseEligible": false,
+  "instructions": "Preencher somente durante sessão humana autorizada. Não inferir participante, consentimento, tecnologia, observações ou resultado."
+}

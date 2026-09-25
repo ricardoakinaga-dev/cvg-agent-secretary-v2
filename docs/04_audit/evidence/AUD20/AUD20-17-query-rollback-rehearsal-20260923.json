@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-17-query-rollback-rehearsal",
+  "result": "PASS_ISOLATED",
+  "scope": {
+    "temporaryWorkspaceOnly": true,
+    "workingTreeChanged": false,
+    "restored": [
+      "server.ts parser declarations/import dependencies"
+    ],
+    "removed": [
+      "request-query.ts",
+      "request-query.test.ts",
+      "query architecture assertion"
+    ],
+    "preserved": [
+      "request-context.ts",
+      "request-context.test.ts",
+      "route contract tests"
+    ]
+  },
+  "checks": {
+    "parserBlockRoundTripMatchesOriginalSource": true,
+    "parserOwnershipInRestoredServer": {
+      "parsePagination": 1,
+      "parseTraceLimit": 1,
+      "OrchestrationGoalQuerySchema": 1,
+      "parseOrchestrationGoalQuery": 1,
+      "auditEventTypes": 1,
+      "parseAuditEvidenceQuery": 1,
+      "parseOptionalAuditFilter": 1
+    },
+    "requestQueryImportRemoved": true,
+    "requestQueryModuleAndDirectTestRemoved": true,
+    "queryArchitectureAssertionRemoved": true,
+    "restoredServerSyntaxDiagnostics": 0,
+    "firstSliceRequestContextSha256Before": "ec4bbc4b68480a6cfd75024cf2382765a20d4d72b9e7dd9f41619403dacaf9a7",
+    "firstSliceRequestContextSha256After": "ec4bbc4b68480a6cfd75024cf2382765a20d4d72b9e7dd9f41619403dacaf9a7",
+    "firstSliceRequestContextTestSha256Before": "6e75f74544d727dc56e99913bd4af5b92ee1438523a19773e35526591b7acda2",
+    "firstSliceRequestContextTestSha256After": "6e75f74544d727dc56e99913bd4af5b92ee1438523a19773e35526591b7acda2",
+    "firstSliceGuardBytesUnchanged": true
+  },
+  "note": "Isolated rollback rehearsal only; no rollback was applied to the working tree and no DB/runtime rollback was needed."
+}

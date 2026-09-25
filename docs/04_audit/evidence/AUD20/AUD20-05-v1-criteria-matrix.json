@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-05-criteria-matrix",
+  "program": "AUD20-REM",
+  "task": "AUD20-05",
+  "observedAt": "2026-09-22T02:53:00Z",
+  "execution": "CONTROLLED_LOCAL",
+  "status": "COMPLETED_LOCAL",
+  "staging": "NO_GO",
+  "production": "NO_GO",
+  "releaseEligible": false,
+  "criteria": [
+    {
+      "id": "AUD20-05-C01",
+      "status": "PASS",
+      "summary": "Observed attestation bytes and runtime replay/key-ring configuration are bound to the environment and candidate by verifier-computed digests."
+    },
+    {
+      "id": "AUD20-05-C02",
+      "status": "PASS",
+      "summary": "Signature, validity window, environment, owner, candidate digest and configuration digest are fail-closed and covered by positive and negative tests."
+    },
+    {
+      "id": "AUD20-05-C03",
+      "status": "PASS",
+      "summary": "Disposable PostgreSQL proves the effective runtime role, schema/table, exact CRUD grants and forbidden ownership/DDL privileges."
+    },
+    {
+      "id": "AUD20-05-C04",
+      "status": "PASS",
+      "summary": "API and worker retain pre-bind/pre-claim barriers; missing PostgreSQL replay configuration, readiness or guard rejects startup."
+    },
+    {
+      "id": "AUD20-05-C05",
+      "status": "PASS",
+      "summary": "Two independent PostgreSQL pools preserve one-winner atomic replay claims and store failures deny access."
+    },
+    {
+      "id": "AUD20-05-C06",
+      "status": "PASS",
+      "summary": "Redacted local command and raw-artifact receipts are reproducible and are sealed by the final candidate manifest and verifier."
+    },
+    {
+      "id": "AUD20-05-C07",
+      "status": "PASS",
+      "summary": "Production explicitly requires the PostgreSQL adapter and an active replay guard; disabling either fails closed with no memory fallback."
+    }
+  ],
+  "verification": {
+    "focused": "PASS",
+    "postgres": "30 files / 342 tests PASS",
+    "full": "285 files / 2213 tests PASS / 192 conditional skips",
+    "coverage": "90.83% statements / 86.87% branches / 89.16% functions / 91.42% lines",
+    "staticAndDocs": "PASS",
+    "independentCritic": "PASS_LIMITED / no implementation blocker; seal was the only pending item"
+  },
+  "limitations": [
+    "Controlled local evidence only; staging and production remain NO_GO.",
+    "No real credentials, data, external integration, commit, push or deploy was used."
+  ]
+}

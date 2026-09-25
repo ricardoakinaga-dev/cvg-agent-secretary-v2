@@ -1,0 +1,13 @@
+
+> cvg-agent-secretary-v2@1.0.0 test
+> vitest run --no-file-parallelism --maxWorkers=2 apps/api/src/__tests__/request-context.test.ts apps/api/src/__tests__/server-boundary-envelope.test.ts apps/api/src/__tests__/webhook-security.test.ts tests/architecture.test.js
+
+
+ RUN  v4.1.11 /home/ricardo/cvg-agent-secretary-v2
+
+
+ Test Files  4 passed (4)
+      Tests  47 passed | 1 skipped (48)
+   Start at  23:55:04
+   Duration  4.77s (transform 904ms, setup 0ms, import 1.53s, tests 632ms, environment 2.19s)
+

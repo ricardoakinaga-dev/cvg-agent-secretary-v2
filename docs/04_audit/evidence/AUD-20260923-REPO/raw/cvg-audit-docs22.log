@@ -1,0 +1,42 @@
+
+> cvg-agent-secretary-v2@1.0.0 docs:check
+> node scripts/docs-check.mjs
+
+{
+  "schemaVersion": 1,
+  "kind": "aud19-documentation-check",
+  "valid": true,
+  "links": {
+    "checked": 810,
+    "broken": []
+  },
+  "json": {
+    "checked": 609,
+    "invalid": []
+  },
+  "states": {
+    "declared": [
+      "WAITING_HUMAN_APPROVAL"
+    ],
+    "unexpected": []
+  },
+  "nextAction": {
+    "valid": true,
+    "reason": null,
+    "runtimeStateAction": "obter autorização específica para a sessão humana de acessibilidade de `AUD20-19`; manter staging e produção bloqueados.",
+    "currentIndexAction": "obter autorização específica para a sessão humana de acessibilidade de `AUD20-19`; manter staging e produção bloqueados."
+  },
+  "semantic": {
+    "valid": true,
+    "failures": [],
+    "state": {
+      "valid": true,
+      "failures": []
+    },
+    "node": {
+      "valid": true,
+      "failures": []
+    },
+    "observedNode": "v22.23.2"
+  }
+}

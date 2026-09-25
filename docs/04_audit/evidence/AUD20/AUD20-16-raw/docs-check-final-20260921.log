@@ -1,0 +1,29 @@
+Command: PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH npm run docs:check
+Observed: 2026-09-21, final post-write verification
+Exit code: 0
+
+{
+  "schemaVersion": 1,
+  "kind": "aud19-documentation-check",
+  "valid": true,
+  "links": {
+    "checked": 783,
+    "broken": []
+  },
+  "json": {
+    "checked": 582,
+    "invalid": []
+  },
+  "states": {
+    "declared": [
+      "WAITING_HUMAN_APPROVAL"
+    ],
+    "unexpected": []
+  },
+  "nextAction": {
+    "valid": true,
+    "reason": null,
+    "runtimeStateAction": "obter decisão humana explícita para horizonte pós-tombstone e owner/review trigger de `AUD20-16`; depois validar SPEC e só então iniciar BUILD; manter `AUD20-05` bloqueada e staging/produção `NO_GO`.",
+    "currentIndexAction": "obter decisão humana explícita para horizonte pós-tombstone e owner/review trigger de `AUD20-16`; depois validar SPEC e só então iniciar BUILD; manter `AUD20-05` bloqueada e staging/produção `NO_GO`."
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud19-mutation-sentinel",
+  "program": "AUD19-REM",
+  "task": "AUD19-08",
+  "generatedAt": "2026-09-25T03:06:30.850Z",
+  "node": "22.23.2",
+  "manifest": "docs/04_audit/evidence/AUD19/AUD19-08-mutants.json",
+  "status": "PASS",
+  "summary": {
+    "total": 1,
+    "detected": 1,
+    "notDetected": 0,
+    "notApplicable": 0,
+    "sandbox": null
+  },
+  "results": [
+    {
+      "id": "MUT-TENANT-01",
+      "category": "tenant",
+      "target": "apps/api/src/server/request-context.ts",
+      "rationale": "Inverting the trusted-identity tenant scope comparison breaks tenant isolation at the API boundary. Refreshed 2026-09-25 (admitted): guard moved verbatim from server.ts to request-context.ts:293 during query-parser/request-context extraction (indent 2→4).",
+      "focusedTests": [
+        "apps/api/src/__tests__/identity-trusted-resolver.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 7,
+        "passed": 6,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-65kUJc/.mutation-report.json\n\n"
+    }
+  ],
+  "candidate": {
+    "candidateId": "9c381d7c3a978c49a8f8145a7953e725672b859dd8656ac67770df92eaddf97e",
+    "commit": "25434811334f5cec92ee0741079302271b82b7cb",
+    "treeHash": "d01569454583d1ee8087348d312c22d2a50443514cf5a816e8c776313f73bfba"
+  },
+  "manifestSha256": "23c48d9baaa0feb7b70b2e7cb6e411d45878958568ca7cb56feecbd5c180b750"
+}

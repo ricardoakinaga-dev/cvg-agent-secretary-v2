@@ -1,5 +1,53 @@
 # 0300 — Build Engineer Master
 
+## Estado incremental pós-query-parser — 2026-09-24
+
+A [revisão 0571](../04_audit/0571_implementation_state_review_2026-09-23.md),
+[lista 0572](../04_audit/0572_next_improvement_round_2026-09-23.md),
+[roadmap 0342](0342_post_query_roadmap_20260923.md) e
+[backlog 0343](0343_post_query_backlog_20260923.md) governam a rodada
+documental incremental. `AUD20-17-FU1` query-parser recebeu `PASS_LOCAL`
+limitado. O BUILD request-context v2 foi executado; C02 tem evidência
+`PASS_LOCAL`; a crítica independente do candidato registrou C01–C05 `PASS` e
+C06/C07 `FAIL`, então a task permanece aberta e sem aceite. O valor de
+branches observado não foi adjudicado contra o piso de 95%, pois o registry
+congelado não enumera o módulo. Ver a
+[errata de aplicabilidade](../04_audit/evidence/AUD20/AUD20-17-request-context-branch-floor-erratum-20260924.md).
+Medidas, cobertura e gates estão no
+[relatório](../04_audit/evidence/AUD20/AUD20-17-request-context-v2-build-report-20260924.md)
+e no [manifesto candidate-bound](../04_audit/evidence/AUD20/AUD20-17-request-context-v2-build-candidate-manifest-20260924.json).
+A proposta SPEC v2 hash `1cb72b0e097ad19539c1f14fbdc892542ae9ddabf716bba00eef20b1c4cb237c`
+recebeu `PASS_FOR_HUMAN_REVIEW` e agora tem aprovação humana e admissão BUILD
+local controlado, registradas em 0190/0337. A reconstrução v1 e os gates locais
+foram executados sem PostgreSQL; C06/C07 e aceite final seguem abertos. Próxima
+ação: Q1 foi decidida (o piso de 95% aplica-se a `request-context.ts` e os
+92% seguem `REPORT_ONLY`); recuperar binding candidate-bound válido e cumprir
+os gates C06 restantes, mantendo C06/C07 `FAIL` até lá. `AUD20-10` permanece
+enfileirada até o DAG liberar. Staging real e produção `NO_GO`.
+
+## Planejamento complementar de 50 melhorias — baseline documental de 2026-09-23
+
+O [plano executivo 0339](0339_plan50_executive_plan_20260923.md),
+[roadmap 0340](0340_plan50_roadmap_20260923.md) e
+[backlog candidato 0341](0341_plan50_backlog_20260923.md) detalham a
+[auditoria 0569](../04_audit/0569_repository_audit_2026-09-23.md) e a
+[lista 0570](../04_audit/0570_prioritized_improvements_2026-09-23.md).
+São baseline de planejamento; os estados oficiais estão em
+[CURRENT](../CURRENT.md) e no backlog operacional 0337. O adiamento de
+`AUD20-10/17/20` descrito no plano foi revogado posteriormente para escopo
+local, sob gates próprios. `AUD20-19` aguarda sessão humana; staging real e
+produção seguem `NO_GO`.
+
+## Checkpoint histórico pós-auditoria de 21/09/2026
+
+A [auditoria 0568](../04_audit/0568_full_repository_audit_2026-09-21.md) é a
+fonte corrente dos 30 achados. O [plano 0335](0335_aud20260921_executive_plan.md),
+o [roadmap 0336](0336_aud20260921_roadmap.md), o
+[backlog 0337](0337_aud20260921_backlog.md) e o
+[prompt 0338](0338_aud20260921_codex_execution_prompt.md) governam a execução
+`AUD20-REM v2`. `AUD20-01..06` e `AUD20-16` estão `COMPLETED` localmente;
+`AUD20-08` é a próxima task. Staging real e produção continuam `NO_GO`.
+
 ## Programa de remediação pós-reauditoria de 20/09/2026
 
 A [reauditoria 0567](../04_audit/0567_aud19_delivery_reaudit_2026-09-20.md) supersede o claim de conclusão integral do programa AUD19. O [roadmap 0333](0333_aud20260920_roadmap.md) e o [backlog 0334](0334_aud20260920_backlog.md) governam `AUD20-REM`. `AUD20-01` está `COMPLETED` no escopo documental e `AUD20-02` foi concluída em BUILD local controlado; `AUD20-03` é a próxima task. Re-selo, staging real e produção continuam bloqueados.

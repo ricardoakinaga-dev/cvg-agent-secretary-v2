@@ -1,0 +1,42 @@
+
+> cvg-agent-secretary-v2@1.0.0 docs:check
+> node scripts/docs-check.mjs
+
+{
+  "schemaVersion": 1,
+  "kind": "aud19-documentation-check",
+  "valid": true,
+  "links": {
+    "checked": 1456,
+    "broken": []
+  },
+  "json": {
+    "checked": 627,
+    "invalid": []
+  },
+  "states": {
+    "declared": [
+      "IN_PROGRESS"
+    ],
+    "unexpected": []
+  },
+  "nextAction": {
+    "valid": true,
+    "reason": null,
+    "runtimeStateAction": "definir rota SPEC/gate própria para C06 antes de outro BUILD ou PostgreSQL; Q1 não libera o DAG e `AUD20-10` segue enfileirada; staging/produção `NO_GO`.",
+    "currentIndexAction": "definir rota SPEC/gate própria para C06 antes de outro BUILD ou PostgreSQL; Q1 não libera o DAG e `AUD20-10` segue enfileirada; staging/produção `NO_GO`."
+  },
+  "semantic": {
+    "valid": true,
+    "failures": [],
+    "state": {
+      "valid": true,
+      "failures": []
+    },
+    "node": {
+      "valid": true,
+      "failures": []
+    },
+    "observedNode": "v22.23.2"
+  }
+}

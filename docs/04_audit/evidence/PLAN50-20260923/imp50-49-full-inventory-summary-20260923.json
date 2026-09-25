@@ -1,0 +1,32 @@
+{
+  "scope": "docs/04_audit/evidence; regular files only",
+  "inventory_rows": 2412,
+  "unique_paths": 2412,
+  "evidence_total_bytes": 24721814,
+  "row_list_path": "/tmp/imp50-49-evidence-lineage-inventory.jsonl",
+  "row_list_bytes": 3840377,
+  "row_list_sha256": "a0a1aa656348c88f4719fa5c5301f876b938567327bd203df3324f9c4f41b717",
+  "classification_counts": {
+    "CURRENT": 1,
+    "HISTORICAL": 1680,
+    "INHERITED": 390,
+    "ORPHAN": 145,
+    "SUPERSEDED": 2,
+    "UNCLASSIFIED": 194
+  },
+  "unresolved_lineage_items": 339,
+  "unresolved_lineage_bytes": 1752236,
+  "path_resolution": {
+    "ambiguous_existing_destinations": 0,
+    "explicit_missing_markdown_links": 0,
+    "potential_missing_repo_relative_evidence_mentions": {
+      "source_reference_pairs": 200,
+      "distinct_target_tokens": 100,
+      "json_manifest_receipt_field_pairs": 16,
+      "json_distinct_target_tokens": 15
+    },
+    "explicit_manifest_receipt_json_path_cycles": 0,
+    "note": "Potential missing path mentions include historical/planning/manifests and need contextual adjudication; they are not all established broken evidence links."
+  },
+  "hypothesis": "Supported for relation-based classification without a direct pointer per descendant (390 inherited items); whole-tree enforcement remains unready until 339 UNCLASSIFIED/ORPHAN items are triaged. Synthetic fixture/checker determinism was not exercised."
+}

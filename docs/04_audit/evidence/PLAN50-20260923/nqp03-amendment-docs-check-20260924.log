@@ -1,0 +1,42 @@
+
+> cvg-agent-secretary-v2@1.0.0 docs:check
+> node scripts/docs-check.mjs
+
+{
+  "schemaVersion": 1,
+  "kind": "aud19-documentation-check",
+  "valid": true,
+  "links": {
+    "checked": 1356,
+    "broken": []
+  },
+  "json": {
+    "checked": 616,
+    "invalid": []
+  },
+  "states": {
+    "declared": [
+      "IN_PROGRESS"
+    ],
+    "unexpected": []
+  },
+  "nextAction": {
+    "valid": true,
+    "reason": null,
+    "runtimeStateAction": "Obter decisão humana sobre a SPEC request-context v2 (1cb72b0e097ad19539c1f14fbdc892542ae9ddabf716bba00eef20b1c4cb237c). Sem aprovação e admissão BUILD separada, não codificar; AUD20-10 segue enfileirada e staging/produção NO_GO.",
+    "currentIndexAction": "Obter decisão humana sobre a SPEC request-context v2 (1cb72b0e097ad19539c1f14fbdc892542ae9ddabf716bba00eef20b1c4cb237c). Sem aprovação e admissão BUILD separada, não codificar; AUD20-10 segue enfileirada e staging/produção NO_GO."
+  },
+  "semantic": {
+    "valid": true,
+    "failures": [],
+    "state": {
+      "valid": true,
+      "failures": []
+    },
+    "node": {
+      "valid": true,
+      "failures": []
+    },
+    "observedNode": "v22.23.2"
+  }
+}

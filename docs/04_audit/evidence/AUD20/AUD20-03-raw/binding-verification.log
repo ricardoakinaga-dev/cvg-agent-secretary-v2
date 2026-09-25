@@ -1,0 +1,200 @@
+{
+  "verifier": "AUD20-03-binding-verifier-v2",
+  "baseCommit": "25434811334f5cec92ee0741079302271b82b7cb",
+  "baseCommitMatch": true,
+  "gitTreeHash": "218d24fa5ee1e66f2cbe48687d5630100abcf3c3",
+  "gitTreeHashMatch": true,
+  "sourceDiffExclusions": [
+    ":!docs/04_audit/evidence/**",
+    ":!docs/CURRENT.md",
+    ":!docs/20_master_execution_log.md",
+    ":!docs/99_runtime_state.md",
+    ":!docs/03_build/0334_aud20260920_backlog.md",
+    ":!docs/30_backlog_master.md"
+  ],
+  "sourceDiffSha256": "a8a45a4238443794d0908773192cb316d23bfc1a4bb4511d4bee3188b1aef4fd",
+  "sourceDiffMatch": true,
+  "sourceFiles": [
+    {
+      "path": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+      "sha256": "472fcd5ef4ed8ba3806e8c3f9c5a4c42a7291d81f5c05c96b3fed350c163dfac"
+    },
+    {
+      "path": "apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts",
+      "sha256": "9c47e77ef18afa7a073121d0f437716e3ee605e3f588ec02c0671696a4349244"
+    },
+    {
+      "path": "apps/worker/src/kernel-composition.ts",
+      "sha256": "c397a66e32864cb00fe2a6df01f7bc3632f6207a0fa29298ea19576c46ca6607"
+    },
+    {
+      "path": "packages/agent-runtime/src/__tests__/orchestration-branch-hardening.test.ts",
+      "sha256": "8cca9ecefb76e963da9a755452921dd1ba18ae05a516b86b91f1c5f6b574ab92"
+    },
+    {
+      "path": "packages/agent-runtime/src/__tests__/orchestration.test.ts",
+      "sha256": "32fb827b702bfdd9c66dc1430cd3740bcc03150da961f38f9f169e8b47b0815a"
+    },
+    {
+      "path": "packages/agent-runtime/src/orchestration.ts",
+      "sha256": "8a1143f90e1a5741271c6b3a09de850fe8082b7609ee08d8567f79c095b49b67"
+    },
+    {
+      "path": "packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts",
+      "sha256": "b8060ad5309c5e038d48d3d81b56faf99548c398e3acd36ab0cd525e48e0301a"
+    },
+    {
+      "path": "packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "sha256": "b9ad7775a3a12f8b083a9f44b4b32c8537adc0b6c05ed4f999031b3438560ff0"
+    },
+    {
+      "path": "packages/persistence/src/orchestrator-postgres.ts",
+      "sha256": "b17985b79ee96bf528da16ff3659fbeb1dd1849ed54f6228b3f73c3be50e244a"
+    },
+    {
+      "path": "packages/persistence/src/postgres.ts",
+      "sha256": "5dd06a65f3ee20b58e63fe6129d775abef15474dc138fd6fcc8ebb5bec8575d2"
+    },
+    {
+      "path": "tests/architecture.test.js",
+      "sha256": "68f310e92ded1e270c298ff80ca44726c8e397f185174ffbd5710a9f1b197e1e"
+    }
+  ],
+  "sourceFilesMatch": true,
+  "candidateId": "e258b9bef592120288ca8bd3a51d043ff66cd06f9b0fc0a61a2ab65af6f7dad7",
+  "candidateIdMatch": true,
+  "commandReceiptCandidateMatch": true,
+  "rawReceiptCandidateMatch": true,
+  "commandStatusesPass": true,
+  "commandArtifactsMatch": true,
+  "rawArtifacts": [
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/build.log",
+      "bytes": 634,
+      "expectedBytes": 634,
+      "sha256": "5bc8034c955cad5c891effe33a9f89341ea2f0444975fa6a754e46400401389b",
+      "expectedSha256": "5bc8034c955cad5c891effe33a9f89341ea2f0444975fa6a754e46400401389b",
+      "match": true
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/coverage-postgres.log",
+      "bytes": 50416,
+      "expectedBytes": 50416,
+      "sha256": "34424d96019e10c59a855169f249e3e3a5ef4fcfa21a6efc92f803732f2f3b68",
+      "expectedSha256": "34424d96019e10c59a855169f249e3e3a5ef4fcfa21a6efc92f803732f2f3b68",
+      "match": true
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/diff-check.log",
+      "bytes": 0,
+      "expectedBytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expectedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/docs-check.log",
+      "bytes": 627,
+      "expectedBytes": 627,
+      "sha256": "2a3c17e0f85c1d460d034a41dadd128c4a6108986bd82bf3a0c6670ad910de15",
+      "expectedSha256": "2a3c17e0f85c1d460d034a41dadd128c4a6108986bd82bf3a0c6670ad910de15",
+      "match": true
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/format.log",
+      "bytes": 133,
+      "expectedBytes": 133,
+      "sha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3",
+      "expectedSha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3",
+      "match": true
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/full-unit-postgres.log",
+      "bytes": 39219,
+      "expectedBytes": 39219,
+      "sha256": "7743fa9752d162e5e6f9065db7d48f3163c24b13fa2f9edc0debbe3c4fbd8928",
+      "expectedSha256": "7743fa9752d162e5e6f9065db7d48f3163c24b13fa2f9edc0debbe3c4fbd8928",
+      "match": true
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/kernel-branch-hardening.log",
+      "bytes": 225,
+      "expectedBytes": 225,
+      "sha256": "5ef503cb7891417cc271116c5fc686f8096bf09b9f6efc47abd7380306f2d51d",
+      "expectedSha256": "5ef503cb7891417cc271116c5fc686f8096bf09b9f6efc47abd7380306f2d51d",
+      "match": true
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/architecture.log",
+      "bytes": 221,
+      "expectedBytes": 221,
+      "sha256": "85223ddd181e9876cd6e0fcec0d29d9e9608a3dbe6c0f9f6b5cbc1f478365e12",
+      "expectedSha256": "85223ddd181e9876cd6e0fcec0d29d9e9608a3dbe6c0f9f6b5cbc1f478365e12",
+      "match": true
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/goal-kernel-postgres.log",
+      "bytes": 225,
+      "expectedBytes": 225,
+      "sha256": "bc6c97054ea3ce71e41e37fb40832ed6b4b26fd877184d2cf5e027e2f02228ff",
+      "expectedSha256": "bc6c97054ea3ce71e41e37fb40832ed6b4b26fd877184d2cf5e027e2f02228ff",
+      "match": true
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/lineage-unit.log",
+      "bytes": 227,
+      "expectedBytes": 227,
+      "sha256": "2efaaf4fec5aae83fb5d482724a813f739e58abca29bec390cf92a8bdcbbff0a",
+      "expectedSha256": "2efaaf4fec5aae83fb5d482724a813f739e58abca29bec390cf92a8bdcbbff0a",
+      "match": true
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/lint.log",
+      "bytes": 49,
+      "expectedBytes": 49,
+      "sha256": "698dae4c32293ce3bc9c1fdd7f7ca0912b7dd7041c3a321551e5666692d8fe36",
+      "expectedSha256": "698dae4c32293ce3bc9c1fdd7f7ca0912b7dd7041c3a321551e5666692d8fe36",
+      "match": true
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/outbox-postgres.log",
+      "bytes": 223,
+      "expectedBytes": 223,
+      "sha256": "fe04badd6e8b41682b3d8d0a656600d2f728bdeff65563f3dd181f23630fb70d",
+      "expectedSha256": "fe04badd6e8b41682b3d8d0a656600d2f728bdeff65563f3dd181f23630fb70d",
+      "match": true
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/postgres-matrix.log",
+      "bytes": 13461,
+      "expectedBytes": 13461,
+      "sha256": "7ed2b038c0aa9c450eba77c24a1afc957f2c44f8799443729ef5be6218f9c778",
+      "expectedSha256": "7ed2b038c0aa9c450eba77c24a1afc957f2c44f8799443729ef5be6218f9c778",
+      "match": true
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/typecheck.log",
+      "bytes": 85,
+      "expectedBytes": 85,
+      "sha256": "8b0652334f8c18d7b8ab65ebb1c68eb5c3e9bfcdeee08c641f75418ba81efb8c",
+      "expectedSha256": "8b0652334f8c18d7b8ab65ebb1c68eb5c3e9bfcdeee08c641f75418ba81efb8c",
+      "match": true
+    }
+  ],
+  "verificationArtifacts": [
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/binding-verification.log",
+      "role": "independent-candidate-binding-verification",
+      "bytesMatch": true,
+      "sha256Match": true,
+      "commandReceiptMatch": true,
+      "resultCandidateMatch": true,
+      "resultSourceDiffMatch": true,
+      "resultSourceFilesMatch": true,
+      "resultCommandArtifactsMatch": true,
+      "resultRawArtifactsMatch": true,
+      "match": true
+    }
+  ],
+  "verificationArtifactsMatch": true
+}

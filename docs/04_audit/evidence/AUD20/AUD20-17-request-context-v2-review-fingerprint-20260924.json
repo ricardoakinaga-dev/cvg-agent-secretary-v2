@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "kind": "read_only_critic_fingerprint_comparison",
+  "command": "gauntlet_state.py fingerprint --repo <repository> --include-state",
+  "pre": {
+    "capturedAt": "2026-09-24T04:33:52Z",
+    "digest": "7ea35b982dfd962ac8f7fde4e68252711651413e9e7dcb872aec0d5d7a0079b5"
+  },
+  "post": {
+    "capturedAt": "2026-09-24T04:41:39Z",
+    "digest": "7ea35b982dfd962ac8f7fde4e68252711651413e9e7dcb872aec0d5d7a0079b5"
+  },
+  "sameDigest": true,
+  "sameHead": true,
+  "sameWorktreeDiff": true,
+  "sameIndexDiff": true,
+  "reviewerReportedWrites": false
+}

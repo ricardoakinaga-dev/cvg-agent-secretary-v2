@@ -1,0 +1,9 @@
+
+ RUN  v4.1.11 /home/ricardo/cvg-agent-secretary-v2
+
+
+ Test Files  1 passed (1)
+      Tests  21 passed (21)
+   Start at  09:58:31
+   Duration  903ms (transform 82ms, setup 0ms, import 102ms, tests 108ms, environment 589ms)
+

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 2,
+  "kind": "aud20-task-receipt",
+  "program": "AUD20-REM",
+  "task": "AUD20-03",
+  "observedAt": "2026-09-21T08:43:16Z",
+  "node": "v22.23.2",
+  "candidateManifest": "docs/04_audit/evidence/AUD20/AUD20-03-candidate-manifest.json",
+  "rawArtifactReceipt": "docs/04_audit/evidence/AUD20/AUD20-03-raw-artifact-receipt.json",
+  "criticalCoverageReport": "docs/04_audit/evidence/AUD20/AUD20-03-critical-coverage.json",
+  "candidate": {
+    "schemaVersion": "aud20-candidate-v2",
+    "candidateId": "e258b9bef592120288ca8bd3a51d043ff66cd06f9b0fc0a61a2ab65af6f7dad7",
+    "baseCommit": "25434811334f5cec92ee0741079302271b82b7cb",
+    "gitTreeHash": "218d24fa5ee1e66f2cbe48687d5630100abcf3c3",
+    "sourceDiffSha256": "a8a45a4238443794d0908773192cb316d23bfc1a4bb4511d4bee3188b1aef4fd",
+    "branch": "main",
+    "dirty": true,
+    "releaseEligible": false
+  },
+  "observations": [
+    "AUD20-N03 divergent canonical lineage is rejected in memory and PostgreSQL.",
+    "AUD20-N04 concurrent Goal/outbox journeys converge on one durable execution and the exact lease race is idempotent at the effective-effect boundary.",
+    "Approval continuation is tested separately: the persisted Goal lineage omits the transient approval id, while the waiting-step continuation still requires the matching approval id.",
+    "Final PostgreSQL ack fencing rejects an expired lease before the final compare-and-swap and does not append an effect journal entry.",
+    "The PostgreSQL-backed full suite ran 294 files and 2360 tests with zero conditional skips; coverage is statements 95.95%, branches 92.54%, functions 95.54%, lines 96.64%.",
+    "Critical kernel composition coverage is 486/511 branches (95.10%), above the frozen 95% threshold.",
+    "Durable redelivery of a persisted waiting_approval marker without a continuation now returns approval_required_pending without invoking the orchestrator."
+  ],
+  "verification": {
+    "status": "PASS",
+    "focusedLineage": "2 files; 106 tests passed",
+    "focusedGoalKernelPostgres": "2 files; 14 tests passed",
+    "focusedOutboxPostgres": "1 file; 9 tests passed",
+    "focusedKernelBranchHardening": "1 file; 79 tests passed",
+    "criticalKernelCompositionBranches": "486/511; 95.10%; threshold 95%",
+    "architectureCaps": "1 file; 5 tests passed; frozen hotspot caps enforced",
+    "independentBindingVerification": "PASS; docs/04_audit/evidence/AUD20/AUD20-03-binding-verifier.mjs recomputed base commit, tree, source diff, source files, candidate id, raw artifact bytes and the declared verification artifact binding",
+    "postgresMatrix": "30 files; 331 tests passed; 0 skipped",
+    "fullUnitPostgres": "294 files; 2360 tests passed; 0 skipped",
+    "staticGates": ["typecheck", "lint", "build", "format:check", "git diff --check", "docs:check"]
+  },
+  "review": {
+    "previousFreshCritic": "BLOCKED findings were addressed in the source and evidence package.",
+    "status": "PASS",
+    "reviewedAt": "2026-09-21T08:43:16Z",
+    "reviewer": "fresh-context independent general auditor",
+    "evidence": [
+      "Two stdout-only binding verifier captures were byte-identical and exited successfully.",
+      "The declared verification artifact and all raw artifacts matched their recorded bytes and SHA-256 values.",
+      "Pre/post git status was unchanged; no reviewer mutation was observed."
+    ]
+  },
+  "qualityBarScope": {
+    "adjudicatedByThisTask": [
+      "criticalBranches",
+      "statements",
+      "branches",
+      "functions",
+      "lines",
+      "requiredSkips",
+      "architectureCaps",
+      "candidateBinding",
+      "documentationValidity"
+    ],
+    "notAdjudicatedByThisTask": [
+      "minimumAreaScore",
+      "taskSuccessRate",
+      "unsafeActionRate",
+      "policyViolationRate",
+      "selectedMutationDetection"
+    ],
+    "scopeReason": "These metrics belong to AUD20-02 G-EVAL and are not acceptance criteria for AUD20-03 N03/N04; no pass is inferred for them here.",
+    "dependencyStatus": "AUD20-02 PACKAGE_READY"
+  },
+  "limitations": [
+    "No commit, push, staging promotion, production deployment, provider call, channel call, or real user data was used.",
+    "The candidate is a dirty working tree because commit and push were not authorized.",
+    "The controlled-local run does not imply staging, production, external gates, or human signoff."
+  ]
+}

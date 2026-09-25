@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud19-mutation-sentinel",
+  "program": "AUD19-REM",
+  "task": "AUD19-08",
+  "generatedAt": "2026-09-22T07:40:58.030Z",
+  "node": "24.20.0",
+  "manifest": "docs/04_audit/evidence/AUD19/AUD19-08-mutants.json",
+  "status": "PASS",
+  "summary": {
+    "total": 7,
+    "detected": 7,
+    "notDetected": 0,
+    "notApplicable": 0,
+    "sandbox": null
+  },
+  "results": [
+    {
+      "id": "MUT-EVAL-02",
+      "category": "eval-boundary",
+      "target": "packages/agent-evals/src/runner.ts",
+      "rationale": "Inverting the integrated identity guard would allow an isolated deterministic baseline to qualify the holdout or reject the real integrated adapter.",
+      "focusedTests": [
+        "packages/agent-evals/src/__tests__/integrated-holdout.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 6,
+        "passed": 4,
+        "failed": 2,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-wOdhmR/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-EVAL-03",
+      "category": "eval-category",
+      "target": "packages/agent-evals/src/runner.ts",
+      "rationale": "Weakening the missing-category guard would let an omitted holdout category avoid explicit fail-closed reporting.",
+      "focusedTests": [
+        "packages/agent-evals/src/__tests__/integrated-holdout.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 6,
+        "passed": 5,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-wOdhmR/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-EVAL-04",
+      "category": "eval-binding",
+      "target": "packages/agent-evals/src/runner.ts",
+      "rationale": "Inverting the seed binding would accept a drifted holdout seed or reject the frozen seed.",
+      "focusedTests": [
+        "packages/agent-evals/src/__tests__/integrated-holdout.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 6,
+        "passed": 4,
+        "failed": 2,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-wOdhmR/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-EVAL-05",
+      "category": "eval-binding",
+      "target": "packages/agent-evals/src/runner.ts",
+      "rationale": "Inverting candidate identity would permit a report from different bytes to qualify the current candidate.",
+      "focusedTests": [
+        "packages/agent-evals/src/__tests__/integrated-holdout.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 6,
+        "passed": 4,
+        "failed": 2,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-wOdhmR/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-EVAL-06",
+      "category": "eval-safety",
+      "target": "packages/agent-evals/src/runner.ts",
+      "rationale": "Disabling the observed-effect guard would qualify a synthetic run that attempted a real-world effect.",
+      "focusedTests": [
+        "packages/agent-evals/src/__tests__/integrated-holdout.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 6,
+        "passed": 5,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-wOdhmR/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-EVAL-07",
+      "category": "eval-binding",
+      "target": "packages/agent-evals/src/runner.ts",
+      "rationale": "Inverting corpus digest validation would accept modified holdout bytes or reject the sealed corpus.",
+      "focusedTests": [
+        "packages/agent-evals/src/__tests__/integrated-holdout.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 6,
+        "passed": 4,
+        "failed": 2,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-wOdhmR/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-EVAL-08",
+      "category": "eval-product-boundary",
+      "target": "packages/agent-core/src/commands/classify-inbound-behavior.ts",
+      "rationale": "Bypassing the product-side semantic classifier must break the integrated holdout, proving the lane does not obtain its outcomes from the deterministic eval baseline.",
+      "focusedTests": [
+        "packages/agent-evals/src/__tests__/integrated-holdout.test.ts"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 6,
+        "passed": 5,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-wOdhmR/.mutation-report.json\n\n"
+    }
+  ],
+  "candidate": {
+    "candidateId": "5d77151479e0a5186b1ee0bb401f57379a292e5bd3403dbce9c76c5bc0f78c8f",
+    "commit": "25434811334f5cec92ee0741079302271b82b7cb",
+    "treeHash": "bb7f1466eba328ef6c3cd5c6ca57da06ba72b661019afa96407bd2ebdc548828"
+  },
+  "manifestSha256": "545ba85fc299ad2e5ad499bf1f4aa23439237ec14bdecd653400de0e54b6bea9"
+}

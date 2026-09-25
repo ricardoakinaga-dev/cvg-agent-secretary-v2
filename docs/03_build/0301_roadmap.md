@@ -1,5 +1,39 @@
 # 0301 — Roadmap
 
+## Roadmap incremental corrente — 2026-09-24
+
+Consultar [0342](0342_post_query_roadmap_20260923.md), com
+[revisão 0571](../04_audit/0571_implementation_state_review_2026-09-23.md)
+e [backlog 0343](0343_post_query_backlog_20260923.md). A revisão NQP-03 não
+aceitou a primeira fatia request-context. A emenda v2 foi aprovada e admitida
+por hash; seu BUILD local agora está executado. C02 tem evidência `PASS_LOCAL`;
+a crítica independente do candidato registrou C01–C05 `PASS` e C06/C07 `FAIL`.
+Branches 92% e functions globais 89,27% são valores reportados enquanto o
+binding permanece incompleto; a aplicabilidade do piso crítico de 95% a
+request-context não está adjudicada porque o registry não enumera o módulo.
+Ver a [errata](../04_audit/evidence/AUD20/AUD20-17-request-context-branch-floor-erratum-20260924.md)
+e o [relatório BUILD](../04_audit/evidence/AUD20/AUD20-17-request-context-v2-build-report-20260924.md).
+Próxima ação: obter a decisão humana Q1 sobre aplicabilidade; manter C06/C07
+`FAIL` e os gaps de binding, baseline, PostgreSQL e mutation sem outro BUILD.
+`AUD20-10` segue enfileirado até Q1 liberar o DAG. Os gates do programa
+`AUD20-REM v2` continuam em 0337.
+
+## Roadmap complementar das 50 melhorias — baseline de 2026-09-23
+
+Consultar [0340](0340_plan50_roadmap_20260923.md), com
+[plano 0339](0339_plan50_executive_plan_20260923.md) e
+[backlog 0341](0341_plan50_backlog_20260923.md). A sequência é relativa a
+gates, sem datas de release inventadas; o programa operacional AUD20 e seu
+estado continuam em [CURRENT](../CURRENT.md) e no backlog 0337.
+
+## Roadmap corrente pós-auditoria — 2026-09-21
+
+Consultar [plano 0335](0335_aud20260921_executive_plan.md),
+[roadmap 0336](0336_aud20260921_roadmap.md) e
+[backlog 0337](0337_aud20260921_backlog.md). Eles ampliam AUD20 para cobrir os
+30 achados da auditoria 0568. Os documentos 0333/0334 permanecem históricos;
+staging real e produção continuam `NO_GO`.
+
 ## Roadmap corrente pós-reauditoria — 2026-09-20
 
 Consultar [0333_aud20260920_roadmap.md](0333_aud20260920_roadmap.md) e [0334_aud20260920_backlog.md](0334_aud20260920_backlog.md). O programa AUD19 abaixo é histórico; staging real e produção permanecem `NO_GO`.

@@ -1,0 +1,5 @@
+Command: PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH node docs/04_audit/evidence/AUD20/AUD20-16-binding-verifier.mjs
+Observed: 2026-09-21, final independent binding verification
+Exit code: 0
+
+{"status":"PASS","candidateId":"927f3e0a7a12fb7c8139dea8961de3536ea8a291e4b407dc350cc3b63e1250ed","scopedFiles":17,"rawArtifacts":12,"commandRawLinks":10}

@@ -1,0 +1,14 @@
+[2m[WebServer] [22m(node:3353168) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:3353242) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:3353242) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/e2e/aud20-19-human-session-harness.spec.ts:40:5 › verify loads only the synthetic app and exposes the sandbox interlock (360ms)
+  ✓  2 [chromium] › tests/e2e/aud20-19-human-session-harness.spec.ts:149:5 › verify rejects a non-local destination before the browser request is sent (45ms)
+
+  2 passed (1.6s)
+AUD20-19-FU1 verify: namespace and headless checks PASS

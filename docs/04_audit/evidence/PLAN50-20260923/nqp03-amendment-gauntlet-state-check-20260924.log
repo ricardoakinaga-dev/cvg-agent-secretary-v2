@@ -1,0 +1,17 @@
+$ python3 /home/ricardo/.codex/skills/gauntlet-loop/scripts/gauntlet_state.py validate --repo /home/ricardo/cvg-agent-secretary-v2 --check-drift
+exit_code=2
+{
+  "valid": false,
+  "errors": [
+    "artifact manifest item 13 hash differs",
+    "artifact manifest item 17 hash differs",
+    "artifact manifest item 20 hash differs",
+    "artifact manifest item 21 hash differs"
+  ]
+}
+
+$ python3 /home/ricardo/.codex/skills/gauntlet-loop/scripts/gauntlet_state.py rebaseline --repo /home/ricardo/cvg-agent-secretary-v2 --reason Attempted after request-context SPEC v2 review and final documentation checks; fail closed because historical artifact manifest entries for mutable 0337/0342/0343 documents no longer match. No manifest or state repair is authorized by this operation.
+exit_code=2
+gauntlet-state: invalid state: artifact manifest item 13 hash differs; artifact manifest item 17 hash differs; artifact manifest item 20 hash differs; artifact manifest item 21 hash differs
+
+state_and_manifest_unchanged=true

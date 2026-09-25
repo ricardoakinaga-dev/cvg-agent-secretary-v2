@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-04-criteria-matrix",
+  "program": "AUD20-REM",
+  "task": "AUD20-04",
+  "observedAt": "2026-09-21T19:17:13Z",
+  "candidateId": "ea348cec64a8a77b36418ef358315bc8d044181720968fc05934b6441507121b",
+  "rawArtifactReceipt": "docs/04_audit/evidence/AUD20/AUD20-04-raw-artifact-receipt.json",
+  "execution": "CONTROLLED_LOCAL",
+  "status": "COMPLETED",
+  "localImplementationVerification": "PASS",
+  "independentCritic": "PASS",
+  "staging": "NO_GO",
+  "production": "NO_GO",
+  "criteria": [
+    {
+      "id": "AUD20-04-C01",
+      "status": "PASS",
+      "summary": "Migration 0028 is additive, checksum-bound and exposes the ledger shape and checks.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD20/AUD20-04-raw/migration-checksum-20260921T1836Z.log",
+        "docs/04_audit/evidence/AUD20/AUD20-04-raw/postgres-matrix-20260921T1826Z.log"
+      ]
+    },
+    {
+      "id": "AUD20-04-C02",
+      "status": "PASS",
+      "summary": "Ordered bounded selection processes five synthetic rows in three observable batches.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD20/AUD20-04-raw/retention-focused-20260921T1828Z.log"
+      ]
+    },
+    {
+      "id": "AUD20-04-C03",
+      "status": "PASS",
+      "summary": "Two sweepers use SKIP LOCKED without duplicate transitions or tenant/hold crossing.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD20/AUD20-04-raw/retention-focused-20260921T1828Z.log",
+        "docs/04_audit/evidence/AUD20/AUD20-04-raw/postgres-matrix-20260921T1826Z.log"
+      ]
+    },
+    {
+      "id": "AUD20-04-C04",
+      "status": "PASS",
+      "summary": "A capped restart converges and a ledger failure rolls back only the current transaction.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD20/AUD20-04-v2-rollback-report-20260921.md",
+        "docs/04_audit/evidence/AUD20/AUD20-04-raw/retention-focused-20260921T1828Z.log"
+      ]
+    },
+    {
+      "id": "AUD20-04-C05",
+      "status": "PASS",
+      "summary": "Late inbound replay remains rejected and physical deletion is separated from tombstoning.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD20/AUD20-04-raw/inbound-replay-20260921T1828Z.log",
+        "docs/04_audit/evidence/AUD20/AUD20-04-raw/retention-focused-20260921T1828Z.log"
+      ]
+    },
+    {
+      "id": "AUD20-04-C06",
+      "status": "PASS",
+      "summary": "Migration lock acquisition and active-batch execution are bounded by configured transaction-local lock and statement timeouts.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD20/AUD20-04-raw/postgres-matrix-20260921T1826Z.log",
+        "docs/04_audit/evidence/AUD20/AUD20-04-raw/retention-focused-20260921T1828Z.log"
+      ]
+    },
+    {
+      "id": "AUD20-04-C07",
+      "status": "PASS",
+      "summary": "Focused, PostgreSQL, unit, static, build, documentation and security gates pass under Node 22.23.2.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD20/AUD20-04-raw/retention-focused-20260921T1828Z.log",
+        "docs/04_audit/evidence/AUD20/AUD20-04-raw/inbound-replay-20260921T1828Z.log",
+        "docs/04_audit/evidence/AUD20/AUD20-04-raw/postgres-matrix-20260921T1826Z.log",
+        "docs/04_audit/evidence/AUD20/AUD20-04-raw/full-unit-20260921T1828Z.log",
+        "docs/04_audit/evidence/AUD20/AUD20-04-raw/environment-node22-20260921T1836Z.log"
+      ]
+    }
+  ],
+  "negativeCoverage": {
+    "AUD20-N05": "PASS",
+    "multipleBatches": "PASS",
+    "concurrentSweepers": "PASS",
+    "restartBetweenBatches": "PASS",
+    "legalHold": "PASS",
+    "crossTenant": "PASS",
+    "ledgerFailure": "PASS",
+    "boundedLock": "PASS",
+    "alteredLogAfterReceipt": "PASS"
+  },
+  "freshVerification": {
+    "focusedRetention": "36 tests passed",
+    "inboundReplay": "9 tests passed",
+    "postgresMatrix": "337 tests passed",
+    "fullUnit": "2179 tests passed; 188 conditional skips",
+    "docsCheck": "778 links; 578 JSON documents",
+    "securityAudit": "0 high vulnerabilities",
+    "node": "v22.23.2"
+  },
+  "limitations": [
+    "A fresh-context independent critic returned PASS after verifying current matrix/report bindings, timeout/rollback behavior, altered-log rejection/restoration and exclusion of historical stale artifacts.",
+    "Mutation score, representative volume, physical backup/restore, staging, production, external integrations and human sign-off were not exercised.",
+    "The scheduled hold-insertion race is covered by the live mutation predicate and tenant/hold tests, but not by a separately scheduled integration fixture."
+  ],
+  "releaseEligible": false
+}

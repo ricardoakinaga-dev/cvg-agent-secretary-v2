@@ -1,0 +1,29 @@
+
+> cvg-agent-secretary-v2@1.0.0 docs:check
+> node scripts/docs-check.mjs
+
+{
+  "schemaVersion": 1,
+  "kind": "aud19-documentation-check",
+  "valid": true,
+  "links": {
+    "checked": 778,
+    "broken": []
+  },
+  "json": {
+    "checked": 578,
+    "invalid": []
+  },
+  "states": {
+    "declared": [
+      "IN_PROGRESS"
+    ],
+    "unexpected": []
+  },
+  "nextAction": {
+    "valid": true,
+    "reason": null,
+    "runtimeStateAction": "obter crítica independente válida para `AUD20-04`, repetir o binding/receipts se aprovada; manter staging/produção `NO_GO`; `AUD20-05` permanece bloqueada.",
+    "currentIndexAction": "obter crítica independente válida para `AUD20-04`, repetir o binding/receipts se aprovada; manter staging/produção `NO_GO`; `AUD20-05` permanece bloqueada."
+  }
+}

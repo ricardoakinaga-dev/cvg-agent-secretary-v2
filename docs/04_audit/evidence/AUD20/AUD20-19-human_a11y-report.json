@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-19-qualification-report",
+  "profile": "human_a11y",
+  "candidateId": "255c2cc78e65f54b1c694b39cc7a8f674ca6a294282d12c3b4ade0bb1c3159b2",
+  "claim": "HUMAN_ACCESSIBILITY_REVIEW",
+  "environment": {
+    "node": "v22.23.2",
+    "platform": "linux",
+    "release": "7.0.0-31-generic",
+    "architecture": "x64",
+    "cpuModel": "AMD Ryzen 7 5700",
+    "logicalCpuCount": 16,
+    "totalMemoryBytes": 67203817472
+  },
+  "status": "PENDING",
+  "failures": [],
+  "blockers": [
+    "human_evidence_required"
+  ],
+  "releaseEligible": false
+}

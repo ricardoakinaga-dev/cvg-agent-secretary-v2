@@ -1,0 +1,46 @@
+
+> cvg-agent-secretary-v2@1.0.0 docs:check
+> node scripts/docs-check.mjs
+
+{
+  "schemaVersion": 1,
+  "kind": "aud19-documentation-check",
+  "valid": false,
+  "links": {
+    "checked": 1387,
+    "broken": []
+  },
+  "json": {
+    "checked": 620,
+    "invalid": []
+  },
+  "states": {
+    "declared": [
+      "IN_PROGRESS"
+    ],
+    "unexpected": []
+  },
+  "nextAction": {
+    "valid": true,
+    "reason": null,
+    "runtimeStateAction": "reconstruir isoladamente a candidata request-context v1 e validar hashes, contagens e atribuição FU1 antes de editar fontes.",
+    "currentIndexAction": "reconstruir isoladamente a candidata request-context v1 e validar hashes, contagens e atribuição FU1 antes de editar fontes."
+  },
+  "semantic": {
+    "valid": false,
+    "failures": [
+      "next_action_mismatch"
+    ],
+    "state": {
+      "valid": false,
+      "failures": [
+        "next_action_mismatch"
+      ]
+    },
+    "node": {
+      "valid": true,
+      "failures": []
+    },
+    "observedNode": "v22.23.2"
+  }
+}

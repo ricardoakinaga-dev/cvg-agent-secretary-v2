@@ -1,0 +1,273 @@
+
+> cvg-agent-secretary-v2@1.0.0 test
+> vitest run --no-file-parallelism --maxWorkers=2 apps/api/src/__tests__/request-context.test.ts apps/api/src/__tests__/server-boundary-envelope.test.ts apps/api/src/__tests__/webhook-security.test.ts tests/architecture.test.js
+
+
+ RUN  v4.1.11 /home/ricardo/cvg-agent-secretary-v2
+
+ ❯ apps/api/src/__tests__/server-boundary-envelope.test.ts (12 tests | 11 failed) 165163ms
+     × answers liveness and readiness probes without exposing internals 15005ms
+     × reports 503 when production readiness fails closed 15016ms
+     × hides request metrics when the endpoint is disabled 15015ms
+     × maps malformed JSON, unsupported media type and oversized bodies 15001ms
+     × validates audit evidence pagination and filters 15015ms
+     × rejects invalid platform scope, task transitions and missing checkpoints 15014ms
+     × accepts a same-status task update and rejects invalid transition payloads 15015ms
+     × rejects audit-review approvals without full audit authority 15016ms
+     × composes injected knowledge, capability authority and postgres defaults 15016ms
+     × rejects unknown takeover sessions, malformed audit identity and expired approvals 15015ms
+     × requires a trusted operator tenant for production data-plane reads 15015ms
+ ❯ apps/api/src/__tests__/webhook-security.test.ts (17 tests | 4 failed | 1 skipped) 60071ms
+     × constructs the verifier from runtime configuration outside test mode 15005ms
+     × accepts a signed webhook and rejects its replay 15016ms
+     × verifies the exact raw JSON bytes supplied by a provider 15015ms
+     × releases a HMAC reservation after a downstream failure so the provider can retry 15015ms
+ ❯ tests/architecture.test.js (7 tests | 1 failed) 154ms
+     × never grows the extracted hotspots and documents each module 7ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 16 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/architecture.test.js > architecture boundaries (AUD19-07) > never grows the extracted hotspots and documents each module
+AssertionError: apps/api/src/server/request-context.ts must declare its responsibility: expected '/** Own API request context, tenant s…' to match /^ \* Responsibility:/m
+
+- Expected:
+/^ \* Responsibility:/m
+
++ Received:
+"/** Own API request context, tenant scope, identity, authorization, timing and raw bodies. */
+import {
+  ChannelSchema,
+  DomainError,
+  parseOperatorIdentity,
+  roleHasPermission,
+  type Channel,
+  type IdentityMode,
+  type OperatorIdentity,
+  type OperatorIdentityResolver
+} from '@cvg/shared'
+import { TenantIdSchema, type TenantId } from '@cvg/platform'
+import { createInvalidJsonBodyError } from '../http-request-boundary.ts'
+import type { ControlledRequestMetrics } from '../request-metrics.ts'
+
+type RequestMetricRoute = { url?: string | undefined }
+type RequestMetricRequest = { method: string; routeOptions: RequestMetricRoute }
+type RequestMetricsSink = Pick<ControlledRequestMetrics, 'record'>
+type RequestMetricHook = (request: RequestMetricRequest) => void | Promise<void>
+type RequestResponseHook = (
+  request: RequestMetricRequest,
+  reply: { statusCode: number }
+) => void | Promise<void>
+type ParserDone = (error: Error | null, value?: unknown) => void
+type JsonParser = (request: object, body: string, done: ParserDone) => void"
+
+ ❯ tests/architecture.test.js:479:65
+    477|         .slice(0, 25)
+    478|         .join('\n')
+    479|       expect(header, `${file} must declare its responsibility`).toMatc…
+       |                                                                 ^
+    480|         /^ \* Responsibility:/m
+    481|       )
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯
+
+ FAIL  apps/api/src/__tests__/server-boundary-envelope.test.ts > server boundary envelopes > answers liveness and readiness probes without exposing internals
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ apps/api/src/__tests__/server-boundary-envelope.test.ts:28:3
+     26|
+     27| describe('server boundary envelopes', () => {
+     28|   it('answers liveness and readiness probes without exposing internals…
+       |   ^
+     29|     const app = buildServer()
+     30|     const live = await app.inject({ method: 'GET', url: '/live' })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯
+
+ FAIL  apps/api/src/__tests__/server-boundary-envelope.test.ts > server boundary envelopes > reports 503 when production readiness fails closed
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ apps/api/src/__tests__/server-boundary-envelope.test.ts:45:3
+     43|   })
+     44|
+     45|   it('reports 503 when production readiness fails closed', async () =>…
+       |   ^
+     46|     vi.stubEnv('NODE_ENV', 'production')
+     47|     const app = buildServer({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/16]⎯
+
+ FAIL  apps/api/src/__tests__/server-boundary-envelope.test.ts > server boundary envelopes > hides request metrics when the endpoint is disabled
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ apps/api/src/__tests__/server-boundary-envelope.test.ts:73:3
+     71|   })
+     72|
+     73|   it('hides request metrics when the endpoint is disabled', async () =…
+       |   ^
+     74|     const app = buildServer({ requestMetricsEnabled: false })
+     75|     const response = await app.inject({ method: 'GET', url: '/health/m…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/16]⎯
+
+ FAIL  apps/api/src/__tests__/server-boundary-envelope.test.ts > server boundary envelopes > maps malformed JSON, unsupported media type and oversized bodies
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ apps/api/src/__tests__/server-boundary-envelope.test.ts:97:3
+     95|   })
+     96|
+     97|   it('maps malformed JSON, unsupported media type and oversized bodies…
+       |   ^
+     98|     const app = buildServer()
+     99|     const invalidJson = await app.inject({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/16]⎯
+
+ FAIL  apps/api/src/__tests__/server-boundary-envelope.test.ts > server boundary envelopes > validates audit evidence pagination and filters
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ apps/api/src/__tests__/server-boundary-envelope.test.ts:150:3
+    148|   })
+    149|
+    150|   it('validates audit evidence pagination and filters', async () => {
+       |   ^
+    151|     const app = buildServer()
+    152|     const invalidLimit = await app.inject({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/16]⎯
+
+ FAIL  apps/api/src/__tests__/server-boundary-envelope.test.ts > server boundary envelopes > rejects invalid platform scope, task transitions and missing checkpoints
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ apps/api/src/__tests__/server-boundary-envelope.test.ts:233:3
+    231|   })
+    232|
+    233|   it('rejects invalid platform scope, task transitions and missing che…
+       |   ^
+    234|     const app = buildServer()
+    235|     const missingTenant = await app.inject({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/16]⎯
+
+ FAIL  apps/api/src/__tests__/server-boundary-envelope.test.ts > server boundary envelopes > accepts a same-status task update and rejects invalid transition payloads
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ apps/api/src/__tests__/server-boundary-envelope.test.ts:283:3
+    281|   })
+    282|
+    283|   it('accepts a same-status task update and rejects invalid transition…
+       |   ^
+    284|     const app = buildServer({
+    285|       requireAuthenticatedMutations: true,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/16]⎯
+
+ FAIL  apps/api/src/__tests__/server-boundary-envelope.test.ts > server boundary envelopes > rejects audit-review approvals without full audit authority
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ apps/api/src/__tests__/server-boundary-envelope.test.ts:384:3
+    382|   })
+    383|
+    384|   it('rejects audit-review approvals without full audit authority', as…
+       |   ^
+    385|     const app = buildServer()
+    386|     const response = await app.inject({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/16]⎯
+
+ FAIL  apps/api/src/__tests__/server-boundary-envelope.test.ts > server boundary envelopes > composes injected knowledge, capability authority and postgres defaults
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ apps/api/src/__tests__/server-boundary-envelope.test.ts:403:3
+    401|   })
+    402|
+    403|   it('composes injected knowledge, capability authority and postgres d…
+       |   ^
+    404|     const app = buildServer({
+    405|       persistence: {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/16]⎯
+
+ FAIL  apps/api/src/__tests__/server-boundary-envelope.test.ts > server boundary envelopes > rejects unknown takeover sessions, malformed audit identity and expired approvals
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ apps/api/src/__tests__/server-boundary-envelope.test.ts:423:3
+    421|   })
+    422|
+    423|   it('rejects unknown takeover sessions, malformed audit identity and …
+       |   ^
+    424|     const app = buildServer()
+    425|     const takeover = await app.inject({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/16]⎯
+
+ FAIL  apps/api/src/__tests__/server-boundary-envelope.test.ts > server boundary envelopes > requires a trusted operator tenant for production data-plane reads
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ apps/api/src/__tests__/server-boundary-envelope.test.ts:487:3
+    485|   })
+    486|
+    487|   it('requires a trusted operator tenant for production data-plane rea…
+       |   ^
+    488|     vi.stubEnv('NODE_ENV', 'production')
+    489|     const app = buildServer({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/16]⎯
+
+ FAIL  apps/api/src/__tests__/webhook-security.test.ts > webhook HMAC API boundary > constructs the verifier from runtime configuration outside test mode
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ apps/api/src/__tests__/webhook-security.test.ts:466:3
+    464|
+    465| describe('webhook HMAC API boundary', () => {
+    466|   it('constructs the verifier from runtime configuration outside test …
+       |   ^
+    467|     await expect(
+    468|       buildServerFromEnv({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/16]⎯
+
+ FAIL  apps/api/src/__tests__/webhook-security.test.ts > webhook HMAC API boundary > accepts a signed webhook and rejects its replay
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ apps/api/src/__tests__/webhook-security.test.ts:493:3
+    491|   })
+    492|
+    493|   it('accepts a signed webhook and rejects its replay', async () => {
+       |   ^
+    494|     vi.stubEnv('NODE_ENV', 'production')
+    495|     const now = Math.floor(Date.now() / 1000) * 1000
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/16]⎯
+
+ FAIL  apps/api/src/__tests__/webhook-security.test.ts > webhook HMAC API boundary > verifies the exact raw JSON bytes supplied by a provider
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ apps/api/src/__tests__/webhook-security.test.ts:528:3
+    526|   })
+    527|
+    528|   it('verifies the exact raw JSON bytes supplied by a provider', async…
+       |   ^
+    529|     vi.stubEnv('NODE_ENV', 'production')
+    530|     const now = Math.floor(Date.now() / 1000) * 1000
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/16]⎯
+
+ FAIL  apps/api/src/__tests__/webhook-security.test.ts > webhook HMAC API boundary > releases a HMAC reservation after a downstream failure so the provider can retry
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ apps/api/src/__tests__/webhook-security.test.ts:577:3
+    575|   })
+    576|
+    577|   it('releases a HMAC reservation after a downstream failure so the pr…
+       |   ^
+    578|     vi.stubEnv('NODE_ENV', 'production')
+    579|     const now = Math.floor(Date.now() / 1000) * 1000
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/16]⎯
+
+
+ Test Files  3 failed | 1 passed (4)
+      Tests  16 failed | 31 passed | 1 skipped (48)
+   Start at  23:49:07
+   Duration  229.67s (transform 965ms, setup 0ms, import 1.61s, tests 225.40s, environment 2.22s)
+

@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-raw-artifact-receipt",
+  "program": "AUD20-REM",
+  "task": "AUD20-04",
+  "observedAt": "2026-09-21T19:17:13Z",
+  "candidateId": "ea348cec64a8a77b36418ef358315bc8d044181720968fc05934b6441507121b",
+  "rawDirectory": "docs/04_audit/evidence/AUD20/AUD20-04-raw",
+  "artifacts": [
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-04-raw/retention-focused-20260921T1828Z.log",
+      "bytes": 225,
+      "sha256": "df500b4918b472df038ce7ea152274bbbe2a69a241742f99132077fb28d06fd5",
+      "role": "retention-focused"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-04-raw/inbound-replay-20260921T1828Z.log",
+      "bytes": 222,
+      "sha256": "e40e2b1386f46767e5970f4cde82892f44f85eadbeafcb64bbb5dd598e966db8",
+      "role": "inbound-replay"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-04-raw/postgres-matrix-20260921T1826Z.log",
+      "bytes": 13161,
+      "sha256": "465595d6308deeb4969f3221d343470daf35929b24d655017a2552e845e47178",
+      "role": "postgres-matrix"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-04-raw/full-unit-20260921T1828Z.log",
+      "bytes": 28400,
+      "sha256": "b3df9d728462028ccf2adfa061125be56c1ae466588af4f225c7273906e2eae0",
+      "role": "full-unit"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-04-raw/typecheck-20260921T1833Z.log",
+      "bytes": 85,
+      "sha256": "8b0652334f8c18d7b8ab65ebb1c68eb5c3e9bfcdeee08c641f75418ba81efb8c",
+      "role": "typecheck"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-04-raw/lint-20260921T1833Z.log",
+      "bytes": 49,
+      "sha256": "698dae4c32293ce3bc9c1fdd7f7ca0912b7dd7041c3a321551e5666692d8fe36",
+      "role": "lint"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-04-raw/format-20260921T1835Z.log",
+      "bytes": 133,
+      "sha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3",
+      "role": "format"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-04-raw/build-20260921T1833Z.log",
+      "bytes": 634,
+      "sha256": "11233d29c751b81e797f7f3873f22e274cdca2ccca160cb339dd958acd0916d0",
+      "role": "build"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-04-raw/security-audit-20260921T1833Z.log",
+      "bytes": 24,
+      "sha256": "6d8c5c8f3d7684adb070417bd608d01ae90aa3dc26a65af03ffda4955f38d9a3",
+      "role": "security-audit"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-04-raw/docs-check-20260921T1917Z.log",
+      "bytes": 930,
+      "sha256": "ecfacdce990c6c27fd9fbca2b46a9a1ad8130be65482a7c7211ba0f7493ee2d8",
+      "role": "documentation-check"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-04-raw/format-docs-final-20260921T1917Z.log",
+      "bytes": 102,
+      "sha256": "03bc99165bddb2f89f286aca22f129cb588602cbd9276ba6bb54ffc4d722aa4c",
+      "role": "documentation-format"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-04-raw/diff-check-final-20260921T1917Z.log",
+      "bytes": 36,
+      "sha256": "35e7bc71287ee90de0f0b0fbb88a725ae47625db330c75871dc425c162714e90",
+      "role": "diff-check"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-04-raw/migration-checksum-20260921T1836Z.log",
+      "bytes": 271,
+      "sha256": "e0dd717f54c14edf276226ea87f747a51b2baea94c5e8b5c713fc336654d9e5e",
+      "role": "migration-checksum"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-04-raw/environment-node22-20260921T1836Z.log",
+      "bytes": 57,
+      "sha256": "a147a0f7158fdd333487b5f43783b622d945bbdb13ef6fdd9784180ace5b3f6e",
+      "role": "environment"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-04-raw/negative-log-mutation-20260921T1838Z.log",
+      "bytes": 312,
+      "sha256": "bf00f872dbaf79d874108207f1c4a21252db900580954dabff5225874ee098d1",
+      "role": "negative-log-after-receipt"
+    }
+  ],
+  "verificationArtifacts": [],
+  "limitations": [
+    "Artifacts are controlled-local evidence from a disposable PostgreSQL instance.",
+    "The source worktree is dirty and this receipt is not a release or staging seal.",
+    "A fresh-context independent critic returned PASS; this receipt closes AUD20-04 only in controlled-local scope.",
+    "The negative log-mutation harness temporarily mutates one raw artifact, proves verifier rejection, and restores the original bytes before the final binding."
+  ]
+}

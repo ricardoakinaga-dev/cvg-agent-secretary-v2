@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "kind": "cvg-current-operational-state",
+  "program": "AUD20-REM-v2",
+  "currentTask": "AUD20-10",
+  "currentStatus": "READY_FOR_NEXT_STEP",
+  "nextAction": "manter `AUD20-10` com o slice IMP50-09 aceito no BUILD local e C01–C07 abertos; próximos passos (alertas/delivery ledger, owner/SLO) exigem decisão/admissão próprias; `AUD20-19` sem sessão autorizada; 141 vínculos IMP50-49 sem adjudicação; staging/produção `NO_GO`.",
+  "releaseBoundary": {
+    "staging": "NO_GO",
+    "production": "NO_GO"
+  },
+  "runtime": {
+    "node": {
+      "exact": "22.23.2",
+      "range": ">=22 <23"
+    }
+  },
+  "sources": {
+    "currentIndex": "docs/CURRENT.md",
+    "runtimeState": "docs/99_runtime_state.md",
+    "executionLog": "docs/20_master_execution_log.md",
+    "backlog": "docs/30_backlog_master.md",
+    "taskMatrix": "docs/03_build/tracking/aud20_v2_findings_matrix.json"
+  },
+  "certification": {
+    "currentPointer": "certification/current.json",
+    "currentNamespace": "certification/phase11",
+    "historicalNamespaces": [
+      "certification/findings.json",
+      "certification/logs/historical/2026-09-11-phase10"
+    ]
+  }
+}

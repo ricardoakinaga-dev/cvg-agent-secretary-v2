@@ -219,7 +219,7 @@
       "id": "AUD20-03",
       "title": "Validar lineage completa e jornada concorrente de Goal",
       "priority": "P0",
-      "status": "READY_FOR_NEXT_STEP",
+      "status": "IN_PROGRESS",
       "dependencies": ["AUD20-01", "AUD20-02"],
       "owner": "orchestration/persistence",
       "findings": ["P1-ORCH-01", "P1-ORCH-02"],
@@ -227,21 +227,40 @@
       "negative": ["AUD20-N03", "AUD20-N04"],
       "allowedPaths": [
         "packages/agent-runtime/src/orchestration.ts",
+        "packages/agent-runtime/src/__tests__/orchestration.test.ts",
+        "packages/agent-runtime/src/__tests__/orchestration-branch-hardening.test.ts",
+        "packages/persistence/src/postgres.ts",
         "packages/persistence/src/orchestrator-postgres.ts",
+        "packages/persistence/src/__tests__/outbox-durability.test.ts",
         "apps/worker/src/kernel-composition.ts",
+        "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
         "packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts",
         "apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts",
+        "tests/architecture.test.js",
         "apps/worker/src/__tests__/postgres-outbox-bridge.integration.test.ts"
       ],
-      "verification": ["test:postgres", "two runDurableGoal journeys", "redelivery/crash negatives"],
-      "evidence": ["PostgreSQL concurrency report", "lineage fingerprint report"],
+      "verification": [
+        "test:postgres",
+        "two runDurableGoal journeys",
+        "redelivery/crash negatives",
+        "durable outbox lease/final-attempt matrix"
+      ],
+      "evidence": [
+        "docs/04_audit/evidence/AUD20/AUD20-03-candidate-manifest.json",
+        "docs/04_audit/evidence/AUD20/AUD20-03-candidate-receipt.json",
+        "docs/04_audit/evidence/AUD20/AUD20-03-postgres-concurrency-report.md",
+        "docs/04_audit/evidence/AUD20/AUD20-03-lineage-report.md",
+        "docs/04_audit/evidence/AUD20/AUD20-03-command-receipt.json",
+        "docs/04_audit/evidence/AUD20/AUD20-03-raw-artifact-receipt.json",
+        "docs/04_audit/evidence/AUD20/AUD20-03-critical-coverage.json"
+      ],
       "rollback": "rollback only additive orchestration changes and migration forward-fix if needed"
     },
     {
       "id": "AUD20-04",
       "title": "Preservar dedupe durante retencao",
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "IN_PROGRESS",
       "dependencies": ["AUD20-01"],
       "owner": "persistence/data-governance",
       "findings": ["P1-DATA-01"],
@@ -249,13 +268,19 @@
       "negative": ["AUD20-N05"],
       "allowedPaths": [
         "packages/persistence/src/retention.ts",
+        "packages/persistence/src/postgres/migrations.ts",
         "packages/persistence/migrations/**",
         "packages/agent-core/src/commands/receive-inbound-message.ts",
         "packages/persistence/src/__tests__/retention-postgres.test.ts",
         "packages/persistence/src/__tests__/*idempotency*"
       ],
-      "verification": ["test:postgres", "TTL/tombstone replay matrix", "tenant/hold isolation"],
-      "evidence": ["migration checksum", "retention replay report"],
+      "verification": [
+        "test:postgres",
+        "TTL/tombstone replay matrix",
+        "tenant/hold isolation",
+        "rollback after ledger failure"
+      ],
+      "evidence": ["migration checksum", "retention replay report", "rollback report"],
       "rollback": "forward-fix only for deployed schema assumptions; no destructive purge"
     },
     {

@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud19-mutation-sentinel",
+  "program": "AUD20-REM-v2",
+  "task": "AUD20-19",
+  "generatedAt": "2026-09-23T00:45:42.748Z",
+  "node": "22.23.2",
+  "manifest": "docs/04_audit/evidence/AUD20/AUD20-19-mutants.json",
+  "status": "PASS",
+  "summary": {
+    "total": 4,
+    "detected": 4,
+    "notDetected": 0,
+    "notApplicable": 0,
+    "sandbox": null
+  },
+  "results": [
+    {
+      "id": "MUT-AUD20-19-SKIP-01",
+      "category": "qualification-skip",
+      "target": "scripts/lib/aud20-19-qualification.mjs",
+      "rationale": "Weakening the required-skip guard must let a known-bad report through and therefore break the focused negative test.",
+      "focusedTests": [
+        "tests/aud20-19-qualification.test.js"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 5,
+        "passed": 4,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-MAF3bl/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-AUD20-19-NODE-01",
+      "category": "qualification-runtime",
+      "target": "scripts/lib/aud20-19-qualification.mjs",
+      "rationale": "Inverting the exact runtime binding must be detected by the supported/unsupported Node cases.",
+      "focusedTests": [
+        "tests/aud20-19-qualification.test.js"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 5,
+        "passed": 4,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-MAF3bl/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-AUD20-19-CANDIDATE-01",
+      "category": "qualification-binding",
+      "target": "scripts/lib/aud20-19-qualification.mjs",
+      "rationale": "Inverting candidate equality must make the stale-candidate negative test fail.",
+      "focusedTests": [
+        "tests/aud20-19-qualification.test.js"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 5,
+        "passed": 4,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-MAF3bl/.mutation-report.json\n\n"
+    },
+    {
+      "id": "MUT-AUD20-19-METRICS-01",
+      "category": "qualification-metrics",
+      "target": "scripts/lib/aud20-19-qualification.mjs",
+      "rationale": "Inverting cleanup qualification must be caught by the invalid PostgreSQL metrics fixture.",
+      "focusedTests": [
+        "tests/aud20-19-qualification.test.js"
+      ],
+      "status": "detected",
+      "exitCode": 1,
+      "timedOut": false,
+      "tests": {
+        "total": 5,
+        "passed": 4,
+        "failed": 1,
+        "pending": 0
+      },
+      "outputTail": "JSON report written to /tmp/aud19-mutants-MAF3bl/.mutation-report.json\n\n"
+    }
+  ],
+  "candidate": {
+    "candidateId": "255c2cc78e65f54b1c694b39cc7a8f674ca6a294282d12c3b4ade0bb1c3159b2",
+    "commit": "25434811334f5cec92ee0741079302271b82b7cb",
+    "treeHash": "a4d26bce9669fa40a717d3d97f4d47583745e20395730d94c3c1968b98db1475"
+  },
+  "manifestSha256": "9f83ec2154a2ccbeab6d27bcb10a3f7b07cf1e8c55cb33c785689293ea5ea78a"
+}

@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-16-raw-artifact-receipt",
+  "program": "AUD20-REM",
+  "task": "AUD20-16",
+  "observedAt": "2026-09-21T22:24:43Z",
+  "execution": "CONTROLLED_LOCAL",
+  "policyVersion": "PENDING_HUMAN_APPROVAL",
+  "rawDirectory": "docs/04_audit/evidence/AUD20/AUD20-16-raw",
+  "candidateBinding": {
+    "algorithm": "aud20-16-worktree-binding-v1",
+    "baseCommit": "25434811334f5cec92ee0741079302271b82b7cb",
+    "gitTreeHash": "218d24fa5ee1e66f2cbe48687d5630100abcf3c3",
+    "sourceDiffSha256": "43b9b49b4c3866cf48b02da715b50bb39643fdb6ce9842ab0a394cf3bed6fd30",
+    "scope": [
+      "docs/02_spec/aud20_16_human_decision_request_20260921.md",
+      "docs/02_spec/aud20_16_tombstone_lifecycle_capacity_20260921.md",
+      "docs/04_audit/evidence/AUD20/AUD20-16-binding-verifier.mjs",
+      "docs/04_audit/evidence/AUD20/AUD20-16-capacity-fixture.json",
+      "docs/04_audit/evidence/AUD20/AUD20-16-d05-interpretation-review-v1.md",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-focused-final-20260921.log",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-green-final-20260921.log",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-negative-final-20260921.log",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-postgres-green-final-20260921.log",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-synthetic-origin-red-20260921T203514Z.log",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/diff-check-final-20260921.log",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/docs-check-final-20260921.log",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/format-final-20260921.log",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/full-unit-final-20260921.log",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/lint-final-20260921.log",
+      "scripts/aud20-16-capacity-model.mjs",
+      "tests/aud20-16-capacity-model.test.js"
+    ],
+    "dirtyWorktree": true,
+    "untrackedIncluded": true,
+    "externalEffects": false,
+    "candidateId": "927f3e0a7a12fb7c8139dea8961de3536ea8a291e4b407dc350cc3b63e1250ed"
+  },
+  "artifacts": [
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-synthetic-origin-red-20260921T203514Z.log",
+      "bytes": 503,
+      "sha256": "e69ba3747c1dcb6393fa97798e446f2acfc332e88e66b0808e30dab69d92acd6",
+      "role": "red-baseline"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-focused-final-20260921.log",
+      "bytes": 492,
+      "sha256": "2630c1bf86321878b05b246e27500b3d361d30f87cede6b569f160ac67194878",
+      "role": "focused-test"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-green-final-20260921.log",
+      "bytes": 1744,
+      "sha256": "852f5cd1d3fa788af9decb523b10fe323084ef6e38024cb5e9d76dfc4a536f35",
+      "role": "synthetic-three-volume-model"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-negative-final-20260921.log",
+      "bytes": 597,
+      "sha256": "943a5658e94fd92b642b02583de240e272861b24b18bf08d6bf8eca7ffb62564",
+      "role": "negative-validation"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-postgres-green-final-20260921.log",
+      "bytes": 3533,
+      "sha256": "b86cc95d8ccb81a9085f6a7f59f7e98d07a488c9d8dfed82cc320763d305e9a8",
+      "role": "postgres-disposable-capacity-measurement"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-16-raw/full-unit-final-20260921.log",
+      "bytes": 318,
+      "sha256": "37845b71c85076fe542a9caae64c5d0bc348e8392493221c07e1733286c5aad2",
+      "role": "full-unit-regression"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-16-raw/lint-final-20260921.log",
+      "bytes": 192,
+      "sha256": "d8921b17f2f8f5a11c1a0f9b4ced0eb0352212c7fe44f191ed41e2e2b924b39a",
+      "role": "repository-lint"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-16-raw/format-final-20260921.log",
+      "bytes": 285,
+      "sha256": "f3f12a0c8b687447b81036f8d6505b3b2dbe471bfc2412f9eab160bc1ddac94f",
+      "role": "repository-format"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-16-raw/docs-check-final-20260921.log",
+      "bytes": 971,
+      "sha256": "a22b091a6a6768b8a633462a7dda4919434ba2a05763e436bec8af3cade1e088",
+      "role": "documentation-check"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-16-raw/diff-check-final-20260921.log",
+      "bytes": 128,
+      "sha256": "00f67e0772b7dfb36b2010631bb31d4dbe3d96d2a7894dee1ed9b5079adc8943",
+      "role": "diff-check"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-16-raw/binding-verification-final-20260921.log",
+      "bytes": 360,
+      "sha256": "4c6b3611230a5070382fc820ecfb05b92d88f1a390bc8448e9602a6cbd7d3e3a",
+      "role": "binding-verification"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-16-capacity-fixture.json",
+      "bytes": 1161,
+      "sha256": "793e0af3a39576fcea2580e98cd218db6ad63b2d4fdc9e3f13cae215ca2e1c40",
+      "role": "synthetic-input"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "scripts/aud20-16-capacity-model.mjs",
+      "sha256": "cd3a1af9dc0fb405bd3297993ebe25ab7ea5d6a0c49ce67e0bc19af0c337ddd3"
+    },
+    {
+      "path": "tests/aud20-16-capacity-model.test.js",
+      "sha256": "689bc39291dbe52cd480636d9a50cfa4a80fe1f0dfdffe29c7bc8f928a4a74f5"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-16-capacity-fixture.json",
+      "sha256": "793e0af3a39576fcea2580e98cd218db6ad63b2d4fdc9e3f13cae215ca2e1c40"
+    },
+    {
+      "path": "docs/02_spec/aud20_16_tombstone_lifecycle_capacity_20260921.md",
+      "sha256": "4b6c42703d909f73a70ebd76c5682d9c13edfe4ab69b9eda79fb4254b526be5c"
+    },
+    {
+      "path": "docs/02_spec/aud20_16_human_decision_request_20260921.md",
+      "sha256": "eb4a0c9244bc7bab572acdd78adeeb1c431f6b0fadb99aa329d890b705b6a97c"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-16-d05-interpretation-review-v1.md",
+      "sha256": "510f355329396411c7f17ecd58a9550f3d0cf1201df5400a2db0c6c0a078bcb5"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-16-binding-verifier.mjs",
+      "sha256": "608e24d30c5956dece0dfd884dbe2b7970d4abe233b925c73926b8d8926d9bcc"
+    }
+  ],
+  "limitations": [
+    "The horizon and safety factor in the fixture are illustrative inputs, not an approved retention policy.",
+    "No schema, production retention behavior, archive, partition, mixed-version writer or recovery path was changed or qualified.",
+    "Human approval is still required for the post-tombstone horizon and capacity owner/review trigger.",
+    "The candidate binding covers the 17 explicitly listed implementation/spec/raw inputs; derived receipts, matrices, runtime state, execution log and independent critic output are verified separately to avoid self-reference."
+  ],
+  "releaseEligible": false
+}

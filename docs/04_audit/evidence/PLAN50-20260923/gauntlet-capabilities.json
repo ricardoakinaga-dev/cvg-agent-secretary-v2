@@ -1,0 +1,7 @@
+{
+  "fresh_context": true,
+  "filesystem_isolation": "state in isolated source snapshot; project BUILD remains in authorized workspace",
+  "max_concurrency": 4,
+  "wait_supported": true,
+  "notes": "Existing repository .gauntlet state is preserved; this identified run has its own isolated snapshot."
+}

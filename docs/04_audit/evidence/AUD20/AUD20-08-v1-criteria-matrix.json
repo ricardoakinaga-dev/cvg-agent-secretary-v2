@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "task": "AUD20-08",
+  "result": "PASS_LOCAL_NO_GO",
+  "criteria": {
+    "C01": "PASS",
+    "C02": "PASS",
+    "C03": "PASS",
+    "C04": "PASS",
+    "C05": "PASS",
+    "C06": "PASS",
+    "C07": "PASS"
+  },
+  "releaseBoundary": {
+    "staging": "NO_GO",
+    "production": "NO_GO"
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 2,
+  "kind": "aud20-command-receipt",
+  "program": "AUD20-REM",
+  "task": "AUD20-03",
+  "observedAt": "2026-09-21T08:43:16Z",
+  "sideEffects": true,
+  "sideEffectScope": "Writes only controlled-local evidence logs; no product, database, provider, channel, staging or production side effect.",
+  "candidateManifest": "docs/04_audit/evidence/AUD20/AUD20-03-candidate-manifest.json",
+  "candidateId": "e258b9bef592120288ca8bd3a51d043ff66cd06f9b0fc0a61a2ab65af6f7dad7",
+  "rawArtifactReceipt": "docs/04_audit/evidence/AUD20/AUD20-03-raw-artifact-receipt.json",
+  "commands": [
+    {
+      "id": "lineage",
+      "command": "npx vitest run packages/agent-runtime/src/__tests__/orchestration-branch-hardening.test.ts packages/agent-runtime/src/__tests__/orchestration.test.ts --no-file-parallelism --maxWorkers=2",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "2 files passed; 106 tests passed",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-03-raw/lineage-unit.log",
+      "rawArtifactSha256": "2efaaf4fec5aae83fb5d482724a813f739e58abca29bec390cf92a8bdcbbff0a"
+    },
+    {
+      "id": "goal-kernel-postgres",
+      "command": "TEST_DATABASE_URL=postgresql://postgres:aud20-synthetic@127.0.0.1:55433/postgres npx vitest run packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts --no-file-parallelism --maxWorkers=2",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "2 files passed; 14 tests passed",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-03-raw/goal-kernel-postgres.log",
+      "rawArtifactSha256": "bc6c97054ea3ce71e41e37fb40832ed6b4b26fd877184d2cf5e027e2f02228ff"
+    },
+    {
+      "id": "outbox-postgres",
+      "command": "TEST_DATABASE_URL=postgresql://postgres:aud20-synthetic@127.0.0.1:55433/postgres npx vitest run packages/persistence/src/__tests__/outbox-durability.test.ts --no-file-parallelism --maxWorkers=2",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "1 file passed; 9 tests passed",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-03-raw/outbox-postgres.log",
+      "rawArtifactSha256": "fe04badd6e8b41682b3d8d0a656600d2f728bdeff65563f3dd181f23630fb70d"
+    },
+    {
+      "id": "postgres-matrix",
+      "command": "TEST_DATABASE_URL=postgresql://postgres:aud20-synthetic@127.0.0.1:55433/postgres npm run test:postgres",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "30 files passed; 331 tests passed; 0 PostgreSQL-matrix skips",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-03-raw/postgres-matrix.log",
+      "rawArtifactSha256": "7ed2b038c0aa9c450eba77c24a1afc957f2c44f8799443729ef5be6218f9c778"
+    },
+    {
+      "id": "full-unit-postgres",
+      "command": "TEST_DATABASE_URL=postgresql://postgres:aud20-synthetic@127.0.0.1:55433/postgres npm test",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "294 files passed; 2360 tests passed; no conditional skips",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-03-raw/full-unit-postgres.log",
+      "rawArtifactSha256": "7743fa9752d162e5e6f9065db7d48f3163c24b13fa2f9edc0debbe3c4fbd8928"
+    },
+    {
+      "id": "coverage-postgres",
+      "command": "TEST_DATABASE_URL=postgresql://postgres:aud20-synthetic@127.0.0.1:55433/postgres npm run test:coverage",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "294 files passed; 2360 tests passed; statements 95.95%; branches 92.54%; functions 95.54%; lines 96.64%",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-03-raw/coverage-postgres.log",
+      "rawArtifactSha256": "34424d96019e10c59a855169f249e3e3a5ef4fcfa21a6efc92f803732f2f3b68"
+    },
+    {
+      "id": "kernel-branch-hardening",
+      "command": "TEST_DATABASE_URL=postgresql://postgres:aud20-synthetic@127.0.0.1:55433/postgres npx vitest run apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts --no-file-parallelism --maxWorkers=2",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "1 file passed; 79 tests passed",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-03-raw/kernel-branch-hardening.log",
+      "rawArtifactSha256": "5ef503cb7891417cc271116c5fc686f8096bf09b9f6efc47abd7380306f2d51d"
+    },
+    {
+      "id": "architecture",
+      "command": "npx vitest run tests/architecture.test.js --no-file-parallelism --maxWorkers=2",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "1 file passed; 5 tests passed; frozen hotspot caps enforced",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-03-raw/architecture.log",
+      "rawArtifactSha256": "85223ddd181e9876cd6e0fcec0d29d9e9608a3dbe6c0f9f6b5cbc1f478365e12"
+    },
+    {
+      "id": "binding-verification",
+      "command": "node docs/04_audit/evidence/AUD20/AUD20-03-binding-verifier.mjs > /tmp/opencode/aud20-binding-verification.next.log && mv /tmp/opencode/aud20-binding-verification.next.log docs/04_audit/evidence/AUD20/AUD20-03-raw/binding-verification.log",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "base commit, tree hash, source diff, source file hashes, candidate id, raw artifacts and the declared verification artifact independently recomputed",
+      "verificationArtifact": "docs/04_audit/evidence/AUD20/AUD20-03-raw/binding-verification.log",
+      "verificationArtifactSha256": "8f45f01846e2f139e6e31ecb20fe081791547d396242868b78a0ceda54a58d7e"
+    },
+    {
+      "id": "typecheck",
+      "command": "npm run typecheck",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "tsc completed without diagnostics",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-03-raw/typecheck.log",
+      "rawArtifactSha256": "8b0652334f8c18d7b8ab65ebb1c68eb5c3e9bfcdeee08c641f75418ba81efb8c"
+    },
+    {
+      "id": "lint",
+      "command": "npm run lint",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "eslint completed without diagnostics",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-03-raw/lint.log",
+      "rawArtifactSha256": "698dae4c32293ce3bc9c1fdd7f7ca0912b7dd7041c3a321551e5666692d8fe36"
+    },
+    {
+      "id": "build",
+      "command": "npm run build",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "TypeScript and Vite production build completed",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-03-raw/build.log",
+      "rawArtifactSha256": "5bc8034c955cad5c891effe33a9f89341ea2f0444975fa6a754e46400401389b"
+    },
+    {
+      "id": "format",
+      "command": "npm run format:check",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "Prettier check completed",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-03-raw/format.log",
+      "rawArtifactSha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3"
+    },
+    {
+      "id": "diff-check",
+      "command": "git diff --check",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "No whitespace errors",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-03-raw/diff-check.log",
+      "rawArtifactSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "docs-check",
+      "command": "npm run docs:check",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "719 links and 570 JSON documents checked; no broken links, invalid JSON or unexpected states",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-03-raw/docs-check.log",
+      "rawArtifactSha256": "2a3c17e0f85c1d460d034a41dadd128c4a6108986bd82bf3a0c6670ad910de15"
+    }
+  ],
+  "skipInventory": {
+    "fullUnit": "0 skipped; TEST_DATABASE_URL was set to the disposable local PostgreSQL instance.",
+    "postgresMatrix": "0 skipped; TEST_DATABASE_URL was set to the disposable local PostgreSQL instance.",
+    "requiredSkips": 0
+  },
+  "limitations": [
+    "The candidate remains a dirty working tree because commit and push were not authorized.",
+    "This is controlled-local evidence only; it does not authorize staging, production, providers, channels, or real data.",
+    "Fresh independent review passed; the candidate remains controlled-local and is not a release or staging seal."
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-16-capacity-fixture",
+  "dataOrigin": "synthetic",
+  "scenario": "approved-direct-retention-horizon",
+  "policyVersion": "AUD20-16-LIFECYCLE-v1",
+  "horizonDays": 30,
+  "safetyFactor": 1.25,
+  "volumes": [
+    {
+      "id": "small",
+      "inboundRowsPerDay": 1000,
+      "eligibleRate": 0.02,
+      "measuredTombstoneRows": 1000,
+      "p50RowBytes": 256,
+      "p95RowBytes": 384,
+      "measuredIndexBytes": 40960,
+      "syntheticPayloadP50Bytes": 128,
+      "syntheticPayloadP95Bytes": 256
+    },
+    {
+      "id": "medium",
+      "inboundRowsPerDay": 10000,
+      "eligibleRate": 0.05,
+      "measuredTombstoneRows": 5000,
+      "p50RowBytes": 384,
+      "p95RowBytes": 512,
+      "measuredIndexBytes": 327680,
+      "syntheticPayloadP50Bytes": 256,
+      "syntheticPayloadP95Bytes": 384
+    },
+    {
+      "id": "operational-limit",
+      "inboundRowsPerDay": 100000,
+      "eligibleRate": 0.08,
+      "measuredTombstoneRows": 20000,
+      "p50RowBytes": 512,
+      "p95RowBytes": 768,
+      "measuredIndexBytes": 2621440,
+      "syntheticPayloadP50Bytes": 384,
+      "syntheticPayloadP95Bytes": 640
+    }
+  ]
+}

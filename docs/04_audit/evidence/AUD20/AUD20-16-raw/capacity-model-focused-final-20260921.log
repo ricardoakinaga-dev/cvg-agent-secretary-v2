@@ -1,0 +1,12 @@
+Command: PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH npm test -- tests/aud20-16-capacity-model.test.js
+Observed: 2026-09-21T21:46:20Z
+
+> cvg-agent-secretary-v2@1.0.0 test
+> vitest run --no-file-parallelism --maxWorkers=2 tests/aud20-16-capacity-model.test.js
+
+ RUN  v4.1.11 /home/ricardo/cvg-agent-secretary-v2
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  18:46:20
+   Duration  2.18s (transform 131ms, setup 0ms, import 211ms, tests 12ms, environment 1.70s)

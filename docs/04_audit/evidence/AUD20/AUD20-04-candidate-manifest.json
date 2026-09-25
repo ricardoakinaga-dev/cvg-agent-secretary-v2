@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-candidate-manifest",
+  "program": "AUD20-REM",
+  "task": "AUD20-04",
+  "observedAt": "2026-09-21T19:09:24Z",
+  "environment": {
+    "node": "v22.23.2",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "candidate": {
+    "candidateId": "ea348cec64a8a77b36418ef358315bc8d044181720968fc05934b6441507121b",
+    "baseCommit": "25434811334f5cec92ee0741079302271b82b7cb",
+    "gitTreeHash": "218d24fa5ee1e66f2cbe48687d5630100abcf3c3",
+    "branch": "main",
+    "dirty": true,
+    "sourceDiffSha256": "b8c43d4a758c0e780837b5c8480b447ebb19f0c266b3066f9ae1fde4563e8f82",
+    "idFormula": "sha256(JSON.stringify({schemaVersion:'aud20-candidate-v2',baseCommit,gitTreeHash,sourceDiffSha256,sourceFiles}))",
+    "binding": "Current worktree source bytes relative to baseCommit; sourceDiffSha256 is SHA-256 of git diff --binary with the exclusions listed in AUD20-04-binding-verifier.mjs",
+    "bindingVerifier": "docs/04_audit/evidence/AUD20/AUD20-04-binding-verifier.mjs",
+    "releaseEligible": false
+  },
+  "sourceFiles": [
+    {
+      "path": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+      "sha256": "472fcd5ef4ed8ba3806e8c3f9c5a4c42a7291d81f5c05c96b3fed350c163dfac"
+    },
+    {
+      "path": "apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts",
+      "sha256": "9c47e77ef18afa7a073121d0f437716e3ee605e3f588ec02c0671696a4349244"
+    },
+    {
+      "path": "apps/worker/src/kernel-composition.ts",
+      "sha256": "c397a66e32864cb00fe2a6df01f7bc3632f6207a0fa29298ea19576c46ca6607"
+    },
+    {
+      "path": "packages/agent-core/src/__tests__/receive-inbound-message.test.ts",
+      "sha256": "1a4dcc972ddd678c64393189391811c4a0ede06d8bb874e7f89e9f783bad4e69"
+    },
+    {
+      "path": "packages/agent-core/src/commands/receive-inbound-message.ts",
+      "sha256": "e110b9b8484dd08c7930e43e12f18a234bfe195978e8076af29bc37ef055773d"
+    },
+    {
+      "path": "packages/agent-runtime/src/__tests__/orchestration-branch-hardening.test.ts",
+      "sha256": "8cca9ecefb76e963da9a755452921dd1ba18ae05a516b86b91f1c5f6b574ab92"
+    },
+    {
+      "path": "packages/agent-runtime/src/__tests__/orchestration.test.ts",
+      "sha256": "32fb827b702bfdd9c66dc1430cd3740bcc03150da961f38f9f169e8b47b0815a"
+    },
+    {
+      "path": "packages/agent-runtime/src/orchestration.ts",
+      "sha256": "8a1143f90e1a5741271c6b3a09de850fe8082b7609ee08d8567f79c095b49b67"
+    },
+    {
+      "path": "packages/persistence/migrations/0027_inbound_idempotency_tombstones.sql",
+      "sha256": "a64e5302e971e96f961f25c045cd7d32e06ab6a8714d3b29050f01e22370e8d1"
+    },
+    {
+      "path": "packages/persistence/migrations/0028_retention_batch_semantics.sql",
+      "sha256": "61a54ff3e51a3f01025c23fa6c489816da181ad40f828201f7986aff3c3250b2"
+    },
+    {
+      "path": "packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts",
+      "sha256": "b8060ad5309c5e038d48d3d81b56faf99548c398e3acd36ab0cd525e48e0301a"
+    },
+    {
+      "path": "packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "sha256": "b9ad7775a3a12f8b083a9f44b4b32c8537adc0b6c05ed4f999031b3438560ff0"
+    },
+    {
+      "path": "packages/persistence/src/__tests__/retention-postgres.test.ts",
+      "sha256": "e81512bcfe861f68287e5495939eb3e7ef1f3f5a651a010d191a1554e5d31d93"
+    },
+    {
+      "path": "packages/persistence/src/__tests__/retention.test.ts",
+      "sha256": "77b5a5fa7a86758040fe3c7903fb4596b584b006dcda30286c1ce38bab6368f4"
+    },
+    {
+      "path": "packages/persistence/src/orchestrator-postgres.ts",
+      "sha256": "b17985b79ee96bf528da16ff3659fbeb1dd1849ed54f6228b3f73c3be50e244a"
+    },
+    {
+      "path": "packages/persistence/src/postgres.ts",
+      "sha256": "5dd06a65f3ee20b58e63fe6129d775abef15474dc138fd6fcc8ebb5bec8575d2"
+    },
+    {
+      "path": "packages/persistence/src/postgres/migrations.ts",
+      "sha256": "bd66fb43fdd3f1c61182fbf0724bd681b6397ef37f92343aeca306b3cb2ee7ed"
+    },
+    {
+      "path": "packages/persistence/src/retention.ts",
+      "sha256": "674a27493425f2b44461b033a894dd8824ea23c0b6a0682039bed2c13c3e2fbe"
+    },
+    {
+      "path": "tests/architecture.test.js",
+      "sha256": "68f310e92ded1e270c298ff80ca44726c8e397f185174ffbd5710a9f1b197e1e"
+    }
+  ],
+  "excludedPaths": [
+    "docs/04_audit/evidence/**",
+    "docs/CURRENT.md",
+    "docs/20_master_execution_log.md",
+    "docs/99_runtime_state.md",
+    "docs/03_build/0334_aud20260920_backlog.md",
+    "docs/30_backlog_master.md"
+  ],
+  "limitations": [
+    "The candidate is a dirty working tree because commit and push were not authorized.",
+    "This manifest is controlled-local evidence, not a release or staging seal.",
+    "The source migrations are bound by explicit source-file SHA-256 because untracked files are not included by git diff --binary.",
+    "A fresh-context independent critic returned PASS for C01-C07, binding, timeout/rollback, altered-log negative and stale-artifact exclusion."
+  ]
+}

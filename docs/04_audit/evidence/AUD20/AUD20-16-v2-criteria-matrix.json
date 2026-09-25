@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-16-criteria-matrix",
+  "program": "AUD20-REM",
+  "task": "AUD20-16",
+  "observedAt": "2026-09-22T01:59:30Z",
+  "execution": "CONTROLLED_LOCAL",
+  "status": "COMPLETED_LOCAL",
+  "policyVersion": "AUD20-16-LIFECYCLE-v1",
+  "staging": "NO_GO",
+  "production": "NO_GO",
+  "releaseEligible": false,
+  "criteria": [
+    {
+      "id": "AUD20-16-C01",
+      "status": "PASS",
+      "summary": "30-day active TTL and post-tombstone horizon are explicit; immutable owner/ref/approval/validity metadata is revalidated per batch with PostgreSQL time; UNCERTAIN never auto-expires.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD20/AUD20-16-human-decision-20260922.json",
+        "docs/02_spec/aud20_16_tombstone_lifecycle_capacity_20260921.md"
+      ]
+    },
+    {
+      "id": "AUD20-16-C02",
+      "status": "PASS",
+      "summary": "resource_id is removed only from mature tombstones while tenant/key/digest/timestamps remain; the migration constraint prevents invalid active/minimized shapes.",
+      "evidence": [
+        "packages/persistence/migrations/0029_inbound_tombstone_lifecycle.sql",
+        "packages/persistence/src/retention.ts",
+        "packages/persistence/src/__tests__/retention-postgres.test.ts"
+      ]
+    },
+    {
+      "id": "AUD20-16-C03",
+      "status": "PASS",
+      "summary": "Offline and disposable PostgreSQL measurements use the approved 30-day horizon, explicit synthetic origin, p50/p95 row size, index size, total size and sweep timing for three volumes.",
+      "evidence": [
+        "scripts/aud20-16-capacity-model.mjs",
+        "tests/aud20-16-capacity-model.test.js",
+        "docs/04_audit/evidence/AUD20/AUD20-16-capacity-fixture.json",
+        "docs/04_audit/evidence/AUD20/AUD20-16-v2-build-report-20260922.md"
+      ]
+    },
+    {
+      "id": "AUD20-16-C04",
+      "status": "PASS_NOT_APPLICABLE_ARCHIVE",
+      "summary": "Direct retention was selected; no archive/partition exists. Durable primary-key consultation remains authoritative and database failure has no permissive fallback.",
+      "evidence": [
+        "docs/02_spec/aud20_16_tombstone_lifecycle_capacity_20260921.md",
+        "packages/persistence/src/postgres.ts",
+        "packages/persistence/src/__tests__/retention-postgres.test.ts"
+      ]
+    },
+    {
+      "id": "AUD20-16-C05",
+      "status": "PASS",
+      "summary": "Reader and writer statements prepared before migration remain executable after it, including a NULL resource_id read; replay remains rejected by the unchanged tenant/key primary key.",
+      "evidence": [
+        "packages/persistence/migrations/0029_inbound_tombstone_lifecycle.sql",
+        "packages/persistence/src/__tests__/retention-postgres.test.ts"
+      ]
+    },
+    {
+      "id": "AUD20-16-C06",
+      "status": "PASS",
+      "summary": "Synthetic long-horizon rows process in bounded batches and restart to convergence; hold changes serialize on the same advisory lock and the update rechecks holds; preserved rows are counted.",
+      "evidence": [
+        "packages/persistence/src/retention.ts",
+        "packages/persistence/src/__tests__/retention-postgres.test.ts"
+      ]
+    },
+    {
+      "id": "AUD20-16-C07",
+      "status": "PASS",
+      "summary": "The v3 critic findings were remediated; final full regression/static/docs checks passed, the v4 re-review passed C01-C06, and the candidate is sealed by the v2 binding verifier.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD20/AUD20-16-v2-build-report-20260922.md",
+        "docs/04_audit/evidence/AUD20/AUD20-16-independent-critic-v3.md",
+        "docs/04_audit/evidence/AUD20/AUD20-16-independent-critic-v4.md",
+        "docs/04_audit/evidence/AUD20/AUD20-16-v2-candidate-manifest.json",
+        "docs/04_audit/evidence/AUD20/AUD20-16-v2-binding-verifier.mjs"
+      ]
+    }
+  ],
+  "negativeCoverage": {
+    "prematureTombstoneMinimization": "PASS",
+    "expiredApproval": "PASS",
+    "oldWriterReplay": "PASS",
+    "restartConvergence": "PASS",
+    "archiveUnavailable": "NOT_APPLICABLE_DIRECT_RETENTION",
+    "realDataInLogs": "PASS"
+  },
+  "limitations": [
+    "Controlled local evidence only; no staging or production authorization.",
+    "No destructive purge, archive or partitioning is implemented.",
+    "The independent reviewer could not reproduce PostgreSQL in its shell because TEST_DATABASE_URL was unset; the main run executed the conditional file 13/13 against disposable local PostgreSQL."
+  ]
+}

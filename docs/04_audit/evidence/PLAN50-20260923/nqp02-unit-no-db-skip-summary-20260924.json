@@ -1,0 +1,232 @@
+{
+  "schema_version": 1,
+  "mode": "unit-only with TEST_DATABASE_URL explicitly empty; PostgreSQL gate NOT_RUN",
+  "result_sha256": "492b672725b22b12f7c6212ff589ca4c0c4b268aab77730a49bdb0e490370ad9",
+  "raw_log_sha256": "1bfcb9663a65a8996cedd721ca37f6172c0af1631e4a81d3b8afb2f837312302",
+  "execution_receipt_sha256": "307d6e5addfd9cdf5e19c6c3679d90e2f03d6fadb96a3e06bb51deaac3472d47",
+  "source_manifest_sha256": "ee20a50b412828a60731f03e6495df563a9f9aa29d4a9d1ffb3368b064b9902e",
+  "success": true,
+  "selected_file_count": 30,
+  "suite_counts": {
+    "tests_total": 354,
+    "passed": 162,
+    "skipped": 192,
+    "failed": 0
+  },
+  "per_file_skip_cases_match_v1_source_reconstruction": true,
+  "static_rows_missing_from_report": [],
+  "static_count_mismatches": {},
+  "wholly_skipped_files": 12,
+  "per_file": [
+    {
+      "path": "apps/api/src/__tests__/journeys-api-postgres.test.ts",
+      "passed": 0,
+      "skipped": 10,
+      "failed": 0,
+      "total": 10
+    },
+    {
+      "path": "apps/api/src/__tests__/operator-replay-guard.test.ts",
+      "passed": 4,
+      "skipped": 1,
+      "failed": 0,
+      "total": 5
+    },
+    {
+      "path": "apps/api/src/__tests__/operator-replay-store.test.ts",
+      "passed": 17,
+      "skipped": 3,
+      "failed": 0,
+      "total": 20
+    },
+    {
+      "path": "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+      "passed": 18,
+      "skipped": 7,
+      "failed": 0,
+      "total": 25
+    },
+    {
+      "path": "apps/api/src/__tests__/webhook-security.test.ts",
+      "passed": 16,
+      "skipped": 1,
+      "failed": 0,
+      "total": 17
+    },
+    {
+      "path": "apps/worker/src/__tests__/continuous-worker-entrypoint.integration.test.ts",
+      "passed": 0,
+      "skipped": 2,
+      "failed": 0,
+      "total": 2
+    },
+    {
+      "path": "apps/worker/src/__tests__/continuous-worker-postgres.integration.test.ts",
+      "passed": 0,
+      "skipped": 3,
+      "failed": 0,
+      "total": 3
+    },
+    {
+      "path": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+      "passed": 50,
+      "skipped": 29,
+      "failed": 0,
+      "total": 79
+    },
+    {
+      "path": "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts",
+      "passed": 9,
+      "skipped": 5,
+      "failed": 0,
+      "total": 14
+    },
+    {
+      "path": "apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts",
+      "passed": 0,
+      "skipped": 6,
+      "failed": 0,
+      "total": 6
+    },
+    {
+      "path": "apps/worker/src/__tests__/postgres-outbox-bridge.integration.test.ts",
+      "passed": 1,
+      "skipped": 1,
+      "failed": 0,
+      "total": 2
+    },
+    {
+      "path": "apps/worker/src/__tests__/postgres-role-preflight.test.ts",
+      "passed": 1,
+      "skipped": 12,
+      "failed": 0,
+      "total": 13
+    },
+    {
+      "path": "packages/chaos/src/__tests__/chaos-postgres.test.ts",
+      "passed": 0,
+      "skipped": 2,
+      "failed": 0,
+      "total": 2
+    },
+    {
+      "path": "packages/persistence/src/__tests__/attendance-approval-postgres.test.ts",
+      "passed": 0,
+      "skipped": 1,
+      "failed": 0,
+      "total": 1
+    },
+    {
+      "path": "packages/persistence/src/__tests__/audit-evidence-checkpoint-postgres.test.ts",
+      "passed": 2,
+      "skipped": 0,
+      "failed": 0,
+      "total": 2
+    },
+    {
+      "path": "packages/persistence/src/__tests__/channel-effect-journal-postgres.test.ts",
+      "passed": 1,
+      "skipped": 11,
+      "failed": 0,
+      "total": 12
+    },
+    {
+      "path": "packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+      "passed": 1,
+      "skipped": 9,
+      "failed": 0,
+      "total": 10
+    },
+    {
+      "path": "packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts",
+      "passed": 0,
+      "skipped": 8,
+      "failed": 0,
+      "total": 8
+    },
+    {
+      "path": "packages/persistence/src/__tests__/journey-task-atomicity.test.ts",
+      "passed": 6,
+      "skipped": 2,
+      "failed": 0,
+      "total": 8
+    },
+    {
+      "path": "packages/persistence/src/__tests__/journeys-postgres.test.ts",
+      "passed": 9,
+      "skipped": 15,
+      "failed": 0,
+      "total": 24
+    },
+    {
+      "path": "packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
+      "passed": 0,
+      "skipped": 4,
+      "failed": 0,
+      "total": 4
+    },
+    {
+      "path": "packages/persistence/src/__tests__/outbox-durability.test.ts",
+      "passed": 2,
+      "skipped": 7,
+      "failed": 0,
+      "total": 9
+    },
+    {
+      "path": "packages/persistence/src/__tests__/platform-approval-postgres.test.ts",
+      "passed": 0,
+      "skipped": 2,
+      "failed": 0,
+      "total": 2
+    },
+    {
+      "path": "packages/persistence/src/__tests__/platform-postgres-smoke.test.ts",
+      "passed": 0,
+      "skipped": 5,
+      "failed": 0,
+      "total": 5
+    },
+    {
+      "path": "packages/persistence/src/__tests__/postgres-migration-smoke.test.ts",
+      "passed": 8,
+      "skipped": 1,
+      "failed": 0,
+      "total": 9
+    },
+    {
+      "path": "packages/persistence/src/__tests__/retention-postgres.test.ts",
+      "passed": 0,
+      "skipped": 13,
+      "failed": 0,
+      "total": 13
+    },
+    {
+      "path": "packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts",
+      "passed": 4,
+      "skipped": 15,
+      "failed": 0,
+      "total": 19
+    },
+    {
+      "path": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
+      "passed": 0,
+      "skipped": 14,
+      "failed": 0,
+      "total": 14
+    },
+    {
+      "path": "packages/persistence/src/__tests__/session-version-pinning-postgres.test.ts",
+      "passed": 1,
+      "skipped": 1,
+      "failed": 0,
+      "total": 2
+    },
+    {
+      "path": "packages/persistence/src/__tests__/tenant-isolation.test.ts",
+      "passed": 12,
+      "skipped": 2,
+      "failed": 0,
+      "total": 14
+    }
+  ]
+}

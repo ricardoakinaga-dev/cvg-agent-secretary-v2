@@ -1,0 +1,117 @@
+Command: PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH node scripts/aud20-16-capacity-model.mjs --input docs/04_audit/evidence/AUD20/AUD20-16-capacity-fixture.json --postgres-url postgres://postgres:aud20_local@127.0.0.1:55439/aud20_synthetic
+Observed: 2026-09-21T21:46:13Z
+PostgreSQL container: postgres:16-alpine, disposable local host, removed after measurement
+
+{
+  "schemaVersion": 1,
+  "kind": "aud20-16-postgres-capacity-measurement",
+  "dataOrigin": "synthetic",
+  "policyVersion": "PENDING_HUMAN_APPROVAL",
+  "horizonDays": 60,
+  "safetyFactor": 1.25,
+  "postgres": {
+    "serverVersion": "16.15",
+    "serverVersionNum": "160015",
+    "disposableHostOnly": true,
+    "schemaName": "aud20_16_capacity_1400552"
+  },
+  "volumes": [
+    {
+      "id": "small",
+      "inboundRowsPerDay": 1000,
+      "eligibleRate": 0.02,
+      "measuredTombstoneRows": 1000,
+      "p50RowBytes": 260,
+      "p95RowBytes": 388,
+      "measuredIndexBytes": 180224,
+      "relationBytes": 286720,
+      "indexBytes": 180224,
+      "totalBytes": 499712,
+      "sweptRows": 1000,
+      "sweepDurationMs": 2.046
+    },
+    {
+      "id": "medium",
+      "inboundRowsPerDay": 10000,
+      "eligibleRate": 0.05,
+      "measuredTombstoneRows": 5000,
+      "p50RowBytes": 388,
+      "p95RowBytes": 516,
+      "measuredIndexBytes": 811008,
+      "relationBytes": 2146304,
+      "indexBytes": 811008,
+      "totalBytes": 2990080,
+      "sweptRows": 5000,
+      "sweepDurationMs": 2.947
+    },
+    {
+      "id": "operational-limit",
+      "inboundRowsPerDay": 100000,
+      "eligibleRate": 0.08,
+      "measuredTombstoneRows": 20000,
+      "p50RowBytes": 532,
+      "p95RowBytes": 788,
+      "measuredIndexBytes": 3473408,
+      "relationBytes": 11706368,
+      "indexBytes": 3473408,
+      "totalBytes": 15212544,
+      "sweptRows": 20000,
+      "sweepDurationMs": 10.386
+    }
+  ],
+  "model": {
+    "schemaVersion": 1,
+    "kind": "aud20-16-capacity-model",
+    "dataOrigin": "synthetic",
+    "policyVersion": "PENDING_HUMAN_APPROVAL",
+    "horizonDays": 60,
+    "safetyFactor": 1.25,
+    "volumes": [
+      {
+        "id": "small",
+        "inboundRowsPerDay": 1000,
+        "eligibleRate": 0.02,
+        "measuredTombstoneRows": 1000,
+        "p50RowBytes": 260,
+        "p95RowBytes": 388,
+        "measuredIndexBytes": 180224,
+        "rowsTombstonedPerDay": 20,
+        "bytesIndexPerRow": 180.224,
+        "dailyGrowthBytesP50": 8804.48,
+        "dailyGrowthBytesP95": 11364.48,
+        "projectedBytesP50": 660336,
+        "projectedBytesP95": 852336
+      },
+      {
+        "id": "medium",
+        "inboundRowsPerDay": 10000,
+        "eligibleRate": 0.05,
+        "measuredTombstoneRows": 5000,
+        "p50RowBytes": 388,
+        "p95RowBytes": 516,
+        "measuredIndexBytes": 811008,
+        "rowsTombstonedPerDay": 500,
+        "bytesIndexPerRow": 162.2016,
+        "dailyGrowthBytesP50": 275100.8,
+        "dailyGrowthBytesP95": 339100.8,
+        "projectedBytesP50": 20632560,
+        "projectedBytesP95": 25432560
+      },
+      {
+        "id": "operational-limit",
+        "inboundRowsPerDay": 100000,
+        "eligibleRate": 0.08,
+        "measuredTombstoneRows": 20000,
+        "p50RowBytes": 532,
+        "p95RowBytes": 788,
+        "measuredIndexBytes": 3473408,
+        "rowsTombstonedPerDay": 8000,
+        "bytesIndexPerRow": 173.6704,
+        "dailyGrowthBytesP50": 5645363.2,
+        "dailyGrowthBytesP95": 7693363.2,
+        "projectedBytesP50": 423402240,
+        "projectedBytesP95": 577002240
+      }
+    ]
+  }
+}

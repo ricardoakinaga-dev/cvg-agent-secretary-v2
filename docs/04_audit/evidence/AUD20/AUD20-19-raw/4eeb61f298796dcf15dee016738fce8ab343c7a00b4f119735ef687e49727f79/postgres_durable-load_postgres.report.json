@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-19-postgres-durable-load",
+  "synthetic": true,
+  "claim": "LOCAL_POSTGRES_DURABLE",
+  "generatedAt": "2026-09-23T00:37:54.611Z",
+  "configuration": {
+    "events": 250,
+    "concurrency": 4,
+    "bounded": true
+  },
+  "processed": 250,
+  "throughputPerSecond": 217.4851947867087,
+  "latencyMs": {
+    "p50": 8.65552,
+    "p95": 11.070908,
+    "p99": 26.750169
+  },
+  "errors": 0,
+  "retries": 0,
+  "backlog": 0,
+  "recoveryMs": 6.018178,
+  "recoveryTerminationCount": 4,
+  "recoveryPoolErrors": 4,
+  "recoveryQueryFailures": 0,
+  "cleanup": "PASS",
+  "releaseEligible": false,
+  "limitations": [
+    "single local machine",
+    "synthetic outbox workload",
+    "not a production capacity claim"
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-critical-coverage-report",
+  "program": "AUD20-REM",
+  "task": "AUD20-04",
+  "validity": "HISTORICAL_STALE",
+  "currentCandidate": false,
+  "supersededBy": "docs/04_audit/evidence/AUD20/AUD20-04-candidate-receipt.json",
+  "observedAt": "2026-09-21T12:31:32Z",
+  "candidateId": "87874e63523b491ad0d3e59fe946fb49db254672db79ff417ab3318b4b07e822",
+  "qualityBar": {
+    "path": "docs/04_audit/evidence/AUD20/AUD20-quality-bar.json",
+    "criticalBranches": 0.95,
+    "globalBranches": 0.85
+  },
+  "measurement": {
+    "command": "TEST_DATABASE_URL=postgres://cvg_test:cvg_test_password@127.0.0.1:55434/cvg_test npm run test:coverage",
+    "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-04-raw/coverage-postgres.log",
+    "rawArtifactSha256": "a89f2dffc8caf1e17f928c72a9514abda77c7ccfeffbb473691060084f610247",
+    "suite": {
+      "testFiles": 294,
+      "tests": 2361,
+      "skipped": 0
+    },
+    "criticalFile": {
+      "path": "apps/worker/src/kernel-composition.ts",
+      "statementsPercent": 99.26,
+      "branches": {
+        "covered": 486,
+        "total": 511,
+        "percent": 95.1,
+        "threshold": 95,
+        "pass": true
+      },
+      "functionsPercent": 100,
+      "linesPercent": 99.24
+    },
+    "global": {
+      "statementsPercent": 95.94,
+      "branchesPercent": 92.53,
+      "functionsPercent": 95.54,
+      "linesPercent": 96.63
+    },
+    "focusedBranchHardening": {
+      "command": "TEST_DATABASE_URL=postgres://cvg_test:cvg_test_password@127.0.0.1:55434/cvg_test npx vitest run apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts --no-file-parallelism --maxWorkers=2",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-04-raw/kernel-branch-hardening.log",
+      "rawArtifactSha256": "e547faab31eca7df43f86b31980107a0427ae92b427b4fab18bd642578076782",
+      "tests": 79,
+      "skipped": 0
+    }
+  },
+  "verdict": "PASS",
+  "limitations": [
+    "The candidate is a dirty controlled-local worktree; this is not a release or staging seal.",
+    "The critical file is unchanged by AUD20-04; the measurement is refreshed and bound to the current candidate."
+  ]
+}

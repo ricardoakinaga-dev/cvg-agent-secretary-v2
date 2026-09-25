@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-19-qualification-profiles",
+  "task": "AUD20-19",
+  "version": "1.0.0",
+  "runtime": { "node": "v22.23.2" },
+  "profiles": {
+    "memory_smoke": {
+      "claim": "LOCAL_MEMORY_SMOKE",
+      "requiresDatabase": false,
+      "requiresHuman": false,
+      "commands": ["load_memory"],
+      "requiredMetrics": [
+        "throughputPerSecond",
+        "latencyMs",
+        "loss",
+        "duplicates"
+      ]
+    },
+    "postgres_durable": {
+      "claim": "LOCAL_POSTGRES_DURABLE",
+      "requiresDatabase": true,
+      "requiresHuman": false,
+      "commands": ["chaos_postgres", "safety_postgres", "load_postgres"],
+      "requiredMetrics": [
+        "throughputPerSecond",
+        "latencyMs",
+        "errors",
+        "retries",
+        "backlog",
+        "recoveryMs",
+        "recoveryTerminationCount",
+        "cleanup"
+      ]
+    },
+    "human_a11y": {
+      "claim": "HUMAN_ACCESSIBILITY_REVIEW",
+      "requiresDatabase": false,
+      "requiresHuman": true,
+      "commands": [],
+      "requiredMetrics": []
+    }
+  },
+  "limits": {
+    "minEvents": 100,
+    "maxEvents": 5000,
+    "minConcurrency": 1,
+    "maxConcurrency": 16,
+    "maxDurationMs": 300000
+  },
+  "releaseEligible": false
+}

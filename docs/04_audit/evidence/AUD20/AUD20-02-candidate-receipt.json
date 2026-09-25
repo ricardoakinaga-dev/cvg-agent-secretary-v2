@@ -3,18 +3,18 @@
   "kind": "aud20-task-receipt",
   "program": "AUD20-REM",
   "task": "AUD20-02",
-  "observedAt": "2026-09-20T23:21:38.936Z",
+  "observedAt": "2026-09-21T02:04:26.179Z",
   "node": "v22.23.2",
   "candidate": {
     "schemaVersion": "phase11-candidate-v2",
-    "candidateId": "0de51135ea4b0422aede9d45af2d7062f67951753fe93c3346114276f250aff5",
-    "commit": "41b7ea13f57b6629dbe054e8fec64af120f7bdbb",
-    "treeHash": "4af049f58afc0918db897bdacd980b48266147d008a6e55aaa28deb76f16e26e",
-    "gitTreeHash": "99f9440f1909de8c27925619425ec7856c787bf9",
+    "candidateId": "e0c06990996e661ee383d32c8d89463d15dc9088104ccb913d22af731ea28f09",
+    "commit": "25434811334f5cec92ee0741079302271b82b7cb",
+    "treeHash": "49ffa1af7231daa614b4eb5018919e87ab7aabea066ea249b500f7ea9a86f584",
+    "gitTreeHash": "218d24fa5ee1e66f2cbe48687d5630100abcf3c3",
     "branch": "main",
     "dirty": false,
     "untrackedFiles": [],
-    "createdAt": "2026-09-20T23:21:38.936Z",
+    "createdAt": "2026-09-21T02:04:26.179Z",
     "fileCount": 1104,
     "files": [
       {
@@ -3265,20 +3265,20 @@
       },
       {
         "path": "docs/20_master_execution_log.md",
-        "sha256": "cfd66f41104c2533d2fde284041f9b8e4cdbbb84f1710705dfd32ca206476230",
-        "size": 289266,
+        "sha256": "d7da0d0507184ab57ed16501156f1f820a32ba1bb5d2d7faaf1c7dc4313cb20d",
+        "size": 293628,
         "tracked": true
       },
       {
         "path": "docs/30_backlog_master.md",
-        "sha256": "5e02506f1e687848b669687a66feb861aae5e819fe354a4033e52525badff236",
-        "size": 132245,
+        "sha256": "45379f1dabb6b8ee689b91d29892ee52febbafb15423af53802323251dd76e96",
+        "size": 134863,
         "tracked": true
       },
       {
         "path": "docs/99_runtime_state.md",
-        "sha256": "7f1f348e011b2ba8873d800dc2239da7d7c50a7e4158bff274534f3d1e40f441",
-        "size": 213998,
+        "sha256": "6d804f73e440e7f53234105635120f2cbe37f73c975c095d26373a94758f52a9",
+        "size": 218711,
         "tracked": true
       },
       {
@@ -3295,8 +3295,8 @@
       },
       {
         "path": "docs/CURRENT.md",
-        "sha256": "8ed4530cb057adbe7bb299a8c8c0e903668d358c569f29f694e4f4cd6e2f7d89",
-        "size": 9511,
+        "sha256": "b086189efac49f8df43a0cc1c08187ec98b4c594d0efb0451dfdcc85cf3e455f",
+        "size": 9788,
         "tracked": true
       },
       {
@@ -3787,14 +3787,14 @@
       },
       {
         "path": "packages/agent-evals/src/__tests__/agent-evals.test.ts",
-        "sha256": "bfbef52069543a72d2268ccc61b8c8fe381acdd92e0914e71e02207df6d997d7",
-        "size": 6808,
+        "sha256": "5cde8434d7805558f23121dc195e645a6c0d39accdf56c695054d2b16e3c4b1f",
+        "size": 6856,
         "tracked": true
       },
       {
         "path": "packages/agent-evals/src/__tests__/eval-contract.test.ts",
-        "sha256": "0454995a31ecdf706e4b7f48426d5b9d45cff4a32ca2b44751afc1a9258b459f",
-        "size": 6205,
+        "sha256": "7cc0157c178ba096eac32d84ff4b5f7c66365cd61bcb5b65f404cdbfd5db518a",
+        "size": 6860,
         "tracked": true
       },
       {
@@ -3811,8 +3811,8 @@
       },
       {
         "path": "packages/agent-evals/src/datasets/core.ts",
-        "sha256": "503c24494aaa47d71405d3a87569bcba8dec4a57761bff12689f1a6fa2643444",
-        "size": 12409,
+        "sha256": "447306d189dcc90b17332650f9949a29fb87e1be6f53a5ef48661bcfc33bcdd6",
+        "size": 12714,
         "tracked": true
       },
       {
@@ -3823,14 +3823,14 @@
       },
       {
         "path": "packages/agent-evals/src/metrics.ts",
-        "sha256": "f38ad78b1ea23539d0c57615204ad842fd95a90834192a13f4f35c33c308e4ae",
+        "sha256": "d0a9d8271a8421c9dae24aeb3d2222c17acbd6f24f08b03a3f246598d6ea6f38",
         "size": 2974,
         "tracked": true
       },
       {
         "path": "packages/agent-evals/src/runner.ts",
-        "sha256": "9476cd13447822eee5bd748a4edac112a04eff97c07f46c45d546bb5ff9cf000",
-        "size": 7302,
+        "sha256": "ac8d57e542395d35399acc65409b99466e73eb58a9a7d3b4a79e0307e46949ad",
+        "size": 8317,
         "tracked": true
       },
       {
@@ -6073,8 +6073,8 @@
       },
       {
         "path": "scripts/lib/certification-rules.mjs",
-        "sha256": "1284db77a610caf5a9eea05a5fa557aa2c4487bd974e648eeda973c8079af78e",
-        "size": 45502,
+        "sha256": "bdc6f0dec4efaf6ee3e4466f9b1a43132c0b17f039960232c0ab683d083d172e",
+        "size": 45990,
         "tracked": true
       },
       {
@@ -6091,8 +6091,8 @@
       },
       {
         "path": "scripts/lib/eval-contract.mjs",
-        "sha256": "fc60b7ec3ac14597c264968af3c98d097f4e28452485e49b2d5c07709a9deef4",
-        "size": 3101,
+        "sha256": "0d5e3489ce2c12847b7e6975a6f0e4c7c34e9f2acfdfde88ec9dc5cf8006b834",
+        "size": 5297,
         "tracked": true
       },
       {
@@ -6163,8 +6163,8 @@
       },
       {
         "path": "scripts/phase10-verify.mjs",
-        "sha256": "2442aa7f793e8e84a15e28cf286c4b1c152a9fd830b5fa944afaf6f8129bfdb6",
-        "size": 43252,
+        "sha256": "b1e4fc1d9efac0386ccef66ab4c9284d74d8c9c221890f9687488065dd5161da",
+        "size": 43869,
         "tracked": true
       },
       {
@@ -6175,8 +6175,8 @@
       },
       {
         "path": "scripts/phase11-2-redteam.mjs",
-        "sha256": "a34abaf3b7477c5e3737d8d09e523605043884594ac0c1a8c0396ac14921e554",
-        "size": 8412,
+        "sha256": "2fd2aacaff36eb70115b50f06b3b483e7a7e33663398fd621c1632f353b1d538",
+        "size": 9104,
         "tracked": true
       },
       {
@@ -6547,14 +6547,14 @@
       },
       {
         "path": "tests/phase11-eval-contract.test.js",
-        "sha256": "5b02d882f16d9478107c9b419c09d770d7460c3649f9abc059d44e83f1e5b3ef",
-        "size": 6126,
+        "sha256": "6293250d4b1fc26d5ffa3211862df7d74e94939caa528857de8280daea82ffb8",
+        "size": 8146,
         "tracked": true
       },
       {
         "path": "tests/phase11-formal-certification.test.js",
-        "sha256": "0c0362fe9f3206992f91460c7b6fd7d543d1c8f097b1c879129900c34c5582c7",
-        "size": 16500,
+        "sha256": "f06eb964122df0401618c33067cfc2c84e23ecfa74595c16e4bece591dc74c26",
+        "size": 16863,
         "tracked": true
       },
       {
@@ -6684,19 +6684,19 @@
   },
   "candidateManifest": {
     "path": "docs/04_audit/evidence/AUD20/AUD20-02-candidate-manifest.json",
-    "sha256": "331504a379e7ea65a8b7a3a96b0fae356c4e23da6689551f2b13421b8d9a0011",
+    "sha256": "e75f22f04286699d675718e890fb88091f67c530591ff68c5b5149ddd837d33c",
     "size": 242572
   },
   "commandReceipt": {
     "path": "docs/04_audit/evidence/AUD20/AUD20-02-command-receipt.json",
-    "sha256": "59b927ae545006b1a428edc551f2f90334ade34f0362020ce8ab19c0894ca461",
-    "size": 2601
+    "sha256": "46c80816f2c12bba40308b987ec00246df2dee08e4325c60f5ad8272361f5f35",
+    "size": 2744
   },
   "artifacts": {
     "evalReport": {
       "path": "certification/agent-eval-report.json",
-      "sha256": "7b9ba9f3f666ffe914dc589df18b06b150546444b4d6b024dacf45232a503824",
-      "size": 821,
+      "sha256": "d21e8ccf08d51b78c0826679ddee10b85eac988147e51ae72356c57cafab8f7d",
+      "size": 995,
       "verdict": "PASS",
       "metrics": {
         "scenarios": 56,
@@ -6728,26 +6728,26 @@
     "status": "PASS_EXPECTED_FAILURE",
     "command": "npm run test:evals -- packages/agent-evals/src/__tests__/eval-contract.test.ts",
     "exitCode": 1,
-    "observed": "Five new runner threshold tests failed before implementation; the known bypass was reproduced."
+    "observed": "Historical threshold-floor RED was recorded before the prior implementation; the fresh critic then identified the corpus and declared-threshold bypasses fixed in this candidate."
   },
   "green": {
     "status": "PASS",
     "focused": {
-      "command": "npm exec -- vitest run packages/agent-evals/src/__tests__/eval-contract.test.ts tests/phase11-eval-contract.test.js tests/mutation-sentinel.test.js tests/phase11-formal-certification.test.js --no-file-parallelism --maxWorkers=2",
+      "command": "npx vitest run packages/agent-evals/src/__tests__/agent-evals.test.ts packages/agent-evals/src/__tests__/eval-contract.test.ts tests/phase11-eval-contract.test.js tests/mutation-sentinel.test.js tests/phase11-formal-certification.test.js --no-file-parallelism --maxWorkers=2",
       "exitCode": 0,
-      "testFiles": 4,
-      "tests": 52
+      "testFiles": 5,
+      "tests": 64
     },
     "evals": {
       "command": "npm run test:evals",
       "exitCode": 0,
       "testFiles": 2,
-      "tests": 23
+      "tests": 24
     },
     "redteam": {
-      "command": "node scripts/phase11-2-redteam.mjs --suite=certification",
+      "command": "node scripts/phase11-2-redteam.mjs --suite=all",
       "exitCode": 0,
-      "checks": 9
+      "checks": 19
     },
     "typecheck": {
       "command": "npm run typecheck",
@@ -6771,7 +6771,7 @@
     "exitCode": 0,
     "testFiles": 282,
     "skippedFiles": 12,
-    "tests": 2171,
+    "tests": 2175,
     "skippedTests": 172
   },
   "coverage": {
@@ -6779,7 +6779,7 @@
     "exitCode": 0,
     "statements": 0.9168,
     "branches": 0.8753,
-    "functions": 0.8955,
+    "functions": 0.8956,
     "lines": 0.9226,
     "requiredFinalGate": "AUD20-12"
   },
@@ -6787,26 +6787,32 @@
     "AUD20-N01": {
       "status": "PASS",
       "runner": "53/56 with threshold 0.85 fails closed",
-      "certifier": "all six contract thresholds and metrics are checked fail-closed",
-      "verifier": "certification red-team reduced-threshold and below-contract checks pass"
+      "certifier": "all thirteen required metrics, six contract thresholds and declared metric thresholds are checked fail-closed",
+      "verifier": "certification red-team reduced-threshold, below-contract and declared-threshold checks pass"
     },
     "AUD20-N02": {
       "status": "PASS",
-      "runner": "NaN, missing, string, out-of-range, empty-corpus and non-finite auxiliary metrics fail closed",
-      "certifier": "NaN, missing, string, empty sample and contract violations fail closed"
+      "runner": "NaN, missing, string, out-of-range, empty/reduced corpus, missing adversarial coverage and non-finite auxiliary metrics fail closed",
+      "certifier": "NaN, missing, string, empty/reduced corpus, digest mismatch, missing verdict and contract violations fail closed"
     }
   },
   "sourceDigests": {
-    "packages/agent-evals/src/runner.ts": "9476cd13447822eee5bd748a4edac112a04eff97c07f46c45d546bb5ff9cf000",
-    "packages/agent-evals/src/__tests__/eval-contract.test.ts": "0454995a31ecdf706e4b7f48426d5b9d45cff4a32ca2b44751afc1a9258b459f",
-    "scripts/lib/eval-contract.mjs": "fc60b7ec3ac14597c264968af3c98d097f4e28452485e49b2d5c07709a9deef4",
-    "tests/phase11-eval-contract.test.js": "5b02d882f16d9478107c9b419c09d770d7460c3649f9abc059d44e83f1e5b3ef",
-    "tests/phase11-formal-certification.test.js": "0c0362fe9f3206992f91460c7b6fd7d543d1c8f097b1c879129900c34c5582c7"
+    "packages/agent-evals/src/runner.ts": "ac8d57e542395d35399acc65409b99466e73eb58a9a7d3b4a79e0307e46949ad",
+    "packages/agent-evals/src/metrics.ts": "d0a9d8271a8421c9dae24aeb3d2222c17acbd6f24f08b03a3f246598d6ea6f38",
+    "packages/agent-evals/src/datasets/core.ts": "447306d189dcc90b17332650f9949a29fb87e1be6f53a5ef48661bcfc33bcdd6",
+    "packages/agent-evals/src/__tests__/agent-evals.test.ts": "5cde8434d7805558f23121dc195e645a6c0d39accdf56c695054d2b16e3c4b1f",
+    "packages/agent-evals/src/__tests__/eval-contract.test.ts": "7cc0157c178ba096eac32d84ff4b5f7c66365cd61bcb5b65f404cdbfd5db518a",
+    "scripts/lib/certification-rules.mjs": "bdc6f0dec4efaf6ee3e4466f9b1a43132c0b17f039960232c0ab683d083d172e",
+    "scripts/lib/eval-contract.mjs": "0d5e3489ce2c12847b7e6975a6f0e4c7c34e9f2acfdfde88ec9dc5cf8006b834",
+    "scripts/phase10-verify.mjs": "b1e4fc1d9efac0386ccef66ab4c9284d74d8c9c221890f9687488065dd5161da",
+    "scripts/phase11-2-redteam.mjs": "2fd2aacaff36eb70115b50f06b3b483e7a7e33663398fd621c1632f353b1d538",
+    "tests/phase11-eval-contract.test.js": "6293250d4b1fc26d5ffa3211862df7d74e94939caa528857de8280daea82ffb8",
+    "tests/phase11-formal-certification.test.js": "f06eb964122df0401618c33067cfc2c84e23ecfa74595c16e4bece591dc74c26"
   },
   "limitations": [
     "All eval data is synthetic and deterministic.",
     "certification/current.json remains historical/stale and was not resealed.",
     "No PostgreSQL, Docker, Playwright, provider, channel, IdP, RAG, egress, staging or production activity was performed in AUD20-02.",
-    "Global functions coverage is 89.55%; final required coverage and denominator gates remain AUD20-12 work."
+    "Global functions coverage is 89.56%; final required coverage and denominator gates remain AUD20-12 work."
   ]
 }

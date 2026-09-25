@@ -1,0 +1,9 @@
+Command: PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH npm run format:check
+Observed: 2026-09-21, final post-write verification
+Exit code: 0
+
+> cvg-agent-secretary-v2@1.0.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!

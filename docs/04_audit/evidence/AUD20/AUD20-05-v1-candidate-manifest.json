@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-05-candidate-manifest",
+  "task": "AUD20-05",
+  "status": "COMPLETED_LOCAL",
+  "observedAt": "2026-09-22T03:10:00Z",
+  "staging": "NO_GO",
+  "production": "NO_GO",
+  "releaseEligible": false,
+  "candidateBinding": {
+    "algorithm": "aud20-05-scoped-bytes-v1",
+    "baseCommit": "25434811334f5cec92ee0741079302271b82b7cb",
+    "sourceDigest": "b72f2eba73beea00b477f2b1dfcee282b6fab178e3a9e1cef2b309a9016fd77c",
+    "candidateId": "83f2aa6982775b2eb57a3d562ca54781d0a50eefd064ba7c1ba3b2411c4da8af",
+    "dirtyWorktree": true,
+    "untrackedIncluded": true,
+    "files": [
+      { "path": "apps/api/src/operator-replay-store.ts", "sha256": "ef387dea54f0eae3e1838cf3a83be28fdd54d3b4e279e5121f45bbc1f2282909" },
+      { "path": "apps/api/src/server.ts", "sha256": "b1bd9acc75f069f05d8f5310487f25166df7ee0d551bc2092acad4f1217a84b4" },
+      { "path": "apps/api/src/__tests__/operator-replay-store.test.ts", "sha256": "6c20a393217bd34e77738fd545210b7c6260082cbfcf5fdae80ebcd230c85f41" },
+      { "path": "apps/api/src/__tests__/build-server-from-env-boundary.test.ts", "sha256": "9e27cfe4b4caf8d6f3345b154979367895d3cdd66ca4bf815a4aee4d845138aa" },
+      { "path": "apps/api/src/__tests__/postgres-persistence-mode.test.ts", "sha256": "f5c205c7344645eb11346f1301238c2c7936e82cefdbabe5e0882c52f37d21e6" },
+      { "path": "scripts/lib/production-preflight-core.mjs", "sha256": "d367ae9f3a6efa599a38cd5f5ffae0ce8ee0f95bf498c7aa344a251386352f60" },
+      { "path": "tests/production-preflight.test.js", "sha256": "817399797d470b733ff6f15cb8517b207de5c942dedecad130505cdc2ec0139a" },
+      { "path": "scripts/aud20-05-resource-attestation-check.mjs", "sha256": "9397557b233cd348b3aa633cdcb7ea0f3e53440135780cd82a6e936cabf0588a" },
+      { "path": "tests/aud20-05-resource-attestation-check.test.js", "sha256": "874b9c2c86d12d4092e78dd2022d40b491359b83d8920774b4791e413d2fc56e" },
+      { "path": "scripts/aud20-05-replay-grants-probe.mjs", "sha256": "60a64348d8f5431e1dc91b09cc695e81fa1db20919399dd09258585d232b8b23" },
+      { "path": "tests/aud20-05-replay-grants-probe.test.js", "sha256": "f0d630c5ce3dfce2edca3b2b7d0a1d5f608f84050d14006d757d55a171227ab5" },
+      { "path": "docs/02_spec/aud20_05_resource_attestation_replay_20260921.md", "sha256": "9b4bb1d51f3fa26d35136dc6de1986ef8ba831d23e3e15afb39375ec31ca4187" },
+      { "path": "docs/04_audit/evidence/AUD20/AUD20-05-v1-build-report-20260922.md", "sha256": "cb7c3e45ab9abe2f86cf8c0d85db966cda4a8e1954d9397feb99d26f45c6d520" },
+      { "path": "docs/04_audit/evidence/AUD20/AUD20-05-v1-criteria-matrix.json", "sha256": "345dd75c59d53e05e85d1ca60c1a411ce4640bf04917103e90ec811833aac54a" },
+      { "path": "docs/04_audit/evidence/AUD20/AUD20-05-independent-critic-v1.md", "sha256": "834f5782997a0b81b42e1d07180057647db9b778074cced23aaca0c81e18fcb5" },
+      { "path": "docs/04_audit/evidence/AUD20/AUD20-05-command-receipt.json", "sha256": "e1940475847eff9209d3dadebbe9ff54a49672db7d18c1bf3b4fbb8922370cc8" },
+      { "path": "docs/04_audit/evidence/AUD20/AUD20-05-raw-artifact-receipt.json", "sha256": "77267c1d26a02746780cbebc5bb61b03da9bc59e1cdfe7aed2240337eb173d75" }
+    ]
+  },
+  "verification": {
+    "focusedPostgres": "20/20 PASS",
+    "postgresRegression": "30 files / 342 tests PASS",
+    "fullRegression": "285 files / 2213 tests PASS / 192 conditional skips",
+    "coverage": "PASS",
+    "staticDocsSecurity": "PASS",
+    "independentCritic": "PASS_LIMITED / no implementation blocker"
+  }
+}

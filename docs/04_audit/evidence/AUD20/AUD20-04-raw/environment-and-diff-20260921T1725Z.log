@@ -1,0 +1,62 @@
+v24.20.0
+11.19.0
+25434811334f5cec92ee0741079302271b82b7cb
+ M apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts
+ M apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts
+ M apps/worker/src/kernel-composition.ts
+ M docs/03_build/0300_build_engineer_master.md
+ M docs/03_build/0301_roadmap.md
+ M docs/03_build/0302_backlog_master.md
+ M docs/03_build/0333_aud20260920_roadmap.md
+ M docs/03_build/0334_aud20260920_backlog.md
+ M docs/04_audit/evidence/AUD20/AUD20-02-candidate-manifest.json
+ M docs/04_audit/evidence/AUD20/AUD20-02-candidate-receipt.json
+ M docs/04_audit/evidence/AUD20/AUD20-02-command-receipt.json
+ M docs/04_audit/evidence/AUD20/AUD20-02-red-green-report.md
+ M docs/04_audit/evidence/AUD20/AUD20-requirements-matrix.json
+ M docs/20_master_execution_log.md
+ M docs/30_backlog_master.md
+ M docs/99_runtime_state.md
+ M docs/CURRENT.md
+ M packages/agent-core/src/__tests__/receive-inbound-message.test.ts
+ M packages/agent-core/src/commands/receive-inbound-message.ts
+ M packages/agent-runtime/src/__tests__/orchestration-branch-hardening.test.ts
+ M packages/agent-runtime/src/__tests__/orchestration.test.ts
+ M packages/agent-runtime/src/orchestration.ts
+ M packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts
+ M packages/persistence/src/__tests__/outbox-durability.test.ts
+ M packages/persistence/src/__tests__/retention-postgres.test.ts
+ M packages/persistence/src/__tests__/retention.test.ts
+ M packages/persistence/src/orchestrator-postgres.ts
+ M packages/persistence/src/postgres.ts
+ M packages/persistence/src/postgres/migrations.ts
+ M packages/persistence/src/retention.ts
+ M tests/architecture.test.js
+?? docs/02_spec/aud20_04_retention_batch_contract_20260921.md
+?? docs/03_build/0335_aud20260921_executive_plan.md
+?? docs/03_build/0336_aud20260921_roadmap.md
+?? docs/03_build/0337_aud20260921_backlog.md
+?? docs/03_build/0338_aud20260921_codex_execution_prompt.md
+?? docs/03_build/tracking/aud20_v2_findings_matrix.json
+?? docs/04_audit/0568_full_repository_audit_2026-09-21.md
+?? docs/04_audit/evidence/AUD20/AUD20-03-binding-verifier.mjs
+?? docs/04_audit/evidence/AUD20/AUD20-03-candidate-manifest.json
+?? docs/04_audit/evidence/AUD20/AUD20-03-candidate-receipt.json
+?? docs/04_audit/evidence/AUD20/AUD20-03-command-receipt.json
+?? docs/04_audit/evidence/AUD20/AUD20-03-critical-coverage.json
+?? docs/04_audit/evidence/AUD20/AUD20-03-lineage-report.md
+?? docs/04_audit/evidence/AUD20/AUD20-03-postgres-concurrency-report.md
+?? docs/04_audit/evidence/AUD20/AUD20-03-raw-artifact-receipt.json
+?? docs/04_audit/evidence/AUD20/AUD20-03-raw/
+?? docs/04_audit/evidence/AUD20/AUD20-04-binding-verification.json
+?? docs/04_audit/evidence/AUD20/AUD20-04-binding-verifier.mjs
+?? docs/04_audit/evidence/AUD20/AUD20-04-candidate-manifest.json
+?? docs/04_audit/evidence/AUD20/AUD20-04-candidate-receipt.json
+?? docs/04_audit/evidence/AUD20/AUD20-04-command-receipt.json
+?? docs/04_audit/evidence/AUD20/AUD20-04-critical-coverage.json
+?? docs/04_audit/evidence/AUD20/AUD20-04-raw-artifact-receipt.json
+?? docs/04_audit/evidence/AUD20/AUD20-04-raw/
+?? docs/04_audit/evidence/AUD20/AUD20-04-retention-replay-report.md
+?? docs/04_audit/evidence/AUD20/AUD20-04-rollback-report.md
+?? packages/persistence/migrations/0027_inbound_idempotency_tombstones.sql
+?? packages/persistence/migrations/0028_retention_batch_semantics.sql

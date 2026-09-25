@@ -1,0 +1,4927 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-17-request-context-v2-controlled-local-build-candidate",
+  "status": "BUILD_LOCAL_EXECUTED_NOT_ACCEPTED",
+  "authorization": {
+    "specPath": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-spec-amendment-proposal-v2-20260924.md",
+    "specSha256": "1cb72b0e097ad19539c1f14fbdc892542ae9ddabf716bba00eef20b1c4cb237c",
+    "approvalReceiptPath": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-spec-amendment-human-approval-v2-20260924.md",
+    "scope": "controlled local request-context BUILD only; no real data, PostgreSQL, external services, commit, push, deploy, staging, or production"
+  },
+  "candidate": {
+    "gitHead": "25434811334f5cec92ee0741079302271b82b7cb",
+    "workingTreeCandidate": true,
+    "isolatedWorkspace": "/tmp/aud20-17-context-v1-run-20260924",
+    "nodeVersion": "v22.23.2",
+    "v1OnlyReconstruction": {
+      "path": "/tmp/aud20-17-context-v1-reconstruction-20260924/server.ts",
+      "sha256": "62cafe09815497590da38024f13a017b902cba6959563a9375c47ed54ab61c3b",
+      "lines": 4707,
+      "restoredParserDeclarationCounts": {
+        "parsePagination": 1,
+        "parseTraceLimit": 1,
+        "parseOrchestrationGoalQuery": 1,
+        "parseAuditEvidenceQuery": 1,
+        "parseOptionalAuditFilter": 1
+      },
+      "requestQueryModuleAndDirectTestRemoved": true,
+      "queryArchitectureAssertionRemoved": true,
+      "integratedContextCapAssertionRemoved": true,
+      "serverBoundaryTest": {
+        "basis": "git HEAD plus only request-context malformed JSON envelope/message assertion; query-parser-only assertions removed",
+        "sha256": "6bd4a735e633e6179e6d2b0015e2b1716cd0259da82d23282ef7cbed78412239",
+        "lines": 477
+      },
+      "routeTestsRestoredFromHead": {
+        "apps/api/src/__tests__/conversation-list.test.ts": {
+          "sha256": "b64c719dff6f74afc31b7df6cfabfa3d5437067bb3b0729a5a19532ded563cbe",
+          "lines": 113
+        },
+        "apps/api/src/__tests__/audit-evidence.test.ts": {
+          "sha256": "22ad84906503013fcd2267a80ad25fe7fa52c83f99c206ca001bcc20c63e4c49",
+          "lines": 321
+        },
+        "apps/api/src/__tests__/orchestration-observability.test.ts": {
+          "sha256": "787e7a8d74a386cfe8e1465179b122fc6b7b45078f3b90e49f109c6aa8b39cac",
+          "lines": 205
+        },
+        "apps/api/src/__tests__/server-boundary-envelope.test.ts": {
+          "sha256": "c4aeaa24f70b7acb481d740645c0c7159809a8f913b0ddec4c4f5a8dea33e4a4",
+          "lines": 472
+        },
+        "apps/api/src/__tests__/platform-admin-routes-coverage.test.ts": {
+          "sha256": "2977d2a9ee0eb40e8a325247cb5bb5e0b330f1eaab1eb4b99af83c9cc2ff70d6",
+          "lines": 707
+        }
+      }
+    },
+    "lineCounts": {
+      "requestContextV1Server": 4707,
+      "integratedServer": 4584,
+      "requestContextModule": 328,
+      "requestQueryModule": 138,
+      "integratedThreeModuleSum": 5050
+    },
+    "currentIntegratedFiles": [
+      {
+        "path": "apps/api/src/server.ts",
+        "sha256": "d1e86de71f1f9ed6b5168397b3a98b9df6dab0dbb7e01ba80528b7b36b3e6519",
+        "lines": 4584
+      },
+      {
+        "path": "apps/api/src/server/request-context.ts",
+        "sha256": "395733f6da3fb4ae05d1baf0d801bd44fdb573ee9122cdcb837b591add34252d",
+        "lines": 328
+      },
+      {
+        "path": "apps/api/src/__tests__/request-context.test.ts",
+        "sha256": "0139c1d7dd5cad1efd483ff044e09cacf8ed5cf0de853873bfa7d5b189073d59",
+        "lines": 468
+      },
+      {
+        "path": "apps/api/src/server/request-query.ts",
+        "sha256": "63d3f868ef1ab83efface68222a47f70c552b7047a970a7a0f2310a7a18162bc",
+        "lines": 138
+      },
+      {
+        "path": "apps/api/src/__tests__/request-query.test.ts",
+        "sha256": "98840957b11cec3d6d4a5f9baaa4929cd4408c6817ec77d0b1c841a28e1ded43",
+        "lines": 192
+      },
+      {
+        "path": "tests/architecture.test.js",
+        "sha256": "c3407a9b8458598c7725d3972ee18e5f32dcef95dad611ebaef3e6fa60aa29b3",
+        "lines": 490
+      },
+      {
+        "path": "apps/api/src/__tests__/webhook-security.test.ts",
+        "sha256": "3edc09a7a06accbbc3564f5a8a1ea9f7d821815a869a90fb3466bbc8125599c2",
+        "lines": 611
+      },
+      {
+        "path": "apps/api/src/__tests__/server-boundary-envelope.test.ts",
+        "sha256": "82c860dfaf51d1aa8da728deca888f49d2bdf71b503e15e7240dfe765a7471ce",
+        "lines": 506
+      }
+    ],
+    "v1CandidateCoreFiles": [
+      {
+        "path": "apps/api/src/server.ts",
+        "sha256": "62cafe09815497590da38024f13a017b902cba6959563a9375c47ed54ab61c3b",
+        "lines": 4707
+      },
+      {
+        "path": "apps/api/src/server/request-context.ts",
+        "sha256": "395733f6da3fb4ae05d1baf0d801bd44fdb573ee9122cdcb837b591add34252d",
+        "lines": 328
+      },
+      {
+        "path": "apps/api/src/__tests__/request-context.test.ts",
+        "sha256": "0139c1d7dd5cad1efd483ff044e09cacf8ed5cf0de853873bfa7d5b189073d59",
+        "lines": 468
+      },
+      {
+        "path": "tests/architecture.test.js",
+        "sha256": "8e8266f313ccd43d1e192d8389843402cd84ca67acc512eab48ae603c3a4b635",
+        "lines": 426
+      },
+      {
+        "path": "apps/api/src/__tests__/webhook-security.test.ts",
+        "sha256": "3edc09a7a06accbbc3564f5a8a1ea9f7d821815a869a90fb3466bbc8125599c2",
+        "lines": 611
+      },
+      {
+        "path": "apps/api/src/__tests__/server-boundary-envelope.test.ts",
+        "sha256": "6bd4a735e633e6179e6d2b0015e2b1716cd0259da82d23282ef7cbed78412239",
+        "lines": 477
+      }
+    ],
+    "allExecutedTestSourceFiles": [
+      {
+        "path": "apps/api/src/__tests__/approval-actions.test.ts",
+        "sha256": "8cdc839d5503521c917990ae2f7850be78ea31efd2faf4d6b67c3c414b632dbe",
+        "lines": 95,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/attendance-approval-atomic.test.ts",
+        "sha256": "21ae65eedc0455a110f6c750ce8a1c4d3fd3defd4d4be2ff801bae7feed3a636",
+        "lines": 133,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/aud17-connected-redteam.test.ts",
+        "sha256": "4156124595a6b79ac8347ae0073aafb57c058e204a9f2495712305bb2c9f9564",
+        "lines": 146,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/audit-evidence-checkpoint-boundary.test.ts",
+        "sha256": "77980c425b726fb5c3b8e6ce68572c12a5562667e6ee546e678ca5aaea9a470f",
+        "lines": 134,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/audit-evidence-checkpoint.test.ts",
+        "sha256": "affb952c102289e600a8d68d2b5a671c7d7ceb01e422303733f321980cb6d1ce",
+        "lines": 156,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/audit-evidence.test.ts",
+        "sha256": "22ad84906503013fcd2267a80ad25fe7fa52c83f99c206ca001bcc20c63e4c49",
+        "lines": 321,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/audit-route.integration.test.ts",
+        "sha256": "17551fcc01659b199b0db7bc2a7b8074c9ab4b5164048eb533b10873a056e5c5",
+        "lines": 41,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/build-server-from-env-boundary.test.ts",
+        "sha256": "9e27cfe4b4caf8d6f3345b154979367895d3cdd66ca4bf815a4aee4d845138aa",
+        "lines": 262,
+        "fileStatus": "passed",
+        "passed": 8,
+        "skipped": 0,
+        "failed": 0,
+        "total": 8,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/capability-approval-api.test.ts",
+        "sha256": "f876a019573a77febac69f9037545a6fc20641cc64563239d106800c655518b0",
+        "lines": 294,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/conversation-list.test.ts",
+        "sha256": "b64c719dff6f74afc31b7df6cfabfa3d5437067bb3b0729a5a19532ded563cbe",
+        "lines": 113,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/correlation.test.ts",
+        "sha256": "7649d5053cd4cd0ceeb026121e54dec9eff96230bd69e99264a2bd8ee29abfce",
+        "lines": 23,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/durable-inbound.test.ts",
+        "sha256": "a083d3213d965befa3a94e94e48d58dcad357acea38bf7d8a0926b5a15f92803",
+        "lines": 151,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/health.test.ts",
+        "sha256": "2367f8f0f5dd15107a9ac12c7251bf89b4acd1bc9923a0828b22b445df2fcce4",
+        "lines": 154,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/http-security-edge-branches.test.ts",
+        "sha256": "2b7c0a305ac0faadaf0e405158680dd8e59188260563dfc49484df563d372044",
+        "lines": 113,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/identity-composition-wiring.test.ts",
+        "sha256": "117ff8fc84ce59fa80f7681fb8e6c8f90ace255680f7350fcbea95e2d0b54bdf",
+        "lines": 328,
+        "fileStatus": "passed",
+        "passed": 8,
+        "skipped": 0,
+        "failed": 0,
+        "total": 8,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/identity-key-ring-rotation.test.ts",
+        "sha256": "7dfba8f038b37f3cb853a7f4fb42adda77f62f04915698994537d191d40bdd09",
+        "lines": 261,
+        "fileStatus": "passed",
+        "passed": 8,
+        "skipped": 0,
+        "failed": 0,
+        "total": 8,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/identity-trusted-resolver.test.ts",
+        "sha256": "39dbfd398ef73d47ec3ce0a0eeb795e2129683162eb0c23d28336d7bdf859f42",
+        "lines": 253,
+        "fileStatus": "passed",
+        "passed": 7,
+        "skipped": 0,
+        "failed": 0,
+        "total": 7,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/inbound-runtime-edges.test.ts",
+        "sha256": "0bd15a218b29d6e446f94447b0d7802fbff9906fd1f112da17ba1ae77e97e58f",
+        "lines": 326,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/journey-routes-coverage.test.ts",
+        "sha256": "78487f597542b541792e99dbc82c5e432ca25f136b1369c8614af1d382c497a3",
+        "lines": 479,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/journeys-api-postgres.test.ts",
+        "sha256": "c6c97bb7ec5467986f595779e28104c6a46dcb83de1e51d5d15eb93e15e8f6ab",
+        "lines": 863,
+        "fileStatus": "all_skipped",
+        "passed": 0,
+        "skipped": 10,
+        "failed": 0,
+        "total": 10,
+        "skippedTests": [
+          {
+            "fullName": "journeys API over PostgreSQL serves the full owner, patient, slot, appointment and task journey over HTTP",
+            "status": "skipped",
+            "title": "serves the full owner, patient, slot, appointment and task journey over HTTP"
+          },
+          {
+            "fullName": "journeys API over PostgreSQL keeps journey state tenant-isolated over HTTP",
+            "status": "skipped",
+            "title": "keeps journey state tenant-isolated over HTTP"
+          },
+          {
+            "fullName": "journeys API over PostgreSQL preserves authentication, validation and approval boundaries over PostgreSQL",
+            "status": "skipped",
+            "title": "preserves authentication, validation and approval boundaries over PostgreSQL"
+          },
+          {
+            "fullName": "journeys API over PostgreSQL reads created journey state back after a server restart",
+            "status": "skipped",
+            "title": "reads created journey state back after a server restart"
+          },
+          {
+            "fullName": "journeys API over PostgreSQL serves journeys through a direct PostgreSQL client without a pool",
+            "status": "skipped",
+            "title": "serves journeys through a direct PostgreSQL client without a pool"
+          },
+          {
+            "fullName": "journeys API over PostgreSQL applies migration 0014 during postgres startup before serving journeys",
+            "status": "skipped",
+            "title": "applies migration 0014 during postgres startup before serving journeys"
+          },
+          {
+            "fullName": "journeys API over PostgreSQL fails journey routes closed when no journey repository is available",
+            "status": "skipped",
+            "title": "fails journey routes closed when no journey repository is available"
+          },
+          {
+            "fullName": "journeys API over PostgreSQL fails startup when a postgres pool cannot construct the journey repository",
+            "status": "skipped",
+            "title": "fails startup when a postgres pool cannot construct the journey repository"
+          },
+          {
+            "fullName": "journeys API over PostgreSQL records the authenticated actor and request correlation on journey audit",
+            "status": "skipped",
+            "title": "records the authenticated actor and request correlation on journey audit"
+          },
+          {
+            "fullName": "journeys API over PostgreSQL keeps the HTTP journey mutation and audit atomic and replayable",
+            "status": "skipped",
+            "title": "keeps the HTTP journey mutation and audit atomic and replayable"
+          }
+        ]
+      },
+      {
+        "path": "apps/api/src/__tests__/journeys-api.test.ts",
+        "sha256": "2477e961b1327174c92ff8779c11ee357443a596249e174f03a6e3013822e59f",
+        "lines": 64,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/knowledge-input-boundary.test.ts",
+        "sha256": "b5b890046cf3b2dcb1ab24b3595a1c88390e3a4623eb281f63f9230c48a2062d",
+        "lines": 143,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/knowledge-source-catalog.test.ts",
+        "sha256": "2e401306315b05d45ec89e2b75cbd1bc2fdcb8dcbaa3bdd97d0f6c99eeeb4b64",
+        "lines": 86,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/observability.test.ts",
+        "sha256": "f1095c1656c218e70bc7b067ace0d530bca6d28b7f203325a86a97a72e272579",
+        "lines": 90,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/operator-identity-rbac.test.ts",
+        "sha256": "6654b48bbc2fc522812ccb078b051cee353ad0cca5056e72305f0e50185194c7",
+        "lines": 327,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/operator-replay-guard.test.ts",
+        "sha256": "d7b31ce4a1187fb2049ca9c97f5d51a3d4822f697a1179aa74e6afa7e3551855",
+        "lines": 270,
+        "fileStatus": "mixed",
+        "passed": 4,
+        "skipped": 1,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": [
+          {
+            "fullName": "operator replay guard (PostgreSQL) rejects the second use of the same JTI across PostgreSQL-backed instances",
+            "status": "skipped",
+            "title": "rejects the second use of the same JTI across PostgreSQL-backed instances"
+          }
+        ]
+      },
+      {
+        "path": "apps/api/src/__tests__/operator-replay-store.test.ts",
+        "sha256": "6c20a393217bd34e77738fd545210b7c6260082cbfcf5fdae80ebcd230c85f41",
+        "lines": 364,
+        "fileStatus": "mixed",
+        "passed": 17,
+        "skipped": 3,
+        "failed": 0,
+        "total": 20,
+        "skippedTests": [
+          {
+            "fullName": "operator replay store (PostgreSQL) claims atomically across two instances sharing the same store",
+            "status": "skipped",
+            "title": "claims atomically across two instances sharing the same store"
+          },
+          {
+            "fullName": "operator replay store (PostgreSQL) reclaims expired claims and purges only expired rows",
+            "status": "skipped",
+            "title": "reclaims expired claims and purges only expired rows"
+          },
+          {
+            "fullName": "operator replay store (PostgreSQL) fails closed when the replay table is not installed",
+            "status": "skipped",
+            "title": "fails closed when the replay table is not installed"
+          }
+        ]
+      },
+      {
+        "path": "apps/api/src/__tests__/orchestration-observability.test.ts",
+        "sha256": "787e7a8d74a386cfe8e1465179b122fc6b7b45078f3b90e49f109c6aa8b39cac",
+        "lines": 205,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/outbox-routes.test.ts",
+        "sha256": "a7d70a96e6b52319fe0dfe01e0754bcf36021e3a89d3141d786810cfcfdba05a",
+        "lines": 201,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/platform-admin-routes-coverage.test.ts",
+        "sha256": "2977d2a9ee0eb40e8a325247cb5bb5e0b330f1eaab1eb4b99af83c9cc2ff70d6",
+        "lines": 707,
+        "fileStatus": "passed",
+        "passed": 7,
+        "skipped": 0,
+        "failed": 0,
+        "total": 7,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/platform-control-plane.test.ts",
+        "sha256": "804366c87b156b590c2db3e0be030323117fe6e8f9614919bc48edad68cd43fc",
+        "lines": 748,
+        "fileStatus": "passed",
+        "passed": 9,
+        "skipped": 0,
+        "failed": 0,
+        "total": 9,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/plugin-catalog.test.ts",
+        "sha256": "1fd83dd1d56d663b287e5b00a3266bea374e32c453cb0de422bfa1b895ec3049",
+        "lines": 111,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/postgres-persistence-mode.test.ts",
+        "sha256": "f5c205c7344645eb11346f1301238c2c7936e82cefdbabe5e0882c52f37d21e6",
+        "lines": 1925,
+        "fileStatus": "mixed",
+        "passed": 18,
+        "skipped": 7,
+        "failed": 0,
+        "total": 25,
+        "skippedTests": [
+          {
+            "fullName": "api PostgreSQL persistence mode uses PostgreSQL-backed webhook replay state across reserve and commit operations",
+            "status": "skipped",
+            "title": "uses PostgreSQL-backed webhook replay state across reserve and commit operations"
+          },
+          {
+            "fullName": "api PostgreSQL persistence mode commits and rolls back the tenant-scoped runtime finalizer atomically",
+            "status": "skipped",
+            "title": "commits and rolls back the tenant-scoped runtime finalizer atomically"
+          },
+          {
+            "fullName": "api PostgreSQL persistence mode rejects a superuser runtime connection when RLS enforcement is requested",
+            "status": "skipped",
+            "title": "rejects a superuser runtime connection when RLS enforcement is requested"
+          },
+          {
+            "fullName": "api PostgreSQL persistence mode validates tenant-scoped startup with separate migration and runtime roles",
+            "status": "skipped",
+            "title": "validates tenant-scoped startup with separate migration and runtime roles"
+          },
+          {
+            "fullName": "api PostgreSQL persistence mode runs inbound, timeline, task, approval and audit endpoints against PostgreSQL when configured",
+            "status": "skipped",
+            "title": "runs inbound, timeline, task, approval and audit endpoints against PostgreSQL when configured"
+          },
+          {
+            "fullName": "api PostgreSQL persistence mode keeps PostgreSQL inbound idempotency isolated by tenant",
+            "status": "skipped",
+            "title": "keeps PostgreSQL inbound idempotency isolated by tenant"
+          },
+          {
+            "fullName": "api PostgreSQL persistence mode keeps human takeover and session continuation fail-closed on PostgreSQL",
+            "status": "skipped",
+            "title": "keeps human takeover and session continuation fail-closed on PostgreSQL"
+          }
+        ]
+      },
+      {
+        "path": "apps/api/src/__tests__/production-boundary.test.ts",
+        "sha256": "cd20ec69d1b7e27b937f8bdac060b03d2f898c2b7db891507b97b9fbb3275fc8",
+        "lines": 222,
+        "fileStatus": "passed",
+        "passed": 9,
+        "skipped": 0,
+        "failed": 0,
+        "total": 9,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/publish-evidence-authority.test.ts",
+        "sha256": "0e70d145d587fdd771d3b75540cf96a29bc29649d912ac39d90e4cebaced5c03",
+        "lines": 275,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/published-runtime-integration.test.ts",
+        "sha256": "7e3fa02f0150e5e3cb3d110a1ce169f0c7d352c0ba52a8ca3414345fb990e7be",
+        "lines": 516,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/rate-limit.test.ts",
+        "sha256": "265ff563f52b7c238c96e047db2440efd03da2655941241a6d62eedda5e715ee",
+        "lines": 117,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/readiness.test.ts",
+        "sha256": "5d63ec6b9073363c8c51b3f5a455ad6fc3f809876549ef0aa8c89e69647a0eef",
+        "lines": 302,
+        "fileStatus": "passed",
+        "passed": 11,
+        "skipped": 0,
+        "failed": 0,
+        "total": 11,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/release-candidate-ledger.test.ts",
+        "sha256": "a96b05a28547cd705e018cb1e908e3fe71eba83c5794dcbf94d99ecffdc18860",
+        "lines": 230,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/request-context.test.ts",
+        "sha256": "0139c1d7dd5cad1efd483ff044e09cacf8ed5cf0de853873bfa7d5b189073d59",
+        "lines": 468,
+        "fileStatus": "passed",
+        "passed": 12,
+        "skipped": 0,
+        "failed": 0,
+        "total": 12,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/runtime-approval-routes.test.ts",
+        "sha256": "07ba5d209223fcd75f0b93b4333ec3c28df18227d441452e189d04c21e2bcfb7",
+        "lines": 164,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/secretary-bootstrap.test.ts",
+        "sha256": "b4138a2a9bc256b20bd92364c5233a95318a1514d2d6dc32825055040acf3180",
+        "lines": 56,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/server-boundary-envelope.test.ts",
+        "sha256": "6bd4a735e633e6179e6d2b0015e2b1716cd0259da82d23282ef7cbed78412239",
+        "lines": 477,
+        "fileStatus": "passed",
+        "passed": 12,
+        "skipped": 0,
+        "failed": 0,
+        "total": 12,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/small-module-boundaries.test.ts",
+        "sha256": "cb89159699d1fe7ee042df1d5590a9ae45d4756d13900334a189cd52f6523976",
+        "lines": 214,
+        "fileStatus": "passed",
+        "passed": 8,
+        "skipped": 0,
+        "failed": 0,
+        "total": 8,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/task-lifecycle.test.ts",
+        "sha256": "7dbbc6fb7a8bce5ea79df3f8fcea978f2d0bdea08f88f00fbec3e3855ab40a85",
+        "lines": 159,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/tenant-inbound-isolation.test.ts",
+        "sha256": "951d66dc09355c534bd79ac4d88126e7a700e69a81f393fa8f8e55c772b0bf18",
+        "lines": 204,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/tenant-isolation-branch-hardening.test.ts",
+        "sha256": "65bfa74805f7deb346e028785908a86104670ab8f57102b822b638c9fcd223df",
+        "lines": 323,
+        "fileStatus": "passed",
+        "passed": 12,
+        "skipped": 0,
+        "failed": 0,
+        "total": 12,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/test-suite-catalog.test.ts",
+        "sha256": "2cc897ab7bd628186be3430905eba2d356fc21ff3f02880fa47ec2a6de26c6fd",
+        "lines": 145,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/trusted-operator-identity.test.ts",
+        "sha256": "c3d5bcaded735962c9609f9101ac94342b5b16493778fa72c9715ddcd90f823d",
+        "lines": 311,
+        "fileStatus": "passed",
+        "passed": 10,
+        "skipped": 0,
+        "failed": 0,
+        "total": 10,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/__tests__/webhook-security.test.ts",
+        "sha256": "3edc09a7a06accbbc3564f5a8a1ea9f7d821815a869a90fb3466bbc8125599c2",
+        "lines": 611,
+        "fileStatus": "mixed",
+        "passed": 16,
+        "skipped": 1,
+        "failed": 0,
+        "total": 17,
+        "skippedTests": [
+          {
+            "fullName": "HmacWebhookVerifier recovers stale PostgreSQL replay leases and preserves committed replay retention",
+            "status": "skipped",
+            "title": "recovers stale PostgreSQL replay leases and preserves committed replay retention"
+          }
+        ]
+      },
+      {
+        "path": "apps/api/src/approval-decision-note-field-boundary.test.ts",
+        "sha256": "a3edb0a91eda7b5f05c829b7f24c6c3e2990a5d74efc0823552e777665aa4c1a",
+        "lines": 107,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/approval-request-field-boundary.test.ts",
+        "sha256": "d7d9cd9aeeb06f54b481798639cf7eda59265234597cf0001cb28381fae6e725",
+        "lines": 116,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/audit-filter-duplicate-boundary.test.ts",
+        "sha256": "52015379b550044ef708dcea9e273a4fc25c298b5a9f7c73b033ae775711a698",
+        "lines": 75,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/http-request-boundary.test.ts",
+        "sha256": "21c66f3c7f89bc8363399c6eaccadeb0ff098a83bcbece24d98f1ac27fbe372c",
+        "lines": 158,
+        "fileStatus": "passed",
+        "passed": 8,
+        "skipped": 0,
+        "failed": 0,
+        "total": 8,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/http-security.test.ts",
+        "sha256": "e52efdd03e359e39526397b6be048e3592d10c3d390f04741fb310571f0852b6",
+        "lines": 390,
+        "fileStatus": "passed",
+        "passed": 10,
+        "skipped": 0,
+        "failed": 0,
+        "total": 10,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/http-target-boundary.test.ts",
+        "sha256": "99b4849201c92d51d196fc8da5b9f844d7ebdd480d200fdcddf3e93430087196",
+        "lines": 149,
+        "fileStatus": "passed",
+        "passed": 8,
+        "skipped": 0,
+        "failed": 0,
+        "total": 8,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/internal-task-field-boundary.test.ts",
+        "sha256": "f43b17217985c8d95ac68286dc95a9628570dc4b164524b264e56b61028c1ac5",
+        "lines": 124,
+        "fileStatus": "passed",
+        "passed": 7,
+        "skipped": 0,
+        "failed": 0,
+        "total": 7,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/metrics-exposure.test.ts",
+        "sha256": "4c6300dd7b9b09d678f864cc2c912947d43ff495c6ce09d62e9a773571a4a4ca",
+        "lines": 54,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/pagination-boundary.test.ts",
+        "sha256": "f3b33d0ef5e1e48a580f2bc378540d3cf7b7853b08a502ed83cad0793a405949",
+        "lines": 117,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/prompt-profile-error-boundary.test.ts",
+        "sha256": "34b4298cae9f95ee3b8df50de7ff700f47adbd73170b5eb57d05643df72ea01e",
+        "lines": 187,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/rem-risk-boundary.test.ts",
+        "sha256": "f3ad6e3956dbe2b464620046e8d3c7956bd468693c1ca66ac303434ce1705c59",
+        "lines": 149,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/request-metrics.test.ts",
+        "sha256": "baf4341b468da495ad9d6363fb171a38de2e73624486314149852a347404fa57",
+        "lines": 152,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/response-correlation.test.ts",
+        "sha256": "1329ad9bf7d3640db2a696776e32495644b17d9878289ee3911f945d84ca4137",
+        "lines": 130,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/api/src/startup-failure.test.ts",
+        "sha256": "26d290c1dab7064be70e44f39ad071f928c1fdc5ace058497fa430e084d2544c",
+        "lines": 132,
+        "fileStatus": "passed",
+        "passed": 8,
+        "skipped": 0,
+        "failed": 0,
+        "total": 8,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/__tests__/app.test.tsx",
+        "sha256": "38c411b282ff6240610338bd5e0a3b481f6654bbc852bddeaa97a42ed4dbd7d3",
+        "lines": 1525,
+        "fileStatus": "passed",
+        "passed": 17,
+        "skipped": 0,
+        "failed": 0,
+        "total": 17,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/__tests__/attendance-approval-conflict.test.tsx",
+        "sha256": "7795e189f4a38c4dd572a92159af1b7749ba9efa62c70594532e5b3f79b858a8",
+        "lines": 158,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/__tests__/audit-checkpoint-app.test.tsx",
+        "sha256": "3ed6ca9c9181ef888ce1555bca57ef3442d2017d39a37b11507f3889220f9a34",
+        "lines": 166,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/__tests__/journeys-identity-race.test.tsx",
+        "sha256": "fe1e50772dc3221af4f42e0587a6dc01ce30bf83b58ec2ac7e36bfa82e4f624a",
+        "lines": 289,
+        "fileStatus": "passed",
+        "passed": 13,
+        "skipped": 0,
+        "failed": 0,
+        "total": 13,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/__tests__/platform-panel.test.tsx",
+        "sha256": "bfd4d7036868140e13ef66c88b2af60db33dadcbc44ac2589cccb61e01c75a92",
+        "lines": 592,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/api/audit-evidence-checkpoint-client.test.ts",
+        "sha256": "95ee31e60d78034ce99376092da200ba024441cc8ba0a94f2876ea7821faaf1b",
+        "lines": 121,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/api/client.test.ts",
+        "sha256": "31af82f7eacde59e5731e90b1071c4c7983f8e1e7d2683bf1436b9fdd6022d84",
+        "lines": 96,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/api/release-candidate-client.test.ts",
+        "sha256": "8e541fe91548e6abd2a0dbb7c4182d8eea86c66873adae0d4f70010e94523413",
+        "lines": 155,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/features/approvals/approvals.test.tsx",
+        "sha256": "8b7e1b5ad69f61f3c21e9f6a0bdb5c5cef523fcffb542cd640eddb4515464815",
+        "lines": 94,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/features/audit/audit-checkpoint.test.tsx",
+        "sha256": "b15c2ac4c0fab998161e46f6e94d159e23c9b87b17dcdfbab6099d9545cbe8e9",
+        "lines": 30,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/features/audit/audit-view.test.tsx",
+        "sha256": "cfb34df34c9d6a20f74dfb9b0476d08d61614ebc0d815f399077ae145ce5d20b",
+        "lines": 49,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/features/conversations/conversations.test.tsx",
+        "sha256": "8a45b0cc8637ae86b3f88148653f9f389f68dabcbbd07934c93e2ca8a8d5e6b7",
+        "lines": 39,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/features/conversations/timeline.test.tsx",
+        "sha256": "9ad230471529febd40f63fed330805873700e92f7d8496b3df1875338d06575c",
+        "lines": 69,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/features/dead-letters/dead-letters.test.tsx",
+        "sha256": "7095ad218c4efc299137f22bac28e063b384e7dc338ac734e45882d752d51086",
+        "lines": 116,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/features/journeys/journeys.test.tsx",
+        "sha256": "4eb810dbf99f9b24d901d0f2197f77035513b6f398cf7e94d205a939252dacb8",
+        "lines": 183,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/features/orchestration/orchestration.test.tsx",
+        "sha256": "7d82ff3727a9e0c9577902bb48699068c8c27f820a99d0a4b7cd5caaaa5b71e1",
+        "lines": 341,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/features/platform/handoff-policy-control-center.test.tsx",
+        "sha256": "906a19f027fe091341808940df9528548e70ccfa201a478bc4d771e1d3ae0b93",
+        "lines": 215,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/features/platform/knowledge-source-catalog.test.tsx",
+        "sha256": "dd9a01ceacd17af42c62c3b135167d2bb84d603b1b9067830ef630bc237b72d4",
+        "lines": 111,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/features/platform/multi-agent-creation.test.tsx",
+        "sha256": "1267e64b43d59c988c9cedbbb702e9c9e1ffdfed49aea6b4e5ba96a901887e7b",
+        "lines": 683,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/features/platform/platform.test.tsx",
+        "sha256": "fe860718a5c3e0985ca4fdf617539b5489ecb6fe817d378ac5d642024a550b33",
+        "lines": 331,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/features/platform/prompt-profile-control-center.test.tsx",
+        "sha256": "330d887e62f6630860777f12669032abe6c5b444575343442fedf73951827b0d",
+        "lines": 193,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/features/platform/prompt-profile.test.ts",
+        "sha256": "bf05a1051a3108ad4e3ade6f4a21b6d3bbd6b6b000457042fbbf5d18f3755a95",
+        "lines": 150,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/features/platform/release-candidate-ledger.test.tsx",
+        "sha256": "43f5406c158e855b033657c93376ebbd59607769887729747e4df2f71a5093c5",
+        "lines": 201,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/web/src/features/tasks/tasks.test.tsx",
+        "sha256": "abfc30201085675c1e370f532a0be70fa8fbaa3de6b505ca66b1efd32aee4b71",
+        "lines": 57,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/worker/src/__tests__/continuous-worker-entrypoint.integration.test.ts",
+        "sha256": "923abaa560103ba7af5a0ce16c8792d83e5f90514803753a967a8ff09aa68c0d",
+        "lines": 352,
+        "fileStatus": "all_skipped",
+        "passed": 0,
+        "skipped": 2,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": [
+          {
+            "fullName": "AAA-19 continuous worker entrypoint over PostgreSQL consumes events around a restart and drains on a real SIGTERM without loss or duplication",
+            "status": "skipped",
+            "title": "consumes events around a restart and drains on a real SIGTERM without loss or duplication"
+          },
+          {
+            "fullName": "AAA-19 continuous worker entrypoint over PostgreSQL runs the role preflight before the first claim and leaves the queue untouched on rejection",
+            "status": "skipped",
+            "title": "runs the role preflight before the first claim and leaves the queue untouched on rejection"
+          }
+        ]
+      },
+      {
+        "path": "apps/worker/src/__tests__/continuous-worker-postgres.integration.test.ts",
+        "sha256": "e16c21cff5ce34f7524db99d2c142f160609df2c50b9f3090f8a5ace36cfb17a",
+        "lines": 447,
+        "fileStatus": "all_skipped",
+        "passed": 0,
+        "skipped": 3,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": [
+          {
+            "fullName": "AAA-19 continuous PostgreSQL worker consumes events across a simulated restart and dead-letters a poison event",
+            "status": "skipped",
+            "title": "consumes events across a simulated restart and dead-letters a poison event"
+          },
+          {
+            "fullName": "AAA-19 continuous PostgreSQL worker observes queue lag, completes in-flight work on shutdown and releases bounded leases",
+            "status": "skipped",
+            "title": "observes queue lag, completes in-flight work on shutdown and releases bounded leases"
+          },
+          {
+            "fullName": "AAA-19 continuous PostgreSQL worker composes durable approval and journal sweeps for the kernel worker",
+            "status": "skipped",
+            "title": "composes durable approval and journal sweeps for the kernel worker"
+          }
+        ]
+      },
+      {
+        "path": "apps/worker/src/__tests__/continuous-worker.test.ts",
+        "sha256": "bc33a20216f23c43ec84f6c13a6bedef2bd75d4b7e48d330b326be18d9193ad2",
+        "lines": 1178,
+        "fileStatus": "passed",
+        "passed": 26,
+        "skipped": 0,
+        "failed": 0,
+        "total": 26,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/worker/src/__tests__/controlled-worker-hardening.test.ts",
+        "sha256": "f7d0898457d28758ea397379296dea5a697176bcebfcf64b7807c2d6d2b8ead6",
+        "lines": 192,
+        "fileStatus": "passed",
+        "passed": 7,
+        "skipped": 0,
+        "failed": 0,
+        "total": 7,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/worker/src/__tests__/controlled-worker.test.ts",
+        "sha256": "c9f35ededb6b907d321b39b8e95afad69272068e41654c2af5208b39791aaef9",
+        "lines": 78,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts",
+        "sha256": "472fcd5ef4ed8ba3806e8c3f9c5a4c42a7291d81f5c05c96b3fed350c163dfac",
+        "lines": 2757,
+        "fileStatus": "mixed",
+        "passed": 50,
+        "skipped": 29,
+        "failed": 0,
+        "total": 79,
+        "skippedTests": [
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) rethrows an unrelated durable orchestrator error",
+            "status": "skipped",
+            "title": "rethrows an unrelated durable orchestrator error"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) does not convert a lease-lost error when the goal was deleted",
+            "status": "skipped",
+            "title": "does not convert a lease-lost error when the goal was deleted"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) returns a fenced result with the active plan after a conflict",
+            "status": "skipped",
+            "title": "returns a fenced result with the active plan after a conflict"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) recovers an expired lease with no approval using the requirement decision",
+            "status": "skipped",
+            "title": "recovers an expired lease with no approval using the requirement decision"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) treats an unreadable approval or missing operation key as uncertain",
+            "status": "skipped",
+            "title": "treats an unreadable approval or missing operation key as uncertain"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) decides replay safety from the persisted journal and approval state",
+            "status": "skipped",
+            "title": "decides replay safety from the persisted journal and approval state"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) retries terminal no-effect journal states only for re-armable approvals",
+            "status": "skipped",
+            "title": "retries terminal no-effect journal states only for re-armable approvals"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) retries an absent journal only for an approved reservation",
+            "status": "skipped",
+            "title": "retries an absent journal only for an approved reservation"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) resolves an expired waiting approval and skips pending ones",
+            "status": "skipped",
+            "title": "resolves an expired waiting approval and skips pending ones"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) skips waiting goals without a plan, without a waiting step or without an approval identity",
+            "status": "skipped",
+            "title": "skips waiting goals without a plan, without a waiting step or without an approval identity"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) skips a waiting goal whose approval cannot be read",
+            "status": "skipped",
+            "title": "skips a waiting goal whose approval cannot be read"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) rejects reuse when persisted planner context has unexpected lineage fields",
+            "status": "skipped",
+            "title": "rejects reuse when persisted planner context has unexpected lineage fields"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) fails closed when no persisted or runtime planner context exists",
+            "status": "skipped",
+            "title": "fails closed when no persisted or runtime planner context exists"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) rejects a persisted runtime snapshot that does not match the controlled kernel",
+            "status": "skipped",
+            "title": "rejects a persisted runtime snapshot that does not match the controlled kernel"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) executes a seeded step with a null conversation and session lineage",
+            "status": "skipped",
+            "title": "executes a seeded step with a null conversation and session lineage"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) executes a seeded step with a non-object input and absent model messages",
+            "status": "skipped",
+            "title": "executes a seeded step with a non-object input and absent model messages"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) executes a seeded step with a null idempotency key and tool identity",
+            "status": "skipped",
+            "title": "executes a seeded step with a null idempotency key and tool identity"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) re-evaluates a recovered plan and executes the recovered step",
+            "status": "skipped",
+            "title": "re-evaluates a recovered plan and executes the recovered step"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) re-evaluates a recovered plan without tool identity",
+            "status": "skipped",
+            "title": "re-evaluates a recovered plan without tool identity"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) resolves a rejected durable approval continuation and fails closed on a mismatch",
+            "status": "skipped",
+            "title": "resolves a rejected durable approval continuation and fails closed on a mismatch"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) resumes a durable approval continuation and ignores an undecided approval",
+            "status": "skipped",
+            "title": "resumes a durable approval continuation and ignores an undecided approval"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) rejects a durable continuation whose approval does not match a waiting step",
+            "status": "skipped",
+            "title": "rejects a durable continuation whose approval does not match a waiting step"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) fails closed when a waiting goal has no active plan for a continuation",
+            "status": "skipped",
+            "title": "fails closed when a waiting goal has no active plan for a continuation"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) completes a message.draft goal through the durable journal and reports the effect",
+            "status": "skipped",
+            "title": "completes a message.draft goal through the durable journal and reports the effect"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) replays a confirmed message.draft effect without a tool call",
+            "status": "skipped",
+            "title": "replays a confirmed message.draft effect without a tool call"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) denies a message.draft goal when the caller operation is uncertain",
+            "status": "skipped",
+            "title": "denies a message.draft goal when the caller operation is uncertain"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) drives a denied capability to a terminal goal without evidence",
+            "status": "skipped",
+            "title": "drives a denied capability to a terminal goal without evidence"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) keeps a step successful when the outbox is unavailable after the effect",
+            "status": "skipped",
+            "title": "keeps a step successful when the outbox is unavailable after the effect"
+          },
+          {
+            "fullName": "kernel durable composition branch hardening (PostgreSQL) fails closed when the durable runtime audit chain is invalid",
+            "status": "skipped",
+            "title": "fails closed when the durable runtime audit chain is invalid"
+          }
+        ]
+      },
+      {
+        "path": "apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts",
+        "sha256": "ac49074f06186f5468fc1d84dea0ca82c59707664a935692d549eb370bd826b3",
+        "lines": 1216,
+        "fileStatus": "mixed",
+        "passed": 9,
+        "skipped": 5,
+        "failed": 0,
+        "total": 14,
+        "skippedTests": [
+          {
+            "fullName": "AAA-21 composed kernel path over API → outbox → worker (PostgreSQL) runs the approved draft write once and replays without a second effect",
+            "status": "skipped",
+            "title": "runs the approved draft write once and replays without a second effect"
+          },
+          {
+            "fullName": "AAA-21 composed kernel path over API → outbox → worker (PostgreSQL) never auto-retries an UNCERTAIN journal state",
+            "status": "skipped",
+            "title": "never auto-retries an UNCERTAIN journal state"
+          },
+          {
+            "fullName": "AAA-21 composed kernel path over API → outbox → worker (PostgreSQL) routes the API outbox through the opt-in durable orchestrator and resumes the same Goal after approval",
+            "status": "skipped",
+            "title": "routes the API outbox through the opt-in durable orchestrator and resumes the same Goal after approval"
+          },
+          {
+            "fullName": "AAA-21 composed kernel path over API → outbox → worker (PostgreSQL) composes kernel handlers when the runtime kind is selected",
+            "status": "skipped",
+            "title": "composes kernel handlers when the runtime kind is selected"
+          },
+          {
+            "fullName": "AAA-21 composed kernel path over API → outbox → worker (PostgreSQL) fails closed when durable kernel tables are missing",
+            "status": "skipped",
+            "title": "fails closed when durable kernel tables are missing"
+          }
+        ]
+      },
+      {
+        "path": "apps/worker/src/__tests__/kernel-composition-state.test.ts",
+        "sha256": "761aa15872030f255fb9cab3da0d83d4dea0603664ee8f7df6e18b771fad3390",
+        "lines": 567,
+        "fileStatus": "passed",
+        "passed": 12,
+        "skipped": 0,
+        "failed": 0,
+        "total": 12,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/worker/src/__tests__/kernel-durable-orchestrator-postgres.test.ts",
+        "sha256": "9c47e77ef18afa7a073121d0f437716e3ee605e3f588ec02c0671696a4349244",
+        "lines": 690,
+        "fileStatus": "all_skipped",
+        "passed": 0,
+        "skipped": 6,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": [
+          {
+            "fullName": "durable worker Goal orchestration creates a durable Goal and stops at WAITING_APPROVAL through the governed kernel",
+            "status": "skipped",
+            "title": "creates a durable Goal and stops at WAITING_APPROVAL through the governed kernel"
+          },
+          {
+            "fullName": "durable worker Goal orchestration rebuilds the first plan from persisted planner context after restart",
+            "status": "skipped",
+            "title": "rebuilds the first plan from persisted planner context after restart"
+          },
+          {
+            "fullName": "durable worker Goal orchestration acknowledges a fenced durable-goal loser instead of retrying it",
+            "status": "skipped",
+            "title": "acknowledges a fenced durable-goal loser instead of retrying it"
+          },
+          {
+            "fullName": "durable worker Goal orchestration converges two concurrent outbox journeys on one Goal and one effect",
+            "status": "skipped",
+            "title": "converges two concurrent outbox journeys on one Goal and one effect"
+          },
+          {
+            "fullName": "durable worker Goal orchestration redelivers after a crash following Goal creation and never duplicates the effect",
+            "status": "skipped",
+            "title": "redelivers after a crash following Goal creation and never duplicates the effect"
+          },
+          {
+            "fullName": "durable worker Goal orchestration combines lease-expiry redelivery, final DLQ and durable effect recovery",
+            "status": "skipped",
+            "title": "combines lease-expiry redelivery, final DLQ and durable effect recovery"
+          }
+        ]
+      },
+      {
+        "path": "apps/worker/src/__tests__/outbox-recovery.test.ts",
+        "sha256": "20190b1e3c7af8aec8c2d22f854a994784cd8cfe68b2a0bbc90ca80b2a310bd5",
+        "lines": 193,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/worker/src/__tests__/postgres-controlled-hardening.test.ts",
+        "sha256": "224c8dd6f9593cc7403dd79c50d3d25a6791e973ad084a7e2c68cdaa44ef4ecd",
+        "lines": 368,
+        "fileStatus": "passed",
+        "passed": 8,
+        "skipped": 0,
+        "failed": 0,
+        "total": 8,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/worker/src/__tests__/postgres-controlled.test.ts",
+        "sha256": "e6d8ac27e5e0535cff27ce6106007e6e43d5fb0224527a521779f7c7f6753f1c",
+        "lines": 233,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/worker/src/__tests__/postgres-outbox-bridge.integration.test.ts",
+        "sha256": "8e3a78a7f64d0d92358400224c91ff97513f8b719287043e21c741887d316b75",
+        "lines": 108,
+        "fileStatus": "mixed",
+        "passed": 1,
+        "skipped": 1,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": [
+          {
+            "fullName": "API to PostgreSQL worker outbox bridge consumes the event written by the API through a separate worker pool",
+            "status": "skipped",
+            "title": "consumes the event written by the API through a separate worker pool"
+          }
+        ]
+      },
+      {
+        "path": "apps/worker/src/__tests__/postgres-role-preflight.test.ts",
+        "sha256": "3ac7f75ddfd97ec695ff7af34280f18cae01aab8b2cf4e680e9cb0e190261950",
+        "lines": 466,
+        "fileStatus": "mixed",
+        "passed": 1,
+        "skipped": 12,
+        "failed": 0,
+        "total": 13,
+        "skippedTests": [
+          {
+            "fullName": "worker PostgreSQL role preflight rejects an additional permissive policy before any claim",
+            "status": "skipped",
+            "title": "rejects an additional permissive policy before any claim"
+          },
+          {
+            "fullName": "worker PostgreSQL role preflight rejects missing effect privileges and forbidden privileges on any critical table",
+            "status": "skipped",
+            "title": "rejects missing effect privileges and forbidden privileges on any critical table"
+          },
+          {
+            "fullName": "worker PostgreSQL role preflight rejects a superuser role",
+            "status": "skipped",
+            "title": "rejects a superuser role"
+          },
+          {
+            "fullName": "worker PostgreSQL role preflight rejects a BYPASSRLS role",
+            "status": "skipped",
+            "title": "rejects a BYPASSRLS role"
+          },
+          {
+            "fullName": "worker PostgreSQL role preflight rejects a role that inherits another role",
+            "status": "skipped",
+            "title": "rejects a role that inherits another role"
+          },
+          {
+            "fullName": "worker PostgreSQL role preflight rejects a role that owns a tenant-isolated table",
+            "status": "skipped",
+            "title": "rejects a role that owns a tenant-isolated table"
+          },
+          {
+            "fullName": "worker PostgreSQL role preflight rejects a role that can create schema objects",
+            "status": "skipped",
+            "title": "rejects a role that can create schema objects"
+          },
+          {
+            "fullName": "worker PostgreSQL role preflight rejects a role without the tenant-isolated schema",
+            "status": "skipped",
+            "title": "rejects a role without the tenant-isolated schema"
+          },
+          {
+            "fullName": "worker PostgreSQL role preflight rejects a role with non-minimal outbox privileges",
+            "status": "skipped",
+            "title": "rejects a role with non-minimal outbox privileges"
+          },
+          {
+            "fullName": "worker PostgreSQL role preflight accepts a minimal role and consumes an event",
+            "status": "skipped",
+            "title": "accepts a minimal role and consumes an event"
+          },
+          {
+            "fullName": "worker PostgreSQL role preflight clears the tenant context of the same pool connection after a rejected preflight",
+            "status": "skipped",
+            "title": "clears the tenant context of the same pool connection after a rejected preflight"
+          },
+          {
+            "fullName": "worker PostgreSQL role preflight destroys a connection whose tenant context cannot be cleared",
+            "status": "skipped",
+            "title": "destroys a connection whose tenant context cannot be cleared"
+          }
+        ]
+      },
+      {
+        "path": "apps/worker/src/__tests__/production-worker-guard.test.ts",
+        "sha256": "c9effe7f48ec376a6317b328d78dac26b5950231825415a8a3a92ed72eeb5091",
+        "lines": 144,
+        "fileStatus": "passed",
+        "passed": 11,
+        "skipped": 0,
+        "failed": 0,
+        "total": 11,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/worker/src/__tests__/published-worker-knowledge-boundary.test.ts",
+        "sha256": "2f4857f06c884b9322eabead95e75a868c549a985c01d51c30bb2b9ad0f384ec",
+        "lines": 205,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/worker/src/__tests__/published-worker-runtime.test.ts",
+        "sha256": "048de355a70821fa20a00c247c27db98771371e3472bbe554da65d3d39185c02",
+        "lines": 393,
+        "fileStatus": "passed",
+        "passed": 9,
+        "skipped": 0,
+        "failed": 0,
+        "total": 9,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/worker/src/__tests__/worker-docker-topology.test.ts",
+        "sha256": "bccffe5b9def08030e41f1212718a2bdeee2a86c57586debf00bc375e46c9b87",
+        "lines": 59,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/worker/src/__tests__/worker-health.test.ts",
+        "sha256": "229c38525d87ca0f3d5071a36fe2b0ae3a63ec2fde11bc9864be8f5ddb47e523",
+        "lines": 178,
+        "fileStatus": "passed",
+        "passed": 9,
+        "skipped": 0,
+        "failed": 0,
+        "total": 9,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/worker/src/__tests__/worker-observability.test.ts",
+        "sha256": "72037ea4a4da098584143a0721e6f543b5a12edd0147ee2080cc51c4ad261a3c",
+        "lines": 134,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/worker/src/__tests__/worker-sweeps.test.ts",
+        "sha256": "f9b337871d89a5f343151ee40311849c0a823d693b1b8508c8518fdf49fff8be",
+        "lines": 296,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "apps/worker/src/__tests__/worker.test.ts",
+        "sha256": "fa9cf71711a4376881c9d414e41239165a4459bdf185c70a1620bfae2da04312",
+        "lines": 62,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/adapters/src/__tests__/controlled-delivery.test.ts",
+        "sha256": "1b06ef2aa7119cb794eed21a954e3d724eaf6700e22bffc837e968c9d08abc54",
+        "lines": 70,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/adapters/src/__tests__/fake-whatsapp-adapter.test.ts",
+        "sha256": "3cb259379559d502f1510c18838c83c5f0102c89543fc87a6cfcf8c4dafb6bf5",
+        "lines": 38,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/adapters/src/__tests__/model-adapter.test.ts",
+        "sha256": "2216036e2def67bdf50d215cf3141da9b769b07c5ff48482dee2b0c25bd9dd36",
+        "lines": 62,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-core/src/__tests__/conversation-session.integration.test.ts",
+        "sha256": "503ecdb652fc33dce38d496e8f9916d0cf4a5ddf1e0bbb78edf614ff53a366ab",
+        "lines": 32,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-core/src/__tests__/internal-task.integration.test.ts",
+        "sha256": "1772d8e838b07a8acfeb9da8e321c70535c5eb86c9637bff7a03580b809c2621",
+        "lines": 23,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-core/src/__tests__/published-agent-runtime.test.ts",
+        "sha256": "a3d0bbdbc3fea3e0c0217e7187ade4ea352f66893dae191fcb621afdad1026fe",
+        "lines": 475,
+        "fileStatus": "passed",
+        "passed": 9,
+        "skipped": 0,
+        "failed": 0,
+        "total": 9,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-core/src/__tests__/receive-inbound-message.test.ts",
+        "sha256": "1a4dcc972ddd678c64393189391811c4a0ede06d8bb874e7f89e9f783bad4e69",
+        "lines": 236,
+        "fileStatus": "passed",
+        "passed": 9,
+        "skipped": 0,
+        "failed": 0,
+        "total": 9,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-evals/src/__tests__/agent-evals.test.ts",
+        "sha256": "5cde8434d7805558f23121dc195e645a6c0d39accdf56c695054d2b16e3c4b1f",
+        "lines": 210,
+        "fileStatus": "passed",
+        "passed": 8,
+        "skipped": 0,
+        "failed": 0,
+        "total": 8,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-evals/src/__tests__/eval-contract.test.ts",
+        "sha256": "7cc0157c178ba096eac32d84ff4b5f7c66365cd61bcb5b65f404cdbfd5db518a",
+        "lines": 214,
+        "fileStatus": "passed",
+        "passed": 16,
+        "skipped": 0,
+        "failed": 0,
+        "total": 16,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-evals/src/__tests__/integrated-holdout.test.ts",
+        "sha256": "131358da7e4a14c5caf95956551514988ea7359736d02a0aac2e8c1e4b2cce0f",
+        "lines": 154,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-runtime/src/__tests__/agent-runtime.test.ts",
+        "sha256": "aec1646677bde6403355e6ecb5e63c824fa5ddc4c84d3c34246d58713d88e87b",
+        "lines": 351,
+        "fileStatus": "passed",
+        "passed": 9,
+        "skipped": 0,
+        "failed": 0,
+        "total": 9,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-runtime/src/__tests__/capability-action-binding.test.ts",
+        "sha256": "fb8374c2a6ba968098ca83fb2b3f1f9f1b219dc934cb26fd78353e1910279dd8",
+        "lines": 148,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-runtime/src/__tests__/composition-branch-hardening.test.ts",
+        "sha256": "c2267a7e77be75acafe7518b125e336e77e4cf88805338c8eb5614253ac45510",
+        "lines": 185,
+        "fileStatus": "passed",
+        "passed": 7,
+        "skipped": 0,
+        "failed": 0,
+        "total": 7,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-runtime/src/__tests__/effect-journal-edges.test.ts",
+        "sha256": "30d74b8f6433eef8f5d862fda9214f839fc04c9e7dc70ed40aba219fac0ff3c0",
+        "lines": 406,
+        "fileStatus": "passed",
+        "passed": 19,
+        "skipped": 0,
+        "failed": 0,
+        "total": 19,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-runtime/src/__tests__/effect-journal.test.ts",
+        "sha256": "ec257b14e13905dc24db9593fdb58c02075d78ce997e128d47f1bb8415b45e94",
+        "lines": 488,
+        "fileStatus": "passed",
+        "passed": 41,
+        "skipped": 0,
+        "failed": 0,
+        "total": 41,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-runtime/src/__tests__/orchestration-branch-hardening.test.ts",
+        "sha256": "8cca9ecefb76e963da9a755452921dd1ba18ae05a516b86b91f1c5f6b574ab92",
+        "lines": 2585,
+        "fileStatus": "passed",
+        "passed": 88,
+        "skipped": 0,
+        "failed": 0,
+        "total": 88,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-runtime/src/__tests__/orchestration.test.ts",
+        "sha256": "32fb827b702bfdd9c66dc1430cd3740bcc03150da961f38f9f169e8b47b0815a",
+        "lines": 1100,
+        "fileStatus": "passed",
+        "passed": 18,
+        "skipped": 0,
+        "failed": 0,
+        "total": 18,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-runtime/src/__tests__/proposal-errors.test.ts",
+        "sha256": "b1ebbeaced50b1341fd55d7caa5856f311436f4e88442f32741f70ad084849a6",
+        "lines": 229,
+        "fileStatus": "passed",
+        "passed": 10,
+        "skipped": 0,
+        "failed": 0,
+        "total": 10,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-runtime/src/__tests__/runtime-binding.test.ts",
+        "sha256": "3fb0e0ec1293fbdadd1598260523052de47a4254734f56e75765776512d2dd21",
+        "lines": 608,
+        "fileStatus": "passed",
+        "passed": 17,
+        "skipped": 0,
+        "failed": 0,
+        "total": 17,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-runtime/src/__tests__/runtime-branch-hardening.test.ts",
+        "sha256": "f599af2621f0f986fcaedfafd4291ea66e439a5cbbfca7b6b9443400aea61ae9",
+        "lines": 1458,
+        "fileStatus": "passed",
+        "passed": 35,
+        "skipped": 0,
+        "failed": 0,
+        "total": 35,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts",
+        "sha256": "bb0f2db23ed220f2e45b5147fbfb43b4132a367e8715d261b647c1faa135a384",
+        "lines": 2800,
+        "fileStatus": "passed",
+        "passed": 76,
+        "skipped": 0,
+        "failed": 0,
+        "total": 76,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-runtime/src/__tests__/runtime-journal.test.ts",
+        "sha256": "185e11196a7257cf814893e27c4d606de87326432b5225126caa2607b2a5f55b",
+        "lines": 972,
+        "fileStatus": "passed",
+        "passed": 19,
+        "skipped": 0,
+        "failed": 0,
+        "total": 19,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-runtime/src/__tests__/runtime-kernel-coverage.test.ts",
+        "sha256": "2a1771ab1f8ed2b9715510b3acdb1d5ed63339c2b9c9cbabe801f6626cae269f",
+        "lines": 1096,
+        "fileStatus": "passed",
+        "passed": 40,
+        "skipped": 0,
+        "failed": 0,
+        "total": 40,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-runtime/src/__tests__/runtime-legacy-rearm.test.ts",
+        "sha256": "4c1d86af3dcf67c989fcaa713b8c7b33c2c9f8cab33c290f2fed02ddc7959a69",
+        "lines": 615,
+        "fileStatus": "passed",
+        "passed": 8,
+        "skipped": 0,
+        "failed": 0,
+        "total": 8,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-runtime/src/__tests__/runtime-limits.test.ts",
+        "sha256": "106c6314c76e4a6fdd365aa5fd98d3b55008f2a11c6c1cdd8c1d07c7396ecf03",
+        "lines": 675,
+        "fileStatus": "passed",
+        "passed": 16,
+        "skipped": 0,
+        "failed": 0,
+        "total": 16,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/agent-runtime/src/__tests__/runtime-sweep-operation-key.test.ts",
+        "sha256": "cf4e2e9ef2ceb7fe1ae46e18f2420c110c88ccdafd5eb0c999d69ec44cbff5b5",
+        "lines": 518,
+        "fileStatus": "passed",
+        "passed": 7,
+        "skipped": 0,
+        "failed": 0,
+        "total": 7,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/approval-engine/src/__tests__/approval-coverage-closure.test.ts",
+        "sha256": "39b5e540e75732710a2a207272ab183936986721dfdb246a621083660cd9da4a",
+        "lines": 859,
+        "fileStatus": "passed",
+        "passed": 14,
+        "skipped": 0,
+        "failed": 0,
+        "total": 14,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/approval-engine/src/__tests__/approval-coverage.test.ts",
+        "sha256": "8412d005dd4a9affe81a371e5c8257f98f5c09a13f9cb72b8267aefa5715c8a8",
+        "lines": 128,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/approval-engine/src/__tests__/approval-critical-coverage.test.ts",
+        "sha256": "483a7204197537dd4833026446ba533d1fdbb239047eaee40eeaf2460ff96270",
+        "lines": 958,
+        "fileStatus": "passed",
+        "passed": 36,
+        "skipped": 0,
+        "failed": 0,
+        "total": 36,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/approval-engine/src/__tests__/approval-engine.test.ts",
+        "sha256": "6b7304bc15fbe3318e3386fd449319716a8a687abaacc5391823e8e2ce05fdb3",
+        "lines": 306,
+        "fileStatus": "passed",
+        "passed": 10,
+        "skipped": 0,
+        "failed": 0,
+        "total": 10,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/approval-engine/src/__tests__/approval-lifecycle-edges.test.ts",
+        "sha256": "56cfe365294ebd3c5b2c028d5d56b4a11dc97514a4aa080ec84cc3667993b207",
+        "lines": 433,
+        "fileStatus": "passed",
+        "passed": 10,
+        "skipped": 0,
+        "failed": 0,
+        "total": 10,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/approval-engine/src/__tests__/approval-lifecycle-fencing.test.ts",
+        "sha256": "fce80a1814e737e91317b39b87747794702679f2fc11d336c2d022c079da687f",
+        "lines": 368,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/approval-engine/src/__tests__/approval-lifecycle.test.ts",
+        "sha256": "dff72c711ecea9db759465541f6115887e95092ac82369a984ed7683ed2ebc17",
+        "lines": 649,
+        "fileStatus": "passed",
+        "passed": 19,
+        "skipped": 0,
+        "failed": 0,
+        "total": 19,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/approval-engine/src/__tests__/approval-operation-key.test.ts",
+        "sha256": "2a22507034c5f18d0c50309bb0dfa302d641665009c32c86f16a1a2fedba3778",
+        "lines": 242,
+        "fileStatus": "passed",
+        "passed": 7,
+        "skipped": 0,
+        "failed": 0,
+        "total": 7,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/channel-gateway/src/__tests__/channel-adapters-branch-hardening.test.ts",
+        "sha256": "32cafcbb715be718be12c34027771cab9887a608b7a43077be04c0c38b8d3161",
+        "lines": 176,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/channel-gateway/src/__tests__/channel-coverage-gateway-hardening.test.ts",
+        "sha256": "50b0c47b1c0ee9b33d997c7d7ebb4ad4d490e1cb9b8199e431e54b792b9b9af9",
+        "lines": 414,
+        "fileStatus": "passed",
+        "passed": 10,
+        "skipped": 0,
+        "failed": 0,
+        "total": 10,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/channel-gateway/src/__tests__/channel-coverage-gateway-journal-paths.test.ts",
+        "sha256": "28d7de412732508b6f2bca2a960692e29ec3f39c0d755c07e3e2a1a145b413a1",
+        "lines": 624,
+        "fileStatus": "passed",
+        "passed": 16,
+        "skipped": 0,
+        "failed": 0,
+        "total": 16,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/channel-gateway/src/__tests__/channel-coverage-inbound-adapters.test.ts",
+        "sha256": "018b03a2ba586f39c9fc15d9bc7699de4b93433e106ecfaa34c55be4b2432c61",
+        "lines": 239,
+        "fileStatus": "passed",
+        "passed": 11,
+        "skipped": 0,
+        "failed": 0,
+        "total": 11,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/channel-gateway/src/__tests__/channel-coverage-journal-hardening.test.ts",
+        "sha256": "7885455b88ca926f3b57e55aa562dbc9b287d4072274f6d7f4a6c7b59be6810e",
+        "lines": 455,
+        "fileStatus": "passed",
+        "passed": 12,
+        "skipped": 0,
+        "failed": 0,
+        "total": 12,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/channel-gateway/src/__tests__/channel-coverage.test.ts",
+        "sha256": "09d02cabc2daeeea5cc84bac4006f658f9c8502579cc605d399423c692fb928f",
+        "lines": 180,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/channel-gateway/src/__tests__/channel-effect-hash-version.test.ts",
+        "sha256": "a6e9e599fe2bf0e97b5fae72d5a6206f2880fada620112b36002a1a82fc1bd02",
+        "lines": 366,
+        "fileStatus": "passed",
+        "passed": 9,
+        "skipped": 0,
+        "failed": 0,
+        "total": 9,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/channel-gateway/src/__tests__/channel-effect-journal-edges.test.ts",
+        "sha256": "3e9d0715e3d9a62154725f353e99c7eae2b51dc22cb758144e2d2ad86a71e037",
+        "lines": 357,
+        "fileStatus": "passed",
+        "passed": 9,
+        "skipped": 0,
+        "failed": 0,
+        "total": 9,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/channel-gateway/src/__tests__/channel-effect-journal.test.ts",
+        "sha256": "10dc94ae36372e4e7d9d39494e1448d1cf4014b564a2f4141fba3bffe6f6b980",
+        "lines": 403,
+        "fileStatus": "passed",
+        "passed": 11,
+        "skipped": 0,
+        "failed": 0,
+        "total": 11,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/channel-gateway/src/__tests__/channel-effect-malformed-version.test.ts",
+        "sha256": "88cf4bc12c69b0336a756649c0eeef23c076c8fb220f3ca57661c2542bbb5b80",
+        "lines": 507,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/channel-gateway/src/__tests__/channel-effect-race.test.ts",
+        "sha256": "5b1dce5d497e4b6721351112881ac9d338f57c769f8e5cf1665667a802170928",
+        "lines": 55,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/channel-gateway/src/__tests__/channel-effect-reconciliation-actor.test.ts",
+        "sha256": "5399ab27fc8563f58b4260b396384d220a3c4e88e20d0d9a1071515171cc95bd",
+        "lines": 258,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/channel-gateway/src/__tests__/channel-gateway.test.ts",
+        "sha256": "eeac0a72dc0db74796a4dbb3b642fd98df33cd7a08f70e3ee19b6f3c1e64a757",
+        "lines": 306,
+        "fileStatus": "passed",
+        "passed": 14,
+        "skipped": 0,
+        "failed": 0,
+        "total": 14,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/chaos/src/__tests__/chaos-postgres.test.ts",
+        "sha256": "7756bc6d4ec3e96abaae67a014d6cd1154b78a5281b39451a44a886cee8323b4",
+        "lines": 79,
+        "fileStatus": "all_skipped",
+        "passed": 0,
+        "skipped": 2,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": [
+          {
+            "fullName": "chaos: PostgreSQL resilience CHAOS-04 temporary disconnect: pool recovers after backend termination",
+            "status": "skipped",
+            "title": "CHAOS-04 temporary disconnect: pool recovers after backend termination"
+          },
+          {
+            "fullName": "chaos: PostgreSQL resilience CHAOS-05 mass termination: connections are re-established cleanly",
+            "status": "skipped",
+            "title": "CHAOS-05 mass termination: connections are re-established cleanly"
+          }
+        ]
+      },
+      {
+        "path": "packages/chaos/src/__tests__/chaos.test.ts",
+        "sha256": "fc732284ae8946bfd042bd5830a21653bb3b4221e81e7b9af24e9f2eb3e0ad59",
+        "lines": 502,
+        "fileStatus": "passed",
+        "passed": 15,
+        "skipped": 0,
+        "failed": 0,
+        "total": 15,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/chaos/src/__tests__/faults-coverage.test.ts",
+        "sha256": "4be152f74187a5e16e2d97f0efa502954f60e30f8e2ac38a8e1a473553c99079",
+        "lines": 48,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/memory/src/__tests__/memory-facts.test.ts",
+        "sha256": "e23d61b10c2eea425e26c3f055c50b4100c9e9c723ffe2ee19d7a9e4ed5610de",
+        "lines": 16,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/model-gateway/src/__tests__/edge-coverage.test.ts",
+        "sha256": "723bc65df1b68889b646ac0e2f0200d06b0c9babd82f59e5e6e29bd811b8ec5e",
+        "lines": 159,
+        "fileStatus": "passed",
+        "passed": 15,
+        "skipped": 0,
+        "failed": 0,
+        "total": 15,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/model-gateway/src/__tests__/gateway-hardening.test.ts",
+        "sha256": "f311228bdcb4d4276ec3e89bd0c44a322ab1156424f01e7739bda4db2beb86f1",
+        "lines": 693,
+        "fileStatus": "passed",
+        "passed": 36,
+        "skipped": 0,
+        "failed": 0,
+        "total": 36,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/model-gateway/src/__tests__/gateway.test.ts",
+        "sha256": "fb40e3f8445ddf2ebfa4df0e24975acc45f350835ea1e3ab9c4bdefce018a4b9",
+        "lines": 598,
+        "fileStatus": "passed",
+        "passed": 16,
+        "skipped": 0,
+        "failed": 0,
+        "total": 16,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/model-gateway/src/__tests__/local-http-providers.test.ts",
+        "sha256": "e88189c93dfd391d46b91af682d927e4243208c452c1601f96ec42fd22bb3390",
+        "lines": 422,
+        "fileStatus": "passed",
+        "passed": 12,
+        "skipped": 0,
+        "failed": 0,
+        "total": 12,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/model-gateway/src/__tests__/providers.test.ts",
+        "sha256": "963277cb6c4a63d05070716bcef4d72fec2f270b260073c334880990d3ed368c",
+        "lines": 205,
+        "fileStatus": "passed",
+        "passed": 14,
+        "skipped": 0,
+        "failed": 0,
+        "total": 14,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/observability/src/__tests__/alerts.test.ts",
+        "sha256": "afe4d2c65a9cb4fddd412dd8510329f021832e1572e0c59e93ce812442c8ced7",
+        "lines": 168,
+        "fileStatus": "passed",
+        "passed": 9,
+        "skipped": 0,
+        "failed": 0,
+        "total": 9,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/observability/src/__tests__/collector.test.ts",
+        "sha256": "a7dbf126ffe064da73d1d0a8916eecd228cf92bc06ceb328e4a47bfc5a550685",
+        "lines": 260,
+        "fileStatus": "passed",
+        "passed": 8,
+        "skipped": 0,
+        "failed": 0,
+        "total": 8,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/observability/src/__tests__/observability-coverage.test.ts",
+        "sha256": "d2bf38de6b0707b70f71b7dae3029dcd33b11c41b32ed7a0a0c7dce7a232e6a2",
+        "lines": 139,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/observability/src/__tests__/observability-exercise.test.ts",
+        "sha256": "7e86c53952c9966e3a7095270216cdec7b5f85dcc7554a590341885694c83e9a",
+        "lines": 83,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/observability/src/__tests__/observability.test.ts",
+        "sha256": "d15c571a192f2246675332d4b63d430353cadec73e0ea6cb8165bfb9e5408696",
+        "lines": 286,
+        "fileStatus": "passed",
+        "passed": 12,
+        "skipped": 0,
+        "failed": 0,
+        "total": 12,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/observability/src/__tests__/sli-slo-catalog.test.ts",
+        "sha256": "68330dbb3909d7627468b8f0c5b0c0f6881281382c75f53b7bfe27c4da712431",
+        "lines": 137,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/attendance-approval-atomic.test.ts",
+        "sha256": "36a2c06c6d07769d32a3e943d1827e5a1eae3c9528e0fc4669312c1bbaadd039",
+        "lines": 114,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/attendance-approval-postgres.test.ts",
+        "sha256": "8de9e14e855e4f2ba0ee6077971a2d2b61584149389dbef70d2eb0f8001220e7",
+        "lines": 140,
+        "fileStatus": "all_skipped",
+        "passed": 0,
+        "skipped": 1,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": [
+          {
+            "fullName": "attendance approval PostgreSQL atomicity forces two connections past the same pending read and rolls back failed audit",
+            "status": "skipped",
+            "title": "forces two connections past the same pending read and rolls back failed audit"
+          }
+        ]
+      },
+      {
+        "path": "packages/persistence/src/__tests__/audit-evidence-checkpoint-postgres.test.ts",
+        "sha256": "f2bdd229151e85ff210690064cdeb2a591c9c084860602d64cbf76f1d457c3a7",
+        "lines": 201,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/audit-evidence-checkpoint.test.ts",
+        "sha256": "dfa2042d91919d8fd9f9fa9c6907798dc06ad7777f8a6bdbfc7fcacd035de1dc",
+        "lines": 252,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/audit-repository.test.ts",
+        "sha256": "36322726af9772a2dd1e2cbe12321c6510bbbbc73cda1a59c3c5694c6793faca",
+        "lines": 66,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/channel-effect-journal-postgres.test.ts",
+        "sha256": "48fc3cfa5e0c55df0a2d6177e9a1dab59212d96f1a810d32e7b42238ba8b7b4e",
+        "lines": 622,
+        "fileStatus": "mixed",
+        "passed": 1,
+        "skipped": 11,
+        "failed": 0,
+        "total": 12,
+        "skippedTests": [
+          {
+            "fullName": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema applies 0012 with forced RLS and the legacy hash default",
+            "status": "skipped",
+            "title": "applies 0012 with forced RLS and the legacy hash default"
+          },
+          {
+            "fullName": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema reserves, sends, confirms and replays the result",
+            "status": "skipped",
+            "title": "reserves, sends, confirms and replays the result"
+          },
+          {
+            "fullName": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema reserves atomically under two concurrent clients",
+            "status": "skipped",
+            "title": "reserves atomically under two concurrent clients"
+          },
+          {
+            "fullName": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema returns conflict for the same key with a different payload hash",
+            "status": "skipped",
+            "title": "returns conflict for the same key with a different payload hash"
+          },
+          {
+            "fullName": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema takes over an expired PENDING lease and fences the stale worker",
+            "status": "skipped",
+            "title": "takes over an expired PENDING lease and fences the stale worker"
+          },
+          {
+            "fullName": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema marks an expired SENDING lease uncertain and never resends by itself",
+            "status": "skipped",
+            "title": "marks an expired SENDING lease uncertain and never resends by itself"
+          },
+          {
+            "fullName": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema releases a retryable failure back to PENDING for a same-key retry",
+            "status": "skipped",
+            "title": "releases a retryable failure back to PENDING for a same-key retry"
+          },
+          {
+            "fullName": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema resolves UNCERTAIN only through explicit reconciliation",
+            "status": "skipped",
+            "title": "resolves UNCERTAIN only through explicit reconciliation"
+          },
+          {
+            "fullName": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema rejects reconciliation without a valid actor and never mutates the row",
+            "status": "skipped",
+            "title": "rejects reconciliation without a valid actor and never mutates the row"
+          },
+          {
+            "fullName": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema fails closed for invalid or malformed hash versions",
+            "status": "skipped",
+            "title": "fails closed for invalid or malformed hash versions"
+          },
+          {
+            "fullName": "channel effect journal PostgreSQL adapter with a disposable PostgreSQL schema isolates cross-tenant rows with a non-BYPASSRLS role",
+            "status": "skipped",
+            "title": "isolates cross-tenant rows with a non-BYPASSRLS role"
+          }
+        ]
+      },
+      {
+        "path": "packages/persistence/src/__tests__/conversation-repository.test.ts",
+        "sha256": "993a61aa599b39a63612b379ccc0b5e8d98cef342baa1fb30cddbe4aabbaf8ff",
+        "lines": 558,
+        "fileStatus": "passed",
+        "passed": 15,
+        "skipped": 0,
+        "failed": 0,
+        "total": 15,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/effect-journal-postgres.test.ts",
+        "sha256": "29e80dacd6dc65384a7d0d065782b0261cde90415564d4e790edf0e20312f719",
+        "lines": 448,
+        "fileStatus": "mixed",
+        "passed": 1,
+        "skipped": 9,
+        "failed": 0,
+        "total": 10,
+        "skippedTests": [
+          {
+            "fullName": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema applies 0012/0013 in order with forced RLS and reserved columns",
+            "status": "skipped",
+            "title": "applies 0012/0013 in order with forced RLS and reserved columns"
+          },
+          {
+            "fullName": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema reserves, starts, confirms and replays the persisted result digest",
+            "status": "skipped",
+            "title": "reserves, starts, confirms and replays the persisted result digest"
+          },
+          {
+            "fullName": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema reserves atomically under two concurrent clients",
+            "status": "skipped",
+            "title": "reserves atomically under two concurrent clients"
+          },
+          {
+            "fullName": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema fails closed with idempotency_key_reuse for a different proposal hash",
+            "status": "skipped",
+            "title": "fails closed with idempotency_key_reuse for a different proposal hash"
+          },
+          {
+            "fullName": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema abandons an expired reservation and re-arms a safe retry",
+            "status": "skipped",
+            "title": "abandons an expired reservation and re-arms a safe retry"
+          },
+          {
+            "fullName": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema marks an expired EFFECT_STARTED reservation uncertain without retrying",
+            "status": "skipped",
+            "title": "marks an expired EFFECT_STARTED reservation uncertain without retrying"
+          },
+          {
+            "fullName": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema fences a stale attempt after a safe takeover",
+            "status": "skipped",
+            "title": "fences a stale attempt after a safe takeover"
+          },
+          {
+            "fullName": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema reconciles UNCERTAIN explicitly and audits the actor",
+            "status": "skipped",
+            "title": "reconciles UNCERTAIN explicitly and audits the actor"
+          },
+          {
+            "fullName": "runtime effect journal PostgreSQL adapter with a disposable PostgreSQL schema isolates cross-tenant reads and writes with a non-BYPASSRLS role",
+            "status": "skipped",
+            "title": "isolates cross-tenant reads and writes with a non-BYPASSRLS role"
+          }
+        ]
+      },
+      {
+        "path": "packages/persistence/src/__tests__/goal-concurrency-postgres.test.ts",
+        "sha256": "b8060ad5309c5e038d48d3d81b56faf99548c398e3acd36ab0cd525e48e0301a",
+        "lines": 659,
+        "fileStatus": "all_skipped",
+        "passed": 0,
+        "skipped": 8,
+        "failed": 0,
+        "total": 8,
+        "skippedTests": [
+          {
+            "fullName": "Goal get-or-create concurrency over PostgreSQL relies on the existing partial unique index instead of a new migration",
+            "status": "skipped",
+            "title": "relies on the existing partial unique index instead of a new migration"
+          },
+          {
+            "fullName": "Goal get-or-create concurrency over PostgreSQL converges concurrent first deliveries on one canonical Goal without a unique violation",
+            "status": "skipped",
+            "title": "converges concurrent first deliveries on one canonical Goal without a unique violation"
+          },
+          {
+            "fullName": "Goal get-or-create concurrency over PostgreSQL creates distinct Goals for the same inbound message id in different tenants",
+            "status": "skipped",
+            "title": "creates distinct Goals for the same inbound message id in different tenants"
+          },
+          {
+            "fullName": "Goal get-or-create concurrency over PostgreSQL converges redelivery on the winner lineage and rejects incompatible reuse",
+            "status": "skipped",
+            "title": "converges redelivery on the winner lineage and rejects incompatible reuse"
+          },
+          {
+            "fullName": "Goal get-or-create concurrency over PostgreSQL rejects every divergent canonical lineage field without changing the winner",
+            "status": "skipped",
+            "title": "rejects every divergent canonical lineage field without changing the winner"
+          },
+          {
+            "fullName": "Goal get-or-create concurrency over PostgreSQL bounds the creation and claim race to one lease and one effect attempt",
+            "status": "skipped",
+            "title": "bounds the creation and claim race to one lease and one effect attempt"
+          },
+          {
+            "fullName": "Goal get-or-create concurrency over PostgreSQL does not produce retry or dead-letter side effects for a benign conflict",
+            "status": "skipped",
+            "title": "does not produce retry or dead-letter side effects for a benign conflict"
+          },
+          {
+            "fullName": "Goal get-or-create concurrency over PostgreSQL rejects settlement from an expired lease holder and accepts only the fresh fencing token",
+            "status": "skipped",
+            "title": "rejects settlement from an expired lease holder and accepts only the fresh fencing token"
+          }
+        ]
+      },
+      {
+        "path": "packages/persistence/src/__tests__/journey-task-atomicity.test.ts",
+        "sha256": "1cd4f3dbee0963b87a14e776c75f90d00eadf6307105b6df9d520818b092e885",
+        "lines": 261,
+        "fileStatus": "mixed",
+        "passed": 6,
+        "skipped": 2,
+        "failed": 0,
+        "total": 8,
+        "skippedTests": [
+          {
+            "fullName": "journey task atomicity PostgreSQL rolls back task on rejected audit and retries with one trusted event",
+            "status": "skipped",
+            "title": "rolls back task on rejected audit and retries with one trusted event"
+          },
+          {
+            "fullName": "journey task atomicity PostgreSQL concurrent same-key insert returns winner without aborted-transaction recovery",
+            "status": "skipped",
+            "title": "concurrent same-key insert returns winner without aborted-transaction recovery"
+          }
+        ]
+      },
+      {
+        "path": "packages/persistence/src/__tests__/journeys-postgres.test.ts",
+        "sha256": "c12936ad2b6a2cc44de091d7a1eb702097c3556437ce7468b280ccdc0228db7f",
+        "lines": 1243,
+        "fileStatus": "mixed",
+        "passed": 9,
+        "skipped": 15,
+        "failed": 0,
+        "total": 24,
+        "skippedTests": [
+          {
+            "fullName": "journey PostgreSQL persistence journey contract (postgres parity) creates, reloads and lists owner drafts with normalized candidates",
+            "status": "skipped",
+            "title": "creates, reloads and lists owner drafts with normalized candidates"
+          },
+          {
+            "fullName": "journey PostgreSQL persistence journey contract (postgres parity) records journey audit with the supplied actor and correlation",
+            "status": "skipped",
+            "title": "records journey audit with the supplied actor and correlation"
+          },
+          {
+            "fullName": "journey PostgreSQL persistence journey contract (postgres parity) audits journey tasks once with trusted actor and session context",
+            "status": "skipped",
+            "title": "audits journey tasks once with trusted actor and session context"
+          },
+          {
+            "fullName": "journey PostgreSQL persistence journey contract (postgres parity) links a patient and creates an approval-blocked appointment draft",
+            "status": "skipped",
+            "title": "links a patient and creates an approval-blocked appointment draft"
+          },
+          {
+            "fullName": "journey PostgreSQL persistence journey contract (postgres parity) expires drafts in place without deleting evidence or inventing confirmation",
+            "status": "skipped",
+            "title": "expires drafts in place without deleting evidence or inventing confirmation"
+          },
+          {
+            "fullName": "journey PostgreSQL persistence journey contract (postgres parity) fails closed across tenant boundaries for reads and writes",
+            "status": "skipped",
+            "title": "fails closed across tenant boundaries for reads and writes"
+          },
+          {
+            "fullName": "journey PostgreSQL persistence journey contract (postgres parity) creates journey tasks idempotently and records handoffs",
+            "status": "skipped",
+            "title": "creates journey tasks idempotently and records handoffs"
+          },
+          {
+            "fullName": "journey PostgreSQL persistence journey contract (postgres parity) rejects invalid inputs with stable validation failures",
+            "status": "skipped",
+            "title": "rejects invalid inputs with stable validation failures"
+          },
+          {
+            "fullName": "journey PostgreSQL persistence applies 0014 with forced RLS, idempotency constraints and draft-only states",
+            "status": "skipped",
+            "title": "applies 0014 with forced RLS, idempotency constraints and draft-only states"
+          },
+          {
+            "fullName": "journey PostgreSQL persistence applies 0014 additively over a 0013 database and preserves prior data",
+            "status": "skipped",
+            "title": "applies 0014 additively over a 0013 database and preserves prior data"
+          },
+          {
+            "fullName": "journey PostgreSQL persistence fails closed for a non-BYPASSRLS runtime role without tenant context",
+            "status": "skipped",
+            "title": "fails closed for a non-BYPASSRLS runtime role without tenant context"
+          },
+          {
+            "fullName": "journey PostgreSQL persistence persists journey task and handoff evidence through the tenant scope",
+            "status": "skipped",
+            "title": "persists journey task and handoff evidence through the tenant scope"
+          },
+          {
+            "fullName": "journey PostgreSQL persistence rolls back the whole journey mutation when the audit insert fails",
+            "status": "skipped",
+            "title": "rolls back the whole journey mutation when the audit insert fails"
+          },
+          {
+            "fullName": "journey PostgreSQL persistence serializes concurrent creates with the same idempotency key",
+            "status": "skipped",
+            "title": "serializes concurrent creates with the same idempotency key"
+          },
+          {
+            "fullName": "journey PostgreSQL persistence clears the tenant context of the borrowed connection after a transaction",
+            "status": "skipped",
+            "title": "clears the tenant context of the borrowed connection after a transaction"
+          }
+        ]
+      },
+      {
+        "path": "packages/persistence/src/__tests__/journeys.test.ts",
+        "sha256": "e6a05f8e8a4671e5a7e6e39a7d8180a9fbbeec11cac18701046038e14474f4f2",
+        "lines": 150,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/orchestrator-postgres.test.ts",
+        "sha256": "d0d4dc08f69dda605f32b30dd31b7b33a0866fe3fc325ec18aee661cc405d4b5",
+        "lines": 351,
+        "fileStatus": "all_skipped",
+        "passed": 0,
+        "skipped": 4,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": [
+          {
+            "fullName": "durable orchestrator PostgreSQL store applies the orchestrator migration and preserves tenant-scoped Goal/Plan/Step lineage",
+            "status": "skipped",
+            "title": "applies the orchestrator migration and preserves tenant-scoped Goal/Plan/Step lineage"
+          },
+          {
+            "fullName": "durable orchestrator PostgreSQL store rejects orphan effect and outbox orchestration lineage",
+            "status": "skipped",
+            "title": "rejects orphan effect and outbox orchestration lineage"
+          },
+          {
+            "fullName": "durable orchestrator PostgreSQL store enforces CAS, claim fencing, attempt history and recovery in PostgreSQL",
+            "status": "skipped",
+            "title": "enforces CAS, claim fencing, attempt history and recovery in PostgreSQL"
+          },
+          {
+            "fullName": "durable orchestrator PostgreSQL store persists the iteration guard and observation in PostgreSQL",
+            "status": "skipped",
+            "title": "persists the iteration guard and observation in PostgreSQL"
+          }
+        ]
+      },
+      {
+        "path": "packages/persistence/src/__tests__/outbox-branch-hardening.test.ts",
+        "sha256": "b7f8943230c20c9cc5d990541e22f4a3e999d424089dff40379af855f7bb0b0d",
+        "lines": 569,
+        "fileStatus": "passed",
+        "passed": 11,
+        "skipped": 0,
+        "failed": 0,
+        "total": 11,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/outbox-durability.test.ts",
+        "sha256": "b9ad7775a3a12f8b083a9f44b4b32c8537adc0b6c05ed4f999031b3438560ff0",
+        "lines": 805,
+        "fileStatus": "mixed",
+        "passed": 2,
+        "skipped": 7,
+        "failed": 0,
+        "total": 9,
+        "skippedTests": [
+          {
+            "fullName": "durable PostgreSQL outbox backfills a legacy processed row while RLS is already forced",
+            "status": "skipped",
+            "title": "backfills a legacy processed row while RLS is already forced"
+          },
+          {
+            "fullName": "durable PostgreSQL outbox fences a stale claim when a worker id is reused after takeover",
+            "status": "skipped",
+            "title": "fences a stale claim when a worker id is reused after takeover"
+          },
+          {
+            "fullName": "durable PostgreSQL outbox keeps the lease race at-least-once and relies on idempotent effects",
+            "status": "skipped",
+            "title": "keeps the lease race at-least-once and relies on idempotent effects"
+          },
+          {
+            "fullName": "durable PostgreSQL outbox fences an ack when the lease expires before the final compare-and-swap",
+            "status": "skipped",
+            "title": "fences an ack when the lease expires before the final compare-and-swap"
+          },
+          {
+            "fullName": "durable PostgreSQL outbox redacts legacy rows without making routable pending work disappear",
+            "status": "skipped",
+            "title": "redacts legacy rows without making routable pending work disappear"
+          },
+          {
+            "fullName": "durable PostgreSQL outbox claims once across two connections, journals at-least-once ack, retries and requeues in-place",
+            "status": "skipped",
+            "title": "claims once across two connections, journals at-least-once ack, retries and requeues in-place"
+          },
+          {
+            "fullName": "durable PostgreSQL outbox commits inbound message and durable intent together",
+            "status": "skipped",
+            "title": "commits inbound message and durable intent together"
+          }
+        ]
+      },
+      {
+        "path": "packages/persistence/src/__tests__/outbox-edge.test.ts",
+        "sha256": "af64482e9642bb0de42f892118393e4bf8d7affc14d2fa0f37083b03456338df",
+        "lines": 686,
+        "fileStatus": "passed",
+        "passed": 22,
+        "skipped": 0,
+        "failed": 0,
+        "total": 22,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/outbox-memory.test.ts",
+        "sha256": "f4dcaa89c8534ac4778bb863b72cbbaabdf6b6a515cc9b765a76f8da22038c16",
+        "lines": 281,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/outbox.test.ts",
+        "sha256": "3da6423b16b57bf7dff662721d6be4c537d9dfa15a0c9888d69bdae4bf8d90a5",
+        "lines": 277,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/persistence-schema.test.ts",
+        "sha256": "56d36f00d432f9262bd85f44c04f18156a0c499259b1d6388e1a84519c3eb1fe",
+        "lines": 316,
+        "fileStatus": "passed",
+        "passed": 7,
+        "skipped": 0,
+        "failed": 0,
+        "total": 7,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/platform-approval-postgres.test.ts",
+        "sha256": "13e1dad2a070edf93b12e52ebf0ae220c325e6380600cb6f3e1024eb0974ad65",
+        "lines": 360,
+        "fileStatus": "all_skipped",
+        "passed": 0,
+        "skipped": 2,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": [
+          {
+            "fullName": "PostgreSQL capability approval authority persists bindings and consumes approvals atomically exactly once",
+            "status": "skipped",
+            "title": "persists bindings and consumes approvals atomically exactly once"
+          },
+          {
+            "fullName": "PostgreSQL capability approval authority enforces tenant visibility for the durable approval table under FORCE RLS",
+            "status": "skipped",
+            "title": "enforces tenant visibility for the durable approval table under FORCE RLS"
+          }
+        ]
+      },
+      {
+        "path": "packages/persistence/src/__tests__/platform-approval-repository.test.ts",
+        "sha256": "f7ae81c9ea8f18cf85ca7443ca0d0f5b38b8b3c438c92b26fc80d24e45343402",
+        "lines": 325,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/platform-control-plane-repository.test.ts",
+        "sha256": "e8465cf12036856853e6839727feb56ef91087d6dfd85f672af257a2861331ab",
+        "lines": 1180,
+        "fileStatus": "passed",
+        "passed": 9,
+        "skipped": 0,
+        "failed": 0,
+        "total": 9,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/platform-postgres-smoke.test.ts",
+        "sha256": "47b1a31701656fb56e8f5af73f96f304ef1b4771c09f1a8918fc24a4c545ada3",
+        "lines": 526,
+        "fileStatus": "all_skipped",
+        "passed": 0,
+        "skipped": 5,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": [
+          {
+            "fullName": "Postgres platform control plane smoke persists an immutable published version and a tenant-scoped trace",
+            "status": "skipped",
+            "title": "persists an immutable published version and a tenant-scoped trace"
+          },
+          {
+            "fullName": "Postgres platform control plane smoke persists versioned suites and redacted A/B run metadata under tenant RLS",
+            "status": "skipped",
+            "title": "persists versioned suites and redacted A/B run metadata under tenant RLS"
+          },
+          {
+            "fullName": "Postgres platform control plane smoke persists tenant-scoped plugin metadata with immutable identity and guarded status",
+            "status": "skipped",
+            "title": "persists tenant-scoped plugin metadata with immutable identity and guarded status"
+          },
+          {
+            "fullName": "Postgres platform control plane smoke persists tenant-scoped knowledge source metadata without content or lifecycle bypass",
+            "status": "skipped",
+            "title": "persists tenant-scoped knowledge source metadata without content or lifecycle bypass"
+          },
+          {
+            "fullName": "Postgres platform control plane smoke persists a validated release-candidate evidence ledger without mutating the version",
+            "status": "skipped",
+            "title": "persists a validated release-candidate evidence ledger without mutating the version"
+          }
+        ]
+      },
+      {
+        "path": "packages/persistence/src/__tests__/plugin-catalog-repository.test.ts",
+        "sha256": "1c92eb7a53bfaf58574f6ef47dd7872cb57925fc157d15bd85a8a4c1c92cc6f2",
+        "lines": 256,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/postgres-migration-smoke.test.ts",
+        "sha256": "4c37ab9d56a9c60cf9f23700e9539ebf6ee6868db5c24d7519d66913652d754f",
+        "lines": 857,
+        "fileStatus": "mixed",
+        "passed": 8,
+        "skipped": 1,
+        "failed": 0,
+        "total": 9,
+        "skippedTests": [
+          {
+            "fullName": "postgres migration smoke applies the migration and persists runtime evidence in an isolated PostgreSQL schema",
+            "status": "skipped",
+            "title": "applies the migration and persists runtime evidence in an isolated PostgreSQL schema"
+          }
+        ]
+      },
+      {
+        "path": "packages/persistence/src/__tests__/release-candidate-repository.test.ts",
+        "sha256": "176c349f5a6359a99a257a7f20df9a5d6e709f0c26c9af3c98f4e4da42173194",
+        "lines": 314,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/repository-error-paths.test.ts",
+        "sha256": "63d7fb30836fb9e447cdfe9b42b9be55eda913bbf4b77af7dd7ab96e47574ade",
+        "lines": 297,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/restore-integrity.test.ts",
+        "sha256": "f035c6e72ce15efbeefd8931c9cdbd5191af7ac3527f840b5454cca4684303f1",
+        "lines": 630,
+        "fileStatus": "passed",
+        "passed": 12,
+        "skipped": 0,
+        "failed": 0,
+        "total": 12,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/restore.test.ts",
+        "sha256": "a18921f0dab64299f40d80733f64ebef140c1c126836a05d66b769b5603cf6a3",
+        "lines": 177,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/retention-postgres.test.ts",
+        "sha256": "72a3fe95b9d651eef67b0aedf08cb16dc528664c29b5b111292f39f975f2dd0d",
+        "lines": 1323,
+        "fileStatus": "all_skipped",
+        "passed": 0,
+        "skipped": 13,
+        "failed": 0,
+        "total": 13,
+        "skippedTests": [
+          {
+            "fullName": "retention sweep on PostgreSQL (synthetic fixtures) ships an additive, tenant-isolated retention ledger migration with checksum",
+            "status": "skipped",
+            "title": "ships an additive, tenant-isolated retention ledger migration with checksum"
+          },
+          {
+            "fullName": "retention sweep on PostgreSQL (synthetic fixtures) bounds the migration advisory lock with an explicit timeout",
+            "status": "skipped",
+            "title": "bounds the migration advisory lock with an explicit timeout"
+          },
+          {
+            "fullName": "retention sweep on PostgreSQL (synthetic fixtures) expires tenant A, preserves tenant B and held records, and is idempotent",
+            "status": "skipped",
+            "title": "expires tenant A, preserves tenant B and held records, and is idempotent"
+          },
+          {
+            "fullName": "retention sweep on PostgreSQL (synthetic fixtures) keeps the ledger invisible outside the target tenant and rejects context mismatch",
+            "status": "skipped",
+            "title": "keeps the ledger invisible outside the target tenant and rejects context mismatch"
+          },
+          {
+            "fullName": "AUD20-04 inbound dedupe retention keeps a durable tombstone and rejects late replay after TTL",
+            "status": "skipped",
+            "title": "keeps a durable tombstone and rejects late replay after TTL"
+          },
+          {
+            "fullName": "AUD20-04 inbound dedupe retention rolls back the current batch when statement timeout is exceeded",
+            "status": "skipped",
+            "title": "rolls back the current batch when statement timeout is exceeded"
+          },
+          {
+            "fullName": "AUD20-04 inbound dedupe retention processes inbound tombstones in bounded ordered batches",
+            "status": "skipped",
+            "title": "processes inbound tombstones in bounded ordered batches"
+          },
+          {
+            "fullName": "AUD20-04 inbound dedupe retention reports an incomplete checkpoint and converges on restart",
+            "status": "skipped",
+            "title": "reports an incomplete checkpoint and converges on restart"
+          },
+          {
+            "fullName": "AUD20-04 inbound dedupe retention lets concurrent sweepers split rows without duplicate tombstones",
+            "status": "skipped",
+            "title": "lets concurrent sweepers split rows without duplicate tombstones"
+          },
+          {
+            "fullName": "AUD20-04 inbound dedupe retention minimizes mature tombstones in restartable batches without reopening replay",
+            "status": "skipped",
+            "title": "minimizes mature tombstones in restartable batches without reopening replay"
+          },
+          {
+            "fullName": "AUD20-04 inbound dedupe retention keeps prepared old reader/writer statements compatible across migration 0029",
+            "status": "skipped",
+            "title": "keeps prepared old reader/writer statements compatible across migration 0029"
+          },
+          {
+            "fullName": "AUD20-04 inbound dedupe retention serializes inbound hold changes with lifecycle minimization",
+            "status": "skipped",
+            "title": "serializes inbound hold changes with lifecycle minimization"
+          },
+          {
+            "fullName": "AUD20-04 inbound dedupe retention fails closed outside the immutable lifecycle approval window",
+            "status": "skipped",
+            "title": "fails closed outside the immutable lifecycle approval window"
+          }
+        ]
+      },
+      {
+        "path": "packages/persistence/src/__tests__/retention.test.ts",
+        "sha256": "77b5a5fa7a86758040fe3c7903fb4596b584b006dcda30286c1ce38bab6368f4",
+        "lines": 781,
+        "fileStatus": "passed",
+        "passed": 27,
+        "skipped": 0,
+        "failed": 0,
+        "total": 27,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts",
+        "sha256": "5d74484550ae463350c0a1b51f5603d0ad43bc9e3273172c573e60db88c457c0",
+        "lines": 805,
+        "fileStatus": "mixed",
+        "passed": 4,
+        "skipped": 15,
+        "failed": 0,
+        "total": 19,
+        "skippedTests": [
+          {
+            "fullName": "durable runtime approval branch hardening deduplicates an inbound continuation and rejects a divergent reuse",
+            "status": "skipped",
+            "title": "deduplicates an inbound continuation and rejects a divergent reuse"
+          },
+          {
+            "fullName": "durable runtime approval branch hardening round-trips a minimal approval without optional proposal columns",
+            "status": "skipped",
+            "title": "round-trips a minimal approval without optional proposal columns"
+          },
+          {
+            "fullName": "durable runtime approval branch hardening decides a PENDING approval with and without a reason, idempotently",
+            "status": "skipped",
+            "title": "decides a PENDING approval with and without a reason, idempotently"
+          },
+          {
+            "fullName": "durable runtime approval branch hardening decides rejections from REQUESTED and PENDING and refuses terminal states",
+            "status": "skipped",
+            "title": "decides rejections from REQUESTED and PENDING and refuses terminal states"
+          },
+          {
+            "fullName": "durable runtime approval branch hardening decides every REQUESTED and PENDING reason variant",
+            "status": "skipped",
+            "title": "decides every REQUESTED and PENDING reason variant"
+          },
+          {
+            "fullName": "durable runtime approval branch hardening persists an explicit operator rejection and cancellation",
+            "status": "skipped",
+            "title": "persists an explicit operator rejection and cancellation"
+          },
+          {
+            "fullName": "durable runtime approval branch hardening refuses to resume a continuation without a durable trace root",
+            "status": "skipped",
+            "title": "refuses to resume a continuation without a durable trace root"
+          },
+          {
+            "fullName": "durable runtime approval branch hardening consumes an approved single-use approval and persists the execution",
+            "status": "skipped",
+            "title": "consumes an approved single-use approval and persists the execution"
+          },
+          {
+            "fullName": "durable runtime approval branch hardening marks a reserved approval uncertain with an explicit reason",
+            "status": "skipped",
+            "title": "marks a reserved approval uncertain with an explicit reason"
+          },
+          {
+            "fullName": "durable runtime approval branch hardening fails a reserved approval with explicit no-effect evidence",
+            "status": "skipped",
+            "title": "fails a reserved approval with explicit no-effect evidence"
+          },
+          {
+            "fullName": "durable runtime approval branch hardening reports not-found for missing approvals and lookups",
+            "status": "skipped",
+            "title": "reports not-found for missing approvals and lookups"
+          },
+          {
+            "fullName": "durable runtime approval branch hardening finds a continuation by inbound message and returns undefined otherwise",
+            "status": "skipped",
+            "title": "finds a continuation by inbound message and returns undefined otherwise"
+          },
+          {
+            "fullName": "durable runtime approval branch hardening sweeps expired reservations with the repository clock",
+            "status": "skipped",
+            "title": "sweeps expired reservations with the repository clock"
+          },
+          {
+            "fullName": "durable runtime approval branch hardening expires stale requests for one tenant through the set-based update",
+            "status": "skipped",
+            "title": "expires stale requests for one tenant through the set-based update"
+          },
+          {
+            "fullName": "durable runtime approval branch hardening rejects the cross-tenant expireStale sweep",
+            "status": "skipped",
+            "title": "rejects the cross-tenant expireStale sweep"
+          }
+        ]
+      },
+      {
+        "path": "packages/persistence/src/__tests__/runtime-approval-store-postgres.test.ts",
+        "sha256": "bb02013307df3a589d5dfacf1a9c9156e302e771dbfaff4a81dd86d1581b3759",
+        "lines": 802,
+        "fileStatus": "all_skipped",
+        "passed": 0,
+        "skipped": 14,
+        "failed": 0,
+        "total": 14,
+        "skippedTests": [
+          {
+            "fullName": "durable runtime approval authority (PROD-04) ships the additive runtime approval migration with forced RLS",
+            "status": "skipped",
+            "title": "ships the additive runtime approval migration with forced RLS"
+          },
+          {
+            "fullName": "durable runtime approval authority (PROD-04) ships the continuation pointer and trace migration without weakening RLS",
+            "status": "skipped",
+            "title": "ships the continuation pointer and trace migration without weakening RLS"
+          },
+          {
+            "fullName": "durable runtime approval authority (PROD-04) atomically commits a decision, continuation outbox event and audit",
+            "status": "skipped",
+            "title": "atomically commits a decision, continuation outbox event and audit"
+          },
+          {
+            "fullName": "durable runtime approval authority (PROD-04) rolls the decision back when the continuation enqueue fails",
+            "status": "skipped",
+            "title": "rolls the decision back when the continuation enqueue fails"
+          },
+          {
+            "fullName": "durable runtime approval authority (PROD-04) applies 0015 additively over 0014 with the checksum guard",
+            "status": "skipped",
+            "title": "applies 0015 additively over 0014 with the checksum guard"
+          },
+          {
+            "fullName": "durable runtime approval authority (PROD-04) keeps proposal and reservation across an adapter restart",
+            "status": "skipped",
+            "title": "keeps proposal and reservation across an adapter restart"
+          },
+          {
+            "fullName": "durable runtime approval authority (PROD-04) serializes a two-connection reserve to exactly one winner",
+            "status": "skipped",
+            "title": "serializes a two-connection reserve to exactly one winner"
+          },
+          {
+            "fullName": "durable runtime approval authority (PROD-04) fences generations and ships the SQL compare-and-set predicate",
+            "status": "skipped",
+            "title": "fences generations and ships the SQL compare-and-set predicate"
+          },
+          {
+            "fullName": "durable runtime approval authority (PROD-04) releases an expired RESERVED approval with no_effect evidence",
+            "status": "skipped",
+            "title": "releases an expired RESERVED approval with no_effect evidence"
+          },
+          {
+            "fullName": "durable runtime approval authority (PROD-04) keeps an EXECUTING approval UNCERTAIN until explicit reconciliation",
+            "status": "skipped",
+            "title": "keeps an EXECUTING approval UNCERTAIN until explicit reconciliation"
+          },
+          {
+            "fullName": "durable runtime approval authority (PROD-04) isolates rows for a non-BYPASSRLS runtime role",
+            "status": "skipped",
+            "title": "isolates rows for a non-BYPASSRLS runtime role"
+          },
+          {
+            "fullName": "durable runtime approval authority (PROD-04) returns operation-key candidates and filters pending approvals",
+            "status": "skipped",
+            "title": "returns operation-key candidates and filters pending approvals"
+          },
+          {
+            "fullName": "durable runtime approval authority (PROD-04) persists the engine expiry transition before rethrowing expired",
+            "status": "skipped",
+            "title": "persists the engine expiry transition before rethrowing expired"
+          },
+          {
+            "fullName": "durable runtime approval authority (PROD-04) rejects the cross-tenant expireStale sweep",
+            "status": "skipped",
+            "title": "rejects the cross-tenant expireStale sweep"
+          }
+        ]
+      },
+      {
+        "path": "packages/persistence/src/__tests__/runtime-audit-chain.test.ts",
+        "sha256": "12d503ffc72d65f5b442279f53156c928dc213eda4229bc9ec3048edd4932d00",
+        "lines": 158,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/runtime-trace-correlation.test.ts",
+        "sha256": "ea309b127aa83ca0bc1f58cb27eaf2b34e60649e68c9cce1afa03d2543536581",
+        "lines": 101,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/session-version-pinning-postgres.test.ts",
+        "sha256": "85ae35c8a001c2981b89d7cc44bbf604d18f2dbe1028a48fb41abfa1138715ba",
+        "lines": 122,
+        "fileStatus": "mixed",
+        "passed": 1,
+        "skipped": 1,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": [
+          {
+            "fullName": "session version pinning migration contract binds sessions atomically under the tenant-aware migration and never replaces the pin",
+            "status": "skipped",
+            "title": "binds sessions atomically under the tenant-aware migration and never replaces the pin"
+          }
+        ]
+      },
+      {
+        "path": "packages/persistence/src/__tests__/session-version-pinning.test.ts",
+        "sha256": "6a51da14d943dd2fa78c8a7557f95df788f94ccb5705a1b7c50ef5a31f629055",
+        "lines": 84,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/persistence/src/__tests__/tenant-isolation.test.ts",
+        "sha256": "69014bc198e44c3fbf69fc3d04a0637e4589cc0a790d224d892c97ac3f3f515f",
+        "lines": 1214,
+        "fileStatus": "mixed",
+        "passed": 12,
+        "skipped": 2,
+        "failed": 0,
+        "total": 14,
+        "skippedTests": [
+          {
+            "fullName": "tenant-scoped PostgreSQL boundary enforces cross-tenant isolation with a non-BYPASSRLS role and resets pooled context",
+            "status": "skipped",
+            "title": "enforces cross-tenant isolation with a non-BYPASSRLS role and resets pooled context"
+          },
+          {
+            "fullName": "tenant-scoped PostgreSQL boundary quarantines legacy tenant mismatches before enabling RLS",
+            "status": "skipped",
+            "title": "quarantines legacy tenant mismatches before enabling RLS"
+          }
+        ]
+      },
+      {
+        "path": "packages/platform/src/__tests__/approval-authority.test.ts",
+        "sha256": "10e5bea294d479bfa420f64df194d96f6cff6dca9ec9a0220d6d7dfe8d1d22f2",
+        "lines": 232,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/capability-approval-gateway.test.ts",
+        "sha256": "fe6f7645db25e6ab455fff6c7c041e82662db810a63d18ed724546e861c9b392",
+        "lines": 329,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/controlled-tool-registry.test.ts",
+        "sha256": "0a1212e821937236c7bebe2104c55c40c9da215cf9ab5f04b602afb9583a3d73",
+        "lines": 380,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/critical-safety-preflight.test.ts",
+        "sha256": "20542f1c808cf1f204451761d56baf04425b9a6f96143585771dcab1a9e28f39",
+        "lines": 294,
+        "fileStatus": "passed",
+        "passed": 9,
+        "skipped": 0,
+        "failed": 0,
+        "total": 9,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/event-bus-hardening.test.ts",
+        "sha256": "6f52d296d0ca130b42ccff125085b66c0fc1c2c5917814800df90865d1ca3356",
+        "lines": 250,
+        "fileStatus": "passed",
+        "passed": 7,
+        "skipped": 0,
+        "failed": 0,
+        "total": 7,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/event-bus.test.ts",
+        "sha256": "3f20e63769f9a197d340639fb751f3610a05595842887541d4022967125cbd79",
+        "lines": 319,
+        "fileStatus": "passed",
+        "passed": 8,
+        "skipped": 0,
+        "failed": 0,
+        "total": 8,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/handoff-policy.test.ts",
+        "sha256": "8def96757c7fca01b30655f7c42ee664e16b2092376c512ef17933b98903efdd",
+        "lines": 153,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/handoff.test.ts",
+        "sha256": "d230720af977373d55f30c0bc0afedf8b0f0509a3d9dac0660620bed37801248",
+        "lines": 29,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/knowledge-input-boundary.test.ts",
+        "sha256": "1c273d3c24a3032565c3a599bfd531f8bd7f6f374bef5e252e1280af6be1d104",
+        "lines": 147,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/knowledge-resolver.test.ts",
+        "sha256": "74d84806ab143cf0642ab435cd4714742974069bdc9578fe15569af8f7262973",
+        "lines": 96,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/knowledge-source-catalog.test.ts",
+        "sha256": "f297c2269d7cbb66a167b6e6d78a6f10fbd8ebb7c2880937498b030ad994febb",
+        "lines": 130,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/malformed-model-output.test.ts",
+        "sha256": "46eee501bd4f5fee859270f6ec1e4330ffd9ee28f59a92b2388d264d7ad13bb6",
+        "lines": 99,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/model-provider-boundary.test.ts",
+        "sha256": "15fd7519b1a2f2b37857b0c1270c1b22b48127d2317d6cbd105c6a9999a7a89b",
+        "lines": 109,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/model-provider.test.ts",
+        "sha256": "aded8bf2048a1e2e5950d69d3ed21c3a9845f97fbf0059d6e431690482d95ac3",
+        "lines": 69,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/output-policy.test.ts",
+        "sha256": "4d384c758784eae6df11f1606dcd2a2c77592c453142c4678f20598f91c70354",
+        "lines": 507,
+        "fileStatus": "passed",
+        "passed": 35,
+        "skipped": 0,
+        "failed": 0,
+        "total": 35,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/platform-foundation.test.ts",
+        "sha256": "f3c8719bbb965ed3d07c58b5ebdaacf82166ea7d9a9552db5d3d587a8672d4d5",
+        "lines": 1532,
+        "fileStatus": "passed",
+        "passed": 20,
+        "skipped": 0,
+        "failed": 0,
+        "total": 20,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/platform-misc-hardening.test.ts",
+        "sha256": "d51fe0bc1c71dbeaa41ad5e1f6531a723a42015310157fb51c430800af559c10",
+        "lines": 242,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/plugin-catalog.test.ts",
+        "sha256": "caeb719f9bacd296e002b41422d125c2a619231619772b2f9a3383fa16b979c6",
+        "lines": 174,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/plugin-gateway-hardening.test.ts",
+        "sha256": "4797f692642ca83b75b3b20a29d4d91ce2992a4e8ce8e48f84ba28414e7fc00f",
+        "lines": 766,
+        "fileStatus": "passed",
+        "passed": 12,
+        "skipped": 0,
+        "failed": 0,
+        "total": 12,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/plugin-registry-versioning.test.ts",
+        "sha256": "83f872334c19b57282be41a366c29e2ef06bf47e48500f0e2f85fd8df8b3b4ca",
+        "lines": 204,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/prompt-profile.test.ts",
+        "sha256": "6ed32fd3dab3cb05dbd67d273710aff435b0e17ef5e145b3694313020f3be62c",
+        "lines": 341,
+        "fileStatus": "passed",
+        "passed": 8,
+        "skipped": 0,
+        "failed": 0,
+        "total": 8,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/publish-evidence-authority.test.ts",
+        "sha256": "e129485f6fa258b28914e454b03520facb8729be8914066bd16e615fb5272b69",
+        "lines": 221,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/qualification.test.ts",
+        "sha256": "0d085337714b15960b7e7d515635c00274c769e6ed620f58f1c501a2b3cc74e7",
+        "lines": 67,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/release-candidate-ledger.test.ts",
+        "sha256": "cee1eba4152547d162db0fd0c0c815d943477f6e6a57d259301acce28473b52a",
+        "lines": 381,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/retention-ledger.test.ts",
+        "sha256": "961f3ad221b6046ac17d2a6f447660f1b9828c53ee005a851835a1f5424ee249",
+        "lines": 86,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/safety-assessment.test.ts",
+        "sha256": "0145961fc92e814477fed0bcacdfccbf0349c7cbc7f33e5ef61859189734c5e6",
+        "lines": 134,
+        "fileStatus": "passed",
+        "passed": 29,
+        "skipped": 0,
+        "failed": 0,
+        "total": 29,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/secretary-preset-hardening.test.ts",
+        "sha256": "1eae01fe49ac2de0de93fd29d98bf1154f34634cd28ee664e226dd6d913491ec",
+        "lines": 111,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/secretary-preset.test.ts",
+        "sha256": "0de881eb641a02e75184001086346dc270d99721f8fd9107893bdcd05c71e092",
+        "lines": 109,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/test-lab-events.test.ts",
+        "sha256": "9befafeab745ea75e6808d605a973876affebc88ea8f9bf83624e33e4a74490d",
+        "lines": 264,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/test-suite-catalog.test.ts",
+        "sha256": "6a9c0295a450dc84084365ac3522be6eaaaa31542a40078cd45bef6d417f764d",
+        "lines": 287,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/tool-invocation-boundary-hardening.test.ts",
+        "sha256": "b2deeb4a34326f9a4c2816c3697da4d7a8eab001ea15b9617bb17b5e6d428a85",
+        "lines": 286,
+        "fileStatus": "passed",
+        "passed": 9,
+        "skipped": 0,
+        "failed": 0,
+        "total": 9,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/tool-invocation-boundary.test.ts",
+        "sha256": "e6c1f795d53f9db2eb42ac7b5fd8d519313344fc050436cf35cd450d8dced9ab",
+        "lines": 551,
+        "fileStatus": "passed",
+        "passed": 14,
+        "skipped": 0,
+        "failed": 0,
+        "total": 14,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/platform/src/__tests__/trace-governance.test.ts",
+        "sha256": "0f1d1860471699fd870014e8203efdfee84a8ba06857585c2c8654b80409a9fc",
+        "lines": 254,
+        "fileStatus": "passed",
+        "passed": 14,
+        "skipped": 0,
+        "failed": 0,
+        "total": 14,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/policy-engine/src/__tests__/capability-scope.test.ts",
+        "sha256": "eb2464b0fe417ef21479a2edbd982454d7d11b6e3dca73c85e308adc700e13ab",
+        "lines": 346,
+        "fileStatus": "passed",
+        "passed": 15,
+        "skipped": 0,
+        "failed": 0,
+        "total": 15,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/policy-engine/src/__tests__/execution-contract-matrix.test.ts",
+        "sha256": "ea1e9ee0bd222a5d72d9469f61664a857d696fefaca6a0744ff75ddb272649a8",
+        "lines": 523,
+        "fileStatus": "passed",
+        "passed": 10,
+        "skipped": 0,
+        "failed": 0,
+        "total": 10,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/policy-engine/src/__tests__/policy-coverage.test.ts",
+        "sha256": "57372edb3d34b51c7a2814a20370d52d3c1927e621a91ee08312835d466c731a",
+        "lines": 196,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts",
+        "sha256": "4d2d066c991f9f7751e835eb8031ca8229ec3816a459fe8bc0a3e09faf582af6",
+        "lines": 242,
+        "fileStatus": "passed",
+        "passed": 9,
+        "skipped": 0,
+        "failed": 0,
+        "total": 9,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/policy-engine/src/__tests__/policy-engine.test.ts",
+        "sha256": "9f78e847e196c59cd8e15b3d9a948c66e1e66eb7bc82c88ba373c8c271e65767",
+        "lines": 396,
+        "fileStatus": "passed",
+        "passed": 14,
+        "skipped": 0,
+        "failed": 0,
+        "total": 14,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/policy/src/__tests__/approval-state.integration.test.ts",
+        "sha256": "69c524fad68701fabe49bb3cc896b883666fcdeeb8b5159c826a1a17c1e65319",
+        "lines": 31,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/policy/src/__tests__/policy-engine.test.ts",
+        "sha256": "bdf720edea2431d2d9de910aa605014c3731eb3a5bf856166bc18e8242e07f15",
+        "lines": 94,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/rag/src/__tests__/institutional-rag-hardening.test.ts",
+        "sha256": "4a84ada822528b9ed5e45602c62556608cbfae2e889517e8d1976bd5331dffd5",
+        "lines": 162,
+        "fileStatus": "passed",
+        "passed": 8,
+        "skipped": 0,
+        "failed": 0,
+        "total": 8,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/rag/src/__tests__/institutional-rag.test.ts",
+        "sha256": "c87d5d2c52d5d8863fefcdd8d2de3d7329aa1443a757b6e8a0e716f4ef6ca438",
+        "lines": 73,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/shared/src/__tests__/audit-governance-hardening.test.ts",
+        "sha256": "22c3d8f8ee12961856b8c701e493618541f6621652465e9a5c0657ed6ce39151",
+        "lines": 311,
+        "fileStatus": "passed",
+        "passed": 10,
+        "skipped": 0,
+        "failed": 0,
+        "total": 10,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/shared/src/__tests__/auth-identity-mode.test.ts",
+        "sha256": "b20d913b7993a0f3de213564ff3d87220aff58e96fa9bf3d8711a681a23232fa",
+        "lines": 33,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/shared/src/__tests__/canonical.test.ts",
+        "sha256": "5d20358099371062f829af8fcc87c21429104071b0cafe20fa819217c03206ab",
+        "lines": 69,
+        "fileStatus": "passed",
+        "passed": 9,
+        "skipped": 0,
+        "failed": 0,
+        "total": 9,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/shared/src/__tests__/data-classification.test.ts",
+        "sha256": "4a5b3704860b06f22d93e9360c1fff72ce7e76ab4973690afbf089e7602e46c3",
+        "lines": 65,
+        "fileStatus": "passed",
+        "passed": 7,
+        "skipped": 0,
+        "failed": 0,
+        "total": 7,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/shared/src/__tests__/http-security-env.test.ts",
+        "sha256": "bfc017e4926a0583ac1fd805440f0573dfc812fe5d87942a54ff3f1e00b9c22f",
+        "lines": 62,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/shared/src/__tests__/ids-hardening.test.ts",
+        "sha256": "9aebcb404299c23d518a9c12e9dd98c13eb7c5b2c3776ba41e7f60a08fed5be7",
+        "lines": 64,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/shared/src/__tests__/lifecycle.test.ts",
+        "sha256": "1f3cdbf4f9f46f2eeb3abca5380a122ea6453f12396c55bf2224eef740f9d079",
+        "lines": 100,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/shared/src/__tests__/shared-branches-hardening.test.ts",
+        "sha256": "752153c779411855385185885fc7bf006dda652d6f43d16f8cf560bbd8a2f68b",
+        "lines": 297,
+        "fileStatus": "passed",
+        "passed": 15,
+        "skipped": 0,
+        "failed": 0,
+        "total": 15,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/shared/src/__tests__/shared-contracts.test.ts",
+        "sha256": "269d6bede7a313acbfa5177db01ab6a3b17312aa193b0636d64fd482f6a48602",
+        "lines": 369,
+        "fileStatus": "passed",
+        "passed": 11,
+        "skipped": 0,
+        "failed": 0,
+        "total": 11,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/shared/src/__tests__/ssrf.test.ts",
+        "sha256": "6348a7afe3ec5778525949833c61c9780b62560a90ce6e3765e33b1471377032",
+        "lines": 128,
+        "fileStatus": "passed",
+        "passed": 34,
+        "skipped": 0,
+        "failed": 0,
+        "total": 34,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/tools/src/__tests__/journey-tools.test.ts",
+        "sha256": "9bf1855d3d9ed6c05ff73b6b1bd8c7102f88bb5520cf5b3098c265c86d7207f1",
+        "lines": 93,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/tools/src/__tests__/local-handlers-hardening.test.ts",
+        "sha256": "811d287a7db12487cae17bc520fd3c67eee9e635999cb58924cb8ce431f9c762",
+        "lines": 237,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/tools/src/__tests__/owner-patient-tools.integration.test.ts",
+        "sha256": "200541ea5870e906d50fd9ef68ca6ac24816a0ea967c8e31b2b74cf89e7acad1",
+        "lines": 28,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/tools/src/__tests__/platform-adapter.test.ts",
+        "sha256": "aa2b09da0f80a61232cd975b7858fe95c1d48a113d7e4093da46f48496b7b53f",
+        "lines": 127,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/tools/src/__tests__/tool-registry.test.ts",
+        "sha256": "5e61246fbf9dda9ff4d93385c48c9cc3d1b8abd1ce2bc0f13fd10fea7bf42d4a",
+        "lines": 44,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/workflows/src/__tests__/handoff-summary.unit.test.ts",
+        "sha256": "10f9b794437acc612fe4dff2d8dc9c6d5ff449e9b5f994e5c00b723c6b779422",
+        "lines": 22,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/workflows/src/__tests__/institutional-rag-safe.flow.test.ts",
+        "sha256": "69fcc9baa90a92b2ce0981c12a99d477fa0401b601842720acfb86316819a052",
+        "lines": 27,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/workflows/src/__tests__/intent-workflow.flow.test.ts",
+        "sha256": "19d57b8dbebc75de221b28d9121c157dfc549dbdd87250701a68151330cedd24",
+        "lines": 84,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/workflows/src/__tests__/persistent-journey.flow.test.ts",
+        "sha256": "4049c27b7f4dec9dff73967303d290d65ab007f35df0294a1419235c5181f5f4",
+        "lines": 139,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/workflows/src/__tests__/scheduling-draft.flow.test.ts",
+        "sha256": "887dfa9f2f130f5f5da2b6c0e003770068d38ac3b00519084a6fe6b4de24e43f",
+        "lines": 14,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "packages/workflows/src/__tests__/triage-safety.flow.test.ts",
+        "sha256": "8fdf15982998a71aa5d98ec03ec33b892c6e8b21e352c6ca601b149e5c19f88c",
+        "lines": 19,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/architecture.test.js",
+        "sha256": "8e8266f313ccd43d1e192d8389843402cd84ca67acc512eab48ae603c3a4b635",
+        "lines": 426,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/aud19-certification-guards.test.js",
+        "sha256": "229146d62e1402106637d69fb81c7f5dedb6819b4b805466e9bce6aa4517ffa5",
+        "lines": 332,
+        "fileStatus": "passed",
+        "passed": 9,
+        "skipped": 0,
+        "failed": 0,
+        "total": 9,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/aud19-critical-coverage.test.js",
+        "sha256": "7d7c0fc36a24abac1ff6f5d20076355dd28f14ba70dd4cd871ca9a9b8992236f",
+        "lines": 105,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/aud19-external-evidence.test.js",
+        "sha256": "b7fd0641c4d50321014f42484aa8f17ae893be8adc23ba11701fea93a8896bc8",
+        "lines": 152,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/aud20-05-replay-grants-probe.test.js",
+        "sha256": "f0d630c5ce3dfce2edca3b2b7d0a1d5f608f84050d14006d757d55a171227ab5",
+        "lines": 127,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/aud20-05-resource-attestation-check.test.js",
+        "sha256": "874b9c2c86d12d4092e78dd2022d40b491359b83d8920774b4791e413d2fc56e",
+        "lines": 277,
+        "fileStatus": "passed",
+        "passed": 8,
+        "skipped": 0,
+        "failed": 0,
+        "total": 8,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/aud20-16-capacity-model.test.js",
+        "sha256": "b8fde4fa259a332a0f46cc3a4d484735c848879670d45cce9bde1e10e5302a56",
+        "lines": 98,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/aud20-19-qualification.test.js",
+        "sha256": "1a3c1d3c0c915e35b9417fc0fc0493d48a30d8cd95b2e002a32c1f5c9a6a0de8",
+        "lines": 226,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/ci-workflow-contract.test.js",
+        "sha256": "c2c2f46364dcd6cd1e666e01b8d51b69f20b656e63b92f8060614dc972f7fb0f",
+        "lines": 30,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/construction-readiness.test.js",
+        "sha256": "7e7ad0c0b59e6e380ca126fed4716174b7664fb0de3cd1fefe9ed6725d8eff41",
+        "lines": 118,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/critic-evidence.test.js",
+        "sha256": "f309300f767ff2690e74cbd5b1e846cccd73353644ce346ab2321858de67e129",
+        "lines": 252,
+        "fileStatus": "passed",
+        "passed": 11,
+        "skipped": 0,
+        "failed": 0,
+        "total": 11,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/docs-integrity.test.js",
+        "sha256": "8c8fa72e88ea5dcc4eeab9976ebd3484f6bff243ffaf10bdb80b5df6d0da69e0",
+        "lines": 318,
+        "fileStatus": "passed",
+        "passed": 12,
+        "skipped": 0,
+        "failed": 0,
+        "total": 12,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/docs-readiness.test.js",
+        "sha256": "1783ad9a909ec1ccda040f438f49a7b92bda33079ae8fde75899d8ff675faa6f",
+        "lines": 195,
+        "fileStatus": "passed",
+        "passed": 7,
+        "skipped": 0,
+        "failed": 0,
+        "total": 7,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/e2e/critical-flows.test.ts",
+        "sha256": "8fd63e0e0190124ea648f310b42ae08ae8ac5b3a142c0885e665c986d95107c6",
+        "lines": 91,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/mutation-sentinel.test.js",
+        "sha256": "010e79d39cd72966eb931988cdc6bf930617eadba9702dd32330790cf541ab13",
+        "lines": 326,
+        "fileStatus": "passed",
+        "passed": 4,
+        "skipped": 0,
+        "failed": 0,
+        "total": 4,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/phase11-2-certification.test.js",
+        "sha256": "9b5a1ec8ccff7aefa04bb3ace683d7c1b6f50bd055e90b9c71bcefc779a5ff71",
+        "lines": 149,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/phase11-certification.test.js",
+        "sha256": "fcb148bcb98cf2a9836b110bd37329723a497d443a488b5dd39b6aab21fcd1c6",
+        "lines": 110,
+        "fileStatus": "passed",
+        "passed": 3,
+        "skipped": 0,
+        "failed": 0,
+        "total": 3,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/phase11-eval-contract.test.js",
+        "sha256": "6293250d4b1fc26d5ffa3211862df7d74e94939caa528857de8280daea82ffb8",
+        "lines": 240,
+        "fileStatus": "passed",
+        "passed": 24,
+        "skipped": 0,
+        "failed": 0,
+        "total": 24,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/phase11-formal-certification.test.js",
+        "sha256": "f06eb964122df0401618c33067cfc2c84e23ecfa74595c16e4bece591dc74c26",
+        "lines": 545,
+        "fileStatus": "passed",
+        "passed": 14,
+        "skipped": 0,
+        "failed": 0,
+        "total": 14,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/phase11-score-rubric.test.js",
+        "sha256": "7a91e4317c3a62e1c871b5c7d68ef0b463e8f0409b3f0f18551f6f65dd5f7b46",
+        "lines": 176,
+        "fileStatus": "passed",
+        "passed": 6,
+        "skipped": 0,
+        "failed": 0,
+        "total": 6,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/production-preflight.test.js",
+        "sha256": "817399797d470b733ff6f15cb8517b207de5c942dedecad130505cdc2ec0139a",
+        "lines": 408,
+        "fileStatus": "passed",
+        "passed": 16,
+        "skipped": 0,
+        "failed": 0,
+        "total": 16,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/release-candidate-boundary.test.js",
+        "sha256": "9b65418ea9140a5ccead77b3d3b4a6a5392a8b6bb75d4c4862e12bf42536d99e",
+        "lines": 105,
+        "fileStatus": "passed",
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0,
+        "total": 5,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/repository-structure.test.js",
+        "sha256": "052bfd6ad86852192bce532f9684bed43d5b2c15b763b4a885f8c66f700cd4d6",
+        "lines": 59,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/vitest-hermetic.test.ts",
+        "sha256": "79e5cda100b975e6f21f800b792963c89793f35857fd22e6cb05d9c18db821be",
+        "lines": 19,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/worker-controlled-smoke.test.js",
+        "sha256": "e09ec2f6a7e5a008bd9e933d2081772e3d096586fe916fb58a28228fc6c84424",
+        "lines": 37,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/worker-startup-smoke.test.js",
+        "sha256": "58b723ecd4b679f538a574d34d1eb36a76c88bafe69435f3376b4d11b238fe59",
+        "lines": 41,
+        "fileStatus": "passed",
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "total": 1,
+        "skippedTests": []
+      },
+      {
+        "path": "tests/workspace-scripts.test.js",
+        "sha256": "f163d19a3ca149c757509b79badd51896bab797b659c4f41da7754321f86b2d6",
+        "lines": 72,
+        "fileStatus": "passed",
+        "passed": 2,
+        "skipped": 0,
+        "failed": 0,
+        "total": 2,
+        "skippedTests": []
+      }
+    ],
+    "excludedFromV1Candidate": {
+      "apps/api/src/server/request-query.ts": {
+        "path": "apps/api/src/server/request-query.ts",
+        "sha256": "63d3f868ef1ab83efface68222a47f70c552b7047a970a7a0f2310a7a18162bc",
+        "lines": 138
+      },
+      "apps/api/src/__tests__/request-query.test.ts": {
+        "path": "apps/api/src/__tests__/request-query.test.ts",
+        "sha256": "98840957b11cec3d6d4a5f9baaa4929cd4408c6817ec77d0b1c841a28e1ded43",
+        "lines": 192
+      }
+    },
+    "requestContextPreEditGuards": {
+      "apps/api/src/server/request-context.ts": {
+        "expected": "ec4bbc4b68480a6cfd75024cf2382765a20d4d72b9e7dd9f41619403dacaf9a7",
+        "actual": "ec4bbc4b68480a6cfd75024cf2382765a20d4d72b9e7dd9f41619403dacaf9a7",
+        "pass": true
+      },
+      "apps/api/src/__tests__/request-context.test.ts": {
+        "expected": "6e75f74544d727dc56e99913bd4af5b92ee1438523a19773e35526591b7acda2",
+        "actual": "6e75f74544d727dc56e99913bd4af5b92ee1438523a19773e35526591b7acda2",
+        "pass": true
+      },
+      "docs/04_audit/evidence/AUD20/AUD20-17-request-context-spec-amendment-proposal-v2-20260924.md": {
+        "expected": "1cb72b0e097ad19539c1f14fbdc892542ae9ddabf716bba00eef20b1c4cb237c",
+        "actual": "1cb72b0e097ad19539c1f14fbdc892542ae9ddabf716bba00eef20b1c4cb237c",
+        "pass": true
+      }
+    },
+    "dependencyResolution": {
+      "nodeModulesSymlink": {
+        "candidatePath": "/tmp/aud20-17-context-v1-run-20260924/node_modules",
+        "target": "/home/ricardo/cvg-agent-secretary-v2/node_modules"
+      },
+      "workspaceLinksResolveToRoot": true,
+      "workspaceSourceEquivalence": {
+        "packages": {
+          "fileCount": 411,
+          "rootTreeSha256": "6113e10d6c7b3a5b7a58fc25794657cfc7df31d351736ad51810a9c5aef6ec43",
+          "isolatedTreeByteEqual": true
+        },
+        "appsWorker": {
+          "fileCount": 39,
+          "rootTreeSha256": "61a03a9df8225d32c3044d7a65fa6936ea9eabec8dc9b33864d5bbf7cb170876",
+          "isolatedTreeByteEqual": true
+        }
+      },
+      "note": "The isolated candidate cloned sources/configuration and reused installed dependencies through the existing node_modules symlink; the linked workspace source trees were byte-equal at verification."
+    },
+    "integratedRootRun": {
+      "candidateBasis": "currentIntegratedFiles exact hashes in this manifest; root workspace at Git HEAD 25434811334f5cec92ee0741079302271b82b7cb",
+      "sourceHashCheck": "all currentIntegratedFiles matched the workspace before both runs",
+      "nodeVersion": "v22.23.2",
+      "fullTestCommand": "TEST_DATABASE_URL='' npm test",
+      "coverageCommand": "TEST_DATABASE_URL='' npm run test:coverage"
+    },
+    "independentReview": {
+      "reviewer": "aud20_17_context_v2_critic_fresh_20260924",
+      "freshContext": true,
+      "readOnly": true,
+      "repositoryFingerprintUnchanged": true,
+      "prePostFingerprintDigest": "7ea35b982dfd962ac8f7fde4e68252711651413e9e7dcb872aec0d5d7a0079b5",
+      "criterionResults": {
+        "C01": "PASS",
+        "C02": "PASS",
+        "C03": "PASS",
+        "C04": "PASS",
+        "C05": "PASS",
+        "C06": "FAIL",
+        "C07": "FAIL"
+      },
+      "overallVerdict": "DO_NOT_ACCEPT"
+    }
+  },
+  "testReceipts": {
+    "matrixLog": {
+      "sha256": "2318df3342ed4db263fbdacd21033335d534817b63a42297dfc738eb103fbd4c",
+      "lines": 13
+    },
+    "fullTestLog": {
+      "sha256": "5bd99a37ed0cc43be893939909997b1bd87df0cf58a732e4b53ebb4f97200673",
+      "lines": 137
+    },
+    "coverageLog": {
+      "sha256": "fe7232e46ef621f63519fb02756a1cfdd6ec0e27ac501c0b5f2dc5d43861a1ba",
+      "lines": 266
+    },
+    "coverageRunJson": {
+      "sha256": "cacac429aa3fb2bab721619aef49e7c2fa06ea004cfc6d9ffcc26aab4a215556",
+      "lines": 0
+    },
+    "perFileInventory": {
+      "sha256": "5bb082d163d26b678dbf84542fb194234aea93b4d8ff42174d4a9c8471694581",
+      "lines": 4325
+    },
+    "matrixCounts": {
+      "files": 13,
+      "passed": 113,
+      "skipped": 9,
+      "failed": 0
+    },
+    "fullTestCounts": {
+      "files": 300,
+      "filesPassed": 288,
+      "filesSkipped": 12,
+      "passed": 2248,
+      "skipped": 192,
+      "failed": 0
+    },
+    "coverage": {
+      "statements": 90.83,
+      "branches": 86.97,
+      "functions": 89.27,
+      "lines": 91.42,
+      "requestContextBranches": 92.0,
+      "requestContextStatements": 99.0,
+      "requestContextFunctions": 100.0,
+      "requestContextLines": 98.91
+    },
+    "environment": {
+      "TEST_DATABASE_URL": "",
+      "postgresqlGate": "NOT_RUN",
+      "selectedMutationDetection": "NOT_RUN"
+    },
+    "integratedFocusedLog": {
+      "sha256": "9e8ba300417efa5e788fc9828df2132106de29f0ab7c3d80777afbdf758ccf27",
+      "lines": 13
+    },
+    "integratedFocusedCounts": {
+      "files": 4,
+      "passed": 47,
+      "skipped": 1,
+      "failed": 0
+    },
+    "supersededFocusedAttempt": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-build-focused-20260924.log",
+      "sha256": "44ba2f032e72db40b2abf75bf9e04fe74b9e5e14df6c540eff87582e59b263e9",
+      "lines": 273,
+      "result": "3 failed files, 16 timed-out failures, 31 passed, 1 skipped; fixed by making request hooks async; final focused round2 passed"
+    },
+    "integratedRootFullTestLog": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-integrated-full-test-round1-20260924.log",
+      "sha256": "6ef5d73e663fceb88a95b2f3ce9acad7c427cc1a569b410be56aac6fb0b66e98",
+      "lines": 138
+    },
+    "integratedRootFullTestCounts": {
+      "files": 301,
+      "filesPassed": 289,
+      "filesSkipped": 12,
+      "passed": 2256,
+      "skipped": 192,
+      "failed": 0
+    },
+    "integratedRootCoverageLog": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-integrated-coverage-round1-20260924.log",
+      "sha256": "6ab8cc63ff5162a7cfb29c08f81ba4ba113ecc96873b0d10ef4efd61897f666f",
+      "lines": 275
+    },
+    "integratedRootCoverageSummary": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-integrated-coverage-summary-20260924.json",
+      "sha256": "94abe96ed88109b890c4d30d5ef387cb002fbf30e170fc622560f166df23802b",
+      "lines": 212
+    },
+    "integratedRootCoverage": {
+      "statements": 90.84,
+      "branches": 87,
+      "functions": 89.27,
+      "lines": 91.43
+    },
+    "integratedRootCoverageDenominators": {
+      "statements": {
+        "covered": 11497,
+        "total": 12656
+      },
+      "branches": {
+        "covered": 8849,
+        "total": 10171
+      },
+      "functions": {
+        "covered": 2107,
+        "total": 2360
+      },
+      "lines": {
+        "covered": 10922,
+        "total": 11945
+      }
+    },
+    "integratedRootRequestContextCoverage": {
+      "statements": 99,
+      "branches": 92,
+      "functions": 100,
+      "lines": 98.91
+    },
+    "integratedRootCoverageEnvironment": {
+      "nodeVersion": "v22.23.2",
+      "TEST_DATABASE_URL": "",
+      "postgresqlGate": "NOT_RUN",
+      "selectedMutationDetection": "NOT_RUN"
+    },
+    "finalDocsCheckCounts": {
+      "links": 1458,
+      "brokenLinks": 0,
+      "jsonFiles": 627,
+      "invalidJson": 0,
+      "semanticState": "valid",
+      "nodeVersion": "v22.23.2"
+    },
+    "supersededDocsCheckAttempt": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-docs-check-superseded-round2-20260924.log",
+      "sha256": "a96fb993d354fc2d2728491e422775fcca2f42ad0faeef672622cd48913780e4",
+      "lines": 46,
+      "result": "FAIL next_action_mismatch; fixed canonical nextAction and reran successfully"
+    }
+  },
+  "staticChecks": {
+    "typecheck": {
+      "sha256": "8b0652334f8c18d7b8ab65ebb1c68eb5c3e9bfcdeee08c641f75418ba81efb8c",
+      "lines": 4
+    },
+    "lint": {
+      "sha256": "698dae4c32293ce3bc9c1fdd7f7ca0912b7dd7041c3a321551e5666692d8fe36",
+      "lines": 4
+    },
+    "format": {
+      "sha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3",
+      "lines": 6
+    },
+    "docsCheck": {
+      "sha256": "19490305301b5cfbe363a778cbacf5caea24fe536498b9a3fcff8b5b9c5bb861",
+      "lines": 42
+    },
+    "gitDiffCheck": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lines": 0
+    },
+    "integratedRootDocsCheckRound2": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-integrated-docs-check-round2-20260924.log",
+      "sha256": "70504b62e59ff6c687dfea66cc849cae5a629ecd01adca97e036adcc0f0ee789",
+      "lines": 42
+    },
+    "integratedRootFormatCheckRound2": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-integrated-format-check-round2-20260924.log",
+      "sha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3",
+      "lines": 6
+    },
+    "supersededDocsCheckAttempt": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-docs-check-superseded-round2-20260924.log",
+      "sha256": "a96fb993d354fc2d2728491e422775fcca2f42ad0faeef672622cd48913780e4",
+      "lines": 46
+    },
+    "finalDocsCheckAfterStateSync": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-docs-check-final-round3-20260924.log",
+      "sha256": "b43e9efb883d76680cc97dd647ffbc3e803e79a615e5a76bb1504966e9b916b4",
+      "lines": 42
+    },
+    "finalFormatCheckAfterStateSync": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-format-check-final-round3-20260924.log",
+      "sha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3",
+      "lines": 6
+    },
+    "finalDiffCheckAfterStateSync": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-diff-check-final-round3-20260924.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lines": 0
+    },
+    "buildReportAfterIndependentReview": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-build-report-20260924.md",
+      "sha256": "0ebebf1c12032597a7733d935c7a08bc19aba4687c420223496499a58ae742a9",
+      "lines": 119
+    },
+    "finalDocsCheckRound4": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-docs-check-final-round4-20260924.log",
+      "sha256": "85e5f211fc1109bf79e5af27686eec0a1d7f2a1b311de4264d84d5cb3c84f287",
+      "lines": 42
+    },
+    "finalFormatCheckRound4": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-format-check-final-round4-20260924.log",
+      "sha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3",
+      "lines": 6
+    },
+    "finalDiffCheckRound4": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-diff-check-final-round4-20260924.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lines": 0
+    },
+    "finalDocsCheckRound5": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-docs-check-final-round5-20260924.log",
+      "sha256": "85e5f211fc1109bf79e5af27686eec0a1d7f2a1b311de4264d84d5cb3c84f287",
+      "lines": 42
+    },
+    "finalFormatCheckRound5": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-format-check-final-round5-20260924.log",
+      "sha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3",
+      "lines": 6
+    },
+    "finalDiffCheckRound5": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-diff-check-final-round5-20260924.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lines": 0
+    },
+    "finalDocsCheckRound6": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-docs-check-final-round6-20260924.log",
+      "sha256": "85e5f211fc1109bf79e5af27686eec0a1d7f2a1b311de4264d84d5cb3c84f287",
+      "lines": 42
+    },
+    "finalFormatCheckRound6": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-format-check-final-round6-20260924.log",
+      "sha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3",
+      "lines": 6
+    },
+    "finalDiffCheckRound6": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-diff-check-final-round6-20260924.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lines": 0
+    }
+  },
+  "gateEvidence": {
+    "C01": "PASS_LOCAL; unique owner and injected request-context architecture assertions passed",
+    "C02": "PASS_LOCAL; reconstructed v1 server 4707/4708, context 328/450, query parser 138/160, integrated sum 5050/5050",
+    "C03": "PASS_LOCAL; identity/default-deny/tenant/inbound matrix passed; PostgreSQL-dependent cases remain skipped",
+    "C04": "PASS_LOCAL; HTTP envelope/message compatibility, malformed JSON, and webhook raw-body assertions passed",
+    "C05": "PASS_LOCAL; negative checks and architecture assertions passed",
+    "C06": "FAIL; integrated root candidate full suite 2256 passed/192 skipped/0 failed; coverage statements 90.84%, branches 87.00%, functions 89.27% (<90%), lines 91.43%; request-context branches 92% (<critical 95%); selected mutation and PostgreSQL gates NOT_RUN",
+    "C07": "FAIL; fresh read-only critic completed after final write, distinguished v1 from integrated query-parser, and did not approve the candidate because C06 fails; see independent critic report",
+    "acceptance": "NOT_ACCEPTED; task remains IN_PROGRESS; C06/C07 fail and independent review rejects acceptance"
+  },
+  "implementationNote": "RequestMetricRoute uses url?: string | undefined and compact structural request/reply aliases for Fastify exactOptionalPropertyTypes; no runtime contract change was introduced. Independent review should compare this syntax adaptation with the approved structural callback shape.",
+  "evidenceFiles": {
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v1-matrix-round2-20260924.log": {
+      "sha256": "2318df3342ed4db263fbdacd21033335d534817b63a42297dfc738eb103fbd4c",
+      "lines": 13
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v1-full-test-round2-20260924.log": {
+      "sha256": "5bd99a37ed0cc43be893939909997b1bd87df0cf58a732e4b53ebb4f97200673",
+      "lines": 137
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v1-coverage-round2-20260924.log": {
+      "sha256": "fe7232e46ef621f63519fb02756a1cfdd6ec0e27ac501c0b5f2dc5d43861a1ba",
+      "lines": 266
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v1-coverage-test-results-20260924.json": {
+      "sha256": "cacac429aa3fb2bab721619aef49e7c2fa06ea004cfc6d9ffcc26aab4a215556",
+      "lines": 0
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v1-test-inventory-20260924.json": {
+      "sha256": "5bb082d163d26b678dbf84542fb194234aea93b4d8ff42174d4a9c8471694581",
+      "lines": 4325
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-typecheck-final-20260924.log": {
+      "sha256": "8b0652334f8c18d7b8ab65ebb1c68eb5c3e9bfcdeee08c641f75418ba81efb8c",
+      "lines": 4
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-lint-final-20260924.log": {
+      "sha256": "698dae4c32293ce3bc9c1fdd7f7ca0912b7dd7041c3a321551e5666692d8fe36",
+      "lines": 4
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-format-final-20260924.log": {
+      "sha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3",
+      "lines": 6
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-docs-check-final-20260924.log": {
+      "sha256": "19490305301b5cfbe363a778cbacf5caea24fe536498b9a3fcff8b5b9c5bb861",
+      "lines": 42
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-format-final-round2-20260924.log": {
+      "sha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3",
+      "lines": 6
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-diff-check-final-20260924.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lines": 0
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-build-focused-round2-20260924.log": {
+      "sha256": "9e8ba300417efa5e788fc9828df2132106de29f0ab7c3d80777afbdf758ccf27",
+      "lines": 13
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-build-focused-20260924.log": {
+      "sha256": "44ba2f032e72db40b2abf75bf9e04fe74b9e5e14df6c540eff87582e59b263e9",
+      "lines": 273
+    },
+    "integratedRootFullTestLog": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-integrated-full-test-round1-20260924.log",
+      "sha256": "6ef5d73e663fceb88a95b2f3ce9acad7c427cc1a569b410be56aac6fb0b66e98",
+      "lines": 138
+    },
+    "integratedRootCoverageLog": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-integrated-coverage-round1-20260924.log",
+      "sha256": "6ab8cc63ff5162a7cfb29c08f81ba4ba113ecc96873b0d10ef4efd61897f666f",
+      "lines": 275
+    },
+    "integratedRootCoverageSummary": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-integrated-coverage-summary-20260924.json",
+      "sha256": "94abe96ed88109b890c4d30d5ef387cb002fbf30e170fc622560f166df23802b",
+      "lines": 212
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-integrated-docs-check-round2-20260924.log": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-integrated-docs-check-round2-20260924.log",
+      "sha256": "70504b62e59ff6c687dfea66cc849cae5a629ecd01adca97e036adcc0f0ee789",
+      "lines": 42
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-integrated-format-check-round2-20260924.log": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-integrated-format-check-round2-20260924.log",
+      "sha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3",
+      "lines": 6
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-independent-critic-20260924.md": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-independent-critic-20260924.md",
+      "sha256": "293a02f1411c35ff811d67dd2b4bac25bd14581b26887ea285de259514fe165d",
+      "lines": 60
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-review-fingerprint-20260924.json": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-review-fingerprint-20260924.json",
+      "sha256": "fdb222b54ee76890b864d672351f625498b9fb79109ed92125365d69968dbb56",
+      "lines": 18
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-docs-check-superseded-round2-20260924.log": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-docs-check-superseded-round2-20260924.log",
+      "sha256": "a96fb993d354fc2d2728491e422775fcca2f42ad0faeef672622cd48913780e4",
+      "lines": 46
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-docs-check-final-round3-20260924.log": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-docs-check-final-round3-20260924.log",
+      "sha256": "b43e9efb883d76680cc97dd647ffbc3e803e79a615e5a76bb1504966e9b916b4",
+      "lines": 42
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-format-check-final-round3-20260924.log": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-format-check-final-round3-20260924.log",
+      "sha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3",
+      "lines": 6
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-diff-check-final-round3-20260924.log": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-diff-check-final-round3-20260924.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lines": 0
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-build-report-20260924.md": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-build-report-20260924.md",
+      "sha256": "0ebebf1c12032597a7733d935c7a08bc19aba4687c420223496499a58ae742a9",
+      "lines": 119
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-docs-check-final-round4-20260924.log": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-docs-check-final-round4-20260924.log",
+      "sha256": "85e5f211fc1109bf79e5af27686eec0a1d7f2a1b311de4264d84d5cb3c84f287",
+      "lines": 42
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-format-check-final-round4-20260924.log": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-format-check-final-round4-20260924.log",
+      "sha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3",
+      "lines": 6
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-diff-check-final-round4-20260924.log": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-diff-check-final-round4-20260924.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lines": 0
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-docs-check-final-round5-20260924.log": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-docs-check-final-round5-20260924.log",
+      "sha256": "85e5f211fc1109bf79e5af27686eec0a1d7f2a1b311de4264d84d5cb3c84f287",
+      "lines": 42
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-format-check-final-round5-20260924.log": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-format-check-final-round5-20260924.log",
+      "sha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3",
+      "lines": 6
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-diff-check-final-round5-20260924.log": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-diff-check-final-round5-20260924.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lines": 0
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-docs-check-final-round6-20260924.log": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-docs-check-final-round6-20260924.log",
+      "sha256": "85e5f211fc1109bf79e5af27686eec0a1d7f2a1b311de4264d84d5cb3c84f287",
+      "lines": 42
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-format-check-final-round6-20260924.log": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-format-check-final-round6-20260924.log",
+      "sha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3",
+      "lines": 6
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-diff-check-final-round6-20260924.log": {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-v2-diff-check-final-round6-20260924.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lines": 0
+    }
+  },
+  "limits": {
+    "apiSchemaChanges": false,
+    "realData": false,
+    "postgresqlUsed": false,
+    "externalServices": false,
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "staging": false,
+    "production": false
+  }
+}

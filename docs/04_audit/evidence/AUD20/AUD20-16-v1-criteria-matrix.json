@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-16-criteria-matrix",
+  "program": "AUD20-REM",
+  "task": "AUD20-16",
+  "observedAt": "2026-09-21T22:24:43Z",
+  "execution": "CONTROLLED_LOCAL",
+  "status": "WAITING_HUMAN_APPROVAL",
+  "policyVersion": "PENDING_HUMAN_APPROVAL",
+  "localImplementationVerification": "PASS_LIMITED",
+  "independentCritic": "PASS_LIMITED",
+  "independentCriticScope": "PARTIAL_GATE_ONLY",
+  "independentCriticVerdict": "PASS_LIMITED_NOT_COMPLETION",
+  "independentCriticEvidence": [
+    "docs/04_audit/evidence/AUD20/AUD20-16-independent-critic-v1.md",
+    "docs/04_audit/evidence/AUD20/AUD20-16-independent-critic-v2.md"
+  ],
+  "receiptIntegrity": {
+    "status": "PASS",
+    "rawArtifacts": 12,
+    "commandRawLinks": 10,
+    "candidateBinding": "PASS"
+  },
+  "candidateBinding": {
+    "status": "PASS",
+    "candidateId": "927f3e0a7a12fb7c8139dea8961de3536ea8a291e4b407dc350cc3b63e1250ed",
+    "verifier": "docs/04_audit/evidence/AUD20/AUD20-16-binding-verifier.mjs",
+    "scopedFiles": 17,
+    "derivedArtifactsExcludedFromScope": true
+  },
+  "d05InterpretationReview": {
+    "horizon": "AMBIGUOUS",
+    "formalOwner": "BLOCKED",
+    "reviewTrigger": "BLOCKED",
+    "evidence": [
+      "docs/04_audit/evidence/AUD20/AUD20-16-d05-interpretation-review-v1.md",
+      "docs/02_spec/aud20_16_human_decision_request_20260921.md"
+    ]
+  },
+  "staging": "NO_GO",
+  "production": "NO_GO",
+  "criteria": [
+    {
+      "id": "AUD20-16-C01",
+      "status": "WAITING_HUMAN_APPROVAL",
+      "summary": "The active 30-day TTL is preserved, but the post-tombstone horizon and owner/review trigger require an explicit decision.",
+      "evidence": [
+        "docs/02_spec/aud20_16_tombstone_lifecycle_capacity_20260921.md",
+        "docs/02_spec/prod20260913_decision_packet.md",
+        "docs/04_audit/evidence/AUD20/AUD20-16-d05-interpretation-review-v1.md",
+        "docs/02_spec/aud20_16_human_decision_request_20260921.md"
+      ]
+    },
+    {
+      "id": "AUD20-16-C02",
+      "status": "WAITING_HUMAN_APPROVAL",
+      "summary": "The data classification is documented; minimization and schema compatibility must follow the approved horizon and owner.",
+      "evidence": [
+        "docs/02_spec/aud20_16_tombstone_lifecycle_capacity_20260921.md"
+      ]
+    },
+    {
+      "id": "AUD20-16-C03",
+      "status": "PASS",
+      "summary": "Offline and PostgreSQL disposable-local measurements require explicit synthetic origin, horizon and safety factor and produce p50/p95 row-plus-index growth for three synthetic volumes, with relation/index/total bytes and sweep counts.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-green-final-20260921.log",
+        "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-postgres-green-final-20260921.log",
+        "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-negative-final-20260921.log",
+        "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-focused-final-20260921.log"
+      ]
+    },
+    {
+      "id": "AUD20-16-C04",
+      "status": "NOT_RUN",
+      "summary": "Archive/partition behavior is intentionally not selected or implemented before policy approval.",
+      "evidence": []
+    },
+    {
+      "id": "AUD20-16-C05",
+      "status": "NOT_RUN",
+      "summary": "Mixed-version schema/writer compatibility is not run before the policy and migration shape are approved.",
+      "evidence": []
+    },
+    {
+      "id": "AUD20-16-C06",
+      "status": "NOT_RUN",
+      "summary": "Long-horizon synthetic retention and recovery are not run before the horizon is decided.",
+      "evidence": []
+    },
+    {
+      "id": "AUD20-16-C07",
+      "status": "WAITING_HUMAN_APPROVAL",
+      "summary": "Focused/full-unit/lint/format/documentation/diff checks and separate candidate-binding verification pass mechanically; semantic binding for policyVersion, owner and review trigger still awaits the policy gate.",
+      "evidence": [
+        "docs/02_spec/aud20_16_tombstone_lifecycle_capacity_20260921.md",
+        "docs/04_audit/evidence/AUD20/AUD20-16-binding-verifier.mjs",
+        "docs/04_audit/evidence/AUD20/AUD20-16-raw/full-unit-final-20260921.log",
+        "docs/04_audit/evidence/AUD20/AUD20-16-raw/docs-check-final-20260921.log",
+        "docs/04_audit/evidence/AUD20/AUD20-16-raw/binding-verification-final-20260921.log",
+        "docs/04_audit/evidence/AUD20/AUD20-16-independent-critic-v1.md",
+        "docs/04_audit/evidence/AUD20/AUD20-16-independent-critic-v2.md"
+      ]
+    }
+  ],
+  "negativeCoverage": {
+    "missingHorizon": "PASS",
+    "missingSyntheticOrigin": "PASS",
+    "nonSyntheticOrigin": "PASS",
+    "postgresMeasurement": "PASS",
+    "invalidEligibleRate": "PASS",
+    "invalidP95Ordering": "PASS",
+    "prematureTombstoneExpiry": "NOT_RUN",
+    "archiveUnavailable": "NOT_RUN",
+    "oldWriterReplay": "NOT_RUN",
+    "realDataInLogs": "PASS"
+  },
+  "limitations": [
+    "This is a partial planning checkpoint, not a task completion receipt.",
+    "No approved post-tombstone duration, formal owner, archive strategy or schema migration exists yet.",
+    "The independent fresh-context critic passed only the partial gate; it did not qualify the task for completion."
+  ],
+  "releaseEligible": false
+}

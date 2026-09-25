@@ -1,0 +1,65 @@
+{
+  "scope": "docs/04_audit/evidence; regular files only",
+  "captured_at_utc": "2026-09-23T17:22:44Z",
+  "inventory_root": "docs/04_audit/evidence",
+  "member_definition": "regular files only; relative repository paths; sorted lexicographically; SHA-256 streamed in 1 MiB chunks; lstat/fstat metadata checked before and after each hash",
+  "inventory_rows": 2433,
+  "unique_paths": 2433,
+  "evidence_total_bytes": 28970553,
+  "row_list_path": "docs/04_audit/evidence/PLAN50-20260923/imp50-49-full-inventory-v2-20260923.jsonl",
+  "row_list_bytes": 444142,
+  "row_list_sha256": "89c0bb3747dcb31f38db8ec94b9fff1ab0efd68cb522a3088e78bdc26ec06a56",
+  "excluded_output_paths": [
+    "docs/04_audit/evidence/PLAN50-20260923/imp50-49-full-inventory-v2-20260923.jsonl",
+    "docs/04_audit/evidence/PLAN50-20260923/imp50-49-full-inventory-v2-report-20260923.md",
+    "docs/04_audit/evidence/PLAN50-20260923/imp50-49-full-inventory-v2-summary-20260923.json"
+  ],
+  "exclusion_boundary": "The three v2 JSONL/summary/report sidecars are created after the capture and are excluded from the captured member list.",
+  "v1_comparison": {
+    "baseline_path": "docs/04_audit/evidence/PLAN50-20260923/imp50-49-full-inventory-20260923.jsonl",
+    "baseline_rows": 2412,
+    "baseline_jsonl_bytes": 3840377,
+    "baseline_jsonl_sha256": "a0a1aa656348c88f4719fa5c5301f876b938567327bd203df3324f9c4f41b717",
+    "added_count": 21,
+    "missing_count": 0,
+    "changed_count": 1,
+    "added_paths": [
+      "docs/04_audit/evidence/AUD20/AUD20-17-human-approval-20260923.md",
+      "docs/04_audit/evidence/AUD20/AUD20-17-independent-critic-v1-20260923.md",
+      "docs/04_audit/evidence/AUD20/AUD20-17-query-slice-scope-critic-20260923.md",
+      "docs/04_audit/evidence/AUD20/AUD20-17-query-spec-critic-v1-20260923.md",
+      "docs/04_audit/evidence/AUD20/AUD20-17-query-spec-critic-v2-20260923.md",
+      "docs/04_audit/evidence/AUD20/AUD20-17-v1-build-report-20260923.md",
+      "docs/04_audit/evidence/AUD20/AUD20-19-FU1-independent-critic-v1-20260923.md",
+      "docs/04_audit/evidence/AUD20/AUD20-19-FU1-independent-critic-v2-20260923.md",
+      "docs/04_audit/evidence/AUD20/AUD20-19-FU1-independent-critic-v3-20260923.md",
+      "docs/04_audit/evidence/AUD20/AUD20-19-FU1-independent-critic-v4-20260923.md",
+      "docs/04_audit/evidence/AUD20/AUD20-19-FU1-spec-preparation-20260923.md",
+      "docs/04_audit/evidence/PLAN50-20260923/imp50-49-aud19-10-member-manifest-candidate-20260923.jsonl",
+      "docs/04_audit/evidence/PLAN50-20260923/imp50-49-aud19-10-member-manifest-candidate-report-20260923.md",
+      "docs/04_audit/evidence/PLAN50-20260923/imp50-49-aud19-10-member-manifest-critic-v1-20260923.md",
+      "docs/04_audit/evidence/PLAN50-20260923/imp50-49-full-inventory-20260923.jsonl",
+      "docs/04_audit/evidence/PLAN50-20260923/imp50-49-full-inventory-report-20260923.md",
+      "docs/04_audit/evidence/PLAN50-20260923/imp50-49-full-inventory-summary-20260923.json",
+      "docs/04_audit/evidence/PLAN50-20260923/imp50-49-historical-reference-map-v2-20260923.jsonl",
+      "docs/04_audit/evidence/PLAN50-20260923/imp50-49-overlay-review-v2-20260923.md",
+      "docs/04_audit/evidence/PLAN50-20260923/imp50-49-triage-proposal-20260923.jsonl",
+      "docs/04_audit/evidence/PLAN50-20260923/imp50-49-triage-proposal-20260923.md"
+    ],
+    "missing_paths": [],
+    "changed_paths": [
+      {
+        "path": "docs/04_audit/evidence/PLAN50-20260923/imp50-status-20260923.md",
+        "v1": {
+          "size_bytes": 12373,
+          "sha256": "8f381d3ffd59e3a026b98130c2fcdbd88939feb42107fdc9a7f674a329ea127a"
+        },
+        "v2": {
+          "size_bytes": 74621,
+          "sha256": "9c9fa80cad7652e508822e7b8480ebc13f5a22beee3f730191dd2d32f573275a"
+        }
+      }
+    ],
+    "note": "Comparison uses only path, size_bytes, and sha256 from v1/v2 inventory rows; it makes no lineage or class adjudication."
+  }
+}

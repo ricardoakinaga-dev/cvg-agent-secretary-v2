@@ -1,5 +1,47 @@
 # 0302 — Backlog Master
 
+## Backlog incremental corrente — 2026-09-24
+
+Consultar [0343](0343_post_query_backlog_20260923.md),
+[roadmap 0342](0342_post_query_roadmap_20260923.md) e
+[revisão 0571](../04_audit/0571_implementation_state_review_2026-09-23.md).
+São propostas vinculadas ao programa existente; `0337` conserva os estados
+oficiais. Query-parser teve `PASS_LOCAL` de subfatia. Request-context v1
+permanece sem aceite. A emenda v2 aprovada e admitida por hash foi executada
+localmente: C02 `PASS_LOCAL`; a crítica independente do candidato registrou
+C01–C05 `PASS` e C06/C07 `FAIL`. C06 continua sem evidência candidate-bound
+suficiente; baseline, PostgreSQL e mutation seguem sem execução/validação.
+Branches de request-context em 92% são valor observado; a aplicação do piso
+crítico de 95% não está adjudicada porque o registry não lista esse módulo.
+Ver a [errata](../04_audit/evidence/AUD20/AUD20-17-request-context-branch-floor-erratum-20260924.md),
+o [relatório BUILD](../04_audit/evidence/AUD20/AUD20-17-request-context-v2-build-report-20260924.md),
+[manifesto candidate-bound](../04_audit/evidence/AUD20/AUD20-17-request-context-v2-build-candidate-manifest-20260924.json)
+e [disposição NQP-03](../04_audit/evidence/AUD20/AUD20-17-nqp03-disposition-critic-v1-20260924.md).
+`AUD20-10` segue admitida/enfileirada até Q1 liberar o DAG; staging e produção
+permanecem `NO_GO`.
+
+## Backlog candidato das 50 melhorias — baseline de 2026-09-23
+
+O [backlog 0341](0341_plan50_backlog_20260923.md) detalha `IMP50-01..50`
+com local, método, dependência e aceite, a partir do
+[plano 0339](0339_plan50_executive_plan_20260923.md) e do
+[roadmap 0340](0340_plan50_roadmap_20260923.md). Os itens são propostas
+subordinadas às tasks `AUD20-*`, não recebem estado oficial próprio. O
+adiamento de `AUD20-10/17/20` foi revogado depois para escopo local sujeito a
+gates próprios. A fonte operacional de status
+permanece o backlog 0337 e [CURRENT](../CURRENT.md).
+
+## Checkpoint histórico pós-auditoria — 2026-09-21
+
+O programa corrente é `AUD20-REM v2`: [plano 0335](0335_aud20260921_executive_plan.md),
+[roadmap 0336](0336_aud20260921_roadmap.md),
+[backlog 0337](0337_aud20260921_backlog.md) e
+[matriz F01–F30](tracking/aud20_v2_findings_matrix.json). `AUD20-01..06`,
+`AUD20-08` e `AUD20-16` estão `COMPLETED`; `AUD20-09` está
+`WAITING_HUMAN_APPROVAL` após Discovery/PRD/SPEC; `AUD20-20` foi adiada por
+instrução do usuário e as demais tasks permanecem `BLOCKED` pelo DAG ou por
+autoridade externa/humana.
+
 ## Backlog corrente pós-reauditoria — 2026-09-20
 
 O programa corrente é `AUD20-REM`: [roadmap 0333](0333_aud20260920_roadmap.md) e [backlog 0334](0334_aud20260920_backlog.md). `AUD20-01` está `COMPLETED` no escopo documental, `AUD20-02` está `COMPLETED` em BUILD local controlado e `AUD20-03` é a próxima task; as demais seguem o DAG. O estado AUD19 abaixo é histórico e foi supersedido pela auditoria 0567.

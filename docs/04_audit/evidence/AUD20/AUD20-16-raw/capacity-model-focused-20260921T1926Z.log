@@ -1,0 +1,10 @@
+Running node v22.23.2 (npm v10.9.8)
+
+ RUN  v4.1.11 /home/ricardo/cvg-agent-secretary-v2
+
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  16:27:09
+   Duration  614ms (transform 21ms, setup 0ms, import 33ms, tests 5ms, environment 480ms)
+

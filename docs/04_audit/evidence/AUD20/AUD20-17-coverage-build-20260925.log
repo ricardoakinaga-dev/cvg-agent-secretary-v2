@@ -1,0 +1,267 @@
+
+> cvg-agent-secretary-v2@1.0.0 test:coverage
+> vitest run --coverage --no-file-parallelism --maxWorkers=2
+
+
+ RUN  v4.1.11 /home/ricardo/cvg-agent-secretary-v2
+      Coverage enabled with v8
+
+{"event":"worker.started","level":"info","timestamp":"2026-09-25T03:17:35.382Z","workerId":"worker-restart-190-a","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.384Z","workerId":"worker-restart-190-a","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-25T03:17:35.385Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-25T03:17:35.385Z","workerId":"worker-restart-190-a","backoffMs":5,"lag":0}
+{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-25T03:17:35.385Z"}
+{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-25T03:17:35.385Z","eventId":"outbox_4b32c0c3-cc82-4cf0-bb92-e5f9d0f745d6","workerId":"worker-restart-190-a","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.391Z","workerId":"worker-restart-190-a","reason":"stop","claimed":1,"processed":1,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-25T03:17:35.391Z","workerId":"worker-restart-190-a","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-25T03:17:35.391Z","workerId":"worker-restart-190-b","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.391Z","workerId":"worker-restart-190-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-25T03:17:35.392Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-25T03:17:35.392Z","workerId":"worker-restart-190-b","backoffMs":5,"lag":0}
+{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-25T03:17:35.392Z"}
+{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-25T03:17:35.392Z","eventId":"outbox_d66efe35-0cec-40e8-8304-2fa8e780dd0c","workerId":"worker-restart-190-b","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.397Z","workerId":"worker-restart-190-b","reason":"stop","claimed":1,"processed":1,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-25T03:17:35.397Z","workerId":"worker-restart-190-b","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-25T03:17:35.419Z","workerId":"worker-retry-190","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.419Z","workerId":"worker-retry-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-25T03:17:35.419Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-25T03:17:35.420Z","workerId":"worker-retry-190","backoffMs":5,"lag":0}
+{"event":"worker.metric","name":"worker_outbox_failed_total","value":1,"attributes":{"status":"failed"},"timestamp":"2026-09-25T03:17:35.420Z"}
+{"event":"worker.outbox.failed","level":"info","timestamp":"2026-09-25T03:17:35.420Z","eventId":"outbox_8024cda0-effd-485f-b106-5bf11bdd338b","workerId":"worker-retry-190","status":"failed","attempt":1,"leaseLost":false,"error":"[redacted-outbox-error]","operation":"outbox"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-25T03:17:35.425Z","workerId":"worker-retry-190","backoffMs":5,"lag":0}
+{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-25T03:17:35.425Z"}
+{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-25T03:17:35.426Z","eventId":"outbox_8024cda0-effd-485f-b106-5bf11bdd338b","workerId":"worker-retry-190","status":"processed","attempt":2,"leaseLost":false,"operation":"outbox"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.430Z","workerId":"worker-retry-190","reason":"stop","claimed":2,"processed":1,"failed":1,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":2,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-25T03:17:35.430Z","workerId":"worker-retry-190","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":1,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-25T03:17:35.431Z","workerId":"worker-poison-190","concurrency":1,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.431Z","workerId":"worker-poison-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":1,"attributes":{"operation":"outbox"},"timestamp":"2026-09-25T03:17:35.432Z"}
+{"event":"worker.metric","name":"worker_outbox_dead_lettered_total","value":1,"attributes":{"status":"dead_letter"},"timestamp":"2026-09-25T03:17:35.432Z"}
+{"event":"worker.outbox.dead_letter","level":"info","timestamp":"2026-09-25T03:17:35.432Z","eventId":"outbox_61beaf5e-6d7c-4662-9338-fa6d8803317c","workerId":"worker-poison-190","status":"dead_letter","attempt":1,"leaseLost":false,"error":"[redacted-outbox-error]","operation":"outbox"}
+{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-25T03:17:35.438Z"}
+{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-25T03:17:35.438Z","eventId":"outbox_b48b4879-e7d8-42c8-9f51-d0fba77adbcd","workerId":"worker-poison-190","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.442Z","workerId":"worker-poison-190","reason":"stop","claimed":2,"processed":1,"failed":0,"deadLettered":1,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":1,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-25T03:17:35.443Z","workerId":"worker-poison-190","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":0,"deadLettered":1,"lag":1}
+{"event":"worker.started","level":"info","timestamp":"2026-09-25T03:17:35.444Z","workerId":"worker-requeue-190-a","concurrency":1,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.444Z","workerId":"worker-requeue-190-a","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-25T03:17:35.445Z"}
+{"event":"worker.metric","name":"worker_outbox_dead_lettered_total","value":1,"attributes":{"status":"dead_letter"},"timestamp":"2026-09-25T03:17:35.445Z"}
+{"event":"worker.outbox.dead_letter","level":"info","timestamp":"2026-09-25T03:17:35.445Z","eventId":"outbox_f428f2d8-2594-4d47-8ba6-2584f111e30c","workerId":"worker-requeue-190-a","status":"dead_letter","attempt":1,"leaseLost":false,"error":"[redacted-outbox-error]","operation":"outbox"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.450Z","workerId":"worker-requeue-190-a","reason":"stop","claimed":1,"processed":0,"failed":0,"deadLettered":1,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-25T03:17:35.450Z","workerId":"worker-requeue-190-a","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":1,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-25T03:17:35.451Z","workerId":"worker-requeue-190-b","concurrency":1,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.451Z","workerId":"worker-requeue-190-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-25T03:17:35.452Z"}
+{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-25T03:17:35.453Z"}
+{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-25T03:17:35.453Z","eventId":"outbox_f428f2d8-2594-4d47-8ba6-2584f111e30c","workerId":"worker-requeue-190-b","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.457Z","workerId":"worker-requeue-190-b","reason":"stop","claimed":1,"processed":1,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-25T03:17:35.457Z","workerId":"worker-requeue-190-b","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-25T03:17:35.481Z","workerId":"worker-sigterm-190","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.482Z","workerId":"worker-sigterm-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-25T03:17:35.483Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-25T03:17:35.483Z","workerId":"worker-sigterm-190","backoffMs":5,"lag":0}
+{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-25T03:17:35.509Z"}
+{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-25T03:17:35.509Z","eventId":"outbox_b32a9ec2-1592-49c7-9638-7013b3b6569f","workerId":"worker-sigterm-190","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.509Z","workerId":"worker-sigterm-190","reason":"stop","claimed":1,"processed":1,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-25T03:17:35.510Z","workerId":"worker-sigterm-190","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-25T03:17:35.511Z","workerId":"worker-release-190-a","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.511Z","workerId":"worker-release-190-a","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-25T03:17:35.512Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-25T03:17:35.512Z","workerId":"worker-release-190-a","backoffMs":5,"lag":0}
+{"event":"worker.shutdown_deferred_release","level":"warn","timestamp":"2026-09-25T03:17:35.549Z","eventId":"outbox_0c0fb5f0-eada-49c3-830d-2e343467b31b","workerId":"worker-release-190-a","leaseAction":"expire_for_retry","operation":"outbox"}
+{"event":"worker.metric","name":"worker_outbox_shutdown_releases_total","value":1,"attributes":{"outcome":"deferred"},"timestamp":"2026-09-25T03:17:35.549Z"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.549Z","workerId":"worker-release-190-a","reason":"stop","claimed":1,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":1}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-25T03:17:35.549Z","workerId":"worker-release-190-a","drained":false,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-25T03:17:35.550Z"}
+{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-25T03:17:35.550Z","eventId":"outbox_0c0fb5f0-eada-49c3-830d-2e343467b31b","workerId":"worker-release-190-a","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
+{"event":"worker.started","level":"info","timestamp":"2026-09-25T03:17:35.577Z","workerId":"worker-heartbeat-renew-190","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":10,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.577Z","workerId":"worker-heartbeat-renew-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-25T03:17:35.578Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-25T03:17:35.578Z","workerId":"worker-heartbeat-renew-190","backoffMs":5,"lag":0}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-25T03:17:35.583Z","workerId":"worker-heartbeat-renew-190","backoffMs":10,"lag":0}
+{"event":"worker.metric","name":"worker_outbox_heartbeats_total","value":1,"attributes":{"outcome":"renewed"},"timestamp":"2026-09-25T03:17:35.588Z"}
+{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-25T03:17:35.590Z"}
+{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-25T03:17:35.590Z","eventId":"outbox_0b0d999c-3c57-4bd1-8843-586965a42283","workerId":"worker-heartbeat-renew-190","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-25T03:17:35.594Z","workerId":"worker-heartbeat-renew-190","backoffMs":20,"lag":0}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.594Z","workerId":"worker-heartbeat-renew-190","reason":"stop","claimed":1,"processed":1,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":1,"idlePolls":3,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-25T03:17:35.595Z","workerId":"worker-heartbeat-renew-190","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-25T03:17:35.596Z","workerId":"worker-heartbeat-failure-190","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":5,"drainMs":10000,"backlogProbe":false,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.596Z","workerId":"worker-heartbeat-failure-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.event_error","level":"error","timestamp":"2026-09-25T03:17:35.596Z","eventId":"outbox_42450f54-6267-4fa9-b4c8-ee9d4b28b773","workerId":"worker-heartbeat-failure-190","attempt":1,"error":"[redacted-outbox-error]","operation":"outbox"}
+{"event":"worker.metric","name":"worker_outbox_errors_total","value":1,"attributes":{"outcome":"error"},"timestamp":"2026-09-25T03:17:35.597Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-25T03:17:35.597Z","workerId":"worker-heartbeat-failure-190","backoffMs":5,"lag":null}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.602Z","workerId":"worker-heartbeat-failure-190","reason":"stop","claimed":1,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":1,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-25T03:17:35.602Z","workerId":"worker-heartbeat-failure-190","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":null}
+{"event":"worker.started","level":"info","timestamp":"2026-09-25T03:17:35.627Z","workerId":"worker-handoff-190","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.628Z","workerId":"worker-handoff-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-25T03:17:35.628Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-25T03:17:35.629Z","workerId":"worker-handoff-190","backoffMs":5,"lag":0}
+{"event":"worker.outbox.handoff","level":"warn","timestamp":"2026-09-25T03:17:35.629Z","eventId":"outbox_5aeb786e-0bd3-402f-b48a-9e680d3967d7","workerId":"worker-handoff-190","status":"handoff","operation":"outbox"}
+{"event":"worker.metric","name":"worker_outbox_handoffs_total","value":1,"attributes":{"outcome":"handoff"},"timestamp":"2026-09-25T03:17:35.629Z"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.633Z","workerId":"worker-handoff-190","reason":"stop","claimed":1,"processed":0,"failed":0,"deadLettered":0,"handoffs":1,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-25T03:17:35.634Z","workerId":"worker-handoff-190","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-25T03:17:35.665Z","workerId":"worker-stop-190","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.665Z","workerId":"worker-stop-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-25T03:17:35.666Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-25T03:17:35.666Z","workerId":"worker-stop-190","backoffMs":5,"lag":0}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:17:35.666Z","workerId":"worker-stop-190","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-25T03:17:35.666Z","workerId":"worker-stop-190","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.sweep_tick","level":"info","timestamp":"2026-09-25T03:19:46.963Z","now":"2026-09-13T00:00:00.000Z","journalReleased":1,"approvalsReleased":2,"approvalsUncertain":1,"goalsInspected":0,"goalsResumed":0,"goalsSkipped":0,"goalsCompleted":0,"goalRecoveryFailures":0,"durationMs":0,"operation":"sweep"}
+{"event":"worker.metric","name":"worker_sweep_journal_released_total","value":1,"attributes":{"operation":"sweep"},"timestamp":"2026-09-25T03:19:46.965Z"}
+{"event":"worker.metric","name":"worker_sweep_approvals_released_total","value":2,"attributes":{"status":"released"},"timestamp":"2026-09-25T03:19:46.965Z"}
+{"event":"worker.metric","name":"worker_sweep_approvals_uncertain_total","value":1,"attributes":{"status":"uncertain"},"timestamp":"2026-09-25T03:19:46.965Z"}
+{"event":"worker.metric","name":"worker_sweep_goals_inspected_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-25T03:19:46.965Z"}
+{"event":"worker.metric","name":"worker_sweep_goals_resumed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-25T03:19:46.966Z"}
+{"event":"worker.metric","name":"worker_sweep_goals_completed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-25T03:19:46.966Z"}
+{"event":"worker.metric","name":"worker_sweep_goal_recovery_failures_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-25T03:19:46.966Z"}
+{"event":"worker.started","level":"info","timestamp":"2026-09-25T03:19:46.967Z","workerId":"worker-sweeps-191","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":true,"externalEffects":false,"durable":true}
+{"event":"worker.sweep_started","level":"info","timestamp":"2026-09-25T03:19:46.967Z","intervalMs":10,"operation":"sweep"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:19:46.967Z","workerId":"worker-sweeps-191","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-25T03:19:46.968Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-25T03:19:46.968Z","workerId":"worker-sweeps-191","backoffMs":5,"lag":0}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-25T03:19:46.973Z","workerId":"worker-sweeps-191","backoffMs":10,"lag":0}
+{"event":"worker.sweep_tick","level":"info","timestamp":"2026-09-25T03:19:46.978Z","now":"2026-09-25T03:19:46.977Z","journalReleased":0,"approvalsReleased":0,"approvalsUncertain":0,"goalsInspected":0,"goalsResumed":0,"goalsSkipped":0,"goalsCompleted":0,"goalRecoveryFailures":0,"durationMs":1,"operation":"sweep"}
+{"event":"worker.metric","name":"worker_sweep_journal_released_total","value":0,"attributes":{"operation":"sweep"},"timestamp":"2026-09-25T03:19:46.978Z"}
+{"event":"worker.metric","name":"worker_sweep_approvals_released_total","value":0,"attributes":{"status":"released"},"timestamp":"2026-09-25T03:19:46.978Z"}
+{"event":"worker.metric","name":"worker_sweep_approvals_uncertain_total","value":0,"attributes":{"status":"uncertain"},"timestamp":"2026-09-25T03:19:46.978Z"}
+{"event":"worker.metric","name":"worker_sweep_goals_inspected_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-25T03:19:46.978Z"}
+{"event":"worker.metric","name":"worker_sweep_goals_resumed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-25T03:19:46.978Z"}
+{"event":"worker.metric","name":"worker_sweep_goals_completed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-25T03:19:46.978Z"}
+{"event":"worker.metric","name":"worker_sweep_goal_recovery_failures_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-25T03:19:46.978Z"}
+{"event":"worker.sweep_stopped","level":"info","timestamp":"2026-09-25T03:19:46.978Z","operation":"sweep"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-25T03:19:46.978Z","workerId":"worker-sweeps-191","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":2,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-25T03:19:46.979Z","workerId":"worker-sweeps-191","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
+
+ Test Files  296 passed | 12 skipped (308)
+      Tests  2381 passed | 192 skipped (2573)
+   Start at  00:16:31
+   Duration  365.05s (transform 4.97s, setup 0ms, import 53.89s, tests 54.06s, environment 193.37s)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   91.18 |    87.62 |   90.04 |   91.78 |                   
+ apps/api/src      |   92.77 |     86.3 |   95.56 |   94.06 |                   
+  http-security.ts |   90.54 |    88.57 |     100 |   97.32 | ...12,293,308,478 
+  ...r-identity.ts |   88.72 |    90.11 |   91.66 |   92.89 | ...27-430,438-439 
+  ...play-store.ts |   72.34 |    78.65 |   76.92 |   72.22 | ...92-300,325,333 
+  rate-limit.ts    |     100 |    97.56 |     100 |     100 | 162               
+  readiness.ts     |     100 |     87.5 |     100 |     100 | 105-117           
+  server.ts        |   93.01 |     79.5 |   93.79 |   93.58 | ...4493,4515,4520 
+  ...up-failure.ts |      96 |       90 |     100 |      96 | 32                
+  ...k-security.ts |   99.41 |    98.23 |     100 |     100 | 127,360           
+ ...api/src/server |   91.22 |    96.15 |   75.29 |   91.02 |                   
+  ...ersistence.ts |   66.07 |    95.45 |   32.14 |   66.66 | ...24,295-296,356 
+  ...ole-checks.ts |   71.05 |    85.48 |   71.42 |   71.05 | 40,248,304-328    
+ apps/worker/src   |   73.64 |    65.91 |   68.78 |    74.7 |                   
+  ...ous-worker.ts |   84.31 |    75.43 |   89.36 |   85.77 | ...80,822,853,888 
+  ...led-worker.ts |      92 |    83.87 |     100 |    90.9 | 123-125           
+  ...omposition.ts |   69.85 |    64.38 |      58 |    70.6 | ...-988,1008,1228 
+  ...validation.ts |   47.61 |    51.61 |   66.66 |   47.61 | ...51,63,71,76-84 
+  ...controlled.ts |   70.86 |    65.13 |   34.21 |   75.42 | ...43,358,455,483 
+  ...-preflight.ts |    5.95 |        0 |       0 |    6.09 | 98-381            
+  ...rker-guard.ts |   97.61 |      100 |     100 |    97.5 | 68                
+  sweeps.ts        |   90.74 |       75 |     100 |      98 | 106               
+  worker-health.ts |   96.05 |    86.79 |   93.75 |   95.77 | 88-91             
+  ...ervability.ts |   94.73 |    90.47 |   93.75 |   93.75 | 148               
+  worker.ts        |     100 |    95.34 |     100 |     100 | 54,132            
+ ...orker/src/jobs |     100 |    91.17 |     100 |     100 |                   
+  ...tbox-event.ts |     100 |    91.17 |     100 |     100 | 105,123,142       
+ ...s/adapters/src |   90.38 |    88.11 |     100 |   90.09 |                   
+  ...d-delivery.ts |   92.85 |    83.78 |     100 |   92.72 | 145,155,164,173   
+  model-adapter.ts |   85.71 |    90.47 |     100 |   85.36 | ...62,145,157,169 
+ ...pters/src/fake |     100 |       50 |     100 |     100 |                   
+  ...pp-adapter.ts |     100 |       50 |     100 |     100 | 19                
+ ...e/src/commands |   95.65 |       80 |     100 |   95.52 |                   
+  ...d-behavior.ts |     100 |       50 |     100 |     100 | 171-174           
+  ...ff-summary.ts |     100 |    77.27 |     100 |     100 | 22-26             
+  ...shed-agent.ts |     100 |     92.1 |     100 |     100 | 65,103,118        
+  ...nd-message.ts |      88 |    74.07 |     100 |      88 | 140,177,196       
+ ...gent-evals/src |   89.06 |    83.33 |   91.66 |    90.9 |                   
+  agent.ts         |   86.66 |      100 |   71.42 |    92.3 | 228               
+  metrics.ts       |   98.21 |    81.81 |     100 |      98 | 55                
+  runner.ts        |   84.84 |     82.6 |   92.85 |   87.42 | ...14,417,420,446 
+ ...nt-runtime/src |   98.11 |    97.32 |   95.48 |   98.35 |                   
+  ...ct-journal.ts |   98.45 |    97.64 |   95.45 |   99.57 | 855               
+  orchestration.ts |   97.86 |    96.25 |   97.84 |   98.05 | ...3022,3085,3131 
+  proposal.ts      |     100 |    96.15 |     100 |     100 | 135               
+  runtime.ts       |      98 |    98.25 |   85.71 |   98.07 | ...2750,2754-2755 
+ ...val-engine/src |     100 |    99.71 |     100 |     100 |                   
+  engine.ts        |     100 |    99.69 |     100 |     100 | 677               
+ ...el-gateway/src |   98.43 |    97.61 |    95.4 |     100 |                   
+  ...urnal-file.ts |   98.12 |      100 |   90.32 |     100 |                   
+  ...ct-journal.ts |    97.9 |    96.07 |     100 |     100 | 370,424,446,473   
+  gateway.ts       |   99.07 |     96.2 |    90.9 |     100 | 96,273,385        
+ ...y/src/adapters |     100 |    96.96 |     100 |     100 |                   
+  chatwoot.ts      |     100 |    96.92 |     100 |     100 | 135,167           
+  evolution.ts     |     100 |    95.74 |     100 |     100 | 124,156           
+ ...ages/chaos/src |   94.11 |    92.85 |   94.73 |   93.93 |                   
+  faults.ts        |   94.11 |    92.85 |   94.73 |   93.93 | 121-122           
+ ...el-gateway/src |   98.16 |    95.78 |   98.27 |   98.29 |                   
+  ...it-breaker.ts |   94.36 |    96.96 |   91.66 |   93.93 | 31-34             
+  gateway.ts       |   97.93 |    90.74 |     100 |   98.52 | 230,421           
+  router.ts        |     100 |     97.5 |     100 |     100 | 87                
+ .../src/providers |   99.29 |    98.36 |     100 |   99.25 |                   
+  ollama.ts        |     100 |    96.96 |     100 |     100 | 159               
+  ...compatible.ts |   98.11 |    97.72 |     100 |   98.07 | 184               
+ ...ervability/src |   92.32 |    81.58 |   89.28 |   94.05 |                   
+  alerts.ts        |    87.5 |    79.31 |   88.88 |   90.24 | 255-259,330       
+  audit-ledger.ts  |   94.11 |    88.88 |      90 |   96.96 | 113               
+  collector.ts     |   84.93 |    76.47 |   78.26 |   87.58 | ...91,598,608,661 
+  ...y-exercise.ts |     100 |    81.48 |     100 |     100 | 146,297-504,570   
+  otel.ts          |   91.22 |    81.25 |   92.85 |   96.22 | 54,82             
+  redaction.ts     |   97.14 |    89.28 |     100 |   96.55 | 54                
+  telemetry.ts     |   97.29 |    97.87 |     100 |   97.05 | 330-331           
+  trace-context.ts |   94.73 |    65.62 |   85.71 |   93.75 | 102               
+ ...ersistence/src |    73.5 |    74.16 |   71.89 |   73.54 |                   
+  journeys.ts      |   92.15 |    86.48 |   98.63 |   92.59 | ...60,767,803,831 
+  outbox.ts        |   99.67 |    99.06 |     100 |     100 | 582,807,1148      
+  restore.ts       |   99.53 |    90.62 |     100 |    99.5 | 384               
+  retention.ts     |   49.02 |    55.02 |   44.64 |    49.7 | ...1512,1565-1723 
+  ...oval-store.ts |   14.97 |     33.8 |    12.9 |    15.3 | ...1-774,798-1031 
+ ...c/repositories |   98.81 |    93.89 |   97.29 |   99.05 |                   
+  ...repository.ts |     100 |     93.1 |     100 |     100 | 63,95             
+  ...repository.ts |   98.92 |    95.69 |   96.77 |   98.87 | 177               
+  ...repository.ts |   98.24 |     92.8 |   96.07 |   98.75 | 106,521           
+  ...repository.ts |     100 |    93.33 |     100 |     100 | 60,79             
+ ...s/platform/src |   94.72 |    92.08 |   97.43 |   95.15 |                   
+  ...-authority.ts |   96.62 |    97.64 |     100 |   98.68 | 194               
+  contracts.ts     |   95.76 |    87.75 |     100 |   95.68 | ...66,270,289,658 
+  ...lane-store.ts |   92.72 |     87.4 |   95.16 |   93.27 | ...1285-1290,1380 
+  ...ed-plugins.ts |     100 |    85.71 |     100 |     100 | 17                
+  ...-preflight.ts |   89.74 |    90.62 |   83.33 |   89.47 | 170-171,179-180   
+  event-bus.ts     |   98.87 |    98.66 |     100 |   98.82 | 230               
+  output-policy.ts |      90 |    86.66 |     100 |   91.66 | 154,176,263,267   
+  ...in-gateway.ts |    96.2 |    92.71 |   97.43 |   96.88 | ...99,768,775,781 
+  ...-evaluator.ts |   95.83 |    96.87 |     100 |   95.65 | 60                
+  ...pt-profile.ts |   92.85 |     91.3 |     100 |   92.72 | 115,139,175,220   
+  qualification.ts |    92.5 |     92.5 |     100 |   91.17 | 48,106,121        
+  ...-candidate.ts |   97.29 |       96 |     100 |   97.22 | 132               
+  ...ion-ledger.ts |   98.68 |    96.87 |     100 |     100 | 204               
+  ...assessment.ts |   95.45 |    94.11 |     100 |   97.36 | 68                
+  ...-evaluator.ts |     100 |    88.88 |     100 |     100 | 34,43             
+  test-lab.ts      |   94.93 |    93.57 |     100 |   94.66 | ...53,859,892-896 
+  ...n-boundary.ts |   97.95 |    94.62 |     100 |   97.75 | 122,184           
+  ...governance.ts |   86.17 |    88.23 |   89.47 |   87.38 | ...32,440-442,446 
+ ...icy-engine/src |   98.77 |    97.84 |     100 |   99.34 |                   
+  engine.ts        |   98.98 |    98.16 |     100 |   98.92 | 285               
+  grants.ts        |   94.73 |    83.33 |     100 |     100 | 154               
+ packages/rag/src  |     100 |     93.1 |     100 |     100 |                   
+  ...tional-rag.ts |     100 |     93.1 |     100 |     100 | 87                
+ ...ges/shared/src |   98.15 |    96.83 |     100 |    99.2 |                   
+  ...governance.ts |   95.68 |    94.73 |     100 |   98.98 | 408               
+  canonical.ts     |   97.91 |    96.77 |     100 |   97.72 | 112               
+  ids.ts           |     100 |       75 |     100 |     100 | 13-14             
+  lifecycle.ts     |    97.5 |    93.75 |     100 |     100 | 62                
+  ssrf.ts          |   99.18 |    98.54 |     100 |   98.94 | 160               
+ ...s/src/journeys |   94.73 |    67.85 |     100 |   94.73 |                   
+  ...y-workflow.ts |   94.73 |    67.85 |     100 |   94.73 | 82                
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 91.18% ( 11540/12656 )
+Branches     : 87.62% ( 8912/10171 )
+Functions    : 90.04% ( 2125/2360 )
+Lines        : 91.78% ( 10964/11945 )
+================================================================================

@@ -1,0 +1,42 @@
+
+> cvg-agent-secretary-v2@1.0.0 docs:check
+> node scripts/docs-check.mjs
+
+{
+  "schemaVersion": 1,
+  "kind": "aud19-documentation-check",
+  "valid": true,
+  "links": {
+    "checked": 1424,
+    "broken": []
+  },
+  "json": {
+    "checked": 625,
+    "invalid": []
+  },
+  "states": {
+    "declared": [
+      "IN_PROGRESS"
+    ],
+    "unexpected": []
+  },
+  "nextAction": {
+    "valid": true,
+    "reason": null,
+    "runtimeStateAction": "obter crítica independente fresh-context C01–C07 da candidata request-context v2 após o último write; manter C06 sem aceite e não executar outro BUILD ou gate PostgreSQL sem autorização própria.",
+    "currentIndexAction": "obter crítica independente fresh-context C01–C07 da candidata request-context v2 após o último write; manter C06 sem aceite e não executar outro BUILD ou gate PostgreSQL sem autorização própria."
+  },
+  "semantic": {
+    "valid": true,
+    "failures": [],
+    "state": {
+      "valid": true,
+      "failures": []
+    },
+    "node": {
+      "valid": true,
+      "failures": []
+    },
+    "observedNode": "v22.23.2"
+  }
+}

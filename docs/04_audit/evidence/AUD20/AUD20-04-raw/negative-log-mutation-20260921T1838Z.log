@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-negative-log-receipt",
+  "negative": "AUD20-N-LOG-AFTER-RECEIPT",
+  "mutatedArtifact": "docs/04_audit/evidence/AUD20/AUD20-04-raw/retention-focused-20260921T1828Z.log",
+  "verifierRejectedMutation": true,
+  "verifierExitCode": 1,
+  "restored": true,
+  "status": "PASS"
+}

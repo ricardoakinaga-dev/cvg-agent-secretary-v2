@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-19-qualification-report",
+  "profile": "postgres_durable",
+  "candidateId": "255c2cc78e65f54b1c694b39cc7a8f674ca6a294282d12c3b4ade0bb1c3159b2",
+  "claim": "LOCAL_POSTGRES_DURABLE",
+  "generatedAt": "2026-09-23T00:45:58.091Z",
+  "environment": {
+    "node": "v22.23.2",
+    "platform": "linux",
+    "release": "7.0.0-31-generic",
+    "architecture": "x64",
+    "cpuModel": "AMD Ryzen 7 5700",
+    "logicalCpuCount": 16,
+    "totalMemoryBytes": 67203817472
+  },
+  "configuration": {
+    "events": 250,
+    "concurrency": 4,
+    "durationMs": 120000
+  },
+  "commands": [
+    {
+      "id": "chaos_postgres",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 1181,
+      "stdoutArtifact": "docs/04_audit/evidence/AUD20/AUD20-19-raw/255c2cc78e65f54b1c694b39cc7a8f674ca6a294282d12c3b4ade0bb1c3159b2/postgres_durable-chaos_postgres.stdout.txt",
+      "stderrArtifact": "docs/04_audit/evidence/AUD20/AUD20-19-raw/255c2cc78e65f54b1c694b39cc7a8f674ca6a294282d12c3b4ade0bb1c3159b2/postgres_durable-chaos_postgres.stderr.txt",
+      "stdoutSha256": "c19ea235c51be6a00a993341b1f72e66deafe9084f563a70851ab75c5185612e",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "testReportArtifact": "docs/04_audit/evidence/AUD20/AUD20-19-raw/255c2cc78e65f54b1c694b39cc7a8f674ca6a294282d12c3b4ade0bb1c3159b2/postgres_durable-chaos_postgres.report.json",
+      "testReportSha256": "05fb70fcdd76ad6b83c14befb412099ce4e95f74b52a997e696d548e8520f63d"
+    },
+    {
+      "id": "safety_postgres",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 10625,
+      "stdoutArtifact": "docs/04_audit/evidence/AUD20/AUD20-19-raw/255c2cc78e65f54b1c694b39cc7a8f674ca6a294282d12c3b4ade0bb1c3159b2/postgres_durable-safety_postgres.stdout.txt",
+      "stderrArtifact": "docs/04_audit/evidence/AUD20/AUD20-19-raw/255c2cc78e65f54b1c694b39cc7a8f674ca6a294282d12c3b4ade0bb1c3159b2/postgres_durable-safety_postgres.stderr.txt",
+      "stdoutSha256": "2e22a02b4fcf7831c168cb9042fd11451a214a90302e12489a7c448b85565ee5",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "testReportArtifact": "docs/04_audit/evidence/AUD20/AUD20-19-raw/255c2cc78e65f54b1c694b39cc7a8f674ca6a294282d12c3b4ade0bb1c3159b2/postgres_durable-safety_postgres.report.json",
+      "testReportSha256": "fc037b43d2699c592c4d0970c0c48787971a1fdcd00d9b33ffcbf65281f0a3dc"
+    },
+    {
+      "id": "load_postgres",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 2160,
+      "stdoutArtifact": "docs/04_audit/evidence/AUD20/AUD20-19-raw/255c2cc78e65f54b1c694b39cc7a8f674ca6a294282d12c3b4ade0bb1c3159b2/postgres_durable-load_postgres.stdout.txt",
+      "stderrArtifact": "docs/04_audit/evidence/AUD20/AUD20-19-raw/255c2cc78e65f54b1c694b39cc7a8f674ca6a294282d12c3b4ade0bb1c3159b2/postgres_durable-load_postgres.stderr.txt",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "testReportArtifact": "docs/04_audit/evidence/AUD20/AUD20-19-raw/255c2cc78e65f54b1c694b39cc7a8f674ca6a294282d12c3b4ade0bb1c3159b2/postgres_durable-load_postgres.report.json",
+      "testReportSha256": "e5f705828d7d25741ee55b4e7d345490a582b6035d960e2810311ea43d523221"
+    }
+  ],
+  "skips": {
+    "total": 0,
+    "required": 0,
+    "optional": 0,
+    "unknown": 0
+  },
+  "metrics": {
+    "schemaVersion": 1,
+    "kind": "aud20-19-postgres-durable-load",
+    "synthetic": true,
+    "claim": "LOCAL_POSTGRES_DURABLE",
+    "generatedAt": "2026-09-23T00:45:58.061Z",
+    "configuration": {
+      "events": 250,
+      "concurrency": 4,
+      "bounded": true
+    },
+    "processed": 250,
+    "throughputPerSecond": 261.33625258889754,
+    "latencyMs": {
+      "p50": 7.268562,
+      "p95": 9.634216,
+      "p99": 30.606741
+    },
+    "errors": 0,
+    "retries": 0,
+    "backlog": 0,
+    "recoveryMs": 13.173976,
+    "recoveryTerminationCount": 4,
+    "recoveryPoolErrors": 2,
+    "recoveryQueryFailures": 2,
+    "cleanup": "PASS",
+    "releaseEligible": false,
+    "limitations": [
+      "single local machine",
+      "synthetic outbox workload",
+      "not a production capacity claim"
+    ]
+  },
+  "limitations": [
+    "single local machine",
+    "synthetic data",
+    "not a production claim"
+  ],
+  "releaseEligible": false,
+  "status": "PASS",
+  "failures": []
+}

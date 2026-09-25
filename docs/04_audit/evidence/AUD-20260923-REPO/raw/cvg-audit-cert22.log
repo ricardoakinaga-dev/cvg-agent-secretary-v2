@@ -1,0 +1,42 @@
+
+> cvg-agent-secretary-v2@1.0.0 certification:verify:phase11
+> node scripts/phase11-verify.mjs
+
+{
+  "schemaVersion": 1,
+  "kind": "phase11-verification",
+  "mode": "current",
+  "status": "FAIL",
+  "currentPointer": "certification/current.json",
+  "result": "certification/phase11/phase11-result.json",
+  "manifest": "certification/phase11/manifest.json",
+  "failures": [
+    "independent_critic_invalid:CRITIC:binding:candidateId=fbca3d2b6632605304aa476c61f2699ada6bcb6d5a852607bcfcca79d70f9d89!=255c2cc78e65f54b1c694b39cc7a8f674ca6a294282d12c3b4ade0bb1c3159b2, commit=fa78f92e8dd0dd3ec77a754f7eab2dfae89e15a6!=25434811334f5cec92ee0741079302271b82b7cb, treeHash=69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23!=a4d26bce9669fa40a717d3d97f4d47583745e20395730d94c3c1968b98db1475|CRITIC:fingerprint:worktree changed after review: reported 71ec54729c917e202438f0ae166b7217723e49fd26f865b899429e64436405a8, current a82a6d5ac8bb0880acddc267cdab9d954b0b75129d0972c3b4128cd43754fde2|CRITIC:artifacts:digest mismatch: docs/CURRENT.md (declared 602f147fd850cc0330614be15e0097698ceb0a014199555f6a177781b96a4f0b)|CRITIC:artifacts:digest mismatch: docs/03_build/0332_aud20260919_backlog.md (declared 9172d944cb6280d9ad82c9b3da2dbc315ad8d6d7c36930f774e5e607dc806081)|CRITIC:artifacts:digest mismatch: docs/04_audit/evidence/AUD19/AUD19-08-mutants.json (declared 38de2e672bd2c7087e02096f2f30cb655363284a950b4ed8194a0a576fe93168)|CRITIC:artifacts:digest mismatch: docs/04_audit/evidence/AUD19/AUD19-12-final-seal-outcome.md (declared 300c1250e10d6b987b137c679bde6f2cb91a3e5b3f7b35c7130fb2b8ef1abf8e)",
+    "independent_critic_package_mismatch",
+    "mutation_report_missing_or_invalid",
+    "candidate_tree_stale:69389ada940dd6ddecf1ee08684ff0558ccbd87419fe13af78541ce5f37d7f23:a4d26bce9669fa40a717d3d97f4d47583745e20395730d94c3c1968b98db1475",
+    "candidate_dirty_state_changed",
+    "candidate_untracked_state_changed",
+    "candidate_id_stale",
+    "candidate_file_count_changed",
+    "candidate_file_hash_changed",
+    "candidate_scope_drift:[{\"type\":\"changed\",\"path\":\".github/workflows/security.yml\",\"recorded\":\"97973c96aa16027161c9113490d36f7666e174369709deb7b9bcddd1385f415e\",\"current\":\"ce9c42b4d19ce8dcfe1f8fbd5c7c60d37c738c29750a72d1d8d248af8e619310\"},{\"type\":\"changed\",\"path\":\".github/workflows/verify.yml\",\"recorded\":\"ca4525c844c2a25e25d860150904c766fe75de50a7168ffb5dd289d1896e0752\",\"current\":\"ab7fc7ca050b5490bb2ade0eb82d2f7fb80bcaaafd262a7ca00059a80b0345e9\"},{\"type\":\"added\",\"path\":\".node-version\",\"current\":\"08062faf0d7a2d22f5d7933c50e975dd1527034275597be7c1b3b9fd2b9d079a\"},{\"type\":\"added\",\"path\":\".nvmrc\",\"current\":\"08062faf0d7a2d22f5d7933c50e975dd1527034275597be7c1b3b9fd2b9d079a\"},{\"type\":\"changed\",\"path\":\"apps/api/src/__tests__/build-server-from-env-boundary.test.ts\",\"recorded\":\"0770d2ef03bfb4ebd6bd81ae5fd6775ba3661e7dcbab30a8a600c8b04c569545\",\"current\":\"9e27cfe4b4caf8d6f3345b154979367895d3cdd66ca4bf815a4aee4d845138aa\"}]",
+    "pointer_candidateId_mismatch",
+    "pointer_treeHash_mismatch",
+    "manifest_candidate_mismatch",
+    "manifest_tree_stale",
+    "required_gate_missing:mutation_sentinel",
+    "artifact_invalid:required_package_missing:certification/phase11/critic-report.json",
+    "artifact_invalid:required_package_missing:certification/phase11/mutation-raw-report.json",
+    "artifact_invalid:required_package_missing:certification/phase11/mutation-report.json",
+    "evidence_graph_candidate_mismatch",
+    "release_candidate_mismatch",
+    "release_tree_mismatch",
+    "decision_recalculation_mismatch",
+    "certification_recalculation_mismatch",
+    "eligible_profile_recalculation_mismatch",
+    "success_state_recalculation_mismatch",
+    "remaining_blockers_recalculation_mismatch",
+    "scores_recalculation_mismatch"
+  ]
+}

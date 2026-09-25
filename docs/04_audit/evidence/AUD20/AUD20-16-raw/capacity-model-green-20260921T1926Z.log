@@ -1,0 +1,55 @@
+Running node v22.23.2 (npm v10.9.8)
+{
+  "schemaVersion": 1,
+  "kind": "aud20-16-capacity-model",
+  "policyVersion": "PENDING_HUMAN_APPROVAL",
+  "horizonDays": 60,
+  "safetyFactor": 1.25,
+  "volumes": [
+    {
+      "id": "small",
+      "inboundRowsPerDay": 1000,
+      "eligibleRate": 0.02,
+      "measuredTombstoneRows": 1000,
+      "p50RowBytes": 256,
+      "p95RowBytes": 384,
+      "measuredIndexBytes": 40960,
+      "rowsTombstonedPerDay": 20,
+      "bytesIndexPerRow": 40.96,
+      "dailyGrowthBytesP50": 5939.2,
+      "dailyGrowthBytesP95": 8499.2,
+      "projectedBytesP50": 445440,
+      "projectedBytesP95": 637440
+    },
+    {
+      "id": "medium",
+      "inboundRowsPerDay": 10000,
+      "eligibleRate": 0.05,
+      "measuredTombstoneRows": 5000,
+      "p50RowBytes": 384,
+      "p95RowBytes": 512,
+      "measuredIndexBytes": 327680,
+      "rowsTombstonedPerDay": 500,
+      "bytesIndexPerRow": 65.536,
+      "dailyGrowthBytesP50": 224768,
+      "dailyGrowthBytesP95": 288768,
+      "projectedBytesP50": 16857600,
+      "projectedBytesP95": 21657600
+    },
+    {
+      "id": "operational-limit",
+      "inboundRowsPerDay": 100000,
+      "eligibleRate": 0.08,
+      "measuredTombstoneRows": 20000,
+      "p50RowBytes": 512,
+      "p95RowBytes": 768,
+      "measuredIndexBytes": 2621440,
+      "rowsTombstonedPerDay": 8000,
+      "bytesIndexPerRow": 131.072,
+      "dailyGrowthBytesP50": 5144576,
+      "dailyGrowthBytesP95": 7192576,
+      "projectedBytesP50": 385843200,
+      "projectedBytesP95": 539443200
+    }
+  ]
+}

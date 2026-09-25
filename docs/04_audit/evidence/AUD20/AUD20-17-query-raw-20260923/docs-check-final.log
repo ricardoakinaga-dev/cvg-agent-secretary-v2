@@ -1,0 +1,42 @@
+
+> cvg-agent-secretary-v2@1.0.0 docs:check
+> node scripts/docs-check.mjs
+
+{
+  "schemaVersion": 1,
+  "kind": "aud19-documentation-check",
+  "valid": true,
+  "links": {
+    "checked": 1218,
+    "broken": []
+  },
+  "json": {
+    "checked": 615,
+    "invalid": []
+  },
+  "states": {
+    "declared": [
+      "IN_PROGRESS"
+    ],
+    "unexpected": []
+  },
+  "nextAction": {
+    "valid": true,
+    "reason": null,
+    "runtimeStateAction": "executar BUILD local query-parser sob Node 22.23.2, dentro da allowlist/caps; depois crítica independente. Manter AUD20-10 enfileirado e request-context sem novo BUILD.",
+    "currentIndexAction": "executar BUILD local query-parser sob Node 22.23.2, dentro da allowlist/caps; depois crítica independente. Manter AUD20-10 enfileirado e request-context sem novo BUILD."
+  },
+  "semantic": {
+    "valid": true,
+    "failures": [],
+    "state": {
+      "valid": true,
+      "failures": []
+    },
+    "node": {
+      "valid": true,
+      "failures": []
+    },
+    "observedNode": "v22.23.2"
+  }
+}

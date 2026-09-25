@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-16-candidate-manifest",
+  "task": "AUD20-16",
+  "status": "COMPLETED_LOCAL",
+  "policyVersion": "AUD20-16-LIFECYCLE-v1",
+  "observedAt": "2026-09-22T01:59:30Z",
+  "staging": "NO_GO",
+  "production": "NO_GO",
+  "releaseEligible": false,
+  "candidateBinding": {
+    "algorithm": "aud20-16-worktree-binding-v2",
+    "baseCommit": "25434811334f5cec92ee0741079302271b82b7cb",
+    "gitTreeHash": "218d24fa5ee1e66f2cbe48687d5630100abcf3c3",
+    "sourceDigest": "acc20d9477e0d8359f1c9a3b11bbe4495c61f75c2a76f69fe69aa192780b01fd",
+    "scope": [
+      "docs/02_spec/aud20_16_human_decision_request_20260921.md",
+      "docs/02_spec/aud20_16_tombstone_lifecycle_capacity_20260921.md",
+      "docs/04_audit/evidence/AUD20/AUD20-16-capacity-fixture.json",
+      "docs/04_audit/evidence/AUD20/AUD20-16-human-decision-20260922.json",
+      "docs/04_audit/evidence/AUD20/AUD20-16-independent-critic-v3.md",
+      "docs/04_audit/evidence/AUD20/AUD20-16-independent-critic-v4.md",
+      "docs/04_audit/evidence/AUD20/AUD20-16-v2-binding-verifier.mjs",
+      "docs/04_audit/evidence/AUD20/AUD20-16-v2-build-report-20260922.md",
+      "docs/04_audit/evidence/AUD20/AUD20-16-v2-criteria-matrix.json",
+      "packages/persistence/migrations/0029_inbound_tombstone_lifecycle.sql",
+      "packages/persistence/src/__tests__/retention-postgres.test.ts",
+      "packages/persistence/src/postgres/migrations.ts",
+      "packages/persistence/src/retention.ts",
+      "scripts/aud20-16-capacity-model.mjs",
+      "tests/aud20-16-capacity-model.test.js"
+    ],
+    "dirtyWorktree": true,
+    "untrackedIncluded": true,
+    "externalEffects": false,
+    "candidateId": "3f7a173135e164b477ef28f29b72bec9090595963515be3f3878be57cbd66bf7"
+  },
+  "verification": {
+    "focusedPostgres": "13/13 PASS",
+    "focusedCapacity": "5/5 PASS",
+    "fullUnit": "285 files / 2198 tests PASS / 192 conditional skips",
+    "typecheck": "PASS",
+    "lint": "PASS",
+    "format": "PASS",
+    "docs": "PASS (792 links / 585 JSON)",
+    "diff": "PASS",
+    "independentCritic": "PASS C01-C06",
+    "bindingVerifier": "PASS"
+  }
+}

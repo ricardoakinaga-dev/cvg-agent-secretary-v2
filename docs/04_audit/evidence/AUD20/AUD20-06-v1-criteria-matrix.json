@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-06-criteria-matrix",
+  "task": "AUD20-06",
+  "status": "COMPLETED_LOCAL",
+  "execution": "CONTROLLED_LOCAL",
+  "staging": "NO_GO",
+  "production": "NO_GO",
+  "releaseEligible": false,
+  "criteria": [
+    { "id": "C01", "status": "PASS", "summary": "Critic and mutation sentinel are mandatory required gates." },
+    { "id": "C02", "status": "PASS", "summary": "Critic identity, candidate binding and post-review fingerprint are revalidated." },
+    { "id": "C03", "status": "PASS", "summary": "Mutation catalog digest, candidate, freshness and execution evidence are fail-closed." },
+    { "id": "C04", "status": "PASS", "summary": "Known-bad candidate, catalog, report, gap and exit-code cases are covered." },
+    { "id": "C05", "status": "PASS", "summary": "Raw and packaged reports are required and semantically reopened by the verifier." },
+    { "id": "C06", "status": "PASS", "summary": "Older packages fail closed while historical reports remain unchanged." },
+    { "id": "C07", "status": "PASS", "summary": "Local regression and coverage passed on the final implementation." }
+  ],
+  "limitations": [
+    "Controlled local scope only; staging and production remain NO_GO.",
+    "No real data, external integration, commit, push or deploy was used."
+  ]
+}

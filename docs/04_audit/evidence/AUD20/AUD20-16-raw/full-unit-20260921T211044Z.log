@@ -1,0 +1,8 @@
+Command: PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH npm test
+Environment: node v22.23.2; npm v10.9.8; vitest v4.1.11
+Exit code: 0
+
+Test Files  283 passed | 12 skipped (295)
+Tests       2183 passed | 188 skipped (2371)
+Start       2026-09-21T21:05:58Z (local runner 18:05:58 -0300)
+Duration    254.96s

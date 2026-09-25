@@ -1,0 +1,7 @@
+Command: PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH npm test
+Observed: 2026-09-21T21:39:34Z
+
+ Test Files  283 passed | 12 skipped (295)
+      Tests  2184 passed | 188 skipped (2372)
+   Start at  18:39:34
+   Duration  356.12s (transform 5.57s, setup 0ms, import 52.58s, tests 35.10s, environment 224.25s)

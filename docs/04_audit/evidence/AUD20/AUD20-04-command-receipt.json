@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 2,
+  "kind": "aud20-command-receipt",
+  "program": "AUD20-REM",
+  "task": "AUD20-04",
+  "observedAt": "2026-09-21T19:17:13Z",
+  "candidateManifest": "docs/04_audit/evidence/AUD20/AUD20-04-candidate-manifest.json",
+  "candidateId": "ea348cec64a8a77b36418ef358315bc8d044181720968fc05934b6441507121b",
+  "rawArtifactReceipt": "docs/04_audit/evidence/AUD20/AUD20-04-raw-artifact-receipt.json",
+  "commands": [
+    {
+      "id": "retention-focused",
+      "command": "TEST_DATABASE_URL=<synthetic-disposable> vitest run --no-file-parallelism --maxWorkers=1 packages/persistence/src/__tests__/retention.test.ts packages/persistence/src/__tests__/retention-postgres.test.ts",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "2 files passed; 36 tests passed; statement-timeout rollback included",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-04-raw/retention-focused-20260921T1828Z.log",
+      "rawArtifactSha256": "df500b4918b472df038ce7ea152274bbbe2a69a241742f99132077fb28d06fd5"
+    },
+    {
+      "id": "inbound-replay",
+      "command": "TEST_DATABASE_URL=<synthetic-disposable> vitest run --no-file-parallelism --maxWorkers=1 packages/agent-core/src/__tests__/receive-inbound-message.test.ts",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "1 file passed; 9 tests passed",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-04-raw/inbound-replay-20260921T1828Z.log",
+      "rawArtifactSha256": "e40e2b1386f46767e5970f4cde82892f44f85eadbeafcb64bbb5dd598e966db8"
+    },
+    {
+      "id": "postgres-matrix",
+      "command": "TEST_DATABASE_URL=<synthetic-disposable> npm run test:postgres",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "30 files passed; 337 tests passed; no PostgreSQL-matrix failures",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-04-raw/postgres-matrix-20260921T1826Z.log",
+      "rawArtifactSha256": "465595d6308deeb4969f3221d343470daf35929b24d655017a2552e845e47178"
+    },
+    {
+      "id": "full-unit",
+      "command": "npm test",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "282 files passed; 12 skipped; 2179 tests passed; 188 conditional skips",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-04-raw/full-unit-20260921T1828Z.log",
+      "rawArtifactSha256": "b3df9d728462028ccf2adfa061125be56c1ae466588af4f225c7273906e2eae0"
+    },
+    {
+      "id": "typecheck",
+      "command": "npm run typecheck",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "tsc completed without diagnostics",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-04-raw/typecheck-20260921T1833Z.log",
+      "rawArtifactSha256": "8b0652334f8c18d7b8ab65ebb1c68eb5c3e9bfcdeee08c641f75418ba81efb8c"
+    },
+    {
+      "id": "lint",
+      "command": "npm run lint",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "eslint completed without diagnostics",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-04-raw/lint-20260921T1833Z.log",
+      "rawArtifactSha256": "698dae4c32293ce3bc9c1fdd7f7ca0912b7dd7041c3a321551e5666692d8fe36"
+    },
+    {
+      "id": "format",
+      "command": "npm run format:check",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "Prettier check completed",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-04-raw/format-20260921T1835Z.log",
+      "rawArtifactSha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3"
+    },
+    {
+      "id": "build",
+      "command": "npm run build",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "TypeScript and Vite production build completed locally",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-04-raw/build-20260921T1833Z.log",
+      "rawArtifactSha256": "11233d29c751b81e797f7f3873f22e274cdca2ccca160cb339dd958acd0916d0"
+    },
+    {
+      "id": "security-audit",
+      "command": "npm audit --audit-level=high",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "0 high vulnerabilities reported",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-04-raw/security-audit-20260921T1833Z.log",
+      "rawArtifactSha256": "6d8c5c8f3d7684adb070417bd608d01ae90aa3dc26a65af03ffda4955f38d9a3"
+    },
+    {
+      "id": "docs-check",
+      "command": "npm run docs:check",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "778 links and 578 JSON documents checked; no broken links, invalid JSON or unexpected states",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-04-raw/docs-check-20260921T1917Z.log",
+      "rawArtifactSha256": "ecfacdce990c6c27fd9fbca2b46a9a1ad8130be65482a7c7211ba0f7493ee2d8"
+    },
+    {
+      "id": "format-docs",
+      "command": "prettier --check current operational docs and AUD20-04 evidence",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "Operational documents and current evidence match Prettier style",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-04-raw/format-docs-final-20260921T1917Z.log",
+      "rawArtifactSha256": "03bc99165bddb2f89f286aca22f129cb588602cbd9276ba6bb54ffc4d722aa4c"
+    },
+    {
+      "id": "diff-check",
+      "command": "git diff --check",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "No whitespace errors",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-04-raw/diff-check-final-20260921T1917Z.log",
+      "rawArtifactSha256": "35e7bc71287ee90de0f0b0fbb88a725ae47625db330c75871dc425c162714e90"
+    },
+    {
+      "id": "migration-checksum",
+      "command": "sha256sum packages/persistence/migrations/0027_inbound_idempotency_tombstones.sql packages/persistence/migrations/0028_retention_batch_semantics.sql",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "Checksums for migrations 0027 and 0028 recorded",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-04-raw/migration-checksum-20260921T1836Z.log",
+      "rawArtifactSha256": "e0dd717f54c14edf276226ea87f747a51b2baea94c5e8b5c713fc336654d9e5e"
+    },
+    {
+      "id": "environment-node22",
+      "command": "node --version && npm --version && git rev-parse HEAD",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "Node v22.23.2, npm 10.9.8 and base commit recorded",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-04-raw/environment-node22-20260921T1836Z.log",
+      "rawArtifactSha256": "a147a0f7158fdd333487b5f43783b622d945bbdb13ef6fdd9784180ace5b3f6e"
+    },
+    {
+      "id": "negative-log-after-receipt",
+      "command": "node docs/04_audit/evidence/AUD20/AUD20-04-negative-log-receipt.mjs",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "Binding verifier rejected a synthetic post-receipt raw-log mutation and the original bytes were restored",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-04-raw/negative-log-mutation-20260921T1838Z.log",
+      "rawArtifactSha256": "bf00f872dbaf79d874108207f1c4a21252db900580954dabff5225874ee098d1"
+    }
+  ],
+  "limitations": [
+    "The command receipt binds controlled-local synthetic evidence only; it does not authorize release, staging, production or external effects.",
+    "A fresh-context independent critic returned PASS; this receipt closes AUD20-04 only in controlled-local scope.",
+    "The log-mutation negative is deliberately generated after this baseline receipt and will be added as a separate PASS command."
+  ]
+}

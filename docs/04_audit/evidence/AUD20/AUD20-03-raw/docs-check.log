@@ -1,0 +1,29 @@
+
+> cvg-agent-secretary-v2@1.0.0 docs:check
+> node scripts/docs-check.mjs
+
+{
+  "schemaVersion": 1,
+  "kind": "aud19-documentation-check",
+  "valid": true,
+  "links": {
+    "checked": 719,
+    "broken": []
+  },
+  "json": {
+    "checked": 570,
+    "invalid": []
+  },
+  "states": {
+    "declared": [
+      "READY_FOR_NEXT_STEP"
+    ],
+    "unexpected": []
+  },
+  "nextAction": {
+    "valid": true,
+    "reason": null,
+    "runtimeStateAction": "iniciar `AUD20-04` após autorização; manter staging/produção `NO_GO`.",
+    "currentIndexAction": "iniciar `AUD20-04` após autorização; manter staging/produção `NO_GO`."
+  }
+}

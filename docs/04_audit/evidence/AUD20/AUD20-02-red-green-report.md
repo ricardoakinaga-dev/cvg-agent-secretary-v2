@@ -2,79 +2,89 @@
 
 **Programa:** `AUD20-REM`
 **Task:** `AUD20-02`
-**Escopo:** BUILD local controlado, dataset sintético determinístico, Node `22.23.2`
-**Candidato:** `0de51135ea4b0422aede9d45af2d7062f67951753fe93c3346114276f250aff5`
-**Commit:** `41b7ea13f57b6629dbe054e8fec64af120f7bdbb`
-**Tree:** `4af049f58afc0918db897bdacd980b48266147d008a6e55aaa28deb76f16e26e`
-**Receipt SHA-256:** `463a8ed9a38391518b65cc3960e507144130ed37615dcf15e76625c8fd8e3b74`
+**Escopo:** BUILD local controlado, dataset sintetico deterministico, Node `v22.23.2`
+**Candidato:** `e0c06990996e661ee383d32c8d89463d15dc9088104ccb913d22af731ea28f09`
+**Commit:** `25434811334f5cec92ee0741079302271b82b7cb`
+**Tree:** `49ffa1af7231daa614b4eb5018919e87ab7aabea066ea249b500f7ea9a86f584`
+**Receipt SHA-256:** `9bb44d052ac2bfd17ed00784c1bf01681a4d92ea0182a57d4e6972eaa26a3cd4`
 
 ## Objetivo
 
-Impedir que `runEvalSuite` aceite threshold abaixo do contrato `0,97` ou
-valores que possam ser convertidos/coagidos para fabricar um PASS. Overrides
-podem apenas aumentar mínimos ou reduzir máximos.
+Impedir que `runEvalSuite` aceite threshold abaixo do contrato `0,97`,
+corpus reduzido/sem cobertura adversarial ou valores que possam ser
+convertidos/coagidos para fabricar um PASS. O caminho direto do certificador
+tambem rejeita metrica fora do threshold declarado.
 
 ## RED
 
-Antes da implementação, os cinco testes novos do runner falharam com `exit 1`:
+Antes da implementacao anterior, os testes de threshold falharam com `exit 1`.
+A critica fresca tambem reproduziu dois bypasses adicionais:
 
 - override `taskSuccessRate=0,85` retornava `PASS` com score perfeito;
-- `NaN`, ausência, string e valor arredondado abaixo do contrato também
-  retornavam `PASS`.
+- `NaN`, ausencia, string e valor arredondado abaixo do contrato retornavam
+  `PASS`;
+- uma fatia nao vazia do corpus e uma metrica abaixo do threshold declarado
+  podiam atravessar o caminho direto como `PASS`.
 
 O RED reproduziu o bypass de `P1-EVAL-01` sem alterar o dataset ou usar dados
 reais.
 
-## Implementação
+## Implementacao
 
-- `packages/agent-evals/src/runner.ts` valida domínio, finitude e presença do
-  corpus, das rates e das métricas auxiliares;
-- compara cada threshold na direção correta e rejeita overrides menos estritos;
-- expõe `thresholdFailures` no relatório sem reduzir a barra;
-- `scripts/lib/eval-contract.mjs` aplica os seis thresholds também ao
-  certificador/verifier;
-- fixtures formais foram alinhados ao contrato vigente sem alterar a barra.
+- `packages/agent-evals/src/runner.ts` valida dominio, finitude, corpus
+  canonico, digest, cobertura adversarial, rates e metricas auxiliares;
+- compara cada threshold na direcao correta e rejeita overrides menos estritos;
+- `scripts/lib/eval-contract.mjs` exige os treze campos metricos, o corpus
+  canonico, os seis thresholds de contrato, a satisfacao dos thresholds
+  declarados e `verdict=PASS`;
+- `scripts/lib/certification-rules.mjs` aplica a mesma rejeicao aos dados
+  auxiliares e ao threshold explicito de escalation;
+- fixtures formais e red-team foram alinhados ao contrato vigente sem alterar a
+  barra.
 
-## GREEN e regressão
+## GREEN e regressao
 
-| Verificação | Resultado |
+| Verificacao | Resultado |
 | --- | --- |
-| focused eval + contrato + mutation sentinel + fixture formal | `4 arquivos / 52 testes PASS` |
-| `npm run test:evals` | `2 arquivos / 23 testes PASS` |
-| `node scripts/phase11-2-redteam.mjs --suite=certification` | `9/9 PASS` |
+| focused eval + contrato + mutation sentinel + fixture formal | `5 arquivos / 64 testes PASS` |
+| `npm run test:evals` | `2 arquivos / 24 testes PASS` |
+| `node scripts/phase11-2-redteam.mjs --suite=all` | `19/19 PASS` |
 | `npm run typecheck` | `PASS` |
 | `npm run lint` | `PASS` |
 | `npm run format:check` | `PASS` |
 | `npm run build` | `PASS` |
-| `npm test` | `282 arquivos PASS, 12 SKIP; 2.171 testes PASS, 172 SKIP` |
-| `npm run test:coverage` | `PASS`; statements `91,68%`, branches `87,53%`, functions `89,55%`, lines `92,26%` |
+| `npm test` | `282 arquivos PASS, 12 SKIP; 2.175 testes PASS, 172 SKIP` |
+| `npm run test:coverage` | `PASS`; statements `91,68%`, branches `87,53%`, functions `89,56%`, lines `92,26%` |
 
-O relatório sintético fresco `certification/agent-eval-report.json` tem SHA-256
-`7b9ba9f3f666ffe914dc589df18b06b150546444b4d6b024dacf45232a503824`, `56/56`,
-`taskSuccessRate=1`, threshold `0,97`, zero policy violation, zero unsafe action
-e `thresholdFailures=[]`.
+O relatorio sintetico fresco `certification/agent-eval-report.json` tem SHA-256
+`d21e8ccf08d51b78c0826679ddee10b85eac988147e51ae72356c57cafab8f7d`, `56/56`,
+`taskSuccessRate=1`, threshold `0,97`, zero policy violation, zero unsafe
+action e `thresholdFailures=[]`.
 
 ## Negativos
 
 - `AUD20-N01`: `53/56` com override `0,85` falha no runner; o certificador
-  rejeita threshold e score abaixo do contrato; o red-team mantém os checks
-  `FALSE-GO-EVAL-THRESHOLD-REDUCED` e `FALSE-GO-EVAL-SUCCESS-BELOW-CONTRACT`.
-- `AUD20-N02`: `NaN`, missing, string, rates fora do domínio, corpus vazio,
-  métricas auxiliares não finitas e arredondamento abaixo de `0,97` falham
-  fechado no runner; métricas e thresholds inválidos falham no certificador.
+  rejeita threshold, score abaixo do contrato e evidencia incompleta; o
+  red-team mantém os checks de false-go.
+- `AUD20-N02`: `NaN`, missing, string, rates fora do dominio, corpus
+  vazio/reduzido, digest divergente, cobertura adversarial ausente, verdict
+  ausente, metricas auxiliares nao finitas e arredondamento abaixo de `0,97`
+  falham fechado no runner/certificador/verifier.
 
-## Limitações e fronteiras
+## Limitacoes e fronteiras
 
-- Coverage de functions global `89,55%` não fecha o gate final; denominador,
+- Coverage de functions global `89,56%` nao fecha o gate final; denominador,
   coverage final e required gates pertencem a AUD20-12.
-- `certification/current.json` continua histórico/stale e não foi re-selado.
-- Não houve PostgreSQL, Docker, Playwright, provider, canal, IdP, RAG,
-  egress, staging, produção, dado real ou efeito externo.
+- `certification/current.json` continua historico/stale e nao foi re-selado.
+- Nao houve PostgreSQL, Docker, Playwright, provider, canal, IdP, RAG, egress,
+  staging, producao, dado real ou efeito externo.
 
-**Veredicto da task:** `AUD20-02=COMPLETED` somente em BUILD local controlado.
+**Veredicto da task:** `AUD20-02=READY_FOR_NEXT_STEP` somente em BUILD local
+controlado; critica independente fresca ainda e necessaria.
 **Manifesto e comandos:** `AUD20-02-candidate-manifest.json` e
-`AUD20-02-command-receipt.json` contêm a saída completa do candidato e os
+`AUD20-02-command-receipt.json` contem a saida completa do candidato e os
 comandos executados.
 
-**Próxima ação:** `AUD20-03` com RED/GREEN de lineage/concorrência e negativos
-`AUD20-N03/N04`.
+**Proxima acao:** critica independente fresca do pacote corrente; se emitir
+`PACKAGE_READY`, executar `AUD20-03` com RED/GREEN de lineage/concorrencia e
+negativos `AUD20-N03/N04`.

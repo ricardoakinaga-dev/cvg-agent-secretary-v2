@@ -1,0 +1,29 @@
+
+> cvg-agent-secretary-v2@1.0.0 typecheck
+> tsc -p tsconfig.typecheck.json --noEmit
+
+apps/api/src/__tests__/request-context.test.ts(82,6): error TS2355: A function whose declared type is neither 'undefined', 'void', nor 'any' must return a value.
+apps/api/src/__tests__/request-context.test.ts(96,61): error TS2355: A function whose declared type is neither 'undefined', 'void', nor 'any' must return a value.
+apps/api/src/__tests__/request-context.test.ts(104,6): error TS2355: A function whose declared type is neither 'undefined', 'void', nor 'any' must return a value.
+apps/api/src/server.ts(429,30): error TS2345: Argument of type 'FastifyInstance<Server<typeof IncomingMessage, typeof ServerResponse>, IncomingMessage, ServerResponse<IncomingMessage>, FastifyBaseLogger, FastifyTypeProviderDefault> & PromiseLike<...> & { ...; } & { ...; }' is not assignable to parameter of type 'RequestContextRegistrar'.
+  Types of property 'addHook' are incompatible.
+    Type '{ <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = unknown, SchemaCompiler extends FastifySchema = FastifySchema, Logger extends FastifyBaseLogger = FastifyBaseLogger, Fn extends onRequestHookHandler<...> | onRequestAsyncHookHandler<...> = onRequestHookHandler<...>>(name: "onReque...' is not assignable to type '{ (name: "onRequest", handler: RequestMetricHook): unknown; (name: "onResponse", handler: RequestResponseHook): unknown; }'.
+      Types of parameters 'hook' and 'handler' are incompatible.
+        Type 'RequestMetricHook' is not assignable to type 'onRequestAsyncHookHandler<Server<typeof IncomingMessage, typeof ServerResponse>, IncomingMessage, ServerResponse<IncomingMessage>, ... 4 more ..., any> | onRequestHookHandler<...>'.
+          Type 'RequestMetricHook' is not assignable to type 'onRequestAsyncHookHandler<Server<typeof IncomingMessage, typeof ServerResponse>, IncomingMessage, ServerResponse<IncomingMessage>, ... 4 more ..., any>'.
+            Types of parameters 'request' and 'request' are incompatible.
+              Type 'FastifyRequest<any, Server<typeof IncomingMessage, typeof ServerResponse>, IncomingMessage, any, FastifyTypeProviderDefault, any, any, ResolveFastifyRequestType<...>>' is not assignable to type 'RequestMetricRequest'.
+                The types of 'routeOptions.url' are incompatible between these types.
+                  Type 'string | undefined' is not assignable to type 'string'.
+                    Type 'undefined' is not assignable to type 'string'.
+apps/api/src/server.ts(430,58): error TS2345: Argument of type 'FastifyInstance<Server<typeof IncomingMessage, typeof ServerResponse>, IncomingMessage, ServerResponse<IncomingMessage>, FastifyBaseLogger, FastifyTypeProviderDefault> & PromiseLike<...> & { ...; } & { ...; }' is not assignable to parameter of type 'RequestContextRegistrar'.
+  Types of property 'addHook' are incompatible.
+    Type '{ <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = unknown, SchemaCompiler extends FastifySchema = FastifySchema, Logger extends FastifyBaseLogger = FastifyBaseLogger, Fn extends onRequestHookHandler<...> | onRequestAsyncHookHandler<...> = onRequestHookHandler<...>>(name: "onReque...' is not assignable to type '{ (name: "onRequest", handler: RequestMetricHook): unknown; (name: "onResponse", handler: RequestResponseHook): unknown; }'.
+      Types of parameters 'hook' and 'handler' are incompatible.
+        Type 'RequestMetricHook' is not assignable to type 'onRequestAsyncHookHandler<Server<typeof IncomingMessage, typeof ServerResponse>, IncomingMessage, ServerResponse<IncomingMessage>, ... 4 more ..., any> | onRequestHookHandler<...>'.
+          Type 'RequestMetricHook' is not assignable to type 'onRequestAsyncHookHandler<Server<typeof IncomingMessage, typeof ServerResponse>, IncomingMessage, ServerResponse<IncomingMessage>, ... 4 more ..., any>'.
+            Types of parameters 'request' and 'request' are incompatible.
+              Type 'FastifyRequest<any, Server<typeof IncomingMessage, typeof ServerResponse>, IncomingMessage, any, FastifyTypeProviderDefault, any, any, ResolveFastifyRequestType<...>>' is not assignable to type 'RequestMetricRequest'.
+                The types of 'routeOptions.url' are incompatible between these types.
+                  Type 'string | undefined' is not assignable to type 'string'.
+                    Type 'undefined' is not assignable to type 'string'.

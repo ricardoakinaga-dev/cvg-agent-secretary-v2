@@ -1,0 +1,29 @@
+
+> cvg-agent-secretary-v2@1.0.0 docs:check
+> node scripts/docs-check.mjs
+
+{
+  "schemaVersion": 1,
+  "kind": "aud19-documentation-check",
+  "valid": true,
+  "links": {
+    "checked": 775,
+    "broken": []
+  },
+  "json": {
+    "checked": 577,
+    "invalid": []
+  },
+  "states": {
+    "declared": [
+      "IN_PROGRESS"
+    ],
+    "unexpected": []
+  },
+  "nextAction": {
+    "valid": true,
+    "reason": null,
+    "runtimeStateAction": "retornar AUD20-04 ao BUILD controlado para implementar batelamento limitado/concorrente e rollout seguro da migration; depois regenerar receipts e repetir o binding; manter staging/produção `NO_GO`.",
+    "currentIndexAction": "retornar AUD20-04 ao BUILD controlado para implementar batelamento limitado/concorrente e rollout seguro da migration; depois regenerar receipts e repetir o binding; manter staging/produção `NO_GO`."
+  }
+}

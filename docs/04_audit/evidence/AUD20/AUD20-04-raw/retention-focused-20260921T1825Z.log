@@ -1,0 +1,41 @@
+
+ RUN  v4.1.11 /home/ricardo/cvg-agent-secretary-v2
+
+ ❯ packages/persistence/src/__tests__/retention-postgres.test.ts (9 tests | 1 failed) 2013ms
+     × processes inbound tombstones in bounded ordered batches 31ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/persistence/src/__tests__/retention-postgres.test.ts > AUD20-04 inbound dedupe retention > processes inbound tombstones in bounded ordered batches
+AssertionError: expected { …(16) } to match object { status: 'EXECUTED', …(5) }
+(10 matching properties omitted from actual)
+
+- Expected
++ Received
+
+@@ -2,7 +2,7 @@
+    "action": "delete",
+    "batchesProcessed": 3,
+    "complete": true,
+    "deletedCount": 0,
+    "status": "EXECUTED",
+-   "tombstonedCount": 5,
++   "tombstonedCount": 6,
+  }
+
+ ❯ packages/persistence/src/__tests__/retention-postgres.test.ts:914:21
+    912|       (item) => item.targetId === 'inbound_idempotency'
+    913|     )!
+    914|     expect(outcome).toMatchObject({
+       |                     ^
+    915|       status: 'EXECUTED',
+    916|       action: 'delete',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 35 passed (36)
+   Start at  15:25:36
+   Duration  3.98s (transform 492ms, setup 0ms, import 771ms, tests 2.03s, environment 987ms)
+

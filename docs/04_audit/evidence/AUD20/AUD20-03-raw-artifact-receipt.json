@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-raw-artifact-receipt",
+  "program": "AUD20-REM",
+  "task": "AUD20-03",
+  "observedAt": "2026-09-21T08:43:16Z",
+  "candidateId": "e258b9bef592120288ca8bd3a51d043ff66cd06f9b0fc0a61a2ab65af6f7dad7",
+  "rawDirectory": "docs/04_audit/evidence/AUD20/AUD20-03-raw",
+  "artifacts": [
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/build.log",
+      "bytes": 634,
+      "sha256": "5bc8034c955cad5c891effe33a9f89341ea2f0444975fa6a754e46400401389b",
+      "role": "build"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/coverage-postgres.log",
+      "bytes": 50416,
+      "sha256": "34424d96019e10c59a855169f249e3e3a5ef4fcfa21a6efc92f803732f2f3b68",
+      "role": "coverage"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "diff-check"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/docs-check.log",
+      "bytes": 627,
+      "sha256": "2a3c17e0f85c1d460d034a41dadd128c4a6108986bd82bf3a0c6670ad910de15",
+      "role": "documentation-check"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/format.log",
+      "bytes": 133,
+      "sha256": "37c75095b8b08554895fa9330d2d841265126b06264f1190821e977b568117d3",
+      "role": "format"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/full-unit-postgres.log",
+      "bytes": 39219,
+      "sha256": "7743fa9752d162e5e6f9065db7d48f3163c24b13fa2f9edc0debbe3c4fbd8928",
+      "role": "full-unit"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/kernel-branch-hardening.log",
+      "bytes": 225,
+      "sha256": "5ef503cb7891417cc271116c5fc686f8096bf09b9f6efc47abd7380306f2d51d",
+      "role": "focused-kernel-branch-hardening"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/architecture.log",
+      "bytes": 221,
+      "sha256": "85223ddd181e9876cd6e0fcec0d29d9e9608a3dbe6c0f9f6b5cbc1f478365e12",
+      "role": "architecture"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/goal-kernel-postgres.log",
+      "bytes": 225,
+      "sha256": "bc6c97054ea3ce71e41e37fb40832ed6b4b26fd877184d2cf5e027e2f02228ff",
+      "role": "focused-goal-kernel"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/lineage-unit.log",
+      "bytes": 227,
+      "sha256": "2efaaf4fec5aae83fb5d482724a813f739e58abca29bec390cf92a8bdcbbff0a",
+      "role": "focused-lineage"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/lint.log",
+      "bytes": 49,
+      "sha256": "698dae4c32293ce3bc9c1fdd7f7ca0912b7dd7041c3a321551e5666692d8fe36",
+      "role": "lint"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/outbox-postgres.log",
+      "bytes": 223,
+      "sha256": "fe04badd6e8b41682b3d8d0a656600d2f728bdeff65563f3dd181f23630fb70d",
+      "role": "focused-outbox"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/postgres-matrix.log",
+      "bytes": 13461,
+      "sha256": "7ed2b038c0aa9c450eba77c24a1afc957f2c44f8799443729ef5be6218f9c778",
+      "role": "postgres-matrix"
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/typecheck.log",
+      "bytes": 85,
+      "sha256": "8b0652334f8c18d7b8ab65ebb1c68eb5c3e9bfcdeee08c641f75418ba81efb8c",
+      "role": "typecheck"
+    }
+  ],
+  "verificationArtifacts": [
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-03-raw/binding-verification.log",
+      "bytes": 7971,
+      "sha256": "8f45f01846e2f139e6e31ecb20fe081791547d396242868b78a0ceda54a58d7e",
+      "role": "independent-candidate-binding-verification"
+    }
+  ],
+  "denominatorAudit": {
+    "scope": "controlled-local",
+    "candidateId": "e258b9bef592120288ca8bd3a51d043ff66cd06f9b0fc0a61a2ab65af6f7dad7",
+    "measurementCommand": "TEST_DATABASE_URL=postgresql://postgres:aud20-synthetic@127.0.0.1:55433/postgres npm run test:coverage",
+    "boundaries": ["web", "bootstrap", "postgresql"],
+    "executed": {
+      "testFiles": 294,
+      "tests": 2360,
+      "statements": 12347,
+      "branches": 9951,
+      "functions": 2312,
+      "lines": 11655
+    },
+    "skipped": 0,
+    "requiredSkips": 0,
+    "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-03-raw/coverage-postgres.log",
+    "rawArtifactSha256": "34424d96019e10c59a855169f249e3e3a5ef4fcfa21a6efc92f803732f2f3b68"
+  },
+  "limitations": [
+    "Artifacts are controlled-local evidence from a disposable PostgreSQL instance.",
+    "The source worktree is dirty and this receipt is not a release or staging seal.",
+    "Fresh independent review passed; the evidence remains controlled-local and is not a release or staging seal."
+  ]
+}

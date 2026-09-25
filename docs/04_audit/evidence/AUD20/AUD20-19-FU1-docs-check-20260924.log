@@ -1,0 +1,42 @@
+
+> cvg-agent-secretary-v2@1.0.0 docs:check
+> node scripts/docs-check.mjs
+
+{
+  "schemaVersion": 1,
+  "kind": "aud19-documentation-check",
+  "valid": true,
+  "links": {
+    "checked": 1875,
+    "broken": []
+  },
+  "json": {
+    "checked": 634,
+    "invalid": []
+  },
+  "states": {
+    "declared": [
+      "WAITING_HUMAN_APPROVAL"
+    ],
+    "unexpected": []
+  },
+  "nextAction": {
+    "valid": true,
+    "reason": null,
+    "runtimeStateAction": "manter AUD20-17 sem aceite até binding candidate-bound e cumprimento dos gates C06 restantes; o piso de 95% aplica-se a request-context, mas os 92% ficam `REPORT_ONLY`. Q2/AUD20-10 segue enfileirada; AUD20-19-FU1 admite apenas BUILD local do harness, sessão separada não autorizada; staging/produção `NO_GO`.",
+    "currentIndexAction": "manter AUD20-17 sem aceite até binding candidate-bound e cumprimento dos gates C06 restantes; o piso de 95% aplica-se a request-context, mas os 92% ficam `REPORT_ONLY`. Q2/AUD20-10 segue enfileirada; AUD20-19-FU1 admite apenas BUILD local do harness, sessão separada não autorizada; staging/produção `NO_GO`."
+  },
+  "semantic": {
+    "valid": true,
+    "failures": [],
+    "state": {
+      "valid": true,
+      "failures": []
+    },
+    "node": {
+      "valid": true,
+      "failures": []
+    },
+    "observedNode": "v22.23.2"
+  }
+}

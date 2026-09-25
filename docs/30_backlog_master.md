@@ -1,3 +1,1171 @@
+# Decisões 2026-09-25
+
+- [x] R2 solicitado; PostgreSQL e mutation admitidos; fluxos aprovados; sessão adiada — ver recibo.
+- [ ] Executar R2 → mutation → PostgreSQL com evidência própria. Staging/produção `NO_GO`.
+
+# Dossiês C06 — 2026-09-25
+
+- [x] 3 pedidos preparados (coverage, mutante, desbloqueio) — `WAITING_HUMAN_APPROVAL`.
+- [ ] Aguardar decisões. Staging/produção `NO_GO`.
+
+# AUD20-10/IMP50-09 aceito — 2026-09-25
+
+- [x] Crítica delta `PASS`; mutation final `22/22`; suíte `2.647 PASS`/192 skips; condições registradas.
+- [ ] C01–C07 abertos (alertas/delivery ledger, owner/SLO) exigem decisão/admissão próprias. Staging/produção `NO_GO`.
+
+# AUD20-10 BUILD executado — 2026-09-25
+
+- [x] Slice IMP50-09 executado na allowlist; gates PASS (suíte 2.647/192, coverage 4/4 ≥90%, mutation dirigida 22/22).
+- [x] Crítica v1 `CONDITIONAL` remediada (F1–F6); manifesto de mutantes v2.
+- [ ] Crítica delta e disposição do slice. Staging/produção `NO_GO`.
+
+# Aceite limitado de AUD20-17 — 2026-09-25
+
+- [x] C06/C07 `PASS` por crítica final; aceite limitado registrado (condições de reabertura).
+- [x] "Sem redução" reference-only (0 regressões/210); `AUD20-11` desbloqueada; `AUD20-10` liberada.
+- [ ] Executar `AUD20-10` (collector admitido). Staging/produção `NO_GO`.
+
+# Crítica de coverage PASS — 2026-09-25
+
+- [x] Pilar de coverage adjudicado por crítica (4/4 pisos; inventário v2 após MINOR).
+- [ ] Disposição formal de C06/C07 (governança/humano). Staging/produção `NO_GO`.
+
+# Coverage 4/4 pisos — 2026-09-25
+
+- [x] Branches 90,19%; functions 91,35%; statements 92,99%; lines 93,49%; binding por inventário/log/resumo.
+- [ ] Crítica independente para adjudicar C06. Staging/produção `NO_GO`.
+
+# C06 avança — 2026-09-25
+
+- [x] Coverage admitido executado (functions 90,04%, request-context 100%).
+- [x] Mutante refrescado (`DETECTED`); `AUD20-11` desbloqueada condicionalmente.
+- [ ] Branches global 87,62% + binding para fechar C06. Staging/produção `NO_GO`.
+
+# PostgreSQL executado — 2026-09-25
+
+- [x] Gate admitido: 30/354, zero skip, teardown comprovado, contêiner destruído.
+- [ ] Dispor C06 restante + desbloqueio próprio de `AUD20-11`. Staging/produção `NO_GO`.
+
+# Mutation executada — 2026-09-25
+
+- [x] Sentinel admitido: 15/16 detected, 1 N/A (`mutation_target_stale`, sem PASS); relatório registrado.
+- [ ] PostgreSQL admitido a executar. Staging/produção `NO_GO`.
+
+# R2 concluído — 2026-09-25
+
+- [x] R2 de FU1: `PASS` (harness local); parecer registrado; sem aceite de produto.
+- [ ] Mutation admitida e PostgreSQL admitido a executar. Staging/produção `NO_GO`.
+
+# Pedidos B25-08/B25-09 — 2026-09-25
+
+- [x] Dossiês de re-selo e 8 gates preparados — `WAITING_HUMAN_APPROVAL`.
+- [ ] Preparação documental esgotada; aguardar humanos. Staging/produção `NO_GO`.
+
+# Pedidos de decisão/admissão — 2026-09-25
+
+- [x] 4 dossiês preparados (R2, sessão humana, PostgreSQL, mutation) — `WAITING_HUMAN_APPROVAL`.
+- [ ] Aguardar respostas hash-bound; nada executa sem elas. Staging/produção `NO_GO`.
+
+# AUD-20260925-REPO — itens executáveis concluídos; gates seguem bloqueados — 2026-09-25
+
+- [x] B25-01/R0: selagem com manifesto v2 (`NOT_SEALED_FOR_RELEASE`, worktree 77/5/274); evidência em `04_audit/evidence/AUD-20260925-REPO/`.
+- [x] B25-02/R1: reconciliação read-only (binding `INCOMPLETO`, 339/348, `REPORT_ONLY`); sem fabricar prova.
+- [x] B25-03/R1: diagnóstico de gap (functions 89,27% ≈ 17; top-10); sem código/threshold alterado.
+- [x] B25-10/D: drift D1–D4 encontrado e corrigido nos masters; `AUD20-08` não reaberto.
+- [x] B25-04–09: bloqueios formais registrados (`BLOCKED`/`WAITING_HUMAN_APPROVAL`); nada executa sem gate próprio.
+- [ ] Próxima ação: recuperar binding candidate-bound + gates C06 (R1/R2); R2 de FU1; admissões `AUD20-11`/mutation; sessão humana e dossiês externos por autoridade própria. Staging/produção `NO_GO`.
+- Ver [auditoria 0573](04_audit/0573_repository_audit_2026-09-25.md), [roadmap 0344](03_build/0344_post_audit_roadmap_20260925.md) e [backlog 0345](03_build/0345_post_audit_backlog_20260925.md).
+
+# AUD20-19-FU1 — BUILD local verificado — 2026-09-24T13:01Z
+
+- AUD20-19-FU1/IMP50-18 BUILD local passou unit `21/21`, verify isolado
+  `2/2`, suíte integral `2.256 PASS`/192 skips, coverage 90,84% statements,
+  87,00% branches, 89,27% functions e 91,43% lines; typecheck, lint,
+  Prettier, docs-check (1.875 links/634 JSONs) e diff-check passaram.
+- A primeira rodada full-test com duas falhas de nextAction documental foi
+  preservada separadamente; após sincronizar runtime, a repetição passou.
+- Não houve sessão humana, participante, consentimento, mídia ou binding de
+  candidato limpo. IMP50-18 permanece sem aceite até crítica independente R2;
+  sessão separada não autorizada. `AUD20-17` continua a ação primária com Q1
+  decidida, C06/C07 `FAIL`, 92% `REPORT_ONLY`; AUD20-10 enfileirada. Os 141
+  vínculos IMP50-49 permanecem sem adjudicação, snapshots v1/v2 intactos.
+  Staging/produção `NO_GO`.
+- Ver [relatório BUILD](04_audit/evidence/AUD20/AUD20-19-FU1-build-report-20260924.md),
+  [decisão Q1](04_audit/evidence/AUD20/AUD20-17-branch-floor-human-decision-20260924.md)
+  e [recibo de admissão](04_audit/evidence/AUD20/AUD20-19-FU1-human-approval-admission-20260924.md).
+
+# AUD20-19-FU1 BUILD local e decisão Q1 — 2026-09-24T12:41Z
+
+- A resposta humana mais recente de AUD20-17/Q1 confirma que o piso crítico de
+  95% se aplica a `apps/api/src/server/request-context.ts`; não altera threshold
+  ou registry, nem torna os 92% `REPORT_ONLY` uma prova de C06. C06/C07 seguem
+  `FAIL` e AUD20-17 continua sem aceite.
+- AUD20-19-FU1/IMP50-18: o BUILD local controlado foi executado após a admissão
+  por hash. Unit focal `21/21 PASS`, Playwright isolado `2/2 PASS`, typecheck,
+  lint e Prettier `PASS`. A primeira suíte integral encontrou duas falhas de
+  estado documental por nextAction desatualizada; runtime foi sincronizado e a
+  repetição/coverage/docs-check final ainda estão pendentes.
+- A sessão headed não foi iniciada; não houve participante, consentimento,
+  mídia ou pacote humano. A task-mãe permanece `WAITING_HUMAN_APPROVAL`; R2
+  independente continua necessária antes da aceitação. Staging/produção
+  `NO_GO`.
+- Ver [relatório BUILD](04_audit/evidence/AUD20/AUD20-19-FU1-build-report-20260924.md),
+  [recibo Q1](04_audit/evidence/AUD20/AUD20-17-branch-floor-human-decision-20260924.md)
+  e [admissão](04_audit/evidence/AUD20/AUD20-19-FU1-human-approval-admission-20260924.md).
+
+# PLAN50 / IMP50-49 — suplemento Git dos 42 alvos — 2026-09-24T10:10Z
+
+- Revisão metadata-only dos 42 alvos fora do conjunto AUD19/raw: 38 caminhos
+  PROD e um digest AUD19-11 têm membership em árvores Git; três arquivos AUD20
+  estão apenas no worktree atual. Isso não prova conteúdo do snapshot nem
+  composição dos runs. Nesta rodada houve leitura de texto não-raw do relatório
+  PROD-04 e resumos co-localizados; nenhum payload raw/blob foi lido.
+- Crítica fresh-context v1: `PASS_WITH_SCOPE_LIMITS`; delta-review v2 da
+  Discovery final: `PASS`. Nenhum dos 141 casos foi adjudicado; classes,
+  snapshot v1 e suplemento v2 permanecem intactos. Discovery 0022 está em
+  `IN_PROGRESS`, sem `DISCOVERY_READY`, PRD, SPEC, checker ou BUILD.
+- A resposta sobre aprovação da SPEC amendment request-context corresponde ao
+  recibo hash-bound já registrado; o BUILD local já foi executado e não foi
+  repetido. Estado primário continua AUD20-17 `WAITING_HUMAN_APPROVAL`, Q1 como
+  próxima ação, C06/C07 `FAIL`, AUD20-10 enfileirada, staging/produção `NO_GO`.
+- Ver [relatório](04_audit/evidence/PLAN50-20260923/imp50-49-remaining-42-git-membership-audit-20260924.md),
+  [receipt](04_audit/evidence/PLAN50-20260923/imp50-49-remaining-42-git-membership-receipt-20260924.json),
+  [crítica v1](04_audit/evidence/PLAN50-20260923/imp50-49-remaining-42-git-membership-critic-v1-20260924.md)
+  e [crítica v2](04_audit/evidence/PLAN50-20260923/imp50-49-remaining-42-git-membership-critic-v2-20260924.md).
+- Verificação documental sob Node `v22.23.2`: `docs:check` PASS (1.809 links,
+  zero quebrados, 630 JSONs, estado/semântica/nextAction válidos); Prettier e
+  `git diff --check` PASS. Nenhum teste de produto.
+
+# PLAN50 / IMP50-49 — verificação documental final — 2026-09-24T09:52Z
+
+- `docs:check` PASS sob Node `v22.23.2`: 1.772 links, zero quebrados; 629
+  JSONs válidos; estados, semântica e nextAction válidos. Prettier nos
+  documentos tocados e `git diff --check` PASS. Nenhum teste de produto.
+- Os arquivos revisados pela crítica permanecem nos hashes declarados no
+  [parecer](04_audit/evidence/PLAN50-20260923/imp50-49-aud19-10-git-tree-membership-critic-v1-20260924.md);
+  Discovery 0022 não foi alterada depois do review.
+
+# PLAN50 / IMP50-49 — crítica independente do vínculo Git — 2026-09-24T09:50Z
+
+- A crítica fresh-context deu `PASS_WITH_SCOPE_LIMITS` para integridade e
+  limites do relatório/receipt e Discovery revisada. O commit comprova
+  membership/OIDs dos 99 caminhos na árvore, sem provar sua participação na
+  execução AUD19-10; os outros 42 não são cobertos. Nenhum dos 141 foi
+  adjudicado, e v1/v2 permanecem intactas. O parecer SHA-256
+  `57e1833b2114651021e4365801824ea211c5027d31a27c3d099dc9b129e4fbf2` revisou
+  Discovery `5111e9cf…78c0a14f`, relatório `8fa3adf0…40f59f4e`, receipt
+  `9ca97b82…c4d627a33` e mapa `03a077e6…e70a3ba`.
+- Discovery continua `IN_PROGRESS`, sem `DISCOVERY_READY`, PRD, SPEC, checker
+  ou BUILD; vínculo de origem por item e outros critérios permanecem abertos.
+  Ver [parecer](04_audit/evidence/PLAN50-20260923/imp50-49-aud19-10-git-tree-membership-critic-v1-20260924.md).
+- Estado operacional primário inalterado: `AUD20-17 / WAITING_HUMAN_APPROVAL`,
+  Q1 como próxima ação, `AUD20-10` enfileirada, staging/produção `NO_GO`.
+
+# PLAN50 / IMP50-49 — reiteração da regra e membership Git — 2026-09-24T09:43Z
+
+- Decisão humana reafirmada: manter os 141 vínculos sem adjudicação até haver
+  evidência suficiente, exigindo referência exata por item em registro
+  apropriado; v1 baseline e v2 suplemento imutável.
+- A checagem read-only encontrou os 99 caminhos raw exatos na árvore do commit
+  AUD19-10 `0bbc3ab0013e5bf25d283c4946f951b0d0275b2a`, 33 por browser. A árvore
+  também contém o relatório, agregado e script agregador. O resultado dá
+  membership de caminho no Git, mas não vincula os bytes do snapshot nem prova
+  composição da execução. Nenhum payload/blob foi lido ou hash de payload
+  recalculado. Os 141 seguem sem adjudicação e nenhuma classe mudou.
+- Discovery 0022 permanece `IN_PROGRESS`, sem `DISCOVERY_READY`, PRD, SPEC,
+  checker ou BUILD. Revisão independente da nova evidência está pendente.
+  Ver [relatório](04_audit/evidence/PLAN50-20260923/imp50-49-aud19-10-git-tree-membership-audit-20260924.md)
+  e [receipt](04_audit/evidence/PLAN50-20260923/imp50-49-aud19-10-git-tree-membership-receipt-20260924.json).
+- Estado operacional primário inalterado: `AUD20-17 / WAITING_HUMAN_APPROVAL`,
+  Q1 como próxima ação canônica, `AUD20-10` enfileirada e staging/produção
+  `NO_GO`.
+
+# PLAN50 / IMP50-49 — follow-up critic do relatório de escopo — 2026-09-24T09:27Z
+
+- O follow-up review deu `PASS` ao relatório final
+  `imp50-49-formatter-path-scope-audit-20260924.md`, SHA-256
+  `41dd157fc45c7339e25d0ef522624770d5b37028c112bbe704929b2cbb01427a`, e à
+  Discovery 0022 SHA-256
+  `1b4f75e899f232ede5d9f0bbc513003f181e7e83a82acb85a57be4a4d198958f`.
+- Confirmada a contagem: 12 de 13 alvos do receipt aparecem em
+  `full-cert/format.log`; o 13º é referência ao código AUD19-11. Isso corrige a
+  observação editorial anterior, sem fortalecer o vínculo dos bytes-alvo ou a
+  composição original AUD19-10.
+- Discovery segue sem `DISCOVERY_READY`; os 141 vínculos permanecem sem
+  adjudicação, snapshot v1 baseline e v2 suplemento imutável. Ver o
+  [parecer](04_audit/evidence/PLAN50-20260923/imp50-49-formatter-path-scope-critic-v1-20260924.md).
+
+# PLAN50 / IMP50-40 — disposição request-context e estado AUD20-17 — 2026-09-24T12:13Z
+
+- AUD20-17 permanece `WAITING_HUMAN_APPROVAL` pela decisão Q1 de
+  aplicabilidade; request-context permanece aberta e não aceita. A SPEC v2 foi aprovada no hash
+  `1cb72b0e097ad19539c1f14fbdc892542ae9ddabf716bba00eef20b1c4cb237c` e o BUILD
+  local controlado já foi executado. A confirmação recebida não exige outro
+  BUILD.
+- Disposição atual: C01–C05 `PASS`, C06/C07 `FAIL`; request-context permanece
+  não aceita. O usuário decidiu que o piso crítico de 95% se aplica ao módulo,
+  sem alterar o registry congelado. Os 92% continuam `REPORT_ONLY` até binding
+  integral candidate-bound; não constituem resultado C06 adjudicado. Ver
+  [recibo Q1](04_audit/evidence/AUD20/AUD20-17-branch-floor-human-decision-20260924.md),
+  [errata](04_audit/evidence/AUD20/AUD20-17-request-context-branch-floor-erratum-20260924.md)
+  e [crítica](04_audit/evidence/AUD20/AUD20-17-nqp03-disposition-critic-v1-20260924.md).
+- Métricas integradas `REPORT_ONLY`; baseline “sem redução”, PostgreSQL e
+  mutation `NOT_RUN`. O manifesto citado no BUILD report não corresponde ao
+  disponível e faltam os hashes das 301 fontes integradas. Query-parser
+  `PASS_LOCAL` permanece atribuído somente à sua subfatia; `AUD20-10` enfileirada.
+- Próxima ação: tratar Q1 como resolvida para aplicabilidade, mas não como gate
+  C06/C07; recuperar binding candidate-bound válido e obter admissões próprias
+  antes de qualquer gate adicional. `AUD20-19-FU1` tem BUILD local controlado
+  admitido em paralelo, mas não autoriza sessão humana. Q2 segue enfileirada.
+  Preservar os 141 vínculos IMP50-49 sem adjudicação, o baseline v1 e o
+  suplemento v2. Staging/produção `NO_GO`.
+- Revisões da disposição: I1 rejeitou a interpretação do piso; I2 rejeitou a
+  falta de marcador histórico da entrada 04:42Z do execution log. I3 confirmou
+  o estado corrente, mas foi interrompida antes do parecer final após apontar
+  checkpoints antigos sem marcador histórico no backlog master, em 0337 e na
+  seção Q1 04:42Z de 0342. As marcações e referências foram corrigidas. I3 é
+  somente um registro intermediário, sem PASS; ver [I2](04_audit/evidence/AUD20/AUD20-17-nqp03-disposition-critic-v2-20260924.md)
+  e [achados intermediários I3](04_audit/evidence/AUD20/AUD20-17-nqp03-disposition-critic-v3-interim-20260924.md).
+  A crítica I4 deu `REJECT` somente em DOC-03, por snapshots antigos sem
+  identificação histórica explícita em runtime, execution log e 0337; DOC-01,
+  DOC-02, DOC-04 e DOC-05 passaram. Os marcadores e a errata no snapshot 04:01Z
+  foram corrigidos. Ver [parecer I4](04_audit/evidence/AUD20/AUD20-17-nqp03-disposition-critic-v4-20260924.md).
+- A crítica fresh-context I5 rejeitou DOC-02: a rota C06 e a reconciliação
+  ainda descreviam como atuais textos de 0190/0337 já corrigidos e vinculavam
+  revisões anteriores a bytes diferentes dos atuais. Os novos textos citam os
+  hashes revisados e mantêm estado/gates inalterados. A crítica I6 deu `PASS`
+  em DOC-01–DOC-05; ver [I5](04_audit/evidence/AUD20/AUD20-17-nqp03-disposition-critic-v5-20260924.md)
+  e [I6](04_audit/evidence/AUD20/AUD20-17-nqp03-disposition-critic-v6-20260924.md).
+- I6 reproduziu `docs:check` PASS sob Node `v22.23.2` (1.668 links/628 JSONs,
+  zero links quebrados e estado semântico válido), Prettier e `git diff --check`;
+  o veredito fresh-context foi `PASS` em DOC-01–DOC-05. Nenhum teste de produto
+  ou BUILD foi executado nesta auditoria documental. Após registrar I6 e atualizar
+  os ponteiros, `docs:check` final validou 1.676 links e 628 JSONs; Prettier e
+  `git diff --check` passaram.
+
+# PLAN50 / IMP50-49 — estado Discovery após crítica v2 — 2026-09-24T07:19Z
+
+- IMP50-49/`AUD20-08-FU3` permanece em `DISCOVERY` / `IN_PROGRESS`, sem gate
+  `DISCOVERY_READY`, PRD, SPEC, checker ou BUILD. A crítica independente v2
+  conferiu os hashes finais e não encontrou base para avançar.
+- Os 141 vínculos insuficientes ficam sem adjudicação; v1 segue baseline de
+  referência e v2, suplemento read-only imutável. A busca literal encontrou
+  27 ocorrências para 13 caminhos em 3.245 caminhos filtrados; os hits são
+  candidatos, sem prova de bytes-alvo/membership na execução original. Receipt:
+  [JSON](04_audit/evidence/PLAN50-20260923/imp50-49-exact-path-search-receipt-20260924.json).
+- A comparação intermediária de 2.428 arquivos não tem manifesto de caminhos
+  preservado; a diferença de cinco em relação ao snapshot v2 (2.433) permanece
+  explicitamente sem reconciliação item a item, sem inferência de classes.
+- Critérios pendentes: suporte autoritativo por item, autoridade/cobertura da
+  linhagem, cutoff e escritas posteriores, regras de falha/distinção das seis
+  classes, fixtures e comportamento read-only determinístico. Ver
+  [Discovery 0022](00_discovery/0022_aud20_08_imp50_49_evidence_lineage.md),
+  [parecer](04_audit/evidence/PLAN50-20260923/imp50-49-discovery-critic-v2-20260924.md)
+  e [relatório](04_audit/evidence/PLAN50-20260923/imp50-49-exact-path-followup-20260924.md).
+- A ação crítica única do programa continua a decisão Q1 sobre o piso de 95%
+  em request-context; Q2/AUD20-10 segue enfileirada e staging/produção `NO_GO`.
+- Verificação documental: `docs:check` PASS sob Node `v22.23.2` (1.602
+  links/628 JSONs); Prettier dos dez documentos e `git diff --check` PASS. Sem
+  testes de produto.
+
+# AUD20-19-FU1 — preflight e aprovação pendente — 2026-09-24T06:55Z
+
+- A SPEC do harness permanece `DRAFT_PENDING_HUMAN_REVIEW`, hash-bound a
+  `decb8d441c2a17678026c6305fb71a9c31a2069d6836ad010362f9c3b9179688`; a
+  crítica fresh-context v4 (`4942f6fbbb096a92f3e0c465cd6217373e8bfa0e127c907cd72a610b063cd723`)
+  deu `PASS` somente para prontidão de revisão humana.
+- O preflight de ambiente confirmou namespace `unshare` sem rota externa,
+  ferramentas e versões requeridas instaladas e Chromium presente sem execução.
+  O worktree está sujo e não pode servir como candidato de sessão.
+- Aprovação da SPEC e admissão do BUILD local controlado foram solicitadas; não
+  há admissão ou BUILD até a resposta. A sessão humana continua sem autorização
+  separada; sem participante, consentimento, mídia, UI/API, staging ou produção.
+- **Próxima ação crítica única:** receber a decisão humana pendente de Q1 sobre
+  a aplicabilidade do piso de 95% a `request-context`; Q1 continua bloqueando
+  Q2/AUD20-10. O FU1 é uma preparação H paralela e só avança após aprovação
+  hash-bound própria. Evidência: [preflight](04_audit/evidence/AUD20/AUD20-19-FU1-environment-preflight-20260924.md).
+- `docs:check` passou sob Node `v22.23.2` (1.582 links/627 JSONs); Prettier dos
+  sete documentos e `git diff --check` passaram. A primeira tentativa sob Node
+  24 foi bloqueada corretamente pelo guard de runtime. Nenhum teste de produto.
+
+# AUD20-17 / IMP50-40 — crítica da reconciliação C06 (registro histórico) — 2026-09-24T06:36Z
+
+- A crítica independente fresh-context deu `PASS` somente para precisão do
+  [relatório de reconciliação](04_audit/evidence/AUD20/AUD20-17-manifest-baseline-reconciliation-20260924.md),
+  revisado no SHA-256
+  `a7869131debf4f4c618672a1fbf27de38377ea002af3ba1b5d7ab3d3b3eb67c4`. Parecer:
+  [crítica v1](04_audit/evidence/AUD20/AUD20-17-manifest-baseline-reconciliation-critic-v1-20260924.md),
+  SHA-256 `84bbc37c9d2e88c55b4b647de8af494e4b1e8897c02b9f4e72830ffe6f37dd5a`.
+- A consistência do manifesto continua parcial: 8/8 fontes integradas, 34/34
+  recibos/evidências e listas v1 conferem em seus escopos; o BUILD report cita
+  `11f061f4…`, enquanto o manifesto atual é `6b86eb90…`, sem inventário
+  hash-bound de todas as 301 fontes do run integrado. Não há baseline
+  candidate-bound para “sem redução”; a disposição fica `NOT_RUN`.
+- Métricas permanecem `REPORT_ONLY`; C06/C07 `FAIL`; a aplicabilidade do piso
+  de 95% a `request-context` aguarda decisão humana. Recomendação: manter sem
+  adjudicação até binding candidate-bound válido. `AUD20-17` aguarda essa
+  decisão; NQP-02/AUD20-11 bloqueado, mutation separada, IMP50-49 com 141
+  vínculos sem adjudicação e v1 baseline/v2 suplemento. Staging/produção `NO_GO`.
+- Próxima ação: obter a decisão humana; não iniciar BUILD/PostgreSQL/mutation
+  nem alterar registry/threshold.
+- verification: `docs:check` PASS sob Node `22.23.2` (1.576 links, 627 JSONs,
+  zero links quebrados e estado/ação semânticos válidos); Prettier check nos
+  nove documentos tocados e `git diff --check` PASS. Nenhum teste de produto
+  ou execução foi realizado.
+
+# AUD20-17 / IMP50-40 — crítica v4 PASS e reconciliação C06 (registro histórico) — 2026-09-24T06:20Z
+
+- A crítica fresh-context v4 deu `PASS` somente para prontidão documental da
+  rota C06 SHA-256
+  `4d20e67ab6f4e93bda7405f85a8e7c4c5e953930228453bb1939a283041652f2`;
+  parecer em
+  [evidência](04_audit/evidence/AUD20/AUD20-17-C06-gate-route-critic-v4-20260924.md).
+- C06/C07 continuam `FAIL`, request-context não aceita e AUD20-17
+  `IN_PROGRESS`. IMP50-49 mantém os 141 vínculos sem adjudicação, v1 como
+  baseline e v2 como suplemento. NQP-02/AUD20-11 segue bloqueado;
+  `AUD20-10` enfileirada; staging/produção `NO_GO`. Nenhuma aprovação de
+  Discovery, produto, BUILD, PostgreSQL ou mutation decorre do parecer.
+- Próxima ação: reconciliar em leitura o manifesto citado pelo BUILD report, o manifesto disponível e os hashes das fontes/resultados; verificar se a baseline “sem redução” é candidate-bound; registrar binding verificável ou preservar métricas/comparações como não vinculadas, sem reescrever relatórios históricos; manter C06/C07 `FAIL`, a aplicabilidade 92%/95% e os 141 vínculos IMP50-49 sem adjudicação; manter `AUD20-11`/NQP-02 bloqueados e a admissão mutation separada; não executar BUILD/PostgreSQL/mutation nem alterar registry/threshold; Q1 não libera o DAG, `AUD20-10` segue enfileirada e staging/produção `NO_GO`.
+- verification: `docs:check` passou após persistir a crítica v4, Node
+  `22.23.2` (1.543 links/627 JSONs, estado semântico válido); Prettier check e
+  `git diff --check` também passaram. Sem testes de produto ou execução.
+
+# AUD20-17 / IMP50-40 — correção da crítica v3 C06 (registro histórico) — 2026-09-24T06:15Z
+
+- A crítica v3 revisou a rota SHA-256
+  `528bf5007b695f78975d772432ec8f48caa36befaedb6a0fdd8dd48c5b046036` e deu
+  `REVISE`: topo de 0337 stale e crítica NQP-01 não vinculada aos bytes atuais
+  da Discovery 0024. Corrigi ambos; a rota atual é
+  `4d20e67ab6f4e93bda7405f85a8e7c4c5e953930228453bb1939a283041652f2`.
+- Discovery 0024 permanece intacta no hash
+  `db2493fde811e6b135360f38fcb6eaac10400660f2fb492ef04b2eae6ae8250d`; a
+  crítica NQP-01 (`25513893261b71f73d1b290bbe5ef3a4741355836509c79b59159c56508978e0`)
+  revisou bytes anteriores `cbf4b7d12b33ca0ee862737afd203202620fdc68325fa01601f28480ea8da74c`.
+  Nova crítica da rota atual pendente; nenhuma aprovação de Discovery ou
+  execução decorre desta correção documental.
+- C06/C07 seguem `FAIL`, request-context não aceita, AUD20-17 `IN_PROGRESS`;
+  141 vínculos IMP50-49 sem adjudicação, v1 baseline e v2 suplemento intactos.
+  `AUD20-11`/NQP-02 bloqueado, `AUD20-10` enfileirada, staging/produção
+  `NO_GO`. Gauntlet segue stale; rebaseline oficial falhou fechado sem edição
+  manual.
+- Próxima ação: obter crítica independente final da rota C06 revisada; preservar a Discovery 0024 existente e exigir crítica vinculada ao hash atual `db2493fde811e6b135360f38fcb6eaac10400660f2fb492ef04b2eae6ae8250d` (o parecer NQP-01 cobre bytes anteriores `cbf4b7d12b33ca0ee862737afd203202620fdc68325fa01601f28480ea8da74c`); reconciliar por leitura o binding do manifesto e da baseline; manter sem adjudicação a aplicabilidade do piso crítico e os 141 vínculos IMP50-49; manter `AUD20-11`/NQP-02 bloqueados até gates próprios; recuperar o estado Gauntlet por mecanismo suportado; não iniciar BUILD/PostgreSQL/mutation; Q1 não libera o DAG, `AUD20-10` segue enfileirada e staging/produção `NO_GO`.
+- verification: `docs:check` passou sob Node `22.23.2` (1.533 links/627 JSONs,
+  estado e próxima ação semânticos válidos); Prettier check dos nove documentos
+  e `git diff --check` passaram. Sem teste de produto, banco, BUILD, mutation
+  ou ação externa.
+
+# AUD20-17 / IMP50-40 — rota C06 revisada e Gauntlet stale (registro histórico) — 2026-09-24T06:01Z
+
+- A crítica fresh-context v1 da rota C06 foi `REVISE`: separar admissão de
+  mutation, reavaliar a Discovery 0024 já existente e vincular a baseline “sem
+  redução” ao candidato/fonte/denominador/run exatos. A rota v2 foi revisada no
+  hash `528bf5007b695f78975d772432ec8f48caa36befaedb6a0fdd8dd48c5b046036`.
+- A crítica fresh-context v2 julgou a lógica adequada, mas manteve `REVISE`
+  porque 0343, log e runtime state ainda apontavam a versão anterior; os
+  ponteiros foram sincronizados. Solicitar nova crítica independente antes de
+  considerar a rota pronta para decisão. Nenhuma execução foi autorizada.
+- A aplicabilidade dos 92% de branches de request-context ao piso crítico 95%
+  continua sem adjudicação: o registry congelado não enumera o caminho, apesar
+  dos resumos 0190/0337. Threshold e registry permanecem intactos. C06/C07
+  seguem `FAIL`; request-context não aceita e AUD20-17 `IN_PROGRESS`.
+- O rebaseline oficial do run `IMP50-NQP-20260923` recusou validar hashes dos
+  itens 13/17/20/21 no manifesto histórico. State, bar, artifacts e history
+  ficaram intactos; não houve edição manual de `.gauntlet`. Ver
+  [recibo](04_audit/evidence/AUD20/AUD20-17-gauntlet-rebaseline-attempt-20260924.md).
+- IMP50-49 mantém os 141 vínculos sem adjudicação, v1 baseline e v2 suplemento
+  intactos; nenhuma reclassificação foi feita.
+- Sem testes, banco, serviço, mutation, BUILD, commit, push, staging ou
+  produção nesta rodada. `docs:check` passou com Node `22.23.2` (1.522 links,
+  627 JSONs, estado semântico válido); Prettier check e `git diff --check`
+  passaram. A execução inicial com Node 24 foi corrigida, sem efeito sobre o
+  produto.
+- Próxima ação: obter crítica independente final da rota C06 v2; reconciliar
+  por leitura o binding do manifesto e da baseline e manter sem adjudicação a
+  aplicabilidade do piso crítico até decisão da autoridade; manter
+  `AUD20-11`/NQP-02 bloqueados; recuperar o estado Gauntlet por mecanismo
+  suportado; não iniciar BUILD/PostgreSQL/mutation. `AUD20-10` segue enfileirada,
+  staging/produção `NO_GO`.
+
+# AUD20-17 / IMP50-40 — auditoria request-context v2 — 2026-09-24T04:42Z
+
+> Registro histórico da auditoria naquele momento. A interpretação posterior
+> da cobertura e o estado Q1 vigente estão na
+> [errata](04_audit/evidence/AUD20/AUD20-17-request-context-branch-floor-erratum-20260924.md)
+> e no registro NQP mais recente no topo deste backlog.
+
+- [x] Crítica fresh-context read-only terminou após BUILD v2. C01–C05 `PASS`;
+      C06/C07 `FAIL`; request-context não aceita. Fingerprint repository+state
+      pré/pós idêntico: `7ea35b982dfd962ac8f7fde4e68252711651413e9e7dcb872aec0d5d7a0079b5`.
+- [x] Estado operacional reconciliado; `docs:check` 1.458 links/627 JSONs e
+      estado semântico válido; `format:check` e `git diff --check` passaram.
+- [x] Suíte completa no candidato integrado: 301 arquivos, 2.256 PASS, 192
+      skips, 0 falhas. Coverage reportada: statements 90,84%, branches 87,00%,
+      functions 89,27%, lines 91,43%; request-context branches observados em
+      92%. O binding incompleto mantém as métricas `REPORT_ONLY`; a aplicabilidade
+      do piso crítico de 95% não está adjudicada. Ver a errata acima; skips não
+      contam como aprovados.
+- [ ] C06 permanece `FAIL`: sem baseline válida demonstrada, mutation
+      selecionada 100% ou gate PostgreSQL com zero required skip. Nenhum gate
+      PostgreSQL foi iniciado; NQP-02/AUD20-11 continuam `BLOCKED`.
+- [x] Crítica independente fresh-context concluiu C01–C05 `PASS` e C06/C07
+      `FAIL`; request-context não foi aceita. Ver o parecer abaixo e o resumo
+      corrente no topo deste backlog.
+- [ ] Q1 não liberou o DAG; `AUD20-10` continua enfileirada. A próxima decisão
+      humana é sobre aplicabilidade do piso de 95%; ela não aprova C06/C07 nem
+      libera execução adicional. Staging e produção `NO_GO`.
+- Evidência: [BUILD](04_audit/evidence/AUD20/AUD20-17-request-context-v2-build-report-20260924.md),
+  [crítica](04_audit/evidence/AUD20/AUD20-17-request-context-v2-independent-critic-20260924.md),
+  [manifesto](04_audit/evidence/AUD20/AUD20-17-request-context-v2-build-candidate-manifest-20260924.json),
+  [fingerprint](04_audit/evidence/AUD20/AUD20-17-request-context-v2-review-fingerprint-20260924.json).
+
+# AUD20-17 / IMP50-40 — resultado BUILD request-context v2 (registro histórico) — 2026-09-24T04:01Z
+
+> O relatório de então tratou 92% de branches como abaixo do piso e tinha C07
+> pendente; a [errata](04_audit/evidence/AUD20/AUD20-17-request-context-branch-floor-erratum-20260924.md)
+> corrigiu a interpretação de 92%, e a crítica independente concluiu C07
+> `FAIL`. O estado e próximo passo atuais estão no registro do topo.
+
+- [x] SPEC v2 aprovada e BUILD local controlado admitido por hash
+      `1cb72b0e097ad19539c1f14fbdc892542ae9ddabf716bba00eef20b1c4cb237c`;
+      admissão registrada em 0190/0337 antes do código.
+- [x] Reconstrução v1 fail-closed passou: `server.ts=4.707`; parsers restaurados
+      uma vez cada; hashes pre-edit conferidos; testes de rotas FU1 atribuídos a
+      cópias `HEAD`; assertion request-context de JSON inválido preservada.
+- [x] BUILD controlado e matriz executados dentro da allowlist. Caps integrados:
+      `server.ts=4.584`, request-context `328`, request-query `138`, total
+      `5.050`; C02 `PASS_LOCAL`.
+- [x] Matriz: 13 arquivos/113 PASS/9 skips/0 falhas. Suíte: 300 arquivos,
+      2.248 PASS/192 skips/0 falhas. Coverage: statements 90,83%, branches
+      86,97%, functions 89,27%, lines 91,42%; request-context branches 92%.
+      Typecheck, lint e Prettier `PASS`.
+- [x] `docs:check` `PASS` (1.424 links, 625 JSONs, estado semântico válido),
+      `format:check` final e `git diff --check` `PASS`.
+- [x] Reporter JSON por arquivo confirma os 192 casos condicionais em 29 fontes
+      e corresponde à tabela NQP-02. Evidência: [relatório](04_audit/evidence/AUD20/AUD20-17-request-context-v2-build-report-20260924.md),
+      [manifesto](04_audit/evidence/AUD20/AUD20-17-request-context-v2-build-candidate-manifest-20260924.json),
+      [inventário](04_audit/evidence/AUD20/AUD20-17-request-context-v1-test-inventory-20260924.json).
+- [ ] C06 `FAIL`: functions abaixo de 90%, branches request-context abaixo do
+      piso crítico 95%, mutation selecionada e PostgreSQL não executados; 192
+      casos condicionais skipped não contam como PASS.
+- [ ] C07 aguarda crítica independente fresh-context após o último write; a
+      fatia segue não aceita e `AUD20-17` permanece `IN_PROGRESS`.
+- [ ] NQP-02/AUD20-11 continua sem PostgreSQL descartável/teardown; não executar
+      esse gate sem sua autorização própria. `AUD20-10` segue enfileirada.
+- [x] Sem API/schema, dados reais, PostgreSQL, serviço externo, commit, push,
+      deploy, staging ou produção; staging/produção `NO_GO`.
+- [ ] Próxima ação histórica: decisão humana Q1 sobre a aplicabilidade do piso
+      de 95%; manter C06/C07 `FAIL` e sem novo BUILD ou gate PostgreSQL sem
+      autorização própria.
+
+# NQP-20260924 — BUILD request-context v2 admitido — 2026-09-24T01:56Z
+
+- [x] SPEC request-context v2 aprovada e BUILD local controlado admitido para
+      SHA-256 `1cb72b0e097ad19539c1f14fbdc892542ae9ddabf716bba00eef20b1c4cb237c`;
+      registros em 0190, 0337 e recibo hash-bound.
+- [ ] Executar reconstrução v1 isolada conforme a transformação rollback
+      query-parser e validar todos os hashes/contagens e atribuições FU1 antes
+      de editar fontes. Qualquer divergência interrompe BUILD.
+- [ ] Implementar apenas a allowlist da emenda e executar critérios focados,
+      matriz/regressão/coverage e revisão independente conforme a SPEC.
+- [ ] C06/C07 e aceite final pendem dos pisos AAA, gates obrigatórios e crítica
+      fresh-context; NQP-02 continua sem PostgreSQL/teardown, AUD20-11 `BLOCKED`.
+- [ ] Não alterar API/schema, usar dados reais, integrar serviços externos,
+      fazer commit/push/deploy ou executar staging/produção. Staging/produção
+      `NO_GO`.
+- [x] IMP50-49: manter os 141 vínculos sem adjudicação até evidência suficiente;
+      v1 baseline e v2 suplemento intactos.
+
+# NQP-20260924 — verificação final e pendências abertas — 2026-09-24T01:47Z
+
+- [x] NQP-02 unitário: 30 arquivos/354 testes, 162 PASS, 192 skipped, 0 falhas;
+      crítica independente `CONDITIONAL`; nenhuma conclusão de PostgreSQL.
+- [x] Checks documentais sob Node `22.23.2`: `docs:check` 1.378 links/620
+      JSONs, `format:check`, manifesto 38/38 e `git diff --check` PASS. Recibos
+      em `docs/04_audit/evidence/PLAN50-20260923/nqp02-final-*-20260924.log`.
+- [x] IMP50-49: manter os 141 vínculos sem adjudicação até evidência suficiente;
+      baseline v1 e suplemento v2 preservados, sem reclassificação.
+- [ ] NQP-02/AUD20-11: gate PostgreSQL descartável, zero required skips e
+      teardown continuam pendentes; atribuição por arquivo ao run histórico não
+      foi provada.
+- [ ] Request-context v2 continua à espera de decisão humana hash-bound e
+      admissão BUILD separada. Nenhum código novo autorizado por esta rodada.
+- [ ] Nenhum dado real, commit, push, staging ou produção; staging/produção
+      `NO_GO`.
+
+# NQP-20260924 — decisão humana pendente da emenda request-context — 2026-09-24T01:05Z
+
+- [x] NQP-03: crítica C01–C07 concluiu sem aceite da primeira fatia; C02/C06/C07 permanecem `FAIL`.
+- [x] Proposta de emenda SPEC v1 recebeu `CONDITIONAL`; v2 hash
+      `1cb72b0e097ad19539c1f14fbdc892542ae9ddabf716bba00eef20b1c4cb237c`
+      recebeu `PASS_FOR_HUMAN_REVIEW` e aguarda decisão humana e admissão BUILD separada.
+- [x] NQP-02: unit run com URL vazia passou 30 arquivos/354 testes (162 PASS,
+      192 skipped, 0 falhas) e confirmou por arquivo a reconstrução atual de 29
+      fontes; o 30º arquivo usou client em memória. Receipt anterior sem hashes
+      das fontes; atribuição daquele run não comprovada. PostgreSQL não executado,
+      sem aceite.
+- [x] NQP-02 evidence: relatório, JSON por arquivo e receipt unitário registrados;
+      manifesto de fontes/evidências v2 (38 entradas) verificado integralmente.
+- [x] NQP-02 critic: fresh-context `CONDITIONAL`; hashes e 29/29 contagens
+      unitárias confirmados, PostgreSQL continua não executado.
+- [ ] `AUD20-11`/`IMP50-07`: gate PostgreSQL e teardown seguem pendentes, pois a
+      task está `BLOCKED` e não há execução contra banco descartável neste round.
+- [ ] NQP-01/02: atingir pisos AAA completos e executar gates obrigatórios sem
+      required skip; coverage functions observada em 89,25%.
+- [ ] Q2/AUD20-10 segue enfileirada até Q1 liberar DAG. AUD20-17 permanece
+      `IN_PROGRESS`; IMP50-49 mantém 141 vínculos sem adjudicação por decisão humana.
+- [ ] Nenhum novo BUILD, commit/push, staging ou produção autorizado por esta
+      disposição. Staging/produção `NO_GO`.
+- [ ] Reconciliar o manifesto histórico `.gauntlet` sem sobrescrever hashes de
+      0337/0342/0343; `validate --check-drift` e `rebaseline` falham fechados.
+
+# NQP-20260923 — nova rodada incremental — 2026-09-23T23:16Z
+
+- [x] Revisão [0571](04_audit/0571_implementation_state_review_2026-09-23.md):
+      22/22 hashes do manifesto conferidos, teste focal Node 22 com 14/14 PASS,
+      gaps de coverage/functions, skips, estado e gates identificados.
+- [x] [Melhorias 0572](04_audit/0572_next_improvement_round_2026-09-23.md),
+      [roadmap 0342](03_build/0342_post_query_roadmap_20260923.md) e
+      [backlog 0343](03_build/0343_post_query_backlog_20260923.md) criados; 12
+      propostas vinculadas aos itens IMP50 existentes, sem admissão de BUILD.
+- [x] NQP-06/NQP-11: resumos vivos reconciliados; checkpoints históricos e
+      snapshots IMP50-49 preservados. `docs:check` (1.295 links/615 JSONs),
+      Prettier e `git diff --check` passaram; nenhum item IMP50 de produto foi
+      fechado por esta edição.
+- [ ] NQP-03 / `AUD20-17`: disposição documental própria de request-context
+      C01–C07; manter não aceito até parecer suficiente. Query-parser FU1 segue
+      `PASS_LOCAL` limitado.
+- [ ] NQP-04 / `AUD20-10`: BUILD local aprovado e admitido, enfileirado sem
+      execução nova; seguir somente depois da ação crítica AUD20-17.
+- [ ] NQP-01/02: provar piso functions ≥90% e zero required skip para a
+      qualificação; a suite anterior reportou 89,25% e 192 skips condicionais.
+- [ ] IMP50-49: v1 baseline e v2 suplemento imutável; 141 vínculos sem
+      adjudicação. Sessão humana AUD20-19 e oito gates externos permanecem
+      pendentes. Staging real e produção `NO_GO`.
+
+# PLAN50 — resultado do BUILD query-parser e decisões humanas — 2026-09-23T21:53Z
+
+- **AUD20-17-FU1 / IMP50-40 query-parser:** BUILD local controlado auditado
+  `PASS` para AC01–AC06 da PRD 0033. Relatório e critérios:
+  [BUILD query-parser](04_audit/evidence/AUD20/AUD20-17-query-build-report-20260923.md)
+  e [crítica final](04_audit/evidence/AUD20/AUD20-17-query-final-critic-v3-20260923.md).
+- Caps: `server.ts=4622/4708`, `request-context.ts=258/450`,
+  `request-query.ts=138/160`, total `5018/5050`. Regressão, coverage, checks
+  estáticos e hashes finais estão no manifesto de evidência. Rollback foi
+  ensaiado apenas em cópia isolada, não aplicado ao worktree.
+- A fatia request-context continua não aceita pelo registro próprio; este
+  resultado não conclui `AUD20-17` nem aprova retrospectivamente aquela fatia.
+  Ação seguinte é revisar documentalmente sua disposição com o C02 do candidato
+  integrado dentro do cap. Nenhum novo BUILD está autorizado por essa ação.
+- IMP50-49: v1 (2.412 caminhos) permanece baseline; v2 é suplemento imutável.
+  Os 141 vínculos insuficientes permanecem sem adjudicação até evidência
+  suficiente, sem reclassificação automática. `AUD20-10` fica enfileirado;
+  staging/produção `NO_GO`.
+
+# PLAN50 — aprovações e decisões humanas — 2026-09-23T20:44Z
+
+- **AUD20-17-FU1 / IMP50-40 query-parser:** usuário aprovou SPEC e BUILD local
+  controlado no SHA-256
+  `fec5dcf0ea25e98ccf87e7b80e3b442b0c006521247d6e1137cbfd0f7c79e348`.
+  Admissão registrada antes do código em [0190](02_spec/0190_spec_validation.md),
+  [0337](03_build/0337_aud20260921_backlog.md) e recibo hash-bound.
+- **AUD20-10 / IMP50-09:** usuário aprovou SPEC e BUILD local controlado no
+  SHA-256 `83130cdf8930fa3639a116cc63ab4c2e0c3486ff40a349105d3423f44c91b685`;
+  admissão registrada, execução enfileirada após a ação crítica AUD20-17.
+- **Request-context:** o usuário orientou revisar a SPEC expandindo somente
+  essa fatia para atingir C02. É direção para revisão documental, sem nova
+  autorização de BUILD; C02/C06/C07 permanecem não aceitos no candidato v1.
+- **IMP50-49:** o usuário escolheu preservar v1 (2.412 caminhos) como baseline;
+  v2 continua íntegro como suplemento. Os 141 casos continuam sem adjudicação
+  até evidência suficiente. Nenhuma classificação foi alterada; Discovery não
+  está `DISCOVERY_READY`.
+- Próxima ação crítica: BUILD local query-parser segundo a allowlist aprovada e
+  revisão independente dos bytes finais. Staging/produção `NO_GO`.
+
+# PLAN50 — decisões humanas pendentes — 2026-09-23T20:21:37Z
+
+- A SPEC mantém 7.398 bytes e SHA-256
+  `fec5dcf0ea25e98ccf87e7b80e3b442b0c006521247d6e1137cbfd0f7c79e348`; os
+  gates Discovery 0023/PRD 0033 e a crítica v2 estão conferidos. A aprovação
+  humana hash-bound e a admissão BUILD continuam pendentes em 0190/0337.
+- `server.ts=4.745`, `request-context.ts=258`; C02 falha por 37 linhas e
+  C06/C07 não aceitos. O inventário IMP50-49 continua no hash esperado e seus
+  141 vínculos aguardam regra explícita.
+- Conferência read-only do mapa IMP50-49: 141 linhas, SHA-256
+  `03a077e6aa422ce6108c2570b886af105a6a592ca976ed96da92d12e6e70a3ba`, sendo
+  99 `aggregate_only` e 42 `basename_only`; nenhum raw foi aberto nem classe
+  alterada. As opções de linhagem estão em
+  [Discovery 0022](00_discovery/0022_aud20_08_imp50_49_evidence_lineage.md).
+- Próxima ação única: pedir decisão sobre a SPEC exata e só então registrar a
+  admissão controlada. O estado segue `WAITING_HUMAN_APPROVAL`, com
+  staging/produção `NO_GO`.
+- `docs:check` PASS sob Node `v22.23.2` (1.205 links, 614 JSONs, semântica);
+  Prettier e `git diff --check` PASS. Nenhum teste de produto foi executado.
+- A revisão/aprovação da SPEC query-parser e a regra de linhagem IMP50-49
+  foram solicitadas separadamente; nenhuma decisão foi recebida ou inferida.
+
+# PLAN50 — revalidação de gates e linhagem — 2026-09-23T20:17:00Z
+
+- O usuário repetiu a escolha do inventário integral read-only IMP50-49 e a
+  aprovação do BUILD request-context de IMP50-40. Ambas já estavam satisfeitas:
+  snapshot v2 preservado; BUILD v1 não repetido, C02 37 linhas acima do limite,
+  C06/C07 sem aceite.
+- Varredura independente de 0340/0341 e da disposição viva não encontrou outra
+  lane IMP50 admitida sem novo gate ou decisão humana. Registro:
+  [relatório](04_audit/evidence/PLAN50-20260923/imp50-independent-lane-scan-20260923.md).
+- Próxima ação crítica permanece a decisão humana hash-bound da SPEC
+  query-parser `fec5dcf0ea25e98ccf87e7b80e3b442b0c006521247d6e1137cbfd0f7c79e348`.
+  Staging e produção permanecem `NO_GO`.
+- `docs:check` PASS sob Node `v22.23.2` (1.200 links, 614 JSONs, semântica);
+  Prettier e `git diff --check` PASS. Nenhum teste de produto foi executado.
+
+# PLAN50 — draft IMP50-21 e decisão request-context — 2026-09-23T19:50:11Z
+
+- O usuário aprovou novamente somente BUILD local controlado de request-context
+  `IMP50-40`, já executado no BUILD v1; não houve repetição. C02 permanece 37
+  linhas acima do limite, C06/C07 sem aceite, e a allowlist congelada.
+- Foi preparado o draft SPEC documental IMP50-21 no hash
+  `7edfc5b4c6647f6064d3e62498552f20816181b57e8f9ceea7db12d530c795fd`. A
+  crítica delta fresh-context `PASS` cobre apenas prontidão para revisão humana;
+  o follow-up segue sem registro/admissão e espera a liberação da ação crítica
+  AUD20-17/IMP50-40. Nenhum master foi editado.
+- `docs:check` PASS (1.189 links, 614 JSONs, semântica), Prettier nos sete
+  documentos tocados e `git diff --check` PASS sob Node `v22.23.2`. Nenhum teste
+  de produto foi executado; staging/produção `NO_GO`.
+- A próxima ação crítica permanece a decisão humana hash-bound da SPEC
+  query-parser `fec5dcf0ea25e98ccf87e7b80e3b442b0c006521247d6e1137cbfd0f7c79e348`.
+
+# PLAN50 — reafirmações de decisões já registradas — 2026-09-23T19:07:02Z
+
+- `IMP50-49`: a escolha repetida de inventário integral read-only já está
+  satisfeita pelo snapshot v2; não houve nova captura nem decisão de linhagem
+  para os 141 vínculos insuficientes.
+- `IMP50-40`: a aprovação request-context reafirma o mesmo hash e allowlist; o
+  BUILD v1 continua não aceito por C02 (37 linhas acima do teto) e C06/C07. Sem
+  repetição ou expansão do BUILD.
+- Nenhum código, teste de produto ou evidência sob `docs/04_audit/evidence/`
+  foi alterado; 2/50 aceitos somente em escopo documental/evidencial, 0 BUILDs
+  de produto aceitos, staging/produção `NO_GO`.
+- `docs:check` passou em Node `v22.23.2` (1.183 links, 614 JSONs, estado
+  semântico válido); `format:check` e `git diff --check` passaram.
+- Próxima ação crítica: decisão humana hash-bound sobre query-parser
+  `fec5dcf0ea25e98ccf87e7b80e3b442b0c006521247d6e1137cbfd0f7c79e348`.
+
+# PLAN50 — revisão de decisão e SPEC IMP50-42 — 2026-09-23T18:51:16Z
+
+- A resposta request-context reafirma o mesmo BUILD local já executado; C02
+  permanece 37 linhas acima do cap e C06/C07 sem aceite. Não houve repetição
+  nem expansão de allowlist.
+- A crítica fresh-context `PASS` da SPEC IMP50-42 (7.020 bytes, SHA-256
+  `2b8f3464bf6e21174ccd41cf65011a61455396698843e5c0a6222f0f58e5ada6`) a deixa
+  pronta para revisão humana somente. Continua sem admissão de BUILD.
+- 2/50 itens seguem aceitos apenas em escopo documental/evidencial; 0 BUILDs de
+  produto aceitos. Staging/produção `NO_GO`; snapshot v2 IMP50-49 preservado.
+- `docs:check` passou sob Node `v22.23.2` (1.183 links, 614 JSONs, semântica
+  válida); Prettier nos documentos tocados e `git diff --check` passaram.
+- Próxima ação crítica: decisão humana hash-bound sobre a SPEC query-parser
+  `fec5dcf0ea25e98ccf87e7b80e3b442b0c006521247d6e1137cbfd0f7c79e348`.
+
+# PLAN50 — SPEC AUD20-10 pronta para revisão humana — 2026-09-23T18:30:47Z
+
+- A crítica independente v1 do adendo AUD20-10/IMP50-09 foi `CONDITIONAL` no
+  hash `952e40664cd0ac559cb32e1a05080d65a2990d7559a417ecb2d07dd2607565d2`;
+  apontou falta de caminho integrado API→worker e de enforcement para o perfil
+  sintético. O draft foi refinado para especificar esses seams, com hash
+  `78435c810bdecb918754943321f28bc91b88e8bebd11b2f249be3d67536b6623`.
+- A crítica v2 final deu `PASS` para prontidão de revisão humana no hash exato
+  `83130cdf8930fa3639a116cc63ab4c2e0c3486ff40a349105d3423f44c91b685`
+  (10.763 bytes). `AUD20-10` permanece `WAITING_HUMAN_APPROVAL`; sem aprovação
+  hash-bound e admissão registrada não iniciar BUILD. Apenas documentação foi
+  alterada; sem código/testes de produto.
+- Snapshot v2 IMP50-49 preservado; nenhum arquivo de `evidence/` foi alterado.
+  Estado do release: staging/produção `NO_GO`. `docs:check` (1.183 links,
+  614 JSONs, semântica), `format:check` e `git diff --check` passaram em Node
+  `v22.23.2`; nenhum teste de produto foi executado.
+
+# PLAN50 — revalidação de decisão e lanes — 2026-09-23T18:01:25Z
+
+- As respostas recebidas para IMP50-49 e request-context repetem decisões já
+  registradas: inventário integral read-only v2 concluído e aprovação do mesmo
+  BUILD request-context/hash/allowlist, cuja execução continua sem aceite. Não
+  alteram gate, critério, scope ou status.
+- Revalidação read-only não encontrou outra fatia IMP50 admitida. O C02 de
+  request-context permanece 37 linhas acima do limite sem extração adicional
+  dentro da allowlist congelada. Não houve alteração de código ou teste de
+  produto.
+- Verificação documental: `docs:check` PASS sob Node `v22.23.2` (1.183 links,
+  614 JSONs, semântica PASS); `format:check` e `git diff --check` PASS. O
+  primeiro `docs:check` com Node `v24.20.0` falhou apenas por incompatibilidade
+  de runtime, antes da repetição sob o Node pinado.
+- Estado: 2/50 aceitos somente em documentação/evidência; 0 BUILDs de produto
+  aceitos; staging/produção `NO_GO`.
+- Próxima ação: revisão/aprovação hash-bound e admissão da SPEC query-parser
+  `fec5dcf0ea25e98ccf87e7b80e3b442b0c006521247d6e1137cbfd0f7c79e348`;
+  IMP50-49 aguarda decisão independente da regra de linhagem dos 141 casos.
+
+# PLAN50 — baseline v2 registrado — 2026-09-23T17:32:03Z
+
+- `IMP50-49`: captura integral read-only v2 concluída às 17:22:44Z: 2.433
+  arquivos regulares / 28.970.553 bytes; JSONL SHA-256
+  `89c0bb3747dcb31f38db8ec94b9fff1ab0efd68cb522a3088e78bdc26ec06a56`.
+  Revarredura separada PASS sem diferenças. Comparação com v1 preservada: 21
+  adições, 0 ausentes e 1 alterado (`imp50-status-20260923.md`); três sidecars
+  v2 estão fora dos membros. Overlay e os 141 vínculos insuficientes permanecem
+  sem adjudicação; sem mudança de classes ou `DISCOVERY_READY`.
+- `IMP50-18`: crítica v4 da SPEC = `PASS` somente para prontidão de revisão
+  humana; sem BUILD ou sessão autorizada.
+- Resposta humana reafirmou o BUILD local request-context já executado; C02,
+  C06 e C07 continuam sem aceite, sem repetição de código/testes.
+- Estado: 2/50 aceitos somente em escopo documental/evidencial, 0 BUILDs de
+  produto aceitos; staging/produção `NO_GO`.
+- Verificação documental: Node `v22.23.2`; `docs:check` (1.179 links, 614
+  JSONs, semântica), `format:check` e `git diff --check` passaram. Nenhum teste
+  de produto foi executado.
+- Próxima ação crítica: decisão hash-bound sobre SPEC query-parser
+  `fec5dcf0ea25e98ccf87e7b80e3b442b0c006521247d6e1137cbfd0f7c79e348`, seguida
+  de registro de gate/admissão em 0190/0337. A regra de linhagem IMP50-49 segue
+  pendente separadamente.
+
+# PLAN50 — manifesto candidato, revisão e decisão — 2026-09-23T16:00Z
+
+- `IMP50-49`: derivado somente do inventário v1 um índice review-only com os 99 caminhos que casam com o glob AUD19-10, 33 por browser, com tamanhos/SHA-256. A crítica fresh-context deu `PASS` para integridade e limites; não há vínculo provado com a execução original, adjudicação ou `DISCOVERY_READY`.
+- Evidência: [manifesto](04_audit/evidence/PLAN50-20260923/imp50-49-aud19-10-member-manifest-candidate-20260923.jsonl), [relatório](04_audit/evidence/PLAN50-20260923/imp50-49-aud19-10-member-manifest-candidate-report-20260923.md), [crítica](04_audit/evidence/PLAN50-20260923/imp50-49-aud19-10-member-manifest-critic-v1-20260923.md). Nenhum payload raw foi aberto e nenhuma classe mudou.
+- A resposta do usuário às 15:51Z reafirmou apenas o BUILD request-context já executado; C02/C06/C07 continuam sem aceite e nenhum código/teste foi repetido. Query-parser segue pendente de decisão separada.
+- Estado PLAN50: 2/50 aceitos somente em escopo documental/evidencial, 0 BUILDs de produto aceitos; staging/produção `NO_GO`. Próxima ação crítica: decisão humana hash-bound sobre query-parser; IMP50-49 aguarda regra de linhagem e baseline.
+
+# PLAN50 — checkpoint IMP50-49 e gates de execução — 2026-09-23T15:31Z
+
+- `IMP50-49`: inspeção somente do agregado AUD19-10 confirmou que ele não lista membros raw por caminho; os 99 vínculos agregados continuam insuficientes. O mapa de 141 casos não adjudica classes.
+- Discovery 0022 registra, sem escolher, as opções de linhagem (referência exata, manifesto fechado com membros/hash/contagem/origem, ou manter sem adjudicação) e baseline (snapshot v1 de 2.412 caminhos ou novo v2 após congelar escritas). Não emitir `DISCOVERY_READY` sem decisão, evidência e crítica independente.
+- Inventário atual de evidências: 2.425 arquivos, 13 adições, 0 ausências e 1 alterado em relação à v1. O agregado JSON não fecha a lacuna; nenhum raw foi aberto.
+- Nenhuma nova lane de BUILD local está admitida. `IMP50-40` request-context permanece não aceito (C02 excede 37 linhas); query-parser e `IMP50-42` aguardam revisão humana. Não repetir código/testes nem ampliar allowlists. Staging/produção `NO_GO`.
+- Verificação documental: Node `v22.23.2`; `docs:check` PASS (1.111 links, 613 JSON válidos, semântica PASS), Prettier nos oito documentos pertinentes e `git diff --check` PASS. Nenhum teste de produto foi executado.
+- Próxima ação crítica: decisão humana separada e hash-bound sobre a SPEC query-parser `fec5dcf0ea25e98ccf87e7b80e3b442b0c006521247d6e1137cbfd0f7c79e348`; sem aprovação e registro de gate/admissão exatos em 0190/0337, não iniciar BUILD.
+
+# PLAN50 — reafirmação request-context e mapa IMP50-49 — 2026-09-23T15:11Z
+
+- `IMP50-40`: o usuário reafirmou BUILD local controlado somente para request-context, no mesmo hash e limites já registrados. A fatia já foi executada; segue não aceita por C02 (4.745 > 4.708 em 37 linhas), C06 e C07. Nenhum código/teste foi repetido. A SPEC query-parser continua sem aprovação/admissão própria.
+- `IMP50-49`: mapa não vinculante cobre os 141 candidatos HISTORICAL sem suporte suficiente: 99 agregados e 42 basename/nome não resolvente. Classes permanecem propostas; Discovery segue sem gate. Árvore atual: 2.425 arquivos, 13 adições, 0 ausências, 1 alterado.
+- Evidência: [mapa por caminho](04_audit/evidence/PLAN50-20260923/imp50-49-historical-reference-map-v2-20260923.jsonl); [parecer v2](04_audit/evidence/PLAN50-20260923/imp50-49-overlay-review-v2-20260923.md).
+- Estado global: 2/50 aceitos apenas em escopo documental/evidencial, 0 BUILDs de produto aceitos; staging/produção `NO_GO`.
+- Próxima ação única: obter decisão humana, separada e hash-bound, sobre a SPEC query-parser `fec5dcf0ea25e98ccf87e7b80e3b442b0c006521247d6e1137cbfd0f7c79e348`; sem aprovação e registro do gate/admissão exatos em 0190/0337, não iniciar seu BUILD local. O slice request-context permanece não aceito e sua allowlist congelada.
+
+# PLAN50 — próxima ação AUD20-17-FU1 (registro histórico) — 2026-09-23T14:17:02Z
+
+- `IMP50-40` segue `IN_PROGRESS`, não aceito: o BUILD request-context excede
+  C02 em 37 linhas. A aprovação registrada cobre somente aquela primeira
+  fatia.
+- Uma segunda fatia com os parsers de query foi definida em Discovery 0023,
+  PRD 0033 e SPEC separada. A SPEC permanece `DRAFT_PENDING_HUMAN_REVIEW` e não
+  autoriza código. Crítica independente v2: sem bloqueador de SPEC, com a
+  obrigação de testar mensagens HTTP exatas durante BUILD.
+- Caps propostos: `server.ts <=4708`, `request-context.ts <=450`,
+  `request-query.ts <=160`, soma `<=5050`. Allowlist e comportamentos negativos
+  estão enumerados na SPEC.
+- Próxima ação única: revisão humana da SPEC final e decisão de admissão. Até a
+  aprovação hash-bound, nenhuma alteração de código/teste para FU1.
+- IMP50-49 permanece com overlay read-only proposto, sem adjudicação ou gate.
+  Estado global: 2/50 aceitos apenas por documentação/evidência; 0 BUILDs de
+  produto aceitos; P0–P7 sem promoção; staging/produção `NO_GO`.
+
+# PLAN50 — triagem IMP50-49 e decisão C02 — 2026-09-23T13:37:30Z
+
+- A proposta de triagem read-only de IMP50-49 cobre os 339 itens não
+  resolvidos no snapshot original: 190 HISTORICAL, 23 INHERITED, 107
+  UNCLASSIFIED e 19 ORPHAN candidatos. Nada foi adjudicado ou gravado no JSONL;
+  126 casos ainda exigem revisão se o overlay for aceito.
+- Os 339 tamanhos e hashes conferem; o overlay linha a linha corresponde ao
+  inventário. A árvore atual tem 2.420 arquivos: oito adições ao snapshot,
+  nenhuma ausência e um arquivo alterado. As adições são três sidecars do
+  inventário, três evidências IMP50-40 e dois artefatos de triagem. Ver
+  [relatório](04_audit/evidence/PLAN50-20260923/imp50-49-triage-proposal-20260923.md)
+  e [overlay JSONL](04_audit/evidence/PLAN50-20260923/imp50-49-triage-proposal-20260923.jsonl).
+- IMP50-40 continua não aceito: C02 excede o cap em 37 linhas e o parecer
+  independente mantém C02/C06/C07 sem aceite. Não houve expansão da allowlist.
+- Estado do programa: 2/50 aceitos apenas por documentação/evidência; nenhum
+  BUILD de produto aceito. P0–P7 sem promoção; staging/produção NO_GO. O
+  Gauntlet PLAN50 isolado permanece ACTIVE/DECOMPOSE, 0 rounds, STALE.
+- Próxima ação única: decisão humana sobre a revisão SPEC de C02 para
+  IMP50-40. Manter a allowlist congelada; IMP50-49 permanece em Discovery sem
+  gate de produto.
+
+# PLAN50 — admissão controlada e inventário — 2026-09-23T11:40:43Z
+
+- `AUD20-17`/`IMP50-40`: aprovação humana exata registrada; BUILD local
+  controlado em andamento somente para request-context. O slice não está aceito;
+  C02 e C01–C07 continuam abertos.
+- `IMP50-49`: inventário completo read-only concluído: 2.412 arquivos; 339
+  itens `UNCLASSIFIED`/`ORPHAN` aguardam triagem. Sem gate Discovery, política
+  aprovada, PRD/SPEC, checker ou BUILD. Ver relatório
+  [IMP50-49](04_audit/evidence/PLAN50-20260923/imp50-49-full-inventory-report-20260923.md).
+- Mantidos 2/50 aceites somente documentais/evidenciais e 0 aceites de produto.
+  Staging/produção seguem `NO_GO`.
+- Resultado: extração request-context em andamento local, sem aceite; C02
+  falha por 37 linhas (`server.ts` 4.745; alvo `<=4708`).
+- Evidência: [relatório BUILD AUD20-17 v1](04_audit/evidence/AUD20/AUD20-17-v1-build-report-20260923.md).
+- Crítica independente não aprova v1 enquanto C02 falhar; C06 não tem
+  resultado de coverage aprovado. Ver
+  [parecer](04_audit/evidence/AUD20/AUD20-17-independent-critic-v1-20260923.md).
+- Próxima ação única: obter decisão humana sobre a revisão da SPEC de C02 para
+  `IMP50-40`; manter o BUILD local não aceito e a allowlist congelada até nova admissão.
+
+# PLAN50 — disposição de execução — 2026-09-23T07:37:38Z
+
+- **Done:** 2/50 melhorias aceitas somente em escopo documental/de evidência:
+  `IMP50-41` (reconciliação AC05/C05/C06) e `IMP50-50` (`AUD20-08-FU2`). Isso
+  não é aceite de produto.
+- **In progress:** nenhum BUILD de produto; 0 slices de produto admitidos.
+- **Blocked/waiting:** os outros 48 candidatos permanecem subordinados aos gates parentais;
+  próxima fatia `IMP50-40` / `AUD20-17` aguarda revisão humana da SPEC. Ver
+  [gate review](04_audit/evidence/PLAN50-20260923/gate-review-20260923.md).
+- Lane independente R8: a proposta de follow-up `AUD20-08-FU1` / `IMP50-42`
+  e a SPEC estão registradas para revisão; não admitidas para BUILD. Ver
+  [preparação](04_audit/evidence/PLAN50-20260923/imp50-42-spec-preparation-20260923.md).
+- `IMP50-50` está concluído como catálogo documental, revisão independente
+  `PASS`; [recibo](04_audit/evidence/PLAN50-20260923/imp50-50-command-catalog-report-20260923.md).
+- `IMP50-41` foi aceito por evidência existente AUD20-08 AC05/C05/C06, após
+  revisão independente e negativo focal fresco; a aceitação não qualifica
+  candidato nem release. Veja a
+  [auditoria](04_audit/evidence/PLAN50-20260923/imp50-41-phase10-metadata-audit-20260923.md).
+- `AUD20-10` segue aguardando SPEC; `AUD20-20` segue `BLOCKED` por R2/R3 e
+  `AUD20-18`; `AUD20-19` segue aguardando autorização de sessão. `IMP50-21`
+  requer follow-up formal antes de corrigir ponteiros em masters de `AUD20-08`.
+- Critérios congelados: P0 `PASS` documental somente; P1 `BLOCKED`; P2
+  `NOT_RUN`; P3 `PASS` limitado ao envelope/preservação da rodada; P4/P5
+  `NOT_RUN`; P6 `BLOCKED/NOT_RUN`; P7 `BLOCKED`.
+- Próxima ação única: revisar/aprovar `AUD20-17`/`IMP50-40`, depois registrar a
+  fatia exata antes do BUILD. Candidato não congelado; staging/produção `NO_GO`.
+- Revalidação gate-only em 06:46Z não identificou slice R8 independente
+  admissível antes da revisão; `AUD20-08` permanece concluída e sem extensão de
+  autorização. Ver [evidência](04_audit/evidence/PLAN50-20260923/imp50-next-action-gate-review-20260923.md).
+- Revalidação de `IMP50-42` confirmou uma proposta SPEC completa para revisão,
+  mas ainda sem admissão de BUILD. O ponteiro PLAN50 divergente em `0300` fica
+  com `IMP50-21` não admitido; a ação crítica única segue `AUD20-17`/`IMP50-40`.
+- `IMP50-49` agora tem proposta Discovery `AUD20-08-FU3` em
+  `DRAFT_PENDING_HUMAN_REVIEW`. A escolha de cobertura do inventário aguarda
+  revisão; não há PRD/SPEC ou gate de BUILD. O pai `AUD20-08` não foi reaberto.
+  Ver [proposta](00_discovery/0022_aud20_08_imp50_49_evidence_lineage.md) e
+  [preparação](04_audit/evidence/PLAN50-20260923/imp50-49-policy-preparation-20260923.md).
+- Gauntlet isolado continua em DECOMPOSE, 0 rounds e evidence freshness STALE;
+  validação sem drift é somente do espelho e não qualifica o workspace atual.
+
+### Revalidação de lanes PLAN50 — 2026-09-23T07:56:51Z
+
+- Não há lane local elegível: os candidatos remanescentes não atendem
+  simultaneamente registro na task-mãe, SPEC aprovada, gate, precedências e
+  admissão. O detalhe por candidato está na
+  [evidência](04_audit/evidence/PLAN50-20260923/ready-lane-revalidation-20260923.md).
+- IMP50-40/AUD20-17 continua sendo a próxima ação única, aguardando decisão
+  humana sobre o adendo; IMP50-09/10 e IMP50-42 também aguardam revisão de SPEC;
+  IMP50-49 aguarda escolha de escopo. IMP50-21 não foi registrado;
+  IMP50-33/AUD20-19 aguarda R4 e AUD20-11, e AUD20-19/20 preservam seus gates
+  humano e de dependência.
+- Nenhuma task foi admitida ou reclassificada. Permanecem 2/50 aceitações
+  documentais/de evidência, 0 BUILDs de produto e staging/produção `NO_GO`.
+- Rechecagem independente às 08:10:48Z confirmou que não houve avanço de gate
+  nem nova admissão. A próxima ação única não muda; consulte a mesma
+  [evidência atualizada](04_audit/evidence/PLAN50-20260923/ready-lane-revalidation-20260923.md).
+
+# PLAN50-20260923 — trio executivo das 50 melhorias
+
+- [x] [Plano executivo 0339](03_build/0339_plan50_executive_plan_20260923.md),
+      [roadmap 0340](03_build/0340_plan50_roadmap_20260923.md) e
+      [backlog 0341](03_build/0341_plan50_backlog_20260923.md) registrados;
+      [evidência](04_audit/evidence/PLAN50-20260923/verification.md) cobre
+      50/50 IDs e critérios de planejamento.
+- [ ] `IMP50-01..50` são candidatos subordinados às tasks `AUD20-*`; admitir
+      execução somente pelo gate da task-mãe. `AUD20-10/17` foram reativadas
+      para escopo local e aguardam revisão SPEC; `AUD20-20` segue bloqueada por
+      dependência R3/R2 e `AUD20-18`.
+- [ ] Próxima ação operacional: revisar e aprovar a SPEC de `AUD20-17` v2026-09-23
+      para a primeira fatia `IMP50-40`; staging real e produção `NO_GO`.
+
+# PLAN-50-20260923 — oportunidades priorizadas
+
+- [x] [Lista de 50 melhorias](04_audit/0570_prioritized_improvements_2026-09-23.md)
+      registrada como proposta: 20 alta, 20 média e 10 baixa; IDs de task e
+      gates existentes prevalecem.
+- [ ] O encaminhamento de cada proposta segue o DAG AUD20-REM v2 e as
+      decisões humanas próprias; reativação local de 10/17/20 registrada,
+      com gates e dependências preservados.
+- [ ] Próxima ação única: revisar a SPEC `AUD20-17`/`IMP50-40`; a sessão humana
+      de `AUD20-19`, staging real e produção seguem pendentes/`NO_GO`.
+
+# AUD-20260923-REPO — reauditoria e encaminhamento
+
+- [x] Auditoria transversal [0569](04_audit/0569_repository_audit_2026-09-23.md)
+      concluída com 18 notas e [logs locais](04_audit/evidence/AUD-20260923-REPO/README.md).
+- [ ] `A23-01/05`: preservar `AUD20-18/07/12` para rebuild, SBOM, critic e
+      certificação do mesmo candidato; promoção permanece `NO_GO`.
+- [ ] `A23-02/03`: preservar `AUD20-10/11/13..15` e os gates externos/humanos;
+      tasks adiadas não foram reabertas nesta auditoria.
+- [ ] `A23-04/07`: reconciliar ponteiros executivos e hotspots quando
+      `AUD20-08/17` forem retomadas; não alterar status de produto por esta
+      avaliação documental.
+- [ ] `A23-06`: próxima ação corrente permanece obter autorização específica
+      para a sessão humana de acessibilidade de `AUD20-19`.
+- staging real e produção: `NO_GO`.
+
+# AUD20-REM v2 — pacote executivo pós-auditoria 0568
+
+- fonte: [0568](04_audit/0568_full_repository_audit_2026-09-21.md); execução: [plano 0335](03_build/0335_aud20260921_executive_plan.md), [roadmap 0336](03_build/0336_aud20260921_roadmap.md), [backlog 0337](03_build/0337_aud20260921_backlog.md) e [prompt 0338](03_build/0338_aud20260921_codex_execution_prompt.md).
+- cobertura: matriz [F01–F30](03_build/tracking/aud20_v2_findings_matrix.json) registra 30/30 achados; AUD20-01..06 e AUD20-16 `COMPLETED` em escopo local controlado; demais tasks seguem o DAG ou autoridade externa.
+- checkpoint: AUD20-08 reconciliou estado corrente, Node exato e namespaces de certificação com checker fail-closed.
+- [ ] próxima ação única: obter autorização específica para a sessão humana de
+      acessibilidade de AUD20-19; manter staging e produção bloqueados.
+- [ ] caminho local: AUD20-16 → 05 → 06 → 08 → 20 → 09 → 17 → 10 → 19 → 18 → 07 → 11 → 12.
+- [ ] caminho externo/humano: AUD20-13 → 14 → 15, somente com ambiente, owners e autorização reais.
+- staging real e produção: `NO_GO`; nenhum planejamento ou prompt substitui gates obrigatórios.
+
+### Fechamento AUD20-05 — 2026-09-22T03:10:00Z
+
+- `COMPLETED_LOCAL`: PostgreSQL `30/342`, regressão `285/2213`, cobertura,
+  static/docs/security e binding `17/17` passaram.
+- Candidato `83f2aa69…`; crítica independente confirmou C01–C05/C07 e deixou
+  apenas o seal, concluído depois do parecer. `releaseEligible=false`.
+
+### Preparação AUD20-06 — 2026-09-22
+
+- Discovery/PRD/SPEC e seus gates documentais foram concluídos; mutation deve
+  entrar na lista requerida/decisão/verifier e critic deve permanecer externo,
+  fresco e ligado ao candidato exato.
+- `WAITING_HUMAN_APPROVAL`: nenhum código do certificador foi alterado.
+
+### Fechamento AUD20-06 — 2026-09-22
+
+- `COMPLETED_LOCAL`: critic e mutation sentinel são gates requeridos; manifesto
+  de mutantes possui digest canônico ancorado no código e reports são
+  revalidados semanticamente pelo verifier.
+- Negativos cobrem candidato/commit divergente, alteração pós-review, catálogo
+  alterado/vazio, report forjado, gap/sobrevivente e exit code não propagado.
+- Regressão final: `285` arquivos / `2.217` testes; cobertura
+  `90,83%/86,99%/89,16%/91,42%`; staging/produção seguem `NO_GO`.
+
+### Preparação AUD20-08 — 2026-09-22
+
+- Discovery/PRD/SPEC concluídos para índice canônico, checker semântico, pin
+  Node `22.23.2` e classificação explícita de findings Phase 10.
+- Docker digest/rebuild permanece em AUD20-18/07; nenhum código ou workflow foi
+  alterado nesta preparação.
+- opção A confirmada; BUILD local controlado `IN_PROGRESS`.
+
+### Fechamento AUD20-08 — 2026-09-22
+
+- `COMPLETED`: índice canônico, checker semântico e pin Node `22.23.2`
+  passaram nos negativos, regressão e crítica independente C01–C07.
+- `AUD20-20` foi liberada como `READY_FOR_NEXT_STEP`; staging e produção
+  permanecem `NO_GO`.
+
+### Preparação AUD20-09 — 2026-09-22
+
+- Por instrução explícita do usuário, `AUD20-20` foi adiada sem claim de
+  conclusão e a sequência avançou para `AUD20-09`.
+- Discovery/PRD/SPEC definem holdout sintético separado, adapter do boundary
+  público, métricas por categoria, safety zero, binding e negativos.
+- `WAITING_HUMAN_APPROVAL`: BUILD local ainda não autorizado; staging e
+  produção permanecem `NO_GO`.
+
+### Fechamento AUD20-09 — 2026-09-22
+
+- `COMPLETED`: holdout integrado 19/19, métricas por 18 categorias, safety e
+  efeitos zero; mutation 16/16 e crítica independente C01–C07 PASS.
+- Regressão Node 22: 286 arquivos / 2.230 testes; cobertura
+  `90,78%/86,89%/89,24%/91,38%`; `releaseEligible=false`.
+- `AUD20-17` avança para `READY_FOR_NEXT_STEP`; staging/produção seguem
+  `NO_GO`.
+
+### Preparação AUD20-17 — 2026-09-22
+
+- Discovery/PRD/SPEC selecionam a primeira fatia incremental: extrair contexto
+  de request (identidade, permissão e tenant) de `apps/api/src/server.ts`.
+- Meta: reduzir ao menos 250 linhas, preservar default deny/contratos HTTP e
+  provar owner único, ausência de ciclo e negativos no boundary público.
+- `WAITING_HUMAN_APPROVAL`: nenhum código desta task foi alterado; BUILD local
+  exige confirmação explícita e staging/produção seguem `NO_GO`.
+
+### Preparação AUD20-10 — 2026-09-22
+
+- `AUD20-17` foi adiada por instrução do usuário, sem claim de conclusão.
+- Discovery/PRD/SPEC de F10 definem collector local opt-in, emissão real de
+  `approval_latency_ms`, delivery ledger e exercício correlacionado.
+- Owner e SLO não foram inventados; BUILD local está
+  `WAITING_HUMAN_APPROVAL`, staging/produção seguem `NO_GO`.
+
+### Preparação AUD20-19 — 2026-09-22
+
+- `AUD20-10` foi adiada por instrução do usuário, sem claim de conclusão.
+- Discovery/PRD/SPEC definem perfis e skips fail-closed, workload PostgreSQL
+  sintético e dossiê verificável para sessão humana de acessibilidade.
+- BUILD de tooling está `WAITING_HUMAN_APPROVAL`; sessão humana, staging e
+  produção não estão autorizados.
+
+### Fechamento local AUD20-19 — 2026-09-22
+
+- Tooling C01–C07 recebeu `PASS_LOCAL` candidate-bound: perfis
+  candidate-bound, skips fail-closed, receipts SHA-256, carga PostgreSQL real
+  do worker, terminação/recuperação, cleanup e mutation `4/4` passaram.
+- Regressão PostgreSQL: `30/354`; focused: `5/5`; crítica independente final:
+  `PASS_LOCAL`, sem P0/P1.
+- A task permanece `WAITING_HUMAN_APPROVAL`: sessão humana não executada,
+  `releaseEligible=false`, staging e produção `NO_GO`.
+
+### Preparação AUD20-05 — 2026-09-21
+
+- A SPEC de attestation, recursos observados, grants CRUD e replay distribuído
+  foi registrada em
+  [aud20_05_resource_attestation_replay_20260921.md](02_spec/aud20_05_resource_attestation_replay_20260921.md).
+- A opção A foi registrada como orientação de desenho escolhida pelo usuário,
+  sem preencher owner formal, autoridade/ação de review ou validade da decisão
+  de `AUD20-16`.
+- O mapeamento confirmou as fronteiras existentes em
+  `production-preflight-core`, `operator-identity`, `operator-replay-store`,
+  bootstrap da API e preflight PostgreSQL do worker. Nenhum arquivo de produto,
+  schema ou migration foi alterado; `AUD20-05` permanece bloqueada até o gate.
+
+### AUD20-05 — tooling offline verificado — 2026-09-21T23:26:20Z
+
+- Foi entregue o checker read-only de attestation/recurso/grants em
+  `scripts/aud20-05-resource-attestation-check.mjs`, com focused `8/8` e
+  negativos para digest observado, candidato trocado, attestation expirada ou
+  adulterada, grants CRUD incompletos/permissivos, RLS bypass, segredo bruto e
+  input não sintético.
+- Regressão local passou `284` arquivos / `2.192` testes / `188` skips; coverage
+  passou com `91,16%` statements, `87,24%` branches, `89,30%` functions e
+  `91,76%` lines. Typecheck, lint, format, docs `789/582` e diff passaram.
+- A evidência está em
+  `docs/04_audit/evidence/AUD20/AUD20-05-tooling-report-20260921.md`.
+  Isso é `PASS_LIMITED` de tooling: não prova grants PostgreSQL efetivos,
+  startup/bind/claim do produto e não libera `AUD20-05`, staging ou produção.
+
+### AUD20-05 — grants efetivos em PostgreSQL descartável — 2026-09-22T00:18:15Z
+
+- O probe `scripts/aud20-05-replay-grants-probe.mjs` aceitou somente loopback,
+  criou schema/roles/tabela sintéticos com nomes únicos, confirmou CRUD efetivo,
+  ausência de DDL/ownership/membership administrativo e removeu o fixture com
+  cleanup `PASS`.
+- Focused dos dois toolings passou `12/12`; regressão passou `285` arquivos /
+  `2.196` testes / `188` skips; coverage permaneceu
+  `91,16%/87,24%/89,30%/91,76%`; typecheck, lint e format passaram.
+- Evidência:
+  `docs/04_audit/evidence/AUD20/AUD20-05-postgres-grants-probe-20260921.md`.
+  C03 avança somente como `PASS_LIMITED`; o probe declara
+  `notRuntimeProof=true` e não libera produto, `AUD20-05`, staging ou produção.
+
+### AUD20-05 — matriz adversarial de grants — 2026-09-22T00:41:12Z
+
+- Seis known-bad variants PostgreSQL foram rejeitadas pelo motivo esperado:
+  CRUD incompleto, `CREATE`, `TRUNCATE`, ownership runtime, bypass-RLS e
+  membership. O caso mínimo válido passou.
+- Todos os sete cenários tiveram cleanup `PASS`; o catálogo terminou com `0`
+  schemas/roles sintéticos residuais.
+- Focused do probe `6/6`; regressão `285/2.198/188`; typecheck, lint e format
+  passaram. Coverage não foi reexecutada nesta subrodada; vale o último run
+  V1.12 já registrado.
+- Escopo permanece tooling local: C03 `PASS_LIMITED`, runtime não exercitado,
+  `AUD20-05` bloqueada e staging/produção `NO_GO`.
+
+### Checkpoint AUD20-16 — receipts reconciliados — 2026-09-21T19:45:13Z
+
+- Os oito comandos do receipt foram vinculados aos artefatos brutos por SHA-256;
+  `docs:check` final passou com `778` links e `582` JSONs, além de
+  `format:check` e `git diff --check`.
+- A regressão full registrada permanece `283` arquivos, `2182` testes e `188`
+  skips condicionais; o focused do calculador permanece `3/3`.
+- O estado oficial não muda: `AUD20-16=WAITING_HUMAN_APPROVAL`,
+  `AUD20-05` bloqueada e staging/produção `NO_GO`. Nenhum código de schema,
+  migration ou archive foi iniciado para AUD20-16.
+
+### Checkpoint AUD20-16 — crítica parcial — 2026-09-21T19:57:38Z
+
+- A crítica independente fresh-context confirmou o gate humano e classificou
+  C03 como a única fatia local concluível neste momento.
+- C07 foi corrigido de `PASS` para `WAITING_HUMAN_APPROVAL`: checks mecânicos
+  não substituem o binding semântico de policy/owner/review trigger.
+- Os receipts serão regenerados após logs finais, pois o `observedAt` anterior
+  precedia os artefatos de 19:38Z. O estado continua `WAITING_HUMAN_APPROVAL`;
+  `AUD20-05` e staging/produção permanecem bloqueados/`NO_GO`.
+
+### Checkpoint AUD20-16 — receipt final — 2026-09-21T20:07:31Z
+
+- A integridade foi fechada: `11/11` artefatos brutos e `8/8` vínculos de
+  comando conferem em bytes/SHA-256; dois typos herdados foram corrigidos.
+- O estado segue `WAITING_HUMAN_APPROVAL`; C07 não é PASS semântico, C03 é a
+  única fatia local concluída, `AUD20-05` está bloqueada e staging/produção
+  permanecem `NO_GO`.
+
+### Checkpoint AUD20-16 — interpretação D05 — 2026-09-21T20:22:34Z
+
+- Parecer independente classificou o horizonte pós-tombstone como
+  `AMBIGUOUS`, owner formal como `BLOCKED` e review trigger como `BLOCKED`.
+- Foi criado o [pedido de decisão](02_spec/aud20_16_human_decision_request_20260921.md),
+  sem valor padrão. D05-3/4 não será reinterpretado silenciosamente.
+- `AUD20-16` segue `WAITING_HUMAN_APPROVAL`; `AUD20-05` e staging/produção
+  permanecem bloqueados/`NO_GO`.
+
+### Checkpoint AUD20-16 — origem sintética fail-closed — 2026-09-21T21:01:56Z
+
+- A calculadora de capacidade offline passou a exigir `dataOrigin: "synthetic"`;
+  ausência e origem não sintética falham fechado. O horizonte continua input
+  ilustrativo `PENDING_HUMAN_APPROVAL`, sem escolha de política.
+- RED/GREEN e negativos foram renovados: focused `4/4`, full `283` arquivos,
+  `2183` testes e `188` skips; lint, format, docs `782/582` e diff passaram.
+- Receipts foram regenerados e o binding verifier separado confirmou `11/11`
+  artefatos e `8/8` links. C03 é a única fatia local; C01/C02/C04–C06/C07
+  continuam dependentes do gate humano/crítica fresh.
+- Próxima ação: preencher o [pedido de decisão](02_spec/aud20_16_human_decision_request_20260921.md);
+  AUD20-05 permanece bloqueada e staging/produção `NO_GO`.
+
+### Checkpoint AUD20-16 — PostgreSQL descartável e regressão final — 2026-09-21T21:50:41Z
+
+- O tooling neutro agora mede em PostgreSQL `16.15` local descartável os
+  `pg_*` de linha/relation/índice/total, p50/p95 e sweep em três volumes
+  sintéticos; o schema temporário é removido ao final. C03 fica localmente
+  `PASS` limitado ao escopo de planejamento.
+- A validação final passou focused `5/5`, full `283` arquivos/`2184` testes/
+  `188` skips, negativos de origem/horizonte/taxa/p95 e checks mecânicos a
+  serem registrados no reseal. Nenhum dado real ou efeito externo foi usado.
+- Foi adicionado `AUD20-16-binding-verifier.mjs`; o candidate binding e os
+  receipts ainda serão fechados após os últimos logs, seguidos de crítica
+  independente fresh-context. C01/C02/C07 continuam sem liberação semântica;
+  C04–C06 não foram executados.
+- Estado: `AUD20-16=WAITING_HUMAN_APPROVAL`; `AUD20-05` bloqueada;
+  staging/produção `NO_GO`. Próxima ação única: decisão humana explícita para
+  horizonte pós-tombstone, owner formal e review trigger.
+
+### Checkpoint AUD20-16 — crítica fresh e chronology reconciliada — 2026-09-21T22:18:02Z
+
+- A crítica independente fresh-context v2 deu `PASS_LIMITED_NOT_COMPLETION`:
+  C03 `PASS` com medição PostgreSQL, binding/receipts íntegros; C01/C02/C07
+  `WAITING_HUMAN_APPROVAL`; C04–C06 `NOT_RUN`.
+- O gap apontado — checkpoints operacionais anteriores ao receipt de
+  `22:01:54Z` — foi corrigido neste bloco final. Nenhum hash, código, schema ou
+  política foi alterado para isso.
+- Estado permanece `AUD20-16=WAITING_HUMAN_APPROVAL`; `AUD20-05` bloqueada;
+  staging/produção `NO_GO`. Próxima ação única: decisão humana explícita para
+  horizonte pós-tombstone, owner formal e review trigger.
+
+### Checkpoint AUD20-16 — reseal final alinhado — 2026-09-21T22:24:43Z
+
+- Runtime state, execution log, backlog e `CURRENT.md` foram alinhados ao
+  fechamento final sem alterar código, policy, source digest ou evidência.
+- Candidate binding, verifier e receipts permanecem íntegros; o veredito da
+  crítica v2 segue `PASS_LIMITED_NOT_COMPLETION`. C03 passa no escopo de
+  planejamento; C01/C02/C07 aguardam decisão humana; C04–C06 `NOT_RUN`.
+- Estado: `AUD20-16=WAITING_HUMAN_APPROVAL`; `AUD20-05` bloqueada;
+  staging/produção `NO_GO`. Próxima ação única: decisão humana explícita para
+  horizonte pós-tombstone, owner formal e review trigger.
+
+# AUD-20260921-REPO — backlog derivado da auditoria profunda
+
+- [ ] **P0 / AUD20-04:** implementar batelamento limitado e concorrente no tombstone, testar múltiplos lotes/restart/backpressure e ensaiar migration sem lock não limitado.
+- [ ] **P0 / AUD20-04:** congelar outputs antes dos receipts, regenerar binding depois do último write e obter crítica fresca; o receipt atual diverge em 8 artefatos.
+- [ ] **P0 / AUD20-07/12:** rebuild candidate-bound de imagens, SBOM, migration/policy digests e certificação no mesmo run.
+- [ ] **P1 / AUD20-05/06:** vincular attestation/grants aos recursos reais e tornar crítico/mutation gates obrigatórios do certificador.
+- [ ] **P1 / AUD20-08/09:** reconciliar matriz/estado/Node e adicionar checker semântico e holdout integrado por categoria.
+- [ ] **P1 / AUD20-10/11:** fechar observabilidade operacional e composição staging-like do mesmo build.
+- [ ] **P2:** definir lifecycle/capacidade dos tombstones, corrigir semântica `deletedCount`, reduzir hotspots/branch chasing e endurecer Docker/healthcheck/pinning.
+- [ ] **P0 release / AUD20-13..15:** validar somente em ambiente autorizado provider, canal, IdP, RAG institucional, RPO/RTO físico, rollback, piloto e sign-off humano.
+- evidência e inventário completo: [auditoria 0568](04_audit/0568_full_repository_audit_2026-09-21.md); maturidade local `72/100`, produção `20/100`, staging/produção `NO_GO`.
+
 # GIT-SYNC-20260915 — versionamento autorizado e push concluído — 2026-09-15
 
 - task: `GIT-SYNC-20260915`; status: `COMPLETED`.
@@ -1834,13 +3002,15 @@ O aceite desta sprint é exclusivamente controlado: schema fictício de fixture,
 - [x] Publicar [reauditoria 0567](04_audit/0567_aud19_delivery_reaudit_2026-09-20.md), [roadmap 0333](03_build/0333_aud20260920_roadmap.md) e [backlog 0334](03_build/0334_aud20260920_backlog.md).
 - [x] `AUD20-01` `COMPLETED`: SPEC/barra, negativos, matriz, manifesto, receipts e revisão independente concluídos; G0 aprovado para BUILD local controlado.
 - [x] `AUD20-02` `COMPLETED`: piso de eval irredutível, N01/N02 e evidências candidate-bound concluídos em BUILD local controlado.
-- [ ] `AUD20-03..05` `BLOCKED`: lineage/concorrência E2E; dedupe durante retenção; binding da atestação e privilégios do replay.
+- [x] `AUD20-03` `COMPLETED`: lineage/concorrência E2E, fencing final do outbox, binding candidate-bound e crítica fresca concluídos em BUILD local; staging/produção permanecem `NO_GO`.
+- [ ] `AUD20-04` `IN_PROGRESS`: tombstone/digest inbound, retenção tenant/hold, replay tardio e rollback em PostgreSQL descartável.
+- [ ] `AUD20-05..12` `BLOCKED`: binding da atestação e privilégios do replay; gates de QA/supply/docs/operação aguardam a sequência.
 - [ ] `AUD20-06..08` `BLOCKED`: crítico/mutation candidate-bound; rebuild/digests do mesmo candidato; checker documental e caps arquiteturais.
 - [ ] `AUD20-09..11` `BLOCKED`: holdout integrado, observabilidade conectada e composição API+worker+DB staging-like.
 - [ ] `AUD20-12` `BLOCKED`: reauditoria e re-selo local somente após zero P0/P1.
 - [ ] `AUD20-13..15` `BLOCKED`: Opção A registrada, porém inputs, owners, ambiente e gates anteriores ausentes; sign-off humano apenas com dossiê completo.
-- **Estado:** entrega local `PARTIAL PASS`; conclusão integral e staging `FAIL / NO_GO`; produção `NO_GO`.
-- **Próxima ação:** executar `AUD20-03` com RED/GREEN de lineage/concorrência; preservar `0,97`, negativos `AUD20-N03/N04`, staging real `NO_GO` e produção `NO_GO`.
+- **Estado:** `AUD20-04` está `IN_PROGRESS` em BUILD local controlado; staging `FAIL / NO_GO`; produção `NO_GO`.
+- **Próxima ação:** executar gates finais de `AUD20-04`; preservar staging e produção `NO_GO`.
 
 ## AUD20-01 — registro de SPEC e baseline
 

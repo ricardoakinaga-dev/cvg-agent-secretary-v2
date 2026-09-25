@@ -1,0 +1,33 @@
+{
+ "id": "AUD-20260925-NO-REGRESSION",
+ "date": "2026-09-25",
+ "baseline": "AUD20-17-request-context-v2-integrated-coverage-summary-20260924.json",
+ "baselineSha256": "94abe96ed88109b890c4d30d5ef387cb002fbf30e170fc622560f166df23802b",
+ "baselineBinding": "REFERENCE_ONLY (candidate binding of the 24/09 run was never resolved; 11f061 manifest divergence)",
+ "candidate": "coverage/coverage-summary.json",
+ "candidateSha256": "c72af2e391bbb9faaca127f8217fba080c4e9c1b63475dea55860cb701c3ad19",
+ "commonFiles": 210,
+ "filesImproved": 25,
+ "filesUnchanged": 185,
+ "filesRegressed": 0,
+ "regressions": [],
+ "onlyInCandidate": [],
+ "totals": {
+  "statements": {
+   "before": 90.84,
+   "after": 92.99
+  },
+  "branches": {
+   "before": 87,
+   "after": 90.19
+  },
+  "functions": {
+   "before": 89.27,
+   "after": 91.35
+  },
+  "lines": {
+   "before": 91.43,
+   "after": 93.49
+  }
+ }
+}

@@ -1,0 +1,9 @@
+Command: PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH node --input-type=module < inline-negative-validation-cases
+Observed: 2026-09-21, controlled local run
+
+missing dataOrigin: rejected (dataOrigin: must be synthetic)
+non-synthetic dataOrigin: rejected (dataOrigin: must be synthetic)
+missing horizon: rejected (horizonDays: must be a positive safe integer)
+invalid eligibleRate: rejected (volumes[0].eligibleRate: must be a finite number between 0 and 1)
+invalid p95 ordering: rejected (volumes[0].p95RowBytes: must be greater than or equal to p50RowBytes)
+negative validation: PASS

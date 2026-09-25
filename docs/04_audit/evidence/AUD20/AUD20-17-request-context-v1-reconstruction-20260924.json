@@ -1,0 +1,262 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-17-request-context-v1-only-reconstruction",
+  "result": "PASS_PRECONDITIONS",
+  "sourceTreeModified": false,
+  "temporaryWorkspace": "/tmp/aud20-17-context-v1-reconstruction-20260924",
+  "requiredHashes": {
+    "apps/api/src/server/request-context.ts": {
+      "expected": "ec4bbc4b68480a6cfd75024cf2382765a20d4d72b9e7dd9f41619403dacaf9a7",
+      "actual": "ec4bbc4b68480a6cfd75024cf2382765a20d4d72b9e7dd9f41619403dacaf9a7",
+      "pass": true
+    },
+    "apps/api/src/__tests__/request-context.test.ts": {
+      "expected": "6e75f74544d727dc56e99913bd4af5b92ee1438523a19773e35526591b7acda2",
+      "actual": "6e75f74544d727dc56e99913bd4af5b92ee1438523a19773e35526591b7acda2",
+      "pass": true
+    },
+    "docs/04_audit/evidence/AUD20/AUD20-17-request-context-spec-amendment-proposal-v2-20260924.md": {
+      "expected": "1cb72b0e097ad19539c1f14fbdc892542ae9ddabf716bba00eef20b1c4cb237c",
+      "actual": "1cb72b0e097ad19539c1f14fbdc892542ae9ddabf716bba00eef20b1c4cb237c",
+      "pass": true
+    }
+  },
+  "queryParserCandidateManifestVerified": 15,
+  "queryParserCandidateManifest": [
+    {
+      "path": "docs/02_spec/aud20_17_imp50_40_query_parsers_20260923.md",
+      "sha256": "fec5dcf0ea25e98ccf87e7b80e3b442b0c006521247d6e1137cbfd0f7c79e348",
+      "expectedSha256": "fec5dcf0ea25e98ccf87e7b80e3b442b0c006521247d6e1137cbfd0f7c79e348",
+      "lineCount": 149
+    },
+    {
+      "path": "docs/00_discovery/0023_aud20_17_imp50_40_query_parsers.md",
+      "sha256": "6171a2b2a8dc7d68ced13ad1b1ad6d1016d89f207c89b5f47cff8db127455a96",
+      "expectedSha256": "6171a2b2a8dc7d68ced13ad1b1ad6d1016d89f207c89b5f47cff8db127455a96",
+      "lineCount": 100
+    },
+    {
+      "path": "docs/01_prd/0033_aud20_17_query_parser_decomposition.md",
+      "sha256": "a34f1aefaee0cb8ac026f7d31a9e4700d03b13b0bcbbf2b5409852707147d66a",
+      "expectedSha256": "a34f1aefaee0cb8ac026f7d31a9e4700d03b13b0bcbbf2b5409852707147d66a",
+      "lineCount": 85
+    },
+    {
+      "path": "apps/api/src/server.ts",
+      "sha256": "4f9dab61d1878317d0b6db57ef2949834c202bbad9fb1490ba49f22989b12434",
+      "expectedSha256": "4f9dab61d1878317d0b6db57ef2949834c202bbad9fb1490ba49f22989b12434",
+      "lineCount": 4622
+    },
+    {
+      "path": "apps/api/src/server/request-query.ts",
+      "sha256": "63d3f868ef1ab83efface68222a47f70c552b7047a970a7a0f2310a7a18162bc",
+      "expectedSha256": "63d3f868ef1ab83efface68222a47f70c552b7047a970a7a0f2310a7a18162bc",
+      "lineCount": 138
+    },
+    {
+      "path": "apps/api/src/__tests__/request-query.test.ts",
+      "sha256": "98840957b11cec3d6d4a5f9baaa4929cd4408c6817ec77d0b1c841a28e1ded43",
+      "expectedSha256": "98840957b11cec3d6d4a5f9baaa4929cd4408c6817ec77d0b1c841a28e1ded43",
+      "lineCount": 192
+    },
+    {
+      "path": "apps/api/src/__tests__/conversation-list.test.ts",
+      "sha256": "94c64802ce719d5d9ee6c4a8c11c9c7aa8a876eb7ed19b5e6a2e179748f5a52a",
+      "expectedSha256": "94c64802ce719d5d9ee6c4a8c11c9c7aa8a876eb7ed19b5e6a2e179748f5a52a",
+      "lineCount": 118
+    },
+    {
+      "path": "apps/api/src/__tests__/audit-evidence.test.ts",
+      "sha256": "56196a7d9f9493bed042a126ecb105e69e38d48b1fd3605ab0fdf83e9783b4d8",
+      "expectedSha256": "56196a7d9f9493bed042a126ecb105e69e38d48b1fd3605ab0fdf83e9783b4d8",
+      "lineCount": 337
+    },
+    {
+      "path": "apps/api/src/__tests__/orchestration-observability.test.ts",
+      "sha256": "6a8b427b3b1c3de51b319e96fa7ca12b3284e14a2d9582e112b52e46ac4297f5",
+      "expectedSha256": "6a8b427b3b1c3de51b319e96fa7ca12b3284e14a2d9582e112b52e46ac4297f5",
+      "lineCount": 213
+    },
+    {
+      "path": "apps/api/src/__tests__/server-boundary-envelope.test.ts",
+      "sha256": "3581f0b1eef92490ae242be38bfb9e6ce0db0fd79bae55cc18c3178f644f7970",
+      "expectedSha256": "3581f0b1eef92490ae242be38bfb9e6ce0db0fd79bae55cc18c3178f644f7970",
+      "lineCount": 501
+    },
+    {
+      "path": "apps/api/src/__tests__/platform-admin-routes-coverage.test.ts",
+      "sha256": "fd0ab519d67d1740435c10c64aec75dceb01c5527395098a5032a4d5b3059143",
+      "expectedSha256": "fd0ab519d67d1740435c10c64aec75dceb01c5527395098a5032a4d5b3059143",
+      "lineCount": 720
+    },
+    {
+      "path": "tests/architecture.test.js",
+      "sha256": "ea96769c8fe2dc5d9da816d2b28602942022229dab595198df8c48b51ac72e59",
+      "expectedSha256": "ea96769c8fe2dc5d9da816d2b28602942022229dab595198df8c48b51ac72e59",
+      "lineCount": 450
+    },
+    {
+      "path": "apps/api/src/server/request-context.ts",
+      "sha256": "ec4bbc4b68480a6cfd75024cf2382765a20d4d72b9e7dd9f41619403dacaf9a7",
+      "expectedSha256": "ec4bbc4b68480a6cfd75024cf2382765a20d4d72b9e7dd9f41619403dacaf9a7",
+      "lineCount": 258
+    },
+    {
+      "path": "apps/api/src/__tests__/request-context.test.ts",
+      "sha256": "6e75f74544d727dc56e99913bd4af5b92ee1438523a19773e35526591b7acda2",
+      "expectedSha256": "6e75f74544d727dc56e99913bd4af5b92ee1438523a19773e35526591b7acda2",
+      "lineCount": 271
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-query-rollback-rehearsal-20260923.json",
+      "sha256": "291a3dbb08c2f76cba5a469e40939f8a7c2923f311df5da3226ec3ead52486ac",
+      "expectedSha256": "291a3dbb08c2f76cba5a469e40939f8a7c2923f311df5da3226ec3ead52486ac",
+      "lineCount": 44
+    }
+  ],
+  "reconstruction": {
+    "integratedServerLines": 4622,
+    "reconstructedServerLines": 4745,
+    "requiredReconstructedServerLines": 4745,
+    "serverLineCountPass": true,
+    "restoredParserOwnership": {
+      "parsePagination": 1,
+      "parseTraceLimit": 1,
+      "OrchestrationGoalQuerySchema": 1,
+      "parseOrchestrationGoalQuery": 1,
+      "auditEventTypes": 1,
+      "parseAuditEvidenceQuery": 1,
+      "parseOptionalAuditFilter": 1
+    },
+    "queryImportRemoved": true,
+    "queryModuleAndDirectTestRemovedFromV1TestSet": true,
+    "queryArchitectureAssertionRemoved": true,
+    "requestContextArchitectureAssertionPreserved": true
+  },
+  "routeTestAttribution": [
+    {
+      "path": "apps/api/src/__tests__/conversation-list.test.ts",
+      "v1Source": "git show HEAD",
+      "v1Sha256": "b64c719dff6f74afc31b7df6cfabfa3d5437067bb3b0729a5a19532ded563cbe",
+      "v1Lines": 113,
+      "integratedFu1Sha256": "94c64802ce719d5d9ee6c4a8c11c9c7aa8a876eb7ed19b5e6a2e179748f5a52a",
+      "integratedFu1Lines": 118,
+      "addedLines": 5,
+      "removedLines": 0,
+      "diff": "diff --git a/apps/api/src/__tests__/conversation-list.test.ts b/apps/api/src/__tests__/conversation-list.test.ts\nindex 72fb4e8..bff77b5 100644\n--- a/apps/api/src/__tests__/conversation-list.test.ts\n+++ b/apps/api/src/__tests__/conversation-list.test.ts\n@@ -110,0 +111,2 @@ describe('conversation list API', () => {\n+    expect(body.data).toBeNull()\n+    expect(response.json()).toHaveProperty('meta.correlationId')\n@@ -111,0 +114,3 @@ describe('conversation list API', () => {\n+    expect(body.error?.message).toBe(\n+      'limit must be between 1 and 100 and offset must be between 0 and 10000'\n+    )\n"
+    },
+    {
+      "path": "apps/api/src/__tests__/audit-evidence.test.ts",
+      "v1Source": "git show HEAD",
+      "v1Sha256": "22ad84906503013fcd2267a80ad25fe7fa52c83f99c206ca001bcc20c63e4c49",
+      "v1Lines": 321,
+      "integratedFu1Sha256": "56196a7d9f9493bed042a126ecb105e69e38d48b1fd3605ab0fdf83e9783b4d8",
+      "integratedFu1Lines": 337,
+      "addedLines": 16,
+      "removedLines": 0,
+      "diff": "diff --git a/apps/api/src/__tests__/audit-evidence.test.ts b/apps/api/src/__tests__/audit-evidence.test.ts\nindex 0c83500..0240571 100644\n--- a/apps/api/src/__tests__/audit-evidence.test.ts\n+++ b/apps/api/src/__tests__/audit-evidence.test.ts\n@@ -255,0 +256,5 @@ describe('audit evidence observability API', () => {\n+    expect(invalidType.json()).toMatchObject({\n+      success: false,\n+      data: null,\n+      meta: { correlationId: expect.any(String) }\n+    })\n@@ -258,0 +264,3 @@ describe('audit evidence observability API', () => {\n+    expect((invalidType.json() as Envelope<never>).error?.message).toBe(\n+      'Audit event type is invalid'\n+    )\n@@ -259,0 +268,5 @@ describe('audit evidence observability API', () => {\n+    expect(invalidPagination.json()).toMatchObject({\n+      success: false,\n+      data: null,\n+      meta: { correlationId: expect.any(String) }\n+    })\n@@ -262,0 +276,3 @@ describe('audit evidence observability API', () => {\n+    expect((invalidPagination.json() as Envelope<never>).error?.message).toBe(\n+      'limit must be between 1 and 100 and offset must be between 0 and 10000'\n+    )\n"
+    },
+    {
+      "path": "apps/api/src/__tests__/orchestration-observability.test.ts",
+      "v1Source": "git show HEAD",
+      "v1Sha256": "787e7a8d74a386cfe8e1465179b122fc6b7b45078f3b90e49f109c6aa8b39cac",
+      "v1Lines": 205,
+      "integratedFu1Sha256": "6a8b427b3b1c3de51b319e96fa7ca12b3284e14a2d9582e112b52e46ac4297f5",
+      "integratedFu1Lines": 213,
+      "addedLines": 8,
+      "removedLines": 0,
+      "diff": "diff --git a/apps/api/src/__tests__/orchestration-observability.test.ts b/apps/api/src/__tests__/orchestration-observability.test.ts\nindex b3a2cf7..e4da0dc 100644\n--- a/apps/api/src/__tests__/orchestration-observability.test.ts\n+++ b/apps/api/src/__tests__/orchestration-observability.test.ts\n@@ -202,0 +203,5 @@ describe('durable orchestration observability API', () => {\n+    expect(response.json()).toMatchObject({\n+      success: false,\n+      data: null,\n+      meta: { correlationId: expect.any(String) }\n+    })\n@@ -203,0 +209,3 @@ describe('durable orchestration observability API', () => {\n+    expect(response.json().error.message).toBe(\n+      'limit must be between 1 and 50 and status must be a valid Goal state'\n+    )\n"
+    },
+    {
+      "path": "apps/api/src/__tests__/server-boundary-envelope.test.ts",
+      "v1Source": "git show HEAD",
+      "v1Sha256": "c4aeaa24f70b7acb481d740645c0c7159809a8f913b0ddec4c4f5a8dea33e4a4",
+      "v1Lines": 472,
+      "integratedFu1Sha256": "3581f0b1eef92490ae242be38bfb9e6ce0db0fd79bae55cc18c3178f644f7970",
+      "integratedFu1Lines": 501,
+      "addedLines": 29,
+      "removedLines": 0,
+      "diff": "diff --git a/apps/api/src/__tests__/server-boundary-envelope.test.ts b/apps/api/src/__tests__/server-boundary-envelope.test.ts\nindex f80352a..413c549 100644\n--- a/apps/api/src/__tests__/server-boundary-envelope.test.ts\n+++ b/apps/api/src/__tests__/server-boundary-envelope.test.ts\n@@ -178,0 +179,14 @@ describe('server boundary envelopes', () => {\n+    for (const response of [\n+      invalidLimit,\n+      invalidOffset,\n+      invalidType,\n+      duplicateFilter,\n+      invalidFilter\n+    ]) {\n+      expect(response.json()).toMatchObject({\n+        success: false,\n+        data: null,\n+        meta: { correlationId: expect.any(String) }\n+      })\n+    }\n+\n@@ -182,0 +197,3 @@ describe('server boundary envelopes', () => {\n+    expect((invalidLimit.json() as Envelope<never>).error?.message).toBe(\n+      'limit must be between 1 and 100 and offset must be between 0 and 10000'\n+    )\n@@ -186,0 +204,3 @@ describe('server boundary envelopes', () => {\n+    expect((invalidOffset.json() as Envelope<never>).error?.message).toBe(\n+      'limit must be between 1 and 100 and offset must be between 0 and 10000'\n+    )\n@@ -190,0 +211,3 @@ describe('server boundary envelopes', () => {\n+    expect((invalidType.json() as Envelope<never>).error?.message).toBe(\n+      'Audit event type is invalid'\n+    )\n@@ -194,0 +218,3 @@ describe('server boundary envelopes', () => {\n+    expect((duplicateFilter.json() as Envelope<never>).error?.message).toBe(\n+      'Audit evidence filters must be single-valued'\n+    )\n@@ -195,0 +222,3 @@ describe('server boundary envelopes', () => {\n+    expect((invalidFilter.json() as Envelope<never>).error?.message).toBe(\n+      'Audit evidence filter is invalid'\n+    )\n"
+    },
+    {
+      "path": "apps/api/src/__tests__/platform-admin-routes-coverage.test.ts",
+      "v1Source": "git show HEAD",
+      "v1Sha256": "2977d2a9ee0eb40e8a325247cb5bb5e0b330f1eaab1eb4b99af83c9cc2ff70d6",
+      "v1Lines": 707,
+      "integratedFu1Sha256": "fd0ab519d67d1740435c10c64aec75dceb01c5527395098a5032a4d5b3059143",
+      "integratedFu1Lines": 720,
+      "addedLines": 13,
+      "removedLines": 0,
+      "diff": "diff --git a/apps/api/src/__tests__/platform-admin-routes-coverage.test.ts b/apps/api/src/__tests__/platform-admin-routes-coverage.test.ts\nindex 4b56278..8c2cab4 100644\n--- a/apps/api/src/__tests__/platform-admin-routes-coverage.test.ts\n+++ b/apps/api/src/__tests__/platform-admin-routes-coverage.test.ts\n@@ -444,0 +445,7 @@ describe('platform admin routes coverage', () => {\n+    for (const response of [invalidLimit, invalidTraceLimit]) {\n+      expect(response.json()).toMatchObject({\n+        success: false,\n+        data: null,\n+        meta: { correlationId: expect.any(String) }\n+      })\n+    }\n@@ -449,0 +457,6 @@ describe('platform admin routes coverage', () => {\n+    expect((invalidTraceLimit.json() as Envelope<never>).error?.code).toBe(\n+      'invalid_pagination'\n+    )\n+    expect((invalidTraceLimit.json() as Envelope<never>).error?.message).toBe(\n+      'limit must be between 1 and 100'\n+    )\n"
+    }
+  ],
+  "manifest": [
+    {
+      "path": "apps/api/src/server.ts",
+      "sha256": "5dc7136ec7cf5fa17d486a4cfd0c77f6d15dc7dd8efbfb161a94677ab0b0f901",
+      "lineCount": 4745,
+      "role": "reconstructed-v1-only"
+    },
+    {
+      "path": "apps/api/src/server/request-context.ts",
+      "sha256": "ec4bbc4b68480a6cfd75024cf2382765a20d4d72b9e7dd9f41619403dacaf9a7",
+      "lineCount": 258,
+      "role": "required-context/query attribution manifest"
+    },
+    {
+      "path": "apps/api/src/__tests__/request-context.test.ts",
+      "sha256": "6e75f74544d727dc56e99913bd4af5b92ee1438523a19773e35526591b7acda2",
+      "lineCount": 271,
+      "role": "required-context/query attribution manifest"
+    },
+    {
+      "path": "apps/api/src/server/request-query.ts",
+      "sha256": "63d3f868ef1ab83efface68222a47f70c552b7047a970a7a0f2310a7a18162bc",
+      "lineCount": 138,
+      "role": "required-context/query attribution manifest"
+    },
+    {
+      "path": "apps/api/src/__tests__/request-query.test.ts",
+      "sha256": "98840957b11cec3d6d4a5f9baaa4929cd4408c6817ec77d0b1c841a28e1ded43",
+      "lineCount": 192,
+      "role": "required-context/query attribution manifest"
+    },
+    {
+      "path": "tests/architecture.test.js",
+      "sha256": "329c7cd629b3a0ef74a964ec61e684d2630b144afb8b915c34f2141b08b10538",
+      "lineCount": 391,
+      "role": "reconstructed-v1-only"
+    },
+    {
+      "path": "apps/api/src/__tests__/conversation-list.test.ts",
+      "sha256": "b64c719dff6f74afc31b7df6cfabfa3d5437067bb3b0729a5a19532ded563cbe",
+      "lineCount": 113,
+      "role": "reconstructed-v1-only"
+    },
+    {
+      "path": "apps/api/src/__tests__/audit-evidence.test.ts",
+      "sha256": "22ad84906503013fcd2267a80ad25fe7fa52c83f99c206ca001bcc20c63e4c49",
+      "lineCount": 321,
+      "role": "reconstructed-v1-only"
+    },
+    {
+      "path": "apps/api/src/__tests__/orchestration-observability.test.ts",
+      "sha256": "787e7a8d74a386cfe8e1465179b122fc6b7b45078f3b90e49f109c6aa8b39cac",
+      "lineCount": 205,
+      "role": "reconstructed-v1-only"
+    },
+    {
+      "path": "apps/api/src/__tests__/server-boundary-envelope.test.ts",
+      "sha256": "c4aeaa24f70b7acb481d740645c0c7159809a8f913b0ddec4c4f5a8dea33e4a4",
+      "lineCount": 472,
+      "role": "reconstructed-v1-only"
+    },
+    {
+      "path": "apps/api/src/__tests__/platform-admin-routes-coverage.test.ts",
+      "sha256": "2977d2a9ee0eb40e8a325247cb5bb5e0b330f1eaab1eb4b99af83c9cc2ff70d6",
+      "lineCount": 707,
+      "role": "reconstructed-v1-only"
+    }
+  ],
+  "errors": []
+}

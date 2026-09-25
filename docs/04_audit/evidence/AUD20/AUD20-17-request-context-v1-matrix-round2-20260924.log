@@ -1,0 +1,13 @@
+
+> cvg-agent-secretary-v2@1.0.0 test
+> vitest run --no-file-parallelism --maxWorkers=2 apps/api/src/__tests__/identity-trusted-resolver.test.ts apps/api/src/__tests__/operator-replay-guard.test.ts apps/api/src/__tests__/identity-composition-wiring.test.ts apps/api/src/__tests__/production-boundary.test.ts apps/api/src/__tests__/build-server-from-env-boundary.test.ts apps/api/src/__tests__/postgres-persistence-mode.test.ts apps/api/src/__tests__/tenant-inbound-isolation.test.ts apps/api/src/__tests__/inbound-runtime-edges.test.ts apps/api/src/__tests__/webhook-security.test.ts apps/api/src/__tests__/server-boundary-envelope.test.ts apps/api/src/__tests__/journey-routes-coverage.test.ts apps/api/src/__tests__/request-context.test.ts tests/architecture.test.js
+
+
+ RUN  v4.1.11 /tmp/aud20-17-context-v1-run-20260924
+
+
+ Test Files  13 passed (13)
+      Tests  113 passed | 9 skipped (122)
+   Start at  00:26:48
+   Duration  14.94s (transform 1.11s, setup 0ms, import 3.81s, tests 2.80s, environment 7.00s)
+

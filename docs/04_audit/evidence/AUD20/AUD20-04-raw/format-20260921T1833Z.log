@@ -1,0 +1,7 @@
+
+> cvg-agent-secretary-v2@1.0.0 format:check
+> prettier --check .
+
+Checking formatting...
+[warn] docs/02_spec/aud20_04_retention_batch_contract_20260921.md
+[warn] Code style issues found in the above file. Run Prettier with --write to fix.

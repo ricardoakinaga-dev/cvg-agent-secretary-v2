@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-16-command-receipt",
+  "program": "AUD20-REM",
+  "task": "AUD20-16",
+  "observedAt": "2026-09-21T22:24:43Z",
+  "execution": "CONTROLLED_LOCAL",
+  "policyVersion": "PENDING_HUMAN_APPROVAL",
+  "candidateBinding": {
+    "algorithm": "aud20-16-worktree-binding-v1",
+    "baseCommit": "25434811334f5cec92ee0741079302271b82b7cb",
+    "gitTreeHash": "218d24fa5ee1e66f2cbe48687d5630100abcf3c3",
+    "sourceDiffSha256": "43b9b49b4c3866cf48b02da715b50bb39643fdb6ce9842ab0a394cf3bed6fd30",
+    "scope": [
+      "docs/02_spec/aud20_16_human_decision_request_20260921.md",
+      "docs/02_spec/aud20_16_tombstone_lifecycle_capacity_20260921.md",
+      "docs/04_audit/evidence/AUD20/AUD20-16-binding-verifier.mjs",
+      "docs/04_audit/evidence/AUD20/AUD20-16-capacity-fixture.json",
+      "docs/04_audit/evidence/AUD20/AUD20-16-d05-interpretation-review-v1.md",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-focused-final-20260921.log",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-green-final-20260921.log",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-negative-final-20260921.log",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-postgres-green-final-20260921.log",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-synthetic-origin-red-20260921T203514Z.log",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/diff-check-final-20260921.log",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/docs-check-final-20260921.log",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/format-final-20260921.log",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/full-unit-final-20260921.log",
+      "docs/04_audit/evidence/AUD20/AUD20-16-raw/lint-final-20260921.log",
+      "scripts/aud20-16-capacity-model.mjs",
+      "tests/aud20-16-capacity-model.test.js"
+    ],
+    "dirtyWorktree": true,
+    "untrackedIncluded": true,
+    "externalEffects": false,
+    "candidateId": "927f3e0a7a12fb7c8139dea8961de3536ea8a291e4b407dc350cc3b63e1250ed"
+  },
+  "commands": [
+    {
+      "id": "capacity-focused",
+      "command": "PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH npm test -- tests/aud20-16-capacity-model.test.js",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "1 file passed; 5 tests passed",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-focused-final-20260921.log",
+      "rawArtifactSha256": "2630c1bf86321878b05b246e27500b3d361d30f87cede6b569f160ac67194878"
+    },
+    {
+      "id": "capacity-green",
+      "command": "PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH node scripts/aud20-16-capacity-model.mjs --input docs/04_audit/evidence/AUD20/AUD20-16-capacity-fixture.json",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "Three synthetic volumes projected with explicit synthetic origin, illustrative horizon and safety factor",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-green-final-20260921.log",
+      "rawArtifactSha256": "852f5cd1d3fa788af9decb523b10fe323084ef6e38024cb5e9d76dfc4a536f35"
+    },
+    {
+      "id": "capacity-negative",
+      "command": "PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH node --input-type=module < inline-negative-validation-cases",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "Missing and non-synthetic origin, horizon, rate and p95 ordering were rejected",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-negative-final-20260921.log",
+      "rawArtifactSha256": "943a5658e94fd92b642b02583de240e272861b24b18bf08d6bf8eca7ffb62564"
+    },
+    {
+      "id": "capacity-postgres",
+      "command": "PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH node scripts/aud20-16-capacity-model.mjs --input docs/04_audit/evidence/AUD20/AUD20-16-capacity-fixture.json --postgres-url postgres://postgres:aud20_local@127.0.0.1:55439/aud20_synthetic",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "PostgreSQL 16.15 disposable-local measurement for three synthetic volumes; pg sizes, p50/p95 and sweeps recorded",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-16-raw/capacity-model-postgres-green-final-20260921.log",
+      "rawArtifactSha256": "b86cc95d8ccb81a9085f6a7f59f7e98d07a488c9d8dfed82cc320763d305e9a8"
+    },
+    {
+      "id": "full-unit",
+      "command": "PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH npm test",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "283 files passed; 12 skipped; 2184 tests passed; 188 conditional skips",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-16-raw/full-unit-final-20260921.log",
+      "rawArtifactSha256": "37845b71c85076fe542a9caae64c5d0bc348e8392493221c07e1733286c5aad2"
+    },
+    {
+      "id": "lint",
+      "command": "PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH npm run lint",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "Repository lint completed without diagnostics",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-16-raw/lint-final-20260921.log",
+      "rawArtifactSha256": "d8921b17f2f8f5a11c1a0f9b4ced0eb0352212c7fe44f191ed41e2e2b924b39a"
+    },
+    {
+      "id": "format",
+      "command": "PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH npm run format:check",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "Repository formatting check passed",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-16-raw/format-final-20260921.log",
+      "rawArtifactSha256": "f3f12a0c8b687447b81036f8d6505b3b2dbe471bfc2412f9eab160bc1ddac94f"
+    },
+    {
+      "id": "docs-check",
+      "command": "PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH npm run docs:check",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "783 links and 582 JSON documents valid; next action coherent",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-16-raw/docs-check-final-20260921.log",
+      "rawArtifactSha256": "a22b091a6a6768b8a633462a7dda4919434ba2a05763e436bec8af3cade1e088"
+    },
+    {
+      "id": "diff-check",
+      "command": "git diff --check",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "No whitespace errors",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-16-raw/diff-check-final-20260921.log",
+      "rawArtifactSha256": "00f67e0772b7dfb36b2010631bb31d4dbe3d96d2a7894dee1ed9b5079adc8943"
+    },
+    {
+      "id": "binding-verifier",
+      "command": "PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH node docs/04_audit/evidence/AUD20/AUD20-16-binding-verifier.mjs",
+      "status": "PASS",
+      "exitCode": 0,
+      "summary": "Candidate binding, scoped source digests, raw bytes/SHA and command links verified independently",
+      "rawArtifact": "docs/04_audit/evidence/AUD20/AUD20-16-raw/binding-verification-final-20260921.log",
+      "rawArtifactSha256": "4c6b3611230a5070382fc820ecfb05b92d88f1a390bc8448e9602a6cbd7d3e3a"
+    }
+  ],
+  "limitations": [
+    "This is a partial planning receipt, not a release seal or task-completion receipt.",
+    "No post-tombstone policy, schema migration, archive, partitioning, mixed-version or recovery behavior was selected or run.",
+    "The independent critic must still review the final candidate-bound package; the human policy decision remains pending.",
+    "The candidate binding covers the 17 explicitly listed implementation/spec/raw inputs; derived receipts, matrices, runtime state, execution log and independent critic output are verified separately to avoid self-reference."
+  ],
+  "releaseEligible": false
+}

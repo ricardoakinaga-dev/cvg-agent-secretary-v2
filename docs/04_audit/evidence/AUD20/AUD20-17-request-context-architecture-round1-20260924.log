@@ -1,0 +1,13 @@
+
+> cvg-agent-secretary-v2@1.0.0 test
+> vitest run --no-file-parallelism --maxWorkers=2 tests/architecture.test.js
+
+
+ RUN  v4.1.11 /home/ricardo/cvg-agent-secretary-v2
+
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  23:54:48
+   Duration  973ms (transform 47ms, setup 0ms, import 66ms, tests 190ms, environment 598ms)
+

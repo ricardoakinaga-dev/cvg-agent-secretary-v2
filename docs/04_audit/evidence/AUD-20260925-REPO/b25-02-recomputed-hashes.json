@@ -1,0 +1,18 @@
+{
+  "manifestSha256": "6b86eb90a9275f3563c1c9f9deadd5477f7c114fe5228768313706512447fdba",
+  "totalEntries": 348,
+  "match": 339,
+  "mismatch": [
+    "v1CandidateCoreFiles:apps/api/src/server.ts",
+    "v1CandidateCoreFiles:tests/architecture.test.js",
+    "v1CandidateCoreFiles:apps/api/src/__tests__/server-boundary-envelope.test.ts",
+    "allExecutedTestSourceFiles:apps/api/src/__tests__/audit-evidence.test.ts",
+    "allExecutedTestSourceFiles:apps/api/src/__tests__/conversation-list.test.ts",
+    "allExecutedTestSourceFiles:apps/api/src/__tests__/orchestration-observability.test.ts",
+    "allExecutedTestSourceFiles:apps/api/src/__tests__/platform-admin-routes-coverage.test.ts",
+    "allExecutedTestSourceFiles:apps/api/src/__tests__/server-boundary-envelope.test.ts",
+    "allExecutedTestSourceFiles:tests/architecture.test.js"
+  ],
+  "missing": [],
+  "notes": "Recomputo read-only contra o worktree corrente (/home/ricardo/cvg-agent-secretary-v2), em português. Escopos: currentIntegratedFiles=8, v1CandidateCoreFiles=6, allExecutedTestSourceFiles=300, evidenceFiles=34; total=348. currentIntegratedFiles 8/8 conferem; evidenceFiles 34/34 conferem; 9 divergências concentradas em entradas de escopo v1-only (v1CandidateCoreFiles e allExecutedTestSourceFiles do run de 300 arquivos) quando comparadas ao worktree integrado atual; missing=0 no worktree corrente. O workspace isolado /tmp/aud20-17-context-v1-run-20260924 não foi usado como base deste recomputo; a reconciliação prévia registra 6/6 e 300/300 conferindo naquele escopo isolado. Digest 11f061f452c2b51ce7202240e9b2b6c67729bbcb41d9439b1d1c3fb12155231d citado no BUILD report não corresponde ao manifesto disponível (6b86eb90a9275f3563c1c9f9deadd5477f7c114fe5228768313706512447fdba); nenhuma cópia preservada dos bytes 11f061… foi localizada; sem inventário hash-bound das 301 fontes do run integrado. Métricas seguem REPORT_ONLY."
+}

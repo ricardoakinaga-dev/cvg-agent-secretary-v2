@@ -1,0 +1,10 @@
+Command: PATH=/home/ricardo/.nvm/versions/node/v22.23.2/bin:$PATH npm test -- tests/aud20-16-capacity-model.test.js
+Environment: node v22.23.2; npm v10.9.8; vitest v4.1.11
+Exit code: 0
+
+Test Files  1 passed (1)
+Tests       4 passed (4)
+Start       2026-09-21T20:36:38Z (local runner 17:36:38 -0300)
+
+The focused suite covers explicit synthetic origin, horizon/safety-factor
+requirements, measured projection and unsafe measurement rejection.

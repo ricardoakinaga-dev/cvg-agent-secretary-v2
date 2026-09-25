@@ -1,0 +1,284 @@
+{
+  "schemaVersion": 1,
+  "kind": "aud20-v2-findings-task-matrix",
+  "program": "AUD20-REM-v2",
+  "source": "docs/04_audit/0568_full_repository_audit_2026-09-21.md",
+  "plan": "docs/03_build/0335_aud20260921_executive_plan.md",
+  "roadmap": "docs/03_build/0336_aud20260921_roadmap.md",
+  "backlog": "docs/03_build/0337_aud20260921_backlog.md",
+  "prompt": "docs/03_build/0338_aud20260921_codex_execution_prompt.md",
+  "currentTask": "AUD20-10",
+  "currentStatus": "READY_FOR_NEXT_STEP",
+  "findingCount": 30,
+  "coveredFindingCount": 30,
+  "tasks": [
+    {
+      "id": "AUD20-01",
+      "status": "COMPLETED"
+    },
+    {
+      "id": "AUD20-02",
+      "status": "COMPLETED"
+    },
+    {
+      "id": "AUD20-03",
+      "status": "COMPLETED"
+    },
+    {
+      "id": "AUD20-04",
+      "status": "COMPLETED"
+    },
+    {
+      "id": "AUD20-05",
+      "status": "COMPLETED"
+    },
+    {
+      "id": "AUD20-06",
+      "status": "COMPLETED"
+    },
+    {
+      "id": "AUD20-07",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "AUD20-08",
+      "status": "COMPLETED"
+    },
+    {
+      "id": "AUD20-09",
+      "status": "COMPLETED"
+    },
+    {
+      "id": "AUD20-10",
+      "status": "READY_FOR_NEXT_STEP"
+    },
+    {
+      "id": "AUD20-11",
+      "status": "READY_FOR_NEXT_STEP"
+    },
+    {
+      "id": "AUD20-12",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "AUD20-13",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "AUD20-14",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "AUD20-15",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "AUD20-16",
+      "status": "COMPLETED"
+    },
+    {
+      "id": "AUD20-17",
+      "status": "COMPLETED"
+    },
+    {
+      "id": "AUD20-18",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "AUD20-19",
+      "status": "WAITING_HUMAN_APPROVAL"
+    },
+    {
+      "id": "AUD20-20",
+      "status": "BLOCKED"
+    }
+  ],
+  "findings": [
+    {
+      "id": "F01",
+      "impact": "HIGH",
+      "priority": "P0",
+      "tasks": ["AUD20-04", "AUD20-12"]
+    },
+    {
+      "id": "F02",
+      "impact": "HIGH",
+      "priority": "P0",
+      "tasks": ["AUD20-12"]
+    },
+    {
+      "id": "F03",
+      "impact": "HIGH",
+      "priority": "P0",
+      "tasks": ["AUD20-07", "AUD20-12"]
+    },
+    {
+      "id": "F04",
+      "impact": "HIGH",
+      "priority": "P0",
+      "tasks": ["AUD20-04"]
+    },
+    {
+      "id": "F05",
+      "impact": "HIGH",
+      "priority": "P0",
+      "tasks": ["AUD20-13"]
+    },
+    {
+      "id": "F06",
+      "impact": "HIGH",
+      "priority": "P0",
+      "tasks": ["AUD20-14", "AUD20-15"]
+    },
+    {
+      "id": "F07",
+      "impact": "HIGH",
+      "priority": "P1",
+      "tasks": ["AUD20-05"]
+    },
+    {
+      "id": "F08",
+      "impact": "HIGH",
+      "priority": "P1",
+      "tasks": ["AUD20-06"]
+    },
+    {
+      "id": "F09",
+      "impact": "HIGH",
+      "priority": "P1",
+      "tasks": ["AUD20-11"]
+    },
+    {
+      "id": "F10",
+      "impact": "HIGH",
+      "priority": "P1",
+      "tasks": ["AUD20-10"]
+    },
+    {
+      "id": "F11",
+      "impact": "MEDIUM",
+      "priority": "P1",
+      "tasks": ["AUD20-04"]
+    },
+    {
+      "id": "F12",
+      "impact": "MEDIUM",
+      "priority": "P1",
+      "tasks": ["AUD20-16"]
+    },
+    {
+      "id": "F13",
+      "impact": "MEDIUM",
+      "priority": "P2",
+      "tasks": ["AUD20-16"]
+    },
+    {
+      "id": "F14",
+      "impact": "MEDIUM",
+      "priority": "P2",
+      "tasks": ["AUD20-04"]
+    },
+    {
+      "id": "F15",
+      "impact": "MEDIUM",
+      "priority": "P1",
+      "tasks": ["AUD20-08"]
+    },
+    {
+      "id": "F16",
+      "impact": "MEDIUM",
+      "priority": "P1",
+      "tasks": ["AUD20-08"]
+    },
+    {
+      "id": "F17",
+      "impact": "MEDIUM",
+      "priority": "P2",
+      "tasks": ["AUD20-08"]
+    },
+    {
+      "id": "F18",
+      "impact": "MEDIUM",
+      "priority": "P1",
+      "tasks": ["AUD20-08"]
+    },
+    {
+      "id": "F19",
+      "impact": "MEDIUM",
+      "priority": "P1",
+      "tasks": ["AUD20-09"]
+    },
+    {
+      "id": "F20",
+      "impact": "MEDIUM",
+      "priority": "P2",
+      "tasks": ["AUD20-17"]
+    },
+    {
+      "id": "F21",
+      "impact": "MEDIUM",
+      "priority": "P2",
+      "tasks": ["AUD20-09"]
+    },
+    {
+      "id": "F22",
+      "impact": "MEDIUM",
+      "priority": "P2",
+      "tasks": ["AUD20-18"]
+    },
+    {
+      "id": "F23",
+      "impact": "MEDIUM",
+      "priority": "P2",
+      "tasks": ["AUD20-18"]
+    },
+    {
+      "id": "F24",
+      "impact": "MEDIUM",
+      "priority": "P2",
+      "tasks": ["AUD20-18", "AUD20-11"]
+    },
+    {
+      "id": "F25",
+      "impact": "MEDIUM",
+      "priority": "P1",
+      "tasks": ["AUD20-06", "AUD20-07"]
+    },
+    {
+      "id": "F26",
+      "impact": "MEDIUM",
+      "priority": "P2",
+      "tasks": ["AUD20-08"]
+    },
+    {
+      "id": "F27",
+      "impact": "MEDIUM",
+      "priority": "P2",
+      "tasks": ["AUD20-19", "AUD20-14"]
+    },
+    {
+      "id": "F28",
+      "impact": "MEDIUM",
+      "priority": "P2",
+      "tasks": ["AUD20-19"]
+    },
+    {
+      "id": "F29",
+      "impact": "LOW",
+      "priority": "P3",
+      "tasks": ["AUD20-18"]
+    },
+    {
+      "id": "F30",
+      "impact": "LOW",
+      "priority": "P3",
+      "tasks": ["AUD20-20"]
+    }
+  ],
+  "releaseBoundary": {
+    "staging": "NO_GO",
+    "production": "NO_GO",
+    "externalEvidence": "NOT_AVAILABLE",
+    "humanSignoff": "NOT_AVAILABLE"
+  }
+}

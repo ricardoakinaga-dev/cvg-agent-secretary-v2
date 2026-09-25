@@ -1,0 +1,1774 @@
+{
+  "schemaVersion": 1,
+  "task": "IMP50-49",
+  "operation": "read_only_git_tree_path_membership_and_markdown_history_search",
+  "capturedAtUtc": "2026-09-24T10:01:00Z",
+  "input": {
+    "targetMap": "docs/04_audit/evidence/PLAN50-20260923/imp50-49-historical-reference-map-v2-20260923.jsonl",
+    "targetMapSha256": "03a077e6aa422ce6108c2570b886af105a6a592ca976ed96da92d12e6e70a3ba",
+    "totalTargets": 141,
+    "previousAud19_10Receipt": "docs/04_audit/evidence/PLAN50-20260923/imp50-49-aud19-10-git-tree-membership-receipt-20260924.json",
+    "previousAud19_10ReceiptSha256": "9ca97b82589364742beac9a97ecc33e5e4f2ae437323f9777d9646fc4d627a33",
+    "excludedPreviouslyCoveredCount": 99,
+    "subset": "remaining 42 map targets outside AUD19/raw subset",
+    "subsetCount": 42,
+    "sortedSubsetPathsSha256": "61cc176ef38911fba8eb456d31fbfda24ee5dcb30d9b91fcd2b8e4e4da4304cf"
+  },
+  "git": {
+    "currentHead": "25434811334f5cec92ee0741079302271b82b7cb",
+    "commits": {
+      "prod04_checkpoint": {
+        "sha": "08d682f20346f14a63324f457741eb6f00ec9339",
+        "tree": "6552af163b1733c742e28cf8d146078d952135c0",
+        "parents": [
+          "512bc11e80fbf7c7b8baf6263aacc811ff829309"
+        ],
+        "authoredAt": "2026-09-14T21:45:07-03:00",
+        "subject": "feat: checkpoint controlled runtime, approval persistence and operator console",
+        "reachableFromCurrentHead": true,
+        "targetPathsPresent": 38,
+        "targetPathsAdded": 38
+      },
+      "aud19_11": {
+        "sha": "320c7c93d924bfd20e5eb9cb2ba8eed2ee5340ec",
+        "tree": "95c8855b5948575aee3809f510697320797404f0",
+        "parents": [
+          "0bbc3ab0013e5bf25d283c4946f951b0d0275b2a"
+        ],
+        "authoredAt": "2026-09-20T03:05:08-03:00",
+        "subject": "feat(ops): packable api/worker topology with non-root, readiness and digests (AUD19-11)",
+        "reachableFromCurrentHead": true,
+        "targetPathsPresent": 39,
+        "targetPathsAdded": 1
+      }
+    },
+    "prod04CheckpointIsAncestorOfAud19_11": true,
+    "aud19_11IsAncestorOfCurrentHead": true,
+    "sameBlobOidAcrossCommitsForCommonTargets": 37,
+    "differentBlobOidAcrossCommitsForCommonTargets": [
+      "docs/04_audit/evidence/PROD-20260913/PROD-04/report.md"
+    ]
+  },
+  "textSearch": {
+    "scope": "git history of tracked Markdown under docs/, excluding docs/04_audit/evidence/**",
+    "method": "git log --all --full-history -S<exact target path>",
+    "targetsWithExactPathStringHits": [],
+    "hitCount": 0
+  },
+  "coLocatedManifest": {
+    "path": "docs/04_audit/evidence/PROD-20260913/PROD-04/manifest.json",
+    "gitBlobOidAtAud19_11": "b6845bcd421ef06a8e2123d8e1d28b91f05c2ec6",
+    "workingTreeGitBlobOid": "b6845bcd421ef06a8e2123d8e1d28b91f05c2ec6",
+    "workingTreeMatchesAud19_11Tree": true,
+    "filesMapExactTargetPathMatches": 0,
+    "logsKeysAreBasenames": [
+      "RED-cas-two-connection.log",
+      "RED-cas-two-connection-prewiring.log",
+      "RED-restart-persistence.log",
+      "RED-restart-persistence-prewiring.log",
+      "GREEN-cas-two-connection.log",
+      "GREEN-restart-persistence.log"
+    ],
+    "scope": "ApprovalStore durável do runtime canônico (ApprovalAuthority + PostgresApprovalAuthority) — arquitetura A2",
+    "status": "IMPLEMENTED"
+  },
+  "entries": [
+    {
+      "path": "docs/04_audit/evidence/AUD19/AUD19-11-digests.json",
+      "originalClassification": "ORPHAN",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "60f56962d2214e3fdf786ef735923e081b3dbbbe7653f725c4bcd664211f0061",
+      "snapshotV1SizeBytes": 9002,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": false,
+          "entry": null,
+          "changeStatus": null
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "3efd509947e647b873238730a83ac7598f80c7dc"
+          },
+          "changeStatus": "A"
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "44711f3c8f5a882b15b5ebb179de07f436d2751a"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 9002
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-06-spec-preparation-20260922.md",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "2613fbe90a4243db24f9bdc19a1c838c24e144e4d4c8dacca8bc9f060b9d54cb",
+      "snapshotV1SizeBytes": 926,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": false,
+          "entry": null,
+          "changeStatus": null
+        },
+        "aud19_11": {
+          "present": false,
+          "entry": null,
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": false,
+          "entry": null
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": "??",
+        "sizeBytes": 926
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-08-spec-preparation-20260922.md",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "07c2ed355a1aa4f84534a0c88a0e5e0b9e5654b199efd8d7d4e87d369cf8afb6",
+      "snapshotV1SizeBytes": 1254,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": false,
+          "entry": null,
+          "changeStatus": null
+        },
+        "aud19_11": {
+          "present": false,
+          "entry": null,
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": false,
+          "entry": null
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": "??",
+        "sizeBytes": 1254
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-16-raw-artifact-receipt.json",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "65eae899335b879d508fc6bd21293b1ee3d3752ffea2f817f3f53315bfa3a418",
+      "snapshotV1SizeBytes": 6937,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": false,
+          "entry": null,
+          "changeStatus": null
+        },
+        "aud19_11": {
+          "present": false,
+          "entry": null,
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": false,
+          "entry": null
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": "??",
+        "sizeBytes": 6937
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/PROD-04/report.md",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "38da722314791698a640fec23059fb38baf6cdcce077ccc1c37c72f7281515d3",
+      "snapshotV1SizeBytes": 13435,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "0787448fbd01a0bf720199dcc5ecc6701c62e304"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "550b54ccb2b7f1608bac32add7d89dc39c5b41bb"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "550b54ccb2b7f1608bac32add7d89dc39c5b41bb"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 13435
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/PROD-04/review/logs/critic-new-suite.log",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "9cec14bc92551ef03bf464eef06cd7e5633b8290faf0c0a6e3ad925e866823a9",
+      "snapshotV1SizeBytes": 225,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "ab9fe0f70d02714f987b650641f26d32b9a43c09"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "ab9fe0f70d02714f987b650641f26d32b9a43c09"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "ab9fe0f70d02714f987b650641f26d32b9a43c09"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 225
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/PROD-04/review/logs/critic-regression.log",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "78a09f2d80cc219501c29f7b0bb028161b0e39b858dac430a908b71797781619",
+      "snapshotV1SizeBytes": 225,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "ba9b43fbdd2d05cc43e2c748f9c76fed11154f46"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "ba9b43fbdd2d05cc43e2c748f9c76fed11154f46"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "ba9b43fbdd2d05cc43e2c748f9c76fed11154f46"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 225
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/PROD-04/review/probes/probe-a-two-connection.log",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "7ba2b557585ca40255602ebccdbe4e5cb36bc2a959a40cb09f6723843bc2bf4d",
+      "snapshotV1SizeBytes": 412,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "f069bf8f55118ca3fa2eec4d11dc28486cac7b6d"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "f069bf8f55118ca3fa2eec4d11dc28486cac7b6d"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "f069bf8f55118ca3fa2eec4d11dc28486cac7b6d"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 412
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/PROD-04/review/probes/probe-b-fencing.log",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "fa959d303906dfd3eabe37848560d12f6baf75b46a339dd8c12658c10154d9e5",
+      "snapshotV1SizeBytes": 432,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "023dad808886c41634a60a83aa503789339755e8"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "023dad808886c41634a60a83aa503789339755e8"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "023dad808886c41634a60a83aa503789339755e8"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 432
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/PROD-04/review/probes/probe-c-crash-before.log",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "2590b72db986fc9a0a88a2452344d398a66fbd55e71cb2fec1763ea2c925a9ac",
+      "snapshotV1SizeBytes": 141,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "e4ea29085d236a5a2128f2ade2e420e22ba67c1d"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "e4ea29085d236a5a2128f2ade2e420e22ba67c1d"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "e4ea29085d236a5a2128f2ade2e420e22ba67c1d"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 141
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/PROD-04/review/probes/probe-d-crash-after.log",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "fa670e6727b3a7910c8770a84ec45304f712fcd45b32bd0d28ad36d84d087cdf",
+      "snapshotV1SizeBytes": 281,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "775063517afd3baf66e5c1fe06e090a8e22179e5"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "775063517afd3baf66e5c1fe06e090a8e22179e5"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "775063517afd3baf66e5c1fe06e090a8e22179e5"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 281
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/PROD-04/review/probes/probe-e-rls.log",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "d635fc4bae76c791782fe63b5e056473ba36e817fa3972420fd596879a470d53",
+      "snapshotV1SizeBytes": 285,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "6bf6db8c4642c3221907cfd13218db64f6e11b16"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "6bf6db8c4642c3221907cfd13218db64f6e11b16"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "6bf6db8c4642c3221907cfd13218db64f6e11b16"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 285
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/PROD-04/review/probes/probe-f-tamper.log",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "d7e17281a7e00e60ab18052d99c06f6ee1ee0ba21239c2f5a745cd93c9026f92",
+      "snapshotV1SizeBytes": 1343,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "0a9f70c79a5aa0a9d055df33c9741bbe6bd4ddb9"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "0a9f70c79a5aa0a9d055df33c9741bbe6bd4ddb9"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "0a9f70c79a5aa0a9d055df33c9741bbe6bd4ddb9"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 1343
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/PROD-04/review/probes/probe-g-invariants.log",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "52ce1d1868c8706d116731e48986dc0761961f32f9696dc9e56bbe5dfcd9e2cf",
+      "snapshotV1SizeBytes": 330,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "d3e5251223153cf8290516fec45aa8a1999d1e8c"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "d3e5251223153cf8290516fec45aa8a1999d1e8c"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "d3e5251223153cf8290516fec45aa8a1999d1e8c"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 330
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/PROD-04/review/probes/probe-h-mutations.log",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "a0c7109e16fb5eed2e483fc605b2222b6edff37ba30c560317a5b1c00ad4777a",
+      "snapshotV1SizeBytes": 278,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "569dc3121c8ea447787cfc7ff35b1dc994c91a09"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "569dc3121c8ea447787cfc7ff35b1dc994c91a09"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "569dc3121c8ea447787cfc7ff35b1dc994c91a09"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 278
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/eslint.log",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "f148dcc4ade04b51677789f034ee82bbdb384fda76a278507119fdfc87958fda",
+      "snapshotV1SizeBytes": 14,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "65389a6e56faf10a56d004724a0a90a0532dbca1"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "65389a6e56faf10a56d004724a0a90a0532dbca1"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "65389a6e56faf10a56d004724a0a90a0532dbca1"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 14
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/fingerprint-before.json",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "27e16612eb8d87f460f32bf1a0cd49e43bc0f86d61d0900910c9289744f3c53c",
+      "snapshotV1SizeBytes": 78744,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "9e6bcf7bb2e6351c77625a680f164b71373bca01"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "9e6bcf7bb2e6351c77625a680f164b71373bca01"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "9e6bcf7bb2e6351c77625a680f164b71373bca01"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 78744
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/fingerprint-final.json",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "27e16612eb8d87f460f32bf1a0cd49e43bc0f86d61d0900910c9289744f3c53c",
+      "snapshotV1SizeBytes": 78744,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "9e6bcf7bb2e6351c77625a680f164b71373bca01"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "9e6bcf7bb2e6351c77625a680f164b71373bca01"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "9e6bcf7bb2e6351c77625a680f164b71373bca01"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 78744
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/fingerprint.py",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "70be4616dc78e094637258cd03e41b427241478cc84c1cb40301732bbc34fd24",
+      "snapshotV1SizeBytes": 1480,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "db915a7662ccac4ce6d4fcffa406fb8462110dda"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "db915a7662ccac4ce6d4fcffa406fb8462110dda"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "db915a7662ccac4ce6d4fcffa406fb8462110dda"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 1480
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/full-test.log",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "710a6ea5fe40ac01cb63704afa877878d226332f5441080db094f2fbc494c972",
+      "snapshotV1SizeBytes": 37009,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "a2befeb52e3871db7c61e9c16f3eca2d5adb67d2"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "a2befeb52e3871db7c61e9c16f3eca2d5adb67d2"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "a2befeb52e3871db7c61e9c16f3eca2d5adb67d2"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 37009
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/probe-a-readiness.ts",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "d108c5e27e20d6c7cd002faeb6e1b98d92ca38fb5342211d6dd79a94f1c1f80a",
+      "snapshotV1SizeBytes": 5317,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "682605dfc908d468171da96573e5d100e690ce3e"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "682605dfc908d468171da96573e5d100e690ce3e"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "682605dfc908d468171da96573e5d100e690ce3e"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 5317
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/probe-a2-timers.ts",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "f8987c23f5a27f0c67fa8a7215d11f3b5631c3a710c4fe1e3f73dcad773bdfd7",
+      "snapshotV1SizeBytes": 2172,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "f11f82680d808e90c60b966885acf09bcb686996"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "f11f82680d808e90c60b966885acf09bcb686996"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "f11f82680d808e90c60b966885acf09bcb686996"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 2172
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/probe-c-atomicity.ts",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "b11b04cc462fa22cc6f5af270d4fa3d509f5064eda5554d7d11a0b3248bf17a2",
+      "snapshotV1SizeBytes": 8815,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "56e1b19e51971daea2b164dbec003bfb81a4aedd"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "56e1b19e51971daea2b164dbec003bfb81a4aedd"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "56e1b19e51971daea2b164dbec003bfb81a4aedd"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 8815
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/probe-d-preflight.ts",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "b2a9815eb1f18322502c4982330fb3bf82482f9c206159f242992e1b5b95a7ed",
+      "snapshotV1SizeBytes": 11067,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "b30a645403975ff67a4ac713ecc3a0e10cf68e40"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "b30a645403975ff67a4ac713ecc3a0e10cf68e40"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "b30a645403975ff67a4ac713ecc3a0e10cf68e40"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 11067
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/probe-e-http-spoof.ts",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "59f306df37becdc939a691ec792e1e054a8342f8e5587ff443bdfba90c9562a4",
+      "snapshotV1SizeBytes": 8456,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "c59cc31952b2099b53f6230a510036072c38988d"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "c59cc31952b2099b53f6230a510036072c38988d"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "c59cc31952b2099b53f6230a510036072c38988d"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 8456
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/typecheck.log",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "8b0652334f8c18d7b8ab65ebb1c68eb5c3e9bfcdeee08c641f75418ba81efb8c",
+      "snapshotV1SizeBytes": 85,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "efda3d2d271eaad553b20dfe7309bdaaf0439dbd"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "efda3d2d271eaad553b20dfe7309bdaaf0439dbd"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "efda3d2d271eaad553b20dfe7309bdaaf0439dbd"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 85
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/ui-baseline.log",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "e28133035710e3af203436eb43ca07c8d45061e8d94059162b83402b49964cdf",
+      "snapshotV1SizeBytes": 225,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "c47eec546e7443229efdf963a0d79430310d0127"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "c47eec546e7443229efdf963a0d79430310d0127"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "c47eec546e7443229efdf963a0d79430310d0127"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 225
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/ui-neutralized-deps.log",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "b444e0e10d7b07a2aab966e22f349b2eb4b10b08f82141804d3509f737309d89",
+      "snapshotV1SizeBytes": 2850,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "266e4ccc8b8952071d83d556fa61a24e36034ee0"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "266e4ccc8b8952071d83d556fa61a24e36034ee0"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "266e4ccc8b8952071d83d556fa61a24e36034ee0"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 2850
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/m1-fresh-review-round3/ui-neutralized-generation.log",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "f766be5fea2b0b2ee5c1d6690f9f27c5633719646b0fa2bca31d516904f2ce57",
+      "snapshotV1SizeBytes": 4097,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "c886f231e4a8a02ef92748a081ed8e00b8129920"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "c886f231e4a8a02ef92748a081ed8e00b8129920"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "c886f231e4a8a02ef92748a081ed8e00b8129920"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 4097
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave-review/ENVIRONMENT.md",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "fad3f593bd572fdae7ab8a04b323da9b37be86320d17fefb03cc5e01357616e8",
+      "snapshotV1SizeBytes": 2425,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "74cda9b91a74478297b4a5ef60819aa25a6191d8"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "74cda9b91a74478297b4a5ef60819aa25a6191d8"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "74cda9b91a74478297b4a5ef60819aa25a6191d8"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 2425
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave-review/fingerprint-after.json",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "714643238d42582f1ba46c304512d2a052297c9b7bd66c32a38178c3813e47f7",
+      "snapshotV1SizeBytes": 66328,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "3554c117d3d40acaded3568e6d09f0c3859e7d49"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "3554c117d3d40acaded3568e6d09f0c3859e7d49"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "3554c117d3d40acaded3568e6d09f0c3859e7d49"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 66328
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave-review/fingerprint-before.json",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "714643238d42582f1ba46c304512d2a052297c9b7bd66c32a38178c3813e47f7",
+      "snapshotV1SizeBytes": 66328,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "3554c117d3d40acaded3568e6d09f0c3859e7d49"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "3554c117d3d40acaded3568e6d09f0c3859e7d49"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "3554c117d3d40acaded3568e6d09f0c3859e7d49"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 66328
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave-review/fingerprint.py",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "f9ecab956f437b89c962a343ee4273b870c8250818187ee26982737750d31035",
+      "snapshotV1SizeBytes": 2862,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "0a6fb38b36cba93a228e5133019c4105ebdd0da4"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "0a6fb38b36cba93a228e5133019c4105ebdd0da4"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "0a6fb38b36cba93a228e5133019c4105ebdd0da4"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 2862
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave-review/probe-factory-double.ts",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "faf6b27ec3d83a60c48e800807a52f1eac683d9ddd170cda5e1392da76b85f23",
+      "snapshotV1SizeBytes": 1738,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "ee3ce4641e92e75b5b8ad1d1e1bb92d17992f617"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "ee3ce4641e92e75b5b8ad1d1e1bb92d17992f617"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "ee3ce4641e92e75b5b8ad1d1e1bb92d17992f617"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 1738
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave-review/probe-identity.ts",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "a105b719893c365df4f368147962ee871eb30803d031403325289b1414212544",
+      "snapshotV1SizeBytes": 6606,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "b680144b587633b44cc48fc7766cfe325baa43de"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "b680144b587633b44cc48fc7766cfe325baa43de"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "b680144b587633b44cc48fc7766cfe325baa43de"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 6606
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave-review/probe-regression.ts",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "dd61286d652f7b8a83bc76a63409fc4c25a67a957c53cc2fa4f373d0f1b1cea1",
+      "snapshotV1SizeBytes": 5964,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "45690c300fb103be6870e4ad57f1606465e8b411"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "45690c300fb103be6870e4ad57f1606465e8b411"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "45690c300fb103be6870e4ad57f1606465e8b411"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 5964
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave-review/server-delta-r2.diff",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "f305368603fe2aa8667bc23c7d9e633f1cce8e8c6bba12244d2467f47d988ef7",
+      "snapshotV1SizeBytes": 20531,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "a82b6903d510daf9c823e2744208f43015325727"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "a82b6903d510daf9c823e2744208f43015325727"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "a82b6903d510daf9c823e2744208f43015325727"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 20531
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave3-01-fix/fingerprint-after-broad.txt",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "42af6b100e0d331d281ab882aedbe92d1d37c9d3f8e48e73ad1514b20d5dc9e9",
+      "snapshotV1SizeBytes": 987,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "32138c48cd45a9660f079cb9e897a8e234b3a8d1"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "32138c48cd45a9660f079cb9e897a8e234b3a8d1"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "32138c48cd45a9660f079cb9e897a8e234b3a8d1"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 987
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave3-01-fix/fingerprint-after-narrow.txt",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "3fcebd18cb3f11bfc6a928484ba63de30a7e6a5efb4eda0e2a94376f51712391",
+      "snapshotV1SizeBytes": 359,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "b74272ec903893b86d3fa23b040e7432cff8377a"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "b74272ec903893b86d3fa23b040e7432cff8377a"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "b74272ec903893b86d3fa23b040e7432cff8377a"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 359
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave3-01-fix/fingerprint-before-broad.txt",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "42af6b100e0d331d281ab882aedbe92d1d37c9d3f8e48e73ad1514b20d5dc9e9",
+      "snapshotV1SizeBytes": 987,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "32138c48cd45a9660f079cb9e897a8e234b3a8d1"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "32138c48cd45a9660f079cb9e897a8e234b3a8d1"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "32138c48cd45a9660f079cb9e897a8e234b3a8d1"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 987
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave3-01-fix/fingerprint-before-narrow.txt",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "3fcebd18cb3f11bfc6a928484ba63de30a7e6a5efb4eda0e2a94376f51712391",
+      "snapshotV1SizeBytes": 359,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "b74272ec903893b86d3fa23b040e7432cff8377a"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "b74272ec903893b86d3fa23b040e7432cff8377a"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "b74272ec903893b86d3fa23b040e7432cff8377a"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 359
+      }
+    },
+    {
+      "path": "docs/04_audit/evidence/PROD-20260913/reaudit-round3/wave3-01-fix/probes/probe-real-socket.ts",
+      "originalClassification": "UNCLASSIFIED",
+      "proposedClassification": "HISTORICAL",
+      "supportKind": "basename_only",
+      "snapshotV1Sha256": "67329e12bc840390456392790a1eb4e9b13e0519be1dc57695ffc191056c07a6",
+      "snapshotV1SizeBytes": 2528,
+      "gitTrees": {
+        "prod04Checkpoint": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "0cb2a0d038fd577bbdcaa0bae308aa6f908f4b4f"
+          },
+          "changeStatus": "A"
+        },
+        "aud19_11": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "0cb2a0d038fd577bbdcaa0bae308aa6f908f4b4f"
+          },
+          "changeStatus": null
+        },
+        "currentHead": {
+          "present": true,
+          "entry": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "0cb2a0d038fd577bbdcaa0bae308aa6f908f4b4f"
+          }
+        }
+      },
+      "worktree": {
+        "exists": true,
+        "status": null,
+        "sizeBytes": 2528
+      }
+    }
+  ],
+  "limits": {
+    "rawPayloadBytesRead": false,
+    "gitBlobBytesRead": false,
+    "snapshotV1Sha256Recomputed": false,
+    "mappedTargetReportTextInspected": [
+      "docs/04_audit/evidence/PROD-20260913/PROD-04/report.md"
+    ],
+    "otherReadOnlySummaryTextInspected": [
+      "docs/04_audit/evidence/PROD-20260913/PROD-04/manifest.json",
+      "docs/04_audit/evidence/PROD-20260913/PROD-04/review/REVIEW.md"
+    ],
+    "manifestEnumeratesAll38ProdMapTargetsByExactPath": false,
+    "mapClassesOrSnapshotsChanged": false,
+    "adjudicationMade": false
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "kind": "phase11-critic-report",
+  "critic": {
+    "identity": "critic.agent.aud20-06-halley-v4",
+    "freshContext": true,
+    "builderIdentity": "builder.agent.aud20-main",
+    "independence": {
+      "criteria": [
+        "fresh-context",
+        "separate-identity",
+        "artifact-only-input",
+        "no-worktree-write",
+        "no-builder-justification"
+      ],
+      "builderJustificationIncluded": false,
+      "builderConclusionReused": false,
+      "writeAccessToWorktree": false
+    }
+  },
+  "binding": {
+    "candidateId": "865671228dfa248b7eae456e818d4aefa341946e1de586b5ad78d2ce76ae5752",
+    "commit": "25434811334f5cec92ee0741079302271b82b7cb",
+    "treeHash": "2d94ca79489867071503c57d389c0859f8e4db5562d88139c0ba877c5c7939aa"
+  },
+  "fingerprint": {
+    "algorithm": "sha256-candidate-v1",
+    "before": "bf22b93b50b265a935e8334bb3eac1b95efb5c2c2ac1f5b3d8e968a65fee282b",
+    "after": "bf22b93b50b265a935e8334bb3eac1b95efb5c2c2ac1f5b3d8e968a65fee282b"
+  },
+  "verdict": {
+    "status": "PASS",
+    "summary": "AUD20-06 implementation approved locally with no remaining P0/P1. Current certification and release remain NO_GO because the worktree is dirty and the Phase 11 package is historical."
+  },
+  "findings": { "P0": 0, "P1": 0, "P2": 0 },
+  "checks": [
+    {
+      "id": "AUD20-06-C01-C07",
+      "status": "PASS",
+      "method": "Focused forged-report regression, candidate recomputation, fail-closed receipt controls and local evidence review.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD20/AUD20-06-v1-build-report-20260922.md",
+        "docs/04_audit/evidence/AUD20/AUD20-06-v1-criteria-matrix.json"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-06-v1-build-report-20260922.md",
+      "sha256": "c7742aa933b608cd95ffc77ae2640e18b081dbef5a6dad048a44a27c15e69183",
+      "size": 1984
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-06-v1-criteria-matrix.json",
+      "sha256": "b93d7a1a045e79b3f7b9978e93b21708ad172b476836d2b103dbf1f2c1346a80",
+      "size": 1306
+    }
+  ],
+  "disclaimers": { "syntheticOnly": true, "productionBlocked": true }
+}

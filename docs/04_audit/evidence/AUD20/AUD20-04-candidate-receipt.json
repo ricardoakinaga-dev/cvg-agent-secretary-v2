@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 2,
+  "kind": "aud20-task-receipt",
+  "program": "AUD20-REM",
+  "task": "AUD20-04",
+  "observedAt": "2026-09-21T19:17:13Z",
+  "taskStatus": "COMPLETED",
+  "execution": "CONTROLLED_LOCAL",
+  "node": "v22.23.2",
+  "candidateManifest": "docs/04_audit/evidence/AUD20/AUD20-04-candidate-manifest.json",
+  "rawArtifactReceipt": "docs/04_audit/evidence/AUD20/AUD20-04-raw-artifact-receipt.json",
+  "criteriaMatrix": "docs/04_audit/evidence/AUD20/AUD20-04-v2-criteria-matrix.json",
+  "buildReport": "docs/04_audit/evidence/AUD20/AUD20-04-v2-build-report-20260921.md",
+  "rollbackReport": "docs/04_audit/evidence/AUD20/AUD20-04-v2-rollback-report-20260921.md",
+  "candidate": {
+    "schemaVersion": "aud20-candidate-v2",
+    "candidateId": "ea348cec64a8a77b36418ef358315bc8d044181720968fc05934b6441507121b",
+    "baseCommit": "25434811334f5cec92ee0741079302271b82b7cb",
+    "gitTreeHash": "218d24fa5ee1e66f2cbe48687d5630100abcf3c3",
+    "sourceDiffSha256": "b8c43d4a758c0e780837b5c8480b447ebb19f0c266b3066f9ae1fde4563e8f82",
+    "branch": "main",
+    "dirty": true,
+    "releaseEligible": false
+  },
+  "verification": {
+    "status": "PASS",
+    "localImplementation": "PASS",
+    "criteria": {
+      "AUD20-04-C01": "PASS",
+      "AUD20-04-C02": "PASS",
+      "AUD20-04-C03": "PASS",
+      "AUD20-04-C04": "PASS",
+      "AUD20-04-C05": "PASS",
+      "AUD20-04-C06": "PASS",
+      "AUD20-04-C07": "PASS"
+    },
+    "retentionFocused": "2 files; 36 tests passed; statement-timeout rollback included",
+    "inboundReplay": "1 file; 9 tests passed",
+    "postgresMatrix": "30 files; 337 tests passed",
+    "fullUnit": "282 files passed; 12 skipped; 2179 tests passed; 188 conditional skips",
+    "staticGates": [
+      "typecheck",
+      "lint",
+      "format:check",
+      "format-docs",
+      "build",
+      "docs:check",
+      "security-audit",
+      "git diff --check"
+    ],
+    "docsCheck": "778 links; 578 JSON documents; next_action coherent",
+    "securityAudit": "0 vulnerabilities",
+    "migrationChecksums": {
+      "0027_inbound_idempotency_tombstones.sql": "a64e5302e971e96f961f25c045cd7d32e06ab6a8714d3b29050f01e22370e8d1",
+      "0028_retention_batch_semantics.sql": "61a54ff3e51a3f01025c23fa6c489816da181ad40f828201f7986aff3c3250b2"
+    },
+    "negativeLogAfterReceipt": "PASS",
+    "staleEvidence": {
+      "excluded": true,
+      "artifacts": [
+        "docs/04_audit/evidence/AUD20/AUD20-04-critical-coverage.json",
+        "docs/04_audit/evidence/AUD20/AUD20-04-retention-replay-report.md",
+        "docs/04_audit/evidence/AUD20/AUD20-04-rollback-report.md"
+      ],
+      "reason": "Historical candidate 87874e... is explicitly marked HISTORICAL_STALE."
+    }
+  },
+  "review": {
+    "status": "PASS",
+    "independentCritic": "PASS",
+    "attempts": 3,
+    "reviewedAt": "2026-09-21T19:08:00Z",
+    "reviewer": "fresh-context-independent-critic",
+    "evidence": [
+      "docs/04_audit/evidence/AUD20/AUD20-04-binding-verification.json",
+      "docs/04_audit/evidence/AUD20/AUD20-04-v2-criteria-matrix.json",
+      "Fresh critic PASS: C01-C07, current evidence bindings, timeout/rollback, altered-log negative and stale-artifact exclusion"
+    ],
+    "reason": "PASS: all mandatory local criteria and evidence-integrity gates were independently reviewed on the repaired candidate."
+  },
+  "release": {
+    "releaseEligible": false,
+    "staging": "NO_GO",
+    "production": "NO_GO",
+    "commit": "NOT_AUTHORIZED",
+    "push": "NOT_AUTHORIZED",
+    "deploy": "NOT_AUTHORIZED"
+  },
+  "limitations": [
+    "No real data, credentials, provider, channel, IdP, RAG, external integration, staging environment or production effect was used.",
+    "Mutation score, representative-volume performance and physical backup/restore evidence were not produced.",
+    "A separately scheduled hold insertion between selection and mutation was not run as a dedicated integration fixture; the live hold predicate and tenant/hold tests passed.",
+    "A fresh-context independent critic returned PASS; this receipt closes AUD20-04 only in controlled-local scope."
+  ]
+}
