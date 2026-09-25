@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "kind": "phase11-trace_lineage-report",
-  "certificationId": "phase11-06e1477ebe76b2f5-muh112ux",
-  "candidateCommit": "98a9636db6d545487c8ae97eb8c75e2b805855de",
-  "generatedAt": "2026-09-25T14:34:56.521Z",
+  "certificationId": "phase11-7c74e336cda9b19b-muh54c90",
+  "candidateCommit": "45629f11da702b4240ef2bc59048c73415c9953f",
+  "generatedAt": "2026-09-25T16:21:02.428Z",
   "gateId": "trace_lineage",
   "status": "PASS",
   "command": "npm test -- --run apps/api/src/__tests__/orchestration-observability.test.ts packages/observability/src/__tests__/observability.test.ts",

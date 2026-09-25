@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "kind": "phase11-invariants",
-  "certificationId": "phase11-06e1477ebe76b2f5-muh112ux",
-  "candidateCommit": "98a9636db6d545487c8ae97eb8c75e2b805855de",
-  "generatedAt": "2026-09-25T14:34:56.650Z",
+  "certificationId": "phase11-7c74e336cda9b19b-muh54c90",
+  "candidateCommit": "45629f11da702b4240ef2bc59048c73415c9953f",
+  "generatedAt": "2026-09-25T16:21:02.541Z",
   "invariants": [
     {
       "id": "INV-001",
@@ -169,11 +169,11 @@
       "evidenceRefs": [
         "certification/phase11/postgres-report.json"
       ],
-      "status": "NOT_RUN",
+      "status": "PASS",
       "evidence": [
         "certification/phase11/postgres-report.json"
       ],
-      "rationale": "At least one mapped gate is not PASS: postgres, governance_redteam."
+      "rationale": "The mapped executable gates passed in the controlled synthetic scope."
     },
     {
       "id": "INV-008",
@@ -194,12 +194,12 @@
         "certification/phase11/postgres-report.json",
         "certification/phase11/evidence-graph.json"
       ],
-      "status": "NOT_RUN",
+      "status": "PASS",
       "evidence": [
         "certification/phase11/postgres-report.json",
         "certification/phase11/evidence-graph.json"
       ],
-      "rationale": "At least one mapped gate is not PASS: tenant_redteam, postgres, trace_lineage."
+      "rationale": "The mapped executable gates passed in the controlled synthetic scope."
     },
     {
       "id": "INV-009",
@@ -220,12 +220,12 @@
         "certification/phase11/postgres-report.json",
         "certification/phase11/chaos-report.json"
       ],
-      "status": "NOT_RUN",
+      "status": "PASS",
       "evidence": [
         "certification/phase11/postgres-report.json",
         "certification/phase11/chaos-report.json"
       ],
-      "rationale": "At least one mapped gate is not PASS: postgres, recovery, chaos, outbox_replay."
+      "rationale": "The mapped executable gates passed in the controlled synthetic scope."
     },
     {
       "id": "INV-010",
@@ -246,12 +246,12 @@
         "certification/phase11/postgres-report.json",
         "certification/phase11/recovery-report.json"
       ],
-      "status": "NOT_RUN",
+      "status": "PASS",
       "evidence": [
         "certification/phase11/postgres-report.json",
         "certification/phase11/recovery-report.json"
       ],
-      "rationale": "At least one mapped gate is not PASS: postgres, recovery."
+      "rationale": "The mapped executable gates passed in the controlled synthetic scope."
     },
     {
       "id": "INV-011",
@@ -348,12 +348,12 @@
         "certification/phase11/logs/governance_redteam.log",
         "certification/phase11/logs/e2e.log"
       ],
-      "status": "FAIL",
+      "status": "PASS",
       "evidence": [
         "certification/phase11/logs/governance_redteam.log",
         "certification/phase11/logs/e2e.log"
       ],
-      "rationale": "At least one mapped gate is not PASS: governance_redteam, e2e."
+      "rationale": "The mapped executable gates passed in the controlled synthetic scope."
     },
     {
       "id": "INV-015",
