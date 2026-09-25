@@ -497,7 +497,9 @@ da próxima ação primária AUD20-17.
 
 ## Próxima ação
 
-- Próxima ação: manter `AUD20-10` com o slice IMP50-09 aceito no BUILD local e C01–C07 abertos; próximos passos (alertas/delivery ledger, owner/SLO) exigem decisão/admissão próprias; `AUD20-19` sem sessão autorizada; 141 vínculos IMP50-49 sem adjudicação; staging/produção `NO_GO`.
+- Próxima ação: executar o preflight read-only do reseal (certification:verify:phase11 e promotion:check) sobre o candidato selado `25c8222` e registrar o delta; manter `AUD20-10` com C01–C07 abertos (próximas fatias exigem decisão), `AUD20-19` sem sessão autorizada, 141 vínculos IMP50-49 sem adjudicação e staging/produção `NO_GO`.
+
+- R0 concluído: worktree consolidado em 4 commits (B1 `eb84cd6`, B2 `80f97ef`, B3 `cb6abd7`, B4 `25c8222`) e candidato **selado** (`SEALED`, worktree `0/0/0`); ver [selagem v3](04_audit/evidence/AUD-20260925-REPO/b25-01-seal-report-v3-20260925.md).
 
 - `AUD20-10/IMP50-09`: BUILD local executado e **slice aceito** (crítica delta fresh-context `PASS`; suíte final `2.647 PASS`/192 skips; coverage 4/4 ≥90%; mutation dirigida `22/22` na árvore final). C01–C07 permanecem abertos; ver [aceite](04_audit/evidence/AUD20/AUD20-10-imp50-09-slice-acceptance-20260925.md) e [relatório](04_audit/evidence/AUD20/AUD20-10-composition-build-report-20260925.md).
 - `AUD20-19`: R2 `PASS` do harness; sessão humana sem autorização (adiada); nenhum aceite de produto.

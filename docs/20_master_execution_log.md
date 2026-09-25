@@ -6,6 +6,10 @@
 
 - R2 de FU1 SOLICITADO; sessão humana ADIADA; gate PostgreSQL ADMITIDO (descartável+teardown); mutation ADMITIDA (pisos intactos); fluxos de re-selo/8 gates APROVADOS como plano. Recibo hash-bound registrado. Próximo: executar R2 → mutation → PostgreSQL. Staging/produção `NO_GO`.
 
+# R0: worktree consolidado e selado — 2026-09-25
+
+- Consolidação autorizada em 4 lotes (produto, tooling, docs, governança), incluindo 5 deleções de `.gauntlet`; worktree `0/0/0` e B25-01 **SEALED** em `25c8222` (v3). Gates revalidados. Nenhum push. Próximo: preflight read-only do reseal. Staging/produção `NO_GO`.
+
 # AUD20-10/IMP50-09 slice aceito — 2026-09-25
 
 - Crítica delta fresh-context `PASS`; mutation reexecutada na árvore final `22/22`; suíte final `2.647 PASS`/192 skips. Slice aceito em escopo local controlado com condições (fonte alterada reabre; owner/SLO e alertas/delivery ledger em fatias próprias; pin do manifesto obsoleto a reconciliar no reseal). C01–C07 abertos; staging/produção `NO_GO`.

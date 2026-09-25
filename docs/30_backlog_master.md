@@ -8,6 +8,11 @@
 - [x] 3 pedidos preparados (coverage, mutante, desbloqueio) — `WAITING_HUMAN_APPROVAL`.
 - [ ] Aguardar decisões. Staging/produção `NO_GO`.
 
+# R0 concluído — 2026-09-25
+
+- [x] Worktree consolidado em 4 commits; 5 deleções de `.gauntlet` commitadas; **SEALED** em `25c8222` (v3).
+- [ ] Preflight read-only do reseal (R4). Staging/produção `NO_GO`.
+
 # AUD20-10/IMP50-09 aceito — 2026-09-25
 
 - [x] Crítica delta `PASS`; mutation final `22/22`; suíte `2.647 PASS`/192 skips; condições registradas.

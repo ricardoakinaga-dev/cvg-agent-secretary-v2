@@ -5045,3 +5045,12 @@ PASS`; suíte integral `289 PASS` arquivos/12 skipped e `2.256 PASS`
 - next_action: manter `AUD20-10` com o slice IMP50-09 aceito no BUILD local e C01–C07 abertos; próximos passos (alertas/delivery ledger, owner/SLO) exigem decisão/admissão próprias; `AUD20-19` sem sessão autorizada; 141 vínculos IMP50-49 sem adjudicação; staging/produção `NO_GO`.
 - evidence: [aceite do slice](04_audit/evidence/AUD20/AUD20-10-imp50-09-slice-acceptance-20260925.md), [relatório](04_audit/evidence/AUD20/AUD20-10-composition-build-report-20260925.md), [suíte final](04_audit/evidence/AUD20/AUD20-10-composition-final-test-20260925.log) (`5b8f5b11…`), [mutation final](04_audit/evidence/AUD20/AUD20-10-directed-mutation-20260925.json) (`83fbe5cb…`).
 - verification: nenhum dado real, commit, push ou deploy; JSONL apenas em raiz temporária descartável.
+
+# R0 concluído: worktree consolidado e candidato selado (B25-01 v3) — 2026-09-25
+
+- current_engine: `AUDIT -> PLAN`; task corrente `AUD20-10` (slice IMP50-09 aceito; C01–C07 abertos); `AUD20-17` `COMPLETED` (aceite limitado); staging/produção `NO_GO`.
+- last_completed_action: consolidar o worktree em 4 lotes autorizados (B1 produto `eb84cd6`, B2 tooling `80f97ef`, B3 docs `cb6abd7`, B4 governança `25c8222`, incluindo 5 deleções de `.gauntlet`) e reexecutar a selagem B25-01: **SEALED** em `25c82222` com worktree `0/0/0`; gates revalidados (`docs:check` 2.027/642, Prettier, diff, typecheck, lint, focados 20/20).
+- progress: R0 do roadmap 0344 concluído; R1/R2 com evidência adjudicada; R3 com slice aceito; resta o preflight do reseal (R4) e a sessão humana (H) adiada; pin canônico do manifesto de mutantes a reconciliar no reseal.
+- next_action: executar o preflight read-only do reseal (certification:verify:phase11 e promotion:check) sobre o candidato selado `25c8222` e registrar o delta; manter `AUD20-10` com C01–C07 abertos (próximas fatias exigem decisão), `AUD20-19` sem sessão autorizada, 141 vínculos IMP50-49 sem adjudicação e staging/produção `NO_GO`.
+- evidence: [selagem v3](04_audit/evidence/AUD-20260925-REPO/b25-01-seal-report-v3-20260925.md), [manifesto v3](04_audit/evidence/AUD-20260925-REPO/b25-01-candidate-manifest-v3-20260925.json), [plano de consolidação](04_audit/evidence/AUD-20260925-REPO/b25-01-consolidation-plan-20260925.md).
+- verification: commits locais sem push; nenhum dado real, deploy ou efeito externo.
