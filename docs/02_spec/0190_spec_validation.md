@@ -163,6 +163,15 @@ humano foi iniciada; nenhum candidato limpo ou pacote humano foi produzido. Ver 
 [relatório BUILD](../04_audit/evidence/AUD20/AUD20-19-FU1-build-report-20260924.md)
 e os [recibos de teste](../04_audit/evidence/AUD20/AUD20-19-FU1-verify-20260924.log).
 
+## Gate aprovado — pin do manifesto de mutantes e reseal Phase 11 — 2026-09-25
+
+Decisões humanas hash-bound no [recibo nº 3](../04_audit/evidence/AUD20/AUD20-20250925-human-decisions-3-20260925.md):
+(1) `SPEC_APPROVED_CONTROLLED_BUILD` para a correção do pin canônico
+`MUTATION_MANIFEST_SHA256` (`scripts/lib/mutation-sentinel.mjs`) com teste
+anti-drift; (2) admissão da execução local controlada do reseal Phase 11
+(`certify:phase11` no candidato congelado), sem promoção, deploy, staging ou
+produção; (3) owner/SLO adiados. Registro em 0337 antes do código.
+
 ## Gate aprovado AUD20-10 / próxima fatia C02/C04/C05 — 2026-09-25
 
 `SPEC_APPROVED_CONTROLLED_BUILD` para a próxima fatia de
