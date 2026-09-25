@@ -4,7 +4,7 @@
   "program": "AUD20-REM-v2",
   "currentTask": "AUD20-10",
   "currentStatus": "READY_FOR_NEXT_STEP",
-  "nextAction": "manter `AUD20-10` com as fatias IMP50-09 e C02/C04/C05 aceitas no BUILD local e C01–C07 abertos (owner/SLO e demais itens exigem decisão humana); reconciliar o pin do manifesto de mutantes no reseal aprovado; `AUD20-19` sem sessão autorizada; 141 vínculos IMP50-49 sem adjudicação; staging/produção `NO_GO`.",
+  "nextAction": "executar a remediação do reseal: (1) gatear o harness AUD20-19 fora do e2e padrão, (2) gerar critic report Phase 11 fresh-context do candidato congelado e (3) reexecutar o certify com PostgreSQL descartável autorizado; manter owner/SLO adiados, `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.",
   "releaseBoundary": {
     "staging": "NO_GO",
     "production": "NO_GO"

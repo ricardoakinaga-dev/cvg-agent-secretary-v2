@@ -8,6 +8,11 @@
 - [x] 3 pedidos preparados (coverage, mutante, desbloqueio) — `WAITING_HUMAN_APPROVAL`.
 - [ ] Aguardar decisões. Staging/produção `NO_GO`.
 
+# Reseal executado — 2026-09-25
+
+- [x] Pin do manifesto corrigido; pacote novo `phase11-06e1477ebe76b2f5-muh112ux` (`NO_GO` fail-closed) substitui o stale.
+- [ ] Remediação: e2e do harness AUD20-19, critic report Phase 11, certify com PostgreSQL descartável. Staging/produção `NO_GO`.
+
 # AUD20-10 C02/C04/C05 aceito — 2026-09-25
 
 - [x] Latência real + ledger de entrega + exercício fechando ciclo; crítica delta `PASS`; gates verdes (mutation `26/26`).

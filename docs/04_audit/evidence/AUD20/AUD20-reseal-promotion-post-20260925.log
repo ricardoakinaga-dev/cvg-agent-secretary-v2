@@ -1,0 +1,43 @@
+
+> cvg-agent-secretary-v2@1.0.0 promotion:check
+> node scripts/promotion-check.mjs --requested PRODUCTION
+
+{
+  "schemaVersion": 1,
+  "kind": "phase11-promotion-check",
+  "eligible": false,
+  "verifier": "FAIL",
+  "currentProfile": "CONTROLLED_LOCAL",
+  "requestedProfile": "PRODUCTION",
+  "blockingGates": [
+    "coverage:FAIL",
+    "postgres:NOT_EXECUTED",
+    "e2e:FAIL",
+    "independent_critic:FAIL",
+    "PHASE11_FORMAL_CLOSURE:FAIL"
+  ],
+  "blockingFindings": [
+    "finding_blocking:AUD-11-05:PARTIAL",
+    "finding_blocking:AUD-11-06:PARTIAL",
+    "finding_blocking:AUD-11-07:PARTIAL"
+  ],
+  "blockingInvariants": [
+    "critical_invariant_not_pass:INV-007:NOT_RUN",
+    "critical_invariant_not_pass:INV-008:NOT_RUN",
+    "critical_invariant_not_pass:INV-009:NOT_RUN",
+    "critical_invariant_not_pass:INV-010:NOT_RUN",
+    "critical_invariant_not_pass:INV-014:FAIL"
+  ],
+  "externalBlockers": [
+    "external_gate_pending:modelProvider:expected_VALIDATED_REAL:actual_NOT_VALIDATED",
+    "external_gate_pending:channel:expected_VALIDATED_REAL:actual_NOT_VALIDATED",
+    "external_gate_pending:externalIdentity:expected_VALIDATED_REAL:actual_NOT_VALIDATED",
+    "external_gate_pending:institutionalRag:expected_VALIDATED_APPROVED:actual_NOT_VALIDATED",
+    "external_gate_pending:rpoRto:expected_VALIDATED:actual_NOT_VALIDATED",
+    "external_gate_pending:pilot:expected_PASS:actual_NOT_VALIDATED",
+    "external_gate_pending:rollback:expected_PASS:actual_NOT_VALIDATED",
+    "external_gate_pending:humanSignoff:expected_VALIDATED:actual_PENDING"
+  ],
+  "reason": "current_certification_invalid",
+  "noProductionEffect": true
+}
