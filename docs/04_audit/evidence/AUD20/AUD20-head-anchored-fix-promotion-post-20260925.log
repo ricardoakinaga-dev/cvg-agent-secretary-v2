@@ -1,0 +1,27 @@
+
+> cvg-agent-secretary-v2@1.0.0 promotion:check
+> node scripts/promotion-check.mjs --requested PRODUCTION
+
+{
+  "schemaVersion": 1,
+  "kind": "phase11-promotion-check",
+  "eligible": false,
+  "verifier": "PASS",
+  "currentProfile": "CONTROLLED_LOCAL",
+  "requestedProfile": "PRODUCTION",
+  "blockingGates": [],
+  "blockingFindings": [],
+  "blockingInvariants": [],
+  "externalBlockers": [
+    "external_gate_pending:modelProvider:expected_VALIDATED_REAL:actual_NOT_VALIDATED",
+    "external_gate_pending:channel:expected_VALIDATED_REAL:actual_NOT_VALIDATED",
+    "external_gate_pending:externalIdentity:expected_VALIDATED_REAL:actual_NOT_VALIDATED",
+    "external_gate_pending:institutionalRag:expected_VALIDATED_APPROVED:actual_NOT_VALIDATED",
+    "external_gate_pending:rpoRto:expected_VALIDATED:actual_NOT_VALIDATED",
+    "external_gate_pending:pilot:expected_PASS:actual_NOT_VALIDATED",
+    "external_gate_pending:rollback:expected_PASS:actual_NOT_VALIDATED",
+    "external_gate_pending:humanSignoff:expected_VALIDATED:actual_PENDING"
+  ],
+  "reason": "production_assurance_incomplete",
+  "noProductionEffect": true
+}

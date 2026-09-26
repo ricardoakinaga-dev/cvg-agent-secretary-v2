@@ -8,6 +8,11 @@
 - [x] 3 pedidos preparados (coverage, mutante, desbloqueio) — `WAITING_HUMAN_APPROVAL`.
 - [ ] Aguardar decisões. Staging/produção `NO_GO`.
 
+# Item A concluído — 2026-09-25
+
+- [x] Binding HEAD-anchored remediado (`5b93ff3` + testes); re-certificação com verify PASS estável; errata de proveniência.
+- [ ] Item B: dossiês dos 8 gates externos/sign-off (owners/credenciais). Staging/produção `NO_GO`.
+
 # Reseal AAA concluído — 2026-09-25
 
 - [x] Correções aplicadas (e2e, pin, critic fresh); reseal com PostgreSQL: `CONDITIONAL_GO`/`AAA_CANDIDATE`, todos os gates locais PASS; verify PASS no snapshot.

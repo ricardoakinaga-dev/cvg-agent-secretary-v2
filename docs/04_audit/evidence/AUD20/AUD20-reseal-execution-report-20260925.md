@@ -37,6 +37,17 @@ O reseal cumpriu o objetivo de **substituir o pacote stale por um pacote do cand
 
 O selo é ancorado em HEAD: após os commits de registro (`93c575d`, `ea2371c`), `certification:verify:phase11` acusa 2 falhas de commit (`CRITIC:binding` e `mutation_candidate_commit_mismatch`) enquanto `candidateId`/`treeHash` permanecem válidos — evidência e saídas de certificação são excluídas do candidato por design, mas o campo `commit` compara com o HEAD vivo. **Remediação proposta (admissão própria):** comparar contra o candidato do pacote quando `candidateId`/`treeHash` conferem, ou selar o report/mutation no mesmo commit do pacote.
 
+## Item A concluído — binding HEAD-anchored remediado
+
+- Fix `5b93ff3` (`critic-evidence.mjs` + `mutation-sentinel.mjs`): `commit` passa a ser informativo quando `candidateId` e `treeHash` conferem; divergência de conteúdo continua `FAIL`. Testes novos (17/17 nos dois arquivos).
+- Re-certificação no candidato com o fix: `phase11-68bb9d0a531007c5-muhr3lor`, **`CONDITIONAL_GO`/`AAA_CANDIDATE`**, todos os gates locais PASS; [log](AUD20-reseal-certify-fix-20260925.log).
+- **Prova do fix**: após os commits de registro (`d096caa`, `0e844c6`), `certification:verify:phase11` segue **PASS (0 falhas)** — [log](AUD20-head-anchored-fix-verify-post-20260925.log); `promotion:check` com `verifier PASS` e inelegível apenas pelos 8 externos — [log](AUD20-head-anchored-fix-promotion-post-20260925.log).
+- Higiene P2: 6 papéis de teste sem `DROP ROLE` no gate PostgreSQL (contêiner descartado em seguida).
+
+### Errata de proveniência (recomendada pelo crítico)
+
+O report de crítico anterior (`ea2371c`) teve o campo `binding.commit` editado manualmente pelo builder (`d45b319`→`45629f1`) para satisfazer a checagem estrita então vigente; `candidateId`/`treeHash`/fingerprint não foram tocados e o report foi substituído na re-certificação. Com a nova semântica, essa edição é desnecessária e fica registrada como errata.
+
 ## Próximos passos recomendados (cada um exige admissão própria)
 
 1. **Gatear o harness AUD20-19 fora do e2e padrão** (corrige `e2e`).

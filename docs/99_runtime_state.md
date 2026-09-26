@@ -5090,3 +5090,12 @@ PASS`; suíte integral `289 PASS` arquivos/12 skipped e `2.256 PASS`
 - next_action: decidir a rota de fechamento do release: (a) remediação do binding HEAD-anchored para re-verificação estável do pacote `CONDITIONAL_GO/AAA_CANDIDATE`, (b) dossiês/owners dos 8 gates externos e sign-off humano, ou (c) owner/SLO de `AUD20-10`; manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.
 - evidence: [relatório do reseal](04_audit/evidence/AUD20/AUD20-reseal-execution-report-20260925.md), [reseal v2](04_audit/evidence/AUD20/AUD20-reseal-certify-pg-v2-20260925.log), [verify PASS](04_audit/evidence/AUD20/AUD20-reseal-verify-post-v2-20260925.log), [promotion](04_audit/evidence/AUD20/AUD20-reseal-promotion-post-v2-20260925.log), [verify pós-registro](04_audit/evidence/AUD20/AUD20-reseal-verify-post-v3-20260925.log).
 - verification: nenhum deploy/push/staging/produção; PostgreSQL descartável removido; nenhum gate afrouxado.
+
+# Item A concluído: binding HEAD-anchored remediado; verify estável — 2026-09-25
+
+- current_engine: `AUDIT -> PLAN`; pacote local `AAA_CANDIDATE` (`CONDITIONAL_GO`) com verify estável; staging/produção `NO_GO`.
+- last_completed_action: implementar a remediação do binding HEAD-anchored (`5b93ff3`; commit informativo quando candidateId/treeHash conferem, com testes), re-certificar (`phase11-68bb9d0a531007c5-muhr3lor`, todos os gates locais PASS) e provar estabilidade: `verify` PASS após os commits de registro (`d096caa`, `0e844c6`); `promotion:check` com `verifier PASS` e inelegível apenas pelos 8 externos. Errata de proveniência registrada.
+- progress: item A fechado; itens B (gates externos/sign-off) e C (owner/SLO) na sequência decidida; higiene P2 de 6 papéis de teste sem DROP ROLE (contêiner removido).
+- next_action: executar o item B (8 gates externos/humanos): preparar os dossiês e obter owners/credenciais/ambientes e sign-off humano; depois o item C (owner/SLO de `AUD20-10`); manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.
+- evidence: [relatório do reseal](04_audit/evidence/AUD20/AUD20-reseal-execution-report-20260925.md), [verify pós-fix](04_audit/evidence/AUD20/AUD20-head-anchored-fix-verify-post-20260925.log), [promotion pós-fix](04_audit/evidence/AUD20/AUD20-head-anchored-fix-promotion-post-20260925.log).
+- verification: nenhum deploy/push/staging/produção; PostgreSQL descartável removido.

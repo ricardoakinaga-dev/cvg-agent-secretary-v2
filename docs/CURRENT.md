@@ -497,9 +497,9 @@ da próxima ação primária AUD20-17.
 
 ## Próxima ação
 
-- Próxima ação: decidir a rota de fechamento do release: (a) remediação do binding HEAD-anchored para re-verificação estável do pacote `CONDITIONAL_GO/AAA_CANDIDATE`, (b) dossiês/owners dos 8 gates externos e sign-off humano, ou (c) owner/SLO de `AUD20-10`; manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.
+- Próxima ação: executar o item B (8 gates externos/humanos): preparar os dossiês e obter owners/credenciais/ambientes e sign-off humano; depois o item C (owner/SLO de `AUD20-10`); manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.
 
-- Reseal AAA concluído: `CONDITIONAL_GO`/`AAA_CANDIDATE` (`phase11-7c74e336cda9b19b-muh54c90`), todos os gates locais PASS, verify PASS no snapshot `45629f1`; promoção barrada apenas pelos 8 gates externos/humanos. Limitação HEAD-anchored registrada. Ver [relatório](04_audit/evidence/AUD20/AUD20-reseal-execution-report-20260925.md).
+- Item A concluído: binding HEAD-anchored remediado (`5b93ff3`); re-certificação `phase11-68bb9d0a531007c5-muhr3lor` (`CONDITIONAL_GO`/`AAA_CANDIDATE`) e **verify PASS estável após commits**; promoção barrada só pelos 8 externos. Ver [relatório](04_audit/evidence/AUD20/AUD20-reseal-execution-report-20260925.md).
 
 - `AUD20-10/IMP50-09`: BUILD local executado e **slice aceito** (crítica delta fresh-context `PASS`; suíte final `2.647 PASS`/192 skips; coverage 4/4 ≥90%; mutation dirigida `22/22` na árvore final). C01–C07 permanecem abertos; ver [aceite](04_audit/evidence/AUD20/AUD20-10-imp50-09-slice-acceptance-20260925.md) e [relatório](04_audit/evidence/AUD20/AUD20-10-composition-build-report-20260925.md).
 - `AUD20-19`: R2 `PASS` do harness; sessão humana sem autorização (adiada); nenhum aceite de produto.

@@ -6,6 +6,10 @@
 
 - R2 de FU1 SOLICITADO; sessão humana ADIADA; gate PostgreSQL ADMITIDO (descartável+teardown); mutation ADMITIDA (pisos intactos); fluxos de re-selo/8 gates APROVADOS como plano. Recibo hash-bound registrado. Próximo: executar R2 → mutation → PostgreSQL. Staging/produção `NO_GO`.
 
+# Item A: binding HEAD-anchored remediado — 2026-09-25
+
+- Fix `5b93ff3` (commit informativo quando candidateId/treeHash conferem) + testes; re-certificação `phase11-68bb9d0a531007c5-muhr3lor` `CONDITIONAL_GO`/`AAA_CANDIDATE` com todos os gates locais PASS; **verify PASS estável após os commits de registro**; promoção inelegível só pelos 8 externos. Errata de proveniência registrada; 6 papéis de teste sem DROP ROLE (contêiner removido). Próximo: item B. Staging/produção `NO_GO`.
+
 # Reseal AAA: CONDITIONAL_GO / AAA_CANDIDATE — 2026-09-25
 
 - Três correções aplicadas (e2e gating `d45b319`; pin `f66a022`; critic report fresh validado) e reseal reexecutado com PostgreSQL descartável autorizado: `phase11-7c74e336cda9b19b-muh54c90`, **todos os gates locais/invariantes PASS**, verify PASS no snapshot `45629f1`; promoção inelegível apenas pelos 8 gates externos/humanos. Limitação HEAD-anchored registrada; 12 papéis de teste sem DROP ROLE (contêiner removido). Staging/produção `NO_GO`.
