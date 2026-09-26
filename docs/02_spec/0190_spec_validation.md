@@ -163,6 +163,15 @@ humano foi iniciada; nenhum candidato limpo ou pacote humano foi produzido. Ver 
 [relatório BUILD](../04_audit/evidence/AUD20/AUD20-19-FU1-build-report-20260924.md)
 e os [recibos de teste](../04_audit/evidence/AUD20/AUD20-19-FU1-verify-20260924.log).
 
+## Gate aprovado — remediação do binding HEAD-anchored — 2026-09-25
+
+`SPEC_APPROVED_CONTROLLED_BUILD` para a remediação do binding HEAD-anchored
+(commit informativo quando `candidateId` e `treeHash` conferem), admitida no
+[recibo nº 4](../04_audit/evidence/AUD20/AUD20-20250925-human-decisions-4-20260925.md).
+Allowlist: `scripts/lib/critic-evidence.mjs`, `scripts/lib/mutation-sentinel.mjs`,
+`tests/critic-evidence.test.js`, `tests/mutation-sentinel.test.js`. Nenhum
+threshold/gate removido; divergência de conteúdo continua `FAIL`.
+
 ## Gate aprovado — pin do manifesto de mutantes e reseal Phase 11 — 2026-09-25
 
 Decisões humanas hash-bound no [recibo nº 3](../04_audit/evidence/AUD20/AUD20-20250925-human-decisions-3-20260925.md):

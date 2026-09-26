@@ -190,10 +190,22 @@ export function verifyMutationReport({
   if (manifestSha256 !== expectedManifestSha256) {
     failures.push('mutation_manifest_not_canonical')
   }
-  for (const key of ['candidateId', 'commit', 'treeHash']) {
+  const candidateContentMatches =
+    report.candidate?.candidateId === currentCandidate?.candidateId &&
+    report.candidate?.treeHash === currentCandidate?.treeHash
+  for (const key of ['candidateId', 'treeHash']) {
     if (report.candidate?.[key] !== currentCandidate?.[key]) {
       failures.push(`mutation_candidate_${key}_mismatch`)
     }
+  }
+  // `commit` is HEAD-anchored while candidateId/treeHash bind the product
+  // bytes: evidence or generated-output commits advance HEAD without changing
+  // the candidate, so commit drift is tolerated when both content hashes match.
+  if (
+    report.candidate?.commit !== currentCandidate?.commit &&
+    !candidateContentMatches
+  ) {
+    failures.push('mutation_candidate_commit_mismatch')
   }
   const generatedAt = Date.parse(report.generatedAt)
   if (!Number.isFinite(generatedAt))

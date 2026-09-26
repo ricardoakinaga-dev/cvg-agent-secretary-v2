@@ -1,0 +1,35 @@
+
+> cvg-agent-secretary-v2@1.0.0 certification:verify:phase11
+> node scripts/phase11-verify.mjs
+
+{
+  "schemaVersion": 1,
+  "kind": "phase11-verification",
+  "mode": "current",
+  "status": "FAIL",
+  "currentPointer": "certification/current.json",
+  "result": "certification/phase11/phase11-result.json",
+  "manifest": "certification/phase11/manifest.json",
+  "failures": [
+    "independent_critic_invalid:CRITIC:binding:candidateId=7c74e336cda9b19b3d8edd6864e2fce2a5296a14b0e051d5f8c70fac4ba08c85!=b724a383d7a677980b7721c048c8b27d024ddb8e3b1c50b12ae480225feab340, treeHash=2a1dc4b71349df7a68ca811166ac97d1dfcc9e546294e53803f157283eb1d953!=8389c6a611bae9b3c0f09ec19ad4d9284f3b38c4e2100f895fe2391281068a70, commit=45629f11da702b4240ef2bc59048c73415c9953f!=746b68474f905dfedb6fd9b36c55ab0a61630f1f|CRITIC:fingerprint:worktree changed after review: reported fbe8619b11a78e791d243837909e7e89ba678e1de9af5cfb6d4a0cd17299261e, current 0847b8430a4869719eaa62d143274865a8aa69a8d47d9ce35b9e7050bcd3d46c|CRITIC:artifacts:digest mismatch: docs/04_audit/evidence/AUD20/AUD20-reseal-execution-report-20260925.md (declared 99c2cd585cbb48268e62b01bf5b9034aceb2b701472edfa392712a841bfabfc7)",
+    "mutation_report_invalid:mutation_candidate_candidateId_mismatch|mutation_candidate_treeHash_mismatch|mutation_candidate_commit_mismatch",
+    "candidate_tree_stale:2a1dc4b71349df7a68ca811166ac97d1dfcc9e546294e53803f157283eb1d953:8389c6a611bae9b3c0f09ec19ad4d9284f3b38c4e2100f895fe2391281068a70",
+    "candidate_dirty_state_changed",
+    "candidate_id_stale",
+    "candidate_file_hash_changed",
+    "candidate_scope_drift:[{\"type\":\"changed\",\"path\":\"docs/03_build/0337_aud20260921_backlog.md\",\"recorded\":\"30a296ea381b000fffe3b35328a5e197033a681d0b650cec54153fd45679c04b\",\"current\":\"76a0b281215c0356e4bb94eb1bf07db321d4c1b6e351aac198d00fcbceec3d18\"},{\"type\":\"changed\",\"path\":\"docs/03_build/tracking/current_state.json\",\"recorded\":\"f5c9fe673c5e2696dde1aea08df3788332a5e90368e026cc8fe241f9a306c63a\",\"current\":\"8fec54a958dc3b26c6f99c640e218baf867409f8d6aa361dcea749b281607627\"},{\"type\":\"changed\",\"path\":\"docs/20_master_execution_log.md\",\"recorded\":\"6786b25b908db9df648ee0cee4da8e38403c16685df44f6d86f16e5e3ac8c986\",\"current\":\"8524aab2eb0612bc5cf3ef740b00a2ada81e1962f0800399d009e8b7d7e26015\"},{\"type\":\"changed\",\"path\":\"docs/30_backlog_master.md\",\"recorded\":\"d64d47c60cf34835185433df4060723cbe53fd625beaef621802d1dc356fa259\",\"current\":\"e806ab3dce3e6942d3d35a73135fca2f3f7aee91bfe5ba0b8c5f2c5ba97f125f\"},{\"type\":\"changed\",\"path\":\"docs/99_runtime_state.md\",\"recorded\":\"7a6f9fad30d7a8e81bf7328f6f05e6a3b1d6644602acff4bc4d04d27e7497cdd\",\"current\":\"0ae01a639c6c5fb7944f6e30376fcf83e4c43e0ccfefe0da54f8f1298df3f912\"}]",
+    "pointer_candidateId_mismatch",
+    "pointer_treeHash_mismatch",
+    "manifest_candidate_mismatch",
+    "manifest_tree_stale",
+    "evidence_graph_candidate_mismatch",
+    "release_candidate_mismatch",
+    "release_tree_mismatch",
+    "decision_recalculation_mismatch",
+    "certification_recalculation_mismatch",
+    "eligible_profile_recalculation_mismatch",
+    "success_state_recalculation_mismatch",
+    "remaining_blockers_recalculation_mismatch",
+    "scores_recalculation_mismatch"
+  ]
+}

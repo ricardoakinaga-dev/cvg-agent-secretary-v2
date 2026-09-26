@@ -111,6 +111,23 @@ describe('AUD19-08 mutation sentinel harness', () => {
       ])
     )
 
+    const driftedCommit = {
+      ...report,
+      candidate: { ...candidate, commit: 'f'.repeat(40) }
+    }
+    expect(
+      verifyMutationReport({
+        report: driftedCommit,
+        ...executionEvidence(driftedCommit),
+        manifest,
+        manifestSha256: 'd'.repeat(64),
+        expectedManifestSha256: 'd'.repeat(64),
+        currentCandidate: candidate,
+        minGeneratedAt: '2026-09-21T23:59:00.000Z',
+        maxGeneratedAt: '2026-09-22T00:01:00.000Z'
+      })
+    ).toEqual({ status: 'PASS', failures: [] })
+
     expect(
       verifyMutationReport({
         report: { ...report, manifestSha256: 'f'.repeat(64) },

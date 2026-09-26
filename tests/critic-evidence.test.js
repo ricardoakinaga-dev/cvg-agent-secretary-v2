@@ -141,6 +141,16 @@ describe('AUD19-08 behavioral independent-critic verification', () => {
     )
   })
 
+  it('tolerates a commit-only drift when the content hashes match', () => {
+    const root = fixture()
+    const report = goodReport(root)
+    report.binding.commit = 'c'.repeat(40)
+    const result = verify(root, { report })
+    expect(result.status).toBe('PASS')
+    expect(result.pass).toBe(true)
+    expect(result.failures).toEqual([])
+  })
+
   it('rejects a critic bound to a different candidate than the analyzed tree', () => {
     const root = fixture()
     const report = goodReport(root)

@@ -240,18 +240,34 @@ export function verifyCriticReport({
   }
 
   if (currentCandidate) {
-    const mismatches = [
+    const contentMismatches = [
       ['candidateId', value.binding.candidateId, currentCandidate.candidateId],
-      ['commit', value.binding.commit, currentCandidate.commit],
       ['treeHash', value.binding.treeHash, currentCandidate.treeHash]
-    ]
-      .filter(([, declared, observed]) => declared !== observed)
-      .map(([field, declared, observed]) => `${field}=${declared}!=${observed}`)
-    if (mismatches.length === 0) {
+    ].filter(([, declared, observed]) => declared !== observed)
+    const commitDrift = value.binding.commit !== currentCandidate.commit
+    if (contentMismatches.length === 0) {
+      // `commit` is HEAD-anchored while candidateId/treeHash bind the product
+      // bytes; evidence or generated-output commits advance HEAD without
+      // changing the candidate, so commit drift is tolerated when both
+      // content hashes match.
       checks.push(
-        check('CRITIC:binding', true, value.binding.candidateId.slice(0, 12))
+        check(
+          'CRITIC:binding',
+          true,
+          commitDrift
+            ? `${value.binding.candidateId.slice(0, 12)} (commit drift ${value.binding.commit.slice(0, 7)}->${currentCandidate.commit.slice(0, 7)} tolerated; evidence-only commits)`
+            : value.binding.candidateId.slice(0, 12)
+        )
       )
     } else {
+      const mismatches = [
+        ...contentMismatches,
+        ...(commitDrift
+          ? [['commit', value.binding.commit, currentCandidate.commit]]
+          : [])
+      ].map(
+        ([field, declared, observed]) => `${field}=${declared}!=${observed}`
+      )
       fail('CRITIC:binding', mismatches.join(', '))
     }
   } else {
