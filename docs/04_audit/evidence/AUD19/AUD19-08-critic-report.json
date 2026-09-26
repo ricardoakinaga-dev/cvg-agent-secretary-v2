@@ -141,6 +141,11 @@
       "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-limited-acceptance-20260925.md",
       "sha256": "16a39ef2450346202699695584859a609e8313b86b3af2d9b22cedbba66150b4",
       "size": 2486
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-10-alerts-ledger-coverage-v2-20260925.log",
+      "sha256": "20d180f4ff44a911db7bfc735e90a66fd5a7c79552824d22ccc3f13a34503da5",
+      "size": 49269
     }
   ],
   "disclaimers": {
