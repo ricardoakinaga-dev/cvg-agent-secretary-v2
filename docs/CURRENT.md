@@ -497,9 +497,9 @@ da próxima ação primária AUD20-17.
 
 ## Próxima ação
 
-- Próxima ação: executar o item B (8 gates externos/humanos): preparar os dossiês e obter owners/credenciais/ambientes e sign-off humano; depois o item C (owner/SLO de `AUD20-10`); manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.
+- Próxima ação: obter os insumos do item B (owners/credenciais dos gates 1–4, ambiente/janela de 5/7, autorização/participantes de 6) e re-certificar o novo candidato pós-owner/SLO antes do sign-off (8); manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.
 
-- Item A concluído: binding HEAD-anchored remediado (`5b93ff3`); re-certificação `phase11-68bb9d0a531007c5-muhr3lor` (`CONDITIONAL_GO`/`AAA_CANDIDATE`) e **verify PASS estável após commits**; promoção barrada só pelos 8 externos. Ver [relatório](04_audit/evidence/AUD20/AUD20-reseal-execution-report-20260925.md).
+- Item C concluído: owner `operations` e os 8 objetivos SLO aprovados (validade 2026-12-31); `AUD20-10` C01–C07 completos no escopo local. A mudança de `alerts.ts` reabre a certificação — re-certificar antes do sign-off. Ver [recibo](04_audit/evidence/AUD20/AUD20-10-slo-human-approval-20260925.md).
 
 - `AUD20-10/IMP50-09`: BUILD local executado e **slice aceito** (crítica delta fresh-context `PASS`; suíte final `2.647 PASS`/192 skips; coverage 4/4 ≥90%; mutation dirigida `22/22` na árvore final). C01–C07 permanecem abertos; ver [aceite](04_audit/evidence/AUD20/AUD20-10-imp50-09-slice-acceptance-20260925.md) e [relatório](04_audit/evidence/AUD20/AUD20-10-composition-build-report-20260925.md).
 - `AUD20-19`: R2 `PASS` do harness; sessão humana sem autorização (adiada); nenhum aceite de produto.

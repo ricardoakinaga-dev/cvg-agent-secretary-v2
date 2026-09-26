@@ -6,6 +6,10 @@
 
 - R2 de FU1 SOLICITADO; sessão humana ADIADA; gate PostgreSQL ADMITIDO (descartável+teardown); mutation ADMITIDA (pisos intactos); fluxos de re-selo/8 gates APROVADOS como plano. Recibo hash-bound registrado. Próximo: executar R2 → mutation → PostgreSQL. Staging/produção `NO_GO`.
 
+# Item C: owner/SLO aprovados; AUD20-10 C01–C07 completos — 2026-09-25
+
+- Decisão humana: owner `operations`; 8 objetivos SLO aprovados como propostos (validade até 2026-12-31). Aplicado no catálogo `AUD19-09-sli-slo.json` e em `alerts.ts`, com testes atualizados; suíte 2.659/192 skips, coverage 4/4, typecheck/lint PASS. A mudança de `alerts.ts` reabre a certificação — re-certificar antes do sign-off (gate 8). Item B aguarda insumos externos. Staging/produção `NO_GO`.
+
 # Item A: binding HEAD-anchored remediado — 2026-09-25
 
 - Fix `5b93ff3` (commit informativo quando candidateId/treeHash conferem) + testes; re-certificação `phase11-68bb9d0a531007c5-muhr3lor` `CONDITIONAL_GO`/`AAA_CANDIDATE` com todos os gates locais PASS; **verify PASS estável após os commits de registro**; promoção inelegível só pelos 8 externos. Errata de proveniência registrada; 6 papéis de teste sem DROP ROLE (contêiner removido). Próximo: item B. Staging/produção `NO_GO`.

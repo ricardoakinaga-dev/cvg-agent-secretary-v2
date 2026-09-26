@@ -4,7 +4,7 @@
   "program": "AUD20-REM-v2",
   "currentTask": "AUD20-10",
   "currentStatus": "READY_FOR_NEXT_STEP",
-  "nextAction": "executar o item B (8 gates externos/humanos): preparar os dossiês e obter owners/credenciais/ambientes e sign-off humano; depois o item C (owner/SLO de `AUD20-10`); manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.",
+  "nextAction": "obter os insumos do item B (owners/credenciais dos gates 1–4, ambiente/janela de 5/7, autorização/participantes de 6) e re-certificar o novo candidato pós-owner/SLO antes do sign-off (8); manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.",
   "releaseBoundary": {
     "staging": "NO_GO",
     "production": "NO_GO"

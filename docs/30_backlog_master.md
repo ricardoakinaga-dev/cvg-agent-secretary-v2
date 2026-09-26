@@ -8,6 +8,11 @@
 - [x] 3 pedidos preparados (coverage, mutante, desbloqueio) — `WAITING_HUMAN_APPROVAL`.
 - [ ] Aguardar decisões. Staging/produção `NO_GO`.
 
+# Item C concluído — 2026-09-25
+
+- [x] Owner `operations` e 8 objetivos SLO aprovados (validade 2026-12-31); `AUD20-10` C01–C07 completos no escopo local.
+- [ ] Item B: insumos externos (owners/credenciais) + re-certificação do novo candidato antes do sign-off. Staging/produção `NO_GO`.
+
 # Item A concluído — 2026-09-25
 
 - [x] Binding HEAD-anchored remediado (`5b93ff3` + testes); re-certificação com verify PASS estável; errata de proveniência.

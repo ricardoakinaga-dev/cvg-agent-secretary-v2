@@ -5099,3 +5099,12 @@ PASS`; suíte integral `289 PASS` arquivos/12 skipped e `2.256 PASS`
 - next_action: executar o item B (8 gates externos/humanos): preparar os dossiês e obter owners/credenciais/ambientes e sign-off humano; depois o item C (owner/SLO de `AUD20-10`); manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.
 - evidence: [relatório do reseal](04_audit/evidence/AUD20/AUD20-reseal-execution-report-20260925.md), [verify pós-fix](04_audit/evidence/AUD20/AUD20-head-anchored-fix-verify-post-20260925.log), [promotion pós-fix](04_audit/evidence/AUD20/AUD20-head-anchored-fix-promotion-post-20260925.log).
 - verification: nenhum deploy/push/staging/produção; PostgreSQL descartável removido.
+
+# Item C concluído: owner/SLO aprovados; AUD20-10 C01–C07 completos — 2026-09-25
+
+- current_engine: `AUDIT -> PLAN`; `AUD20-10` com C01–C07 completos no escopo local controlado (owner/SLO aprovados); candidato novo pós-alteração de `alerts.ts` pendente de re-certificação; staging/produção `NO_GO`.
+- last_completed_action: aplicar a decisão humana de owner/SLO (owner `operations`; 8 objetivos aprovados como propostos, validade até 2026-12-31) no catálogo `AUD19-09-sli-slo.json` e nas regras de `alerts.ts`, com testes atualizados; suíte `2.659 PASS`/192 skips, coverage 4/4 ≥90%, typecheck/lint PASS.
+- progress: itens A (binding HEAD-anchored) e C (owner/SLO) concluídos; item B (8 gates externos) preparado (plano + dossiês) e pendente de insumos do usuário; a mudança de `alerts.ts` reabre a certificação — re-certificar antes do sign-off (gate 8).
+- next_action: obter os insumos do item B (owners/credenciais dos gates 1–4, ambiente/janela de 5/7, autorização/participantes de 6) e re-certificar o novo candidato pós-owner/SLO antes do sign-off (8); manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.
+- evidence: [recibo owner/SLO](04_audit/evidence/AUD20/AUD20-10-slo-human-approval-20260925.md), [coverage](04_audit/evidence/AUD20/AUD20-10-slo-approval-coverage-20260925.log), [catálogo](04_audit/evidence/AUD19/AUD19-09-sli-slo.json).
+- verification: nenhum dado real, deploy/push/staging/produção.
