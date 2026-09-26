@@ -1,13 +1,13 @@
 $ node scripts/phase11-2-redteam.mjs --suite=certification && npm test -- --run apps/api/src/__tests__/aud17-connected-redteam.test.ts
-# certificationId=phase11-7c74e336cda9b19b-muh54c90
-# candidateId=7c74e336cda9b19b3d8edd6864e2fce2a5296a14b0e051d5f8c70fac4ba08c85
-# commit=45629f11da702b4240ef2bc59048c73415c9953f
-# treeHash=2a1dc4b71349df7a68ca811166ac97d1dfcc9e546294e53803f157283eb1d953
+# certificationId=phase11-68bb9d0a531007c5-muhr3lor
+# candidateId=68bb9d0a531007c57572a44929480d138c2c55791ed0e522ceeadf9f5dc0aae0
+# commit=e09c5f34d49b4d660755e4ba573af4dfd847f49e
+# treeHash=7d216305e39e1615cf7900b44357e2686ec12ab4d4cf21630ef9d1c3e0e9b8df
 # gate=certification_redteam
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=2097
+# exitCode=0 durationMs=2758
 
 {
   "schemaVersion": 1,
@@ -68,8 +68,8 @@ $ node scripts/phase11-2-redteam.mjs --suite=certification && npm test -- --run 
 
  Test Files  1 passed (1)
       Tests  1 passed (1)
-   Start at  13:20:58
-   Duration  1.64s (transform 656ms, setup 0ms, import 918ms, tests 110ms, environment 516ms)
+   Start at  23:40:11
+   Duration  2.16s (transform 918ms, setup 0ms, import 1.26s, tests 134ms, environment 645ms)
 
 
 

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "kind": "phase11-critic-report",
   "critic": {
-    "identity": "opencode-fresh-critic-20260925-phase11",
+    "identity": "opencode-independent-critic-phase11-r2-20260925",
     "freshContext": true,
     "builderIdentity": "cvg-lead-agent",
     "independence": {
@@ -19,105 +19,95 @@
     }
   },
   "binding": {
-    "candidateId": "7c74e336cda9b19b3d8edd6864e2fce2a5296a14b0e051d5f8c70fac4ba08c85",
-    "commit": "45629f11da702b4240ef2bc59048c73415c9953f",
-    "treeHash": "2a1dc4b71349df7a68ca811166ac97d1dfcc9e546294e53803f157283eb1d953"
+    "candidateId": "68bb9d0a531007c57572a44929480d138c2c55791ed0e522ceeadf9f5dc0aae0",
+    "commit": "5b93ff3e2ec889a0735a0c38eabfc65f3e4bedc5",
+    "treeHash": "7d216305e39e1615cf7900b44357e2686ec12ab4d4cf21630ef9d1c3e0e9b8df"
   },
   "fingerprint": {
     "algorithm": "sha256-candidate-v1",
-    "before": "fbe8619b11a78e791d243837909e7e89ba678e1de9af5cfb6d4a0cd17299261e",
-    "after": "fbe8619b11a78e791d243837909e7e89ba678e1de9af5cfb6d4a0cd17299261e"
+    "before": "6b07e00aecb8fceb31da60a6488c6c56d5e7e542f317696dabbc36228810acb8",
+    "after": "6b07e00aecb8fceb31da60a6488c6c56d5e7e542f317696dabbc36228810acb8"
   },
   "verdict": {
     "status": "PASS",
-    "summary": "Auditoria fresh-context do candidato congelado d45b319af08c06383a59fdbeba09ccec11aa268a (candidateId 7c74e336cda9b19b3d8edd6864e2fce2a5296a14b0e051d5f8c70fac4ba08c85, treeHash 2a1dc4b71349df7a68ca811166ac97d1dfcc9e546294e53803f157283eb1d953) com worktree limpo: recomputei o candidato com o proprio buildPhase11Candidate do repositorio e obtive exatamente os tres valores, fileCount=1207, dirty=false, untrackedFiles=[] e gitTreeHash a556d9d390c59ad262dfd861fd60dcbd167e7a9a. E2E fix: playwright.config.ts no HEAD ignora **/aud20-19-human-session-harness.spec.ts; o log commitado no proprio candidato mostra 75 testes (25 x 3 navegadores) e 75 PASS, sem o harness; a configuracao dedicada playwright.aud20-19-human-session.config.ts existe e retem o harness para a sessao autorizada; o pacote anterior registra o vermelho com 81 testes/3 falhas, logo ha red->green. Pin de mutacao: sha256(docs/04_audit/evidence/AUD19/AUD19-08-mutants.json)=f6a2b7e9e144ac51ca31ee6e53910e9b7505251c9b42d16ab0c98c5c500ce039 confere com MUTATION_MANIFEST_SHA256 e o teste anti-drift assegura a igualdade; recoloquei os 26 mutantes contra a arvore congelada (pares find/replace unicos) e reexecutei 2 mutantes novos em sandbox /tmp, ambos detected. Coverage: o log v2 (20d180f4...) registra 306 arquivos/12 skipped, 2657 PASS/192 skips e 93,02/90,20/91,36/93,51 (4/4 >=90%); a superficie instrumentada nao mudou apos o snapshot. Aceites: os dois aceites limitados, o relatorio de reseal e runtime state/log registram escopo, condicoes e pendencias (C01-C07 abertos, owner/SLO humano, pin reconciliado, critic fresh e certify com PostgreSQL). Determinismo: coverage v1->v2 estavel, e2e vermelho->verde, mutation 26/26 com reexecucao independente. Redaction/PII: a amostra de latencia emite exatamente {decision,outcome,operation}, sem IDs/conteudo; varredura por CPF/telefone/e-mail pessoal nos logs desta rodada sem ocorrencias. Independencia: nenhuma escrita no repositorio, nenhuma justificativa do builder consumida. P0=0; P1=0. P2 (3): (1) o JSON de mutacao e moment-bound, nao candidate-bound ao congelado (mitigado por alvos/testes inalterados e rerun no certify); (2) pisos de branches criticos >=95% dependem do certify com PostgreSQL descartavel autorizado, lacuna ja mapeada; (3) a config dedicada do harness AUD20-19 nao tem script npm/CI enquanto a sessao humana esta adiada. Este PASS qualifica o gate independent_critic; nao altera o NO_GO corrente de coverage/postgres/closure nem autoriza staging/producao."
+    "summary": "Veredito independente fresh-context do candidato congelado 68bb9d0a5310@5b93ff3e2ec8 (treeHash 7d216305, branch main, dirty=false, 1207 arquivos, worktree limpo; fingerprint sha256-candidate-v1=6b07e00a). Escopo sintetico/controlado local; nenhuma producao, deploy, egress ou efeito externo.\n\nRemediacao HEAD-anchored (item A, 5b93ff3, admitida no recibo humano no 4 com allowlist): candidateId e treeHash vinculam os bytes do candidato e continuam obrigatorios; commit (HEAD) passa a ser tolerado apenas quando ambos conferem. Verifiquei a semantica por inspecao do diff e por execucao real: (a) o validador em producao, rodado com o report armazenado (7c74e336@45629f1), retorna FAIL citando candidateId, treeHash, commit, fingerprint e digest de artefato - drift real de conteudo NAO e mascarado; (b) verifyCriticReport e verifyMutationReport, executados em memoria contra o candidato vivo, retornam PASS com commit divergente e conteudo identico, e FAIL com candidateId/treeHash divergentes; (c) o fingerprint before/after continua ancorando os bytes. Testes focados: 17/17 PASS (12 critic-evidence + 5 mutation-sentinel), incluindo os dois novos casos de drift tolerado; pin canonico do manifesto conferido em disco (f6a2b7e9... = MUTATION_MANIFEST_SHA256) com teste anti-drift.\n\nRodada: d45b319 move o harness humano AUD20-19 para config dedicada (e2e 75/75 nos 3 browsers; config e runner proprios permanecem); f66a022 re-pina o manifesto; 5b93ff3 corrige o binding. Certificacao vigente (7c74e336@45629f1): 35 gates PASS, unit 2.658 passed/192 skips, coverage 97,23/94,45/96,99/97,83 e 4/4 pisos, mutation 26/26, e2e 75/75, decision CONDITIONAL_GO/AAA_CANDIDATE. Essa evidencia e HISTORICA para 68bb9d0a (o fix altera fontes do candidato) e a re-certificacao e o proximo passo admitido; certification:verify:phase11 hoje FAILa por binding, como esperado e declarado.\n\nProveniencia (achado): o report da rodada anterior foi editado manualmente pelo builder em ea2371c (campo binding.commit d45b319->45629f1) para vencer a checagem estrita; o method/summary do proprio report continuam citando d45b319 e o log do gate registra PASS sem nota de drift. Nao ha impacto de conteudo (candidateId/treeHash/fingerprint intactos) e esta rodada substitui o report, mas o fato deve constar em errata/divulgacao; a nova semantica elimina a necessidade dessa edicao.\n\nRedaction/PII: varredura dos artefatos citados (e-mail, CPF, telefone, bearer, chave privada, credencial em URL) sem ocorrencias; apenas caminhos locais/npm. Independencia: fresh-context, identidade distinta do builder, input somente artefatos, zero escrita no worktree, sem justificativa de builder.\n\nSem P0/P1. P2 (4): (1) falta teste unitario negativo do caso conteudo divergente COM commit divergente; (2) a tolerancia nao verifica ancestralidade do commit divergente nem registra o commit observado; (3) suite/coverage/e2e/mutation seguem ancorados a 7c74e336@45629f1 - re-certificar 68bb9d0a e requisito do selo current; (4) report anterior rebindado a mao por builder (ea2371c) com texto interno stale - recomendo errata explicita.\n\nPASS para o gate independent_critic do candidato congelado, condicionado a gravar este report e re-certificar; nenhum gate, threshold ou skip foi afrouxado."
   },
   "findings": {
     "P0": 0,
     "P1": 0,
-    "P2": 3
+    "P2": 4
   },
   "checks": [
     {
-      "id": "binding-candidato",
+      "id": "CHECK-A-fix-semantics",
       "status": "PASS",
-      "method": "Recompute read-only com buildPhase11Candidate sobre o worktree: candidateId=7c74e336..., commit=d45b319..., treeHash=2a1dc4b7..., gitTreeHash=a556d9d..., dirty=false, untrackedFiles=[], fileCount=1207; git log -1 e git status --porcelain (vazio) confirmam HEAD e congelamento.",
+      "method": "Inspecionei git show 5b93ff3 (diffs de critic-evidence.mjs e mutation-sentinel.mjs) e d45b319/f66a022. Em critic-evidence, contentMismatches cobre candidateId+treeHash e commit so entra na falha quando os hashes de conteudo divergem; em mutation-sentinel, candidateContentMatches exige candidateId E treeHash iguais e mutation_candidate_commit_mismatch so e emitido fora disso. Execucao real: node scripts/phase11-2-evidence-check.mjs --critic com o report armazenado retorna status FAIL citando candidateId/treeHash/commit + fingerprint + digest de artefato (drift real reprovado). Em memoria, verifyCriticReport(commit divergente, conteudo igual)=PASS e (candidateId/treeHash divergente)=FAIL; verifyMutationReport idem.",
       "evidence": [
-        "docs/04_audit/evidence/AUD20/AUD20-reseal-e2e-fix-20260925.log",
-        "docs/04_audit/evidence/AUD20/AUD20-reseal-execution-report-20260925.md"
-      ]
-    },
-    {
-      "id": "e2e-fix-75-75",
-      "status": "PASS",
-      "method": "Config do HEAD adiciona testIgnore para **/aud20-19-human-session-harness.spec.ts; log commitado no candidato mostra 75 passed (4.3m) sem o harness; config dedicada existe com testMatch exclusivo; pacote anterior registra 81 testes com 3 falhas (red antes, green depois).",
-      "evidence": [
-        "docs/04_audit/evidence/AUD20/AUD20-reseal-e2e-fix-20260925.log",
-        "docs/04_audit/evidence/AUD20/AUD20-reseal-execution-report-20260925.md"
-      ]
-    },
-    {
-      "id": "pin-mutacao-manifesto",
-      "status": "PASS",
-      "method": "sha256 do AUD19-08-mutants.json = f6a2b7e9... igual a MUTATION_MANIFEST_SHA256 e ao manifestSha256 do relatorio; teste anti-drift em tests/mutation-sentinel.test.js; 26/26 pares find/replace unicos na arvore congelada; reexecucao independente de 2 mutantes em /tmp detectou ambos.",
-      "evidence": [
-        "docs/04_audit/evidence/AUD19/AUD19-08-mutants.json",
-        "docs/04_audit/evidence/AUD20/AUD20-10-alerts-ledger-mutation-20260925.json"
-      ]
-    },
-    {
-      "id": "coverage-4-4",
-      "status": "PASS",
-      "method": "Log v2 mostra 93,02/90,20/91,36/93,51 (4/4 >=90%); coverage/coverage-summary.json recomputado localmente traz os mesmos numeros; nenhuma fonte instrumentada mudou depois do snapshot (git diff 1d36e90..HEAD vazio nesses caminhos).",
-      "evidence": [
-        "docs/04_audit/evidence/AUD20/AUD20-10-alerts-ledger-coverage-v2-20260925.log",
+        "docs/04_audit/evidence/AUD20/AUD20-head-anchored-fix-verify-20260925.log",
         "docs/02_spec/aaa_quality_contract.md"
       ]
     },
     {
-      "id": "suite-2657-192",
+      "id": "CHECK-A2-fix-tests",
       "status": "PASS",
-      "method": "Log v2 registra 'Test Files 306 passed | 12 skipped (318)' e 'Tests 2657 passed | 192 skipped (2849)'; os 192 skips sao os condicionais declarados sem PostgreSQL, coerentes com o aceite e o relatorio do reseal.",
+      "method": "npx vitest run tests/critic-evidence.test.js tests/mutation-sentinel.test.js: 17/17 PASS, incluindo os dois casos novos de drift tolerado; pin canonico do manifesto conferido em disco (f6a2b7e9... = MUTATION_MANIFEST_SHA256); diff de 5b93ff3 restrito a allowlist do recibo no 4.",
       "evidence": [
-        "docs/04_audit/evidence/AUD20/AUD20-10-alerts-ledger-coverage-v2-20260925.log",
-        "docs/04_audit/evidence/AUD20/AUD20-10-alerts-ledger-slice-acceptance-20260925.md"
+        "docs/04_audit/evidence/AUD20/AUD20-head-anchored-fix-verify-20260925.log",
+        "docs/02_spec/aaa_quality_contract.md"
       ]
     },
     {
-      "id": "aceites-e-escopo",
+      "id": "CHECK-B-candidate-binding",
       "status": "PASS",
-      "method": "Aceites limitados e relatorio de reseal declaram escopo, condicoes de reabertura e pendencias (C01-C07 abertos, owner/SLO humano, pin reconciliado, critic fresh, PostgreSQL descartavel); runtime state/log/backlog registram a rodada; nenhuma alegacao de release/staging/producao.",
+      "method": "Recompute read-only com buildPhase11Candidate: candidateId=68bb9d0a..., commit=5b93ff3e..., treeHash=7d216305..., dirty=false, fileCount=1207; fingerprint=6b07e00a...; git status vazio. O report armazenado anterior (7c74e336@45629f1) falha, como esperado; a verificacao estrita de conteudo do pacote permanece.",
       "evidence": [
-        "docs/04_audit/evidence/AUD20/AUD20-10-alerts-ledger-slice-acceptance-20260925.md",
-        "docs/04_audit/evidence/AUD20/AUD20-reseal-execution-report-20260925.md"
+        "docs/02_spec/aaa_quality_contract.md",
+        "docs/04_audit/evidence/AUD20/AUD20-head-anchored-fix-verify-20260925.log"
       ]
     },
     {
-      "id": "determinismo-reprodutibilidade",
+      "id": "CHECK-C-coverage-suite",
       "status": "PASS",
-      "method": "Rodadas repetidas/regeneradas coerentes: coverage v1 (32921f8f) -> v2 (20d180f4) mantendo 4/4; e2e red (81/3) -> green (75/0); mutation 26/26 mais reexecucao independente em /tmp; digests declarados conferem com os arquivos em disco.",
+      "method": "coverage certificado com PostgreSQL descartavel: statements 97,23% (12496/12852), branches 94,45% (9760/10333), functions 96,99% (2325/2397), lines 97,83% (11869/12132), acima dos pisos congelados; unit 306 arquivos/2.658 testes passed e 192 skips; o run pre-PostgreSQL falhava corretamente nos pisos criticos.",
+      "evidence": [
+        "docs/02_spec/aaa_quality_contract.md",
+        "docs/04_audit/evidence/AUD20/AUD20-10-alerts-ledger-coverage-v2-20260925.log"
+      ]
+    },
+    {
+      "id": "CHECK-D-mutation",
+      "status": "PASS",
+      "method": "Pacote certificado: mutation-raw-report.json = 26/26 detected, 0 notDetected, 0 notApplicable, manifestSha256 f6a2b7e9... igual ao pin canonico; gate mutation_sentinel PASS. O JSON dirigido da fatia alerts-ledger e historico para 68bb9d0a; o report sera reexecutado na re-certificacao.",
+      "evidence": [
+        "docs/04_audit/evidence/AUD20/AUD20-10-alerts-ledger-mutation-20260925.json",
+        "docs/02_spec/aaa_quality_contract.md"
+      ]
+    },
+    {
+      "id": "CHECK-E-e2e",
+      "status": "PASS",
+      "method": "d45b319 adiciona testIgnore do harness humano AUD20-19 em playwright.config.ts; spec, runner e config dedicado permanecem (relocate, nao supressao). Log e2e: 75 passed (4,3m) nos 3 browsers; o pacote anterior registrava 81 testes com 3 falhas.",
       "evidence": [
         "docs/04_audit/evidence/AUD20/AUD20-reseal-e2e-fix-20260925.log",
-        "docs/04_audit/evidence/AUD20/AUD20-10-alerts-ledger-coverage-v2-20260925.log",
-        "docs/04_audit/evidence/AUD20/AUD20-10-alerts-ledger-mutation-20260925.json"
+        "docs/02_spec/aaa_quality_contract.md"
       ]
     },
     {
-      "id": "redaction-pii",
+      "id": "CHECK-F-aceites",
       "status": "PASS",
-      "method": "Amostra de latencia com atributos exatamente {decision,outcome,operation} e sem IDs/conteudo; varredura por CPF/telefone/e-mail pessoal nos logs e JSON desta rodada sem ocorrencias; dados sinteticos; outputTails dos mutantes contem apenas caminhos de sandbox /tmp.",
+      "method": "Aceite do slice IMP50-09 (suite 2.647/192, coverage 4/4, mutation 22/22, condicoes vinculantes) e aceite limitado do request-context (C06/C07, inventario dc9b95b0..., piso de 95% vinculante); escopo local/controlado, sem release.",
       "evidence": [
-        "docs/04_audit/evidence/AUD20/AUD20-10-alerts-ledger-slice-acceptance-20260925.md",
-        "docs/04_audit/evidence/AUD20/AUD20-10-alerts-ledger-mutation-20260925.json"
+        "docs/04_audit/evidence/AUD20/AUD20-10-imp50-09-slice-acceptance-20260925.md",
+        "docs/04_audit/evidence/AUD20/AUD20-17-request-context-limited-acceptance-20260925.md"
       ]
     },
     {
-      "id": "independencia-read-only",
+      "id": "CHECK-G-redaction-independence",
       "status": "PASS",
-      "method": "Critico fresh-context sem participacao no BUILD, sem justificativa do builder, sem escrita no repositorio (git status --porcelain vazio apos todas as verificacoes; apenas /tmp/opencode/critic usado); criterios declarados: fresh-context, separate-identity, artifact-only-input, no-worktree-write, no-builder-justification.",
+      "method": "Varredura dos artefatos por e-mail/CPF/telefone/bearer/chave/credencial: zero ocorrencias; dados sinteticos. Independencia praticada: fresh-context, identidade != builder, artefatos como entrada, zero escrita no worktree, sem justificativa do builder (CRITIC:builder_content PASS).",
       "evidence": [
-        "docs/04_audit/evidence/AUD20/AUD20-reseal-execution-report-20260925.md",
-        "docs/04_audit/evidence/AUD20/AUD20-reseal-e2e-fix-20260925.log"
+        "docs/02_spec/aaa_quality_contract.md",
+        "docs/04_audit/evidence/AUD20/AUD20-10-alerts-ledger-mutation-20260925.json"
       ]
     }
   ],
@@ -128,19 +118,9 @@
       "size": 31985
     },
     {
-      "path": "docs/04_audit/evidence/AUD20/AUD20-reseal-execution-report-20260925.md",
-      "sha256": "99c2cd585cbb48268e62b01bf5b9034aceb2b701472edfa392712a841bfabfc7",
-      "size": 3121
-    },
-    {
-      "path": "docs/04_audit/evidence/AUD20/AUD20-reseal-e2e-fix-20260925.log",
-      "sha256": "f8405e6b0929a308b5f79fa292736b4eedd5fdbe2b9ea1606251188061953918",
-      "size": 12344
-    },
-    {
-      "path": "docs/04_audit/evidence/AUD20/AUD20-10-alerts-ledger-coverage-v2-20260925.log",
-      "sha256": "20d180f4ff44a911db7bfc735e90a66fd5a7c79552824d22ccc3f13a34503da5",
-      "size": 49269
+      "path": "docs/04_audit/evidence/AUD20/AUD20-head-anchored-fix-verify-20260925.log",
+      "sha256": "b7eb4533d7317861b17a0b3627e95eeaafaf49059080d8c86cc40cd204456864",
+      "size": 3266
     },
     {
       "path": "docs/04_audit/evidence/AUD20/AUD20-10-alerts-ledger-mutation-20260925.json",
@@ -148,14 +128,24 @@
       "size": 18092
     },
     {
-      "path": "docs/04_audit/evidence/AUD19/AUD19-08-mutants.json",
-      "sha256": "f6a2b7e9e144ac51ca31ee6e53910e9b7505251c9b42d16ab0c98c5c500ce039",
-      "size": 15345
+      "path": "docs/04_audit/evidence/AUD20/AUD20-reseal-e2e-fix-20260925.log",
+      "sha256": "f8405e6b0929a308b5f79fa292736b4eedd5fdbe2b9ea1606251188061953918",
+      "size": 12344
     },
     {
-      "path": "docs/04_audit/evidence/AUD20/AUD20-10-alerts-ledger-slice-acceptance-20260925.md",
-      "sha256": "42f9d8c8097aea8f84a55135e48c6a91885dda70104762a8a290ae3df54807b5",
-      "size": 2167
+      "path": "docs/04_audit/evidence/AUD20/AUD20-10-imp50-09-slice-acceptance-20260925.md",
+      "sha256": "9794b794dba357e685800819a5308d0fe4486e3b167068b90a7fc959f74f4434",
+      "size": 1967
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-limited-acceptance-20260925.md",
+      "sha256": "16a39ef2450346202699695584859a609e8313b86b3af2d9b22cedbba66150b4",
+      "size": 2486
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-10-alerts-ledger-coverage-v2-20260925.log",
+      "sha256": "20d180f4ff44a911db7bfc735e90a66fd5a7c79552824d22ccc3f13a34503da5",
+      "size": 49269
     }
   ],
   "disclaimers": {
