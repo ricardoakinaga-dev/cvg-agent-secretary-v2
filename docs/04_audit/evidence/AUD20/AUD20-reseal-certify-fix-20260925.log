@@ -1,0 +1,26 @@
+
+> cvg-agent-secretary-v2@1.0.0 certify:phase11
+> node scripts/phase11-certify.mjs
+
+{
+  "certificationId": "phase11-68bb9d0a531007c5-muhr3lor",
+  "candidateId": "68bb9d0a531007c57572a44929480d138c2c55791ed0e522ceeadf9f5dc0aae0",
+  "commit": "e09c5f34d49b4d660755e4ba573af4dfd847f49e",
+  "treeHash": "7d216305e39e1615cf7900b44357e2686ec12ab4d4cf21630ef9d1c3e0e9b8df",
+  "decision": "CONDITIONAL_GO",
+  "certification": "AAA_CANDIDATE",
+  "eligibleProfile": "STAGING",
+  "remainingBlockers": [
+    "external_gate_pending:modelProvider:expected_VALIDATED_REAL:actual_NOT_VALIDATED",
+    "external_gate_pending:channel:expected_VALIDATED_REAL:actual_NOT_VALIDATED",
+    "external_gate_pending:externalIdentity:expected_VALIDATED_REAL:actual_NOT_VALIDATED",
+    "external_gate_pending:institutionalRag:expected_VALIDATED_APPROVED:actual_NOT_VALIDATED",
+    "external_gate_pending:rpoRto:expected_VALIDATED:actual_NOT_VALIDATED",
+    "external_gate_pending:pilot:expected_PASS:actual_NOT_VALIDATED",
+    "external_gate_pending:rollback:expected_PASS:actual_NOT_VALIDATED",
+    "external_gate_pending:humanSignoff:expected_VALIDATED:actual_PENDING"
+  ],
+  "package": "certification/phase11",
+  "currentPointer": "certification/current.json"
+}
+[phase11] decision=CONDITIONAL_GO certification=AAA_CANDIDATE certificationId=phase11-68bb9d0a531007c5-muhr3lor
