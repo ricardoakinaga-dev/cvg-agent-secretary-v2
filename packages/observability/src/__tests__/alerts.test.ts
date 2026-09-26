@@ -34,12 +34,12 @@ function stateOf(
 }
 
 describe('alert rules', () => {
-  it('covers every AUD19-09 domain with an unapproved owner placeholder', () => {
+  it('covers every AUD19-09 domain with the approved operations owner', () => {
     const domains = new Set(DEFAULT_ALERT_RULES.map((rule) => rule.domain))
     expect([...domains].sort()).toEqual([...ALERT_DOMAINS].sort())
     for (const rule of DEFAULT_ALERT_RULES) {
-      expect(rule.owner).toBeNull()
-      expect(rule.sloStatus).toBe('PROPOSED_NOT_APPROVED')
+      expect(rule.owner).toBe('operations')
+      expect(rule.sloStatus).toBe('APPROVED')
       expect(rule.runbook.startsWith('docs/08_runtime/runbooks/')).toBe(true)
       expect(rule.threshold).toBeTypeOf('number')
       expect(rule.windowMs).toBeGreaterThan(0)

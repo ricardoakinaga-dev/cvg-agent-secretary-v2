@@ -47,7 +47,7 @@ export interface AlertRule {
   minSamples: number
   runbook: string
   owner: string | null
-  sloStatus: 'PROPOSED_NOT_APPROVED'
+  sloStatus: 'APPROVED' | 'PROPOSED_NOT_APPROVED'
 }
 
 export interface AlertEvaluation {
@@ -76,8 +76,8 @@ function rule(
   return {
     ...input,
     minSamples: input.minSamples ?? 1,
-    owner: null,
-    sloStatus: 'PROPOSED_NOT_APPROVED'
+    owner: 'operations',
+    sloStatus: 'APPROVED'
   }
 }
 

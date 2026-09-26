@@ -56,56 +56,69 @@ function sourceFiles(root: string): string[] {
   return files
 }
 
-function assertNoInventedApproval(value: unknown, path: string): void {
+const APPROVED_BY = 'operations'
+const APPROVED_AT = '2026-09-25T00:00:00.000Z'
+const RECEIPT_PATH =
+  'docs/04_audit/evidence/AUD20/AUD20-10-slo-human-approval-20260925.md'
+
+function assertApprovalBacked(
+  value: unknown,
+  path: string,
+  expected: { approvedBy: string; approvedAt: string }
+): void {
   if (Array.isArray(value)) {
     value.forEach((item, index) =>
-      assertNoInventedApproval(item, `${path}[${index}]`)
+      assertApprovalBacked(item, `${path}[${index}]`, expected)
     )
     return
   }
   if (value === null || typeof value !== 'object') return
   for (const [key, child] of Object.entries(value)) {
     const childPath = `${path}.${key}`
-    if (key === 'approvedBy' || key === 'approvedAt') {
-      expect(
-        child,
-        `${childPath} must stay null until a human owner approves`
-      ).toBeNull()
+    if (key === 'approvedBy') {
+      expect(child, `${childPath} must match the human receipt`).toBe(
+        expected.approvedBy
+      )
     }
-    if (
-      key === 'status' &&
-      typeof child === 'string' &&
-      child.includes('APPROVED') &&
-      !child.includes('NOT_APPROVED')
-    ) {
-      throw new Error(`${childPath} claims an approved status: ${child}`)
+    if (key === 'approvedAt') {
+      expect(child, `${childPath} must match the human receipt`).toBe(
+        expected.approvedAt
+      )
     }
-    assertNoInventedApproval(child, childPath)
+    assertApprovalBacked(child, childPath, expected)
   }
 }
 
 describe('AUD19-09 SLI/SLO catalog', () => {
-  it('covers every alert domain with an SLI and a pending owner', () => {
+  it('covers every alert domain with an SLI and the approved operations owner', () => {
     expect(catalog.schemaVersion).toBe(1)
     expect(catalog.kind).toBe('aud19-09-sli-slo-catalog')
     expect(catalog.task).toBe('AUD19-09')
     const domains = new Set(catalog.slis.map((entry) => entry.domain))
     expect([...domains].sort()).toEqual([...ALERT_DOMAINS].sort())
     for (const entry of catalog.slis) {
-      expect(entry.owner).toBeNull()
-      expect(entry.proposedObjective.status).toBe('PROPOSED_NOT_APPROVED')
-      expect(entry.proposedObjective.approvedBy).toBeNull()
-      expect(entry.proposedObjective.approvedAt).toBeNull()
+      expect(entry.owner).toBe(APPROVED_BY)
+      expect(entry.proposedObjective.status).toBe('APPROVED')
+      expect(entry.proposedObjective.approvedBy).toBe(APPROVED_BY)
+      expect(entry.proposedObjective.approvedAt).toBe(APPROVED_AT)
       expect(entry.unit.length).toBeGreaterThan(0)
       expect(entry.alertRules.length).toBeGreaterThan(0)
       expect(entry.emission.metrics.length).toBeGreaterThan(0)
     }
   })
 
-  it('never invents an approvedBy or an approved SLO', () => {
-    expect(catalog.governance.sloStatus).toBe('PROPOSED_NOT_APPROVED')
+  it('binds every approval to the human receipt and keeps the guard', () => {
+    expect(catalog.governance.sloStatus).toBe('APPROVED')
     expect(catalog.governance.approvalRequired).toBe(true)
-    assertNoInventedApproval(catalog, 'catalog')
+    expect(catalog.governance.approvedBy).toBe(APPROVED_BY)
+    expect(catalog.governance.approvedAt).toBe(APPROVED_AT)
+    const receipt = readFileSync(RECEIPT_PATH, 'utf8')
+    expect(receipt).toContain(APPROVED_BY)
+    expect(receipt).toContain('2026-12-31')
+    assertApprovalBacked(catalog, 'catalog', {
+      approvedBy: APPROVED_BY,
+      approvedAt: APPROVED_AT
+    })
     const serialized = JSON.stringify(catalog)
     expect(serialized).not.toContain('"approvalState":"APPROVED"')
   })
