@@ -1,3 +1,13 @@
+# 0574 — Auditoria com notas 0-100 — 2026-09-26
+
+- [x] Rodada `AUD-20260926-REPO` concluída e [relatório 0574](04_audit/0574_repository_audit_2026-09-26.md) publicado (16 itens; global **65**; gates locais PASS, suíte 2.659/0 falha/192 skip).
+- [ ] **P0**: push dos 66 commits e `.gitleaks.toml` com allowlist de hashes em `docs/**/evidence/**` para restaurar `Verify`/`Security`.
+- [ ] **P0**: adicionar `certification:verify`, `promotion:check` e `aud19-critical-coverage.mjs` ao `verify.yml` (CI está verde com certificação inválida).
+- [ ] **P1**: corrigir branches de `kernel-composition.ts` (66,14%) e `runtime-approval-store.ts` (33,80%) e tornar o gate de cobertura determinístico.
+- [ ] **P1**: alinhar `vitest.config.mts` aos pisos 90/85/90/90 e tirar `apps/web` da exclusão de coverage.
+- [ ] **P1**: ligar observabilidade da API (`logger`, `onResponse`, `runtimeCollector`) e avaliar regras de alerta em processo.
+- [ ] **P2**: quebrar `server.ts` (4.584 linhas), ESLint type-aware, declarar 12 deps workspace ausentes, remover `pino`/`drizzle-orm`/`dotenv`, ativar `tests/aud20-19-human-session-harness.test.mjs` e unificar o registro de estado. Staging/produção `NO_GO`.
+
 # Decisões 2026-09-25
 
 - [x] R2 solicitado; PostgreSQL e mutation admitidos; fluxos aprovados; sessão adiada — ver recibo.

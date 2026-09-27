@@ -1,3 +1,7 @@
+# 0574 — Auditoria técnica e de governança com notas 0-100 — 2026-09-26
+
+- Rodada `AUD-20260926-REPO` no `HEAD` `6655c50`: 16 itens pontuados de 0 a 100 em 4 áreas (engenharia 70, verificação 68, segurança/infra 70, documentação 52; **global 65**). Gates locais PASS sob Node `22.23.2` (typecheck, lint, Prettier, `docs:check`, build, `npm audit` 0 vulns, suíte **2.659 pass / 0 falha / 192 skip**). Gates da governança **falham**: `promotion:check` `current_certification_invalid` + 8 externos; `aud19-critical-coverage` `kernel 89,37%` / `approval 77,64%`. CI remoto vermelho desde 17/09; 66 commits sem push. Relatório: [0574](04_audit/0574_repository_audit_2026-09-26.md). Staging/produção `NO_GO`.
+
 # Dossiês C06 — 2026-09-25
 
 - Preparados pedidos de BUILD de coverage (só testes), refresh de `MUT-TENANT-01` e desbloqueio de `AUD20-11`. Aguardam decisão; nada executado. Staging/produção `NO_GO`.

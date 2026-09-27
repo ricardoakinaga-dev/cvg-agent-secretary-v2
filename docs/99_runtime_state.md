@@ -5108,3 +5108,12 @@ PASS`; suíte integral `289 PASS` arquivos/12 skipped e `2.256 PASS`
 - next_action: obter os insumos do item B (owners/credenciais dos gates 1–4, ambiente/janela de 5/7, autorização/participantes de 6) e re-certificar o novo candidato pós-owner/SLO antes do sign-off (8); manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.
 - evidence: [recibo owner/SLO](04_audit/evidence/AUD20/AUD20-10-slo-human-approval-20260925.md), [coverage](04_audit/evidence/AUD20/AUD20-10-slo-approval-coverage-20260925.log), [catálogo](04_audit/evidence/AUD19/AUD19-09-sli-slo.json).
 - verification: nenhum dado real, deploy/push/staging/produção.
+
+# 0574 — Auditoria técnica e de governança com notas 0-100 — 2026-09-26
+
+- current_engine: `AUDIT -> PLAN`; task canônica `AUD20-10` `READY_FOR_NEXT_STEP` (conforme `docs/03_build/tracking/current_state.json`); staging/produção `NO_GO`.
+- last_completed_action: executar a rodada `AUD-20260926-REPO` sobre o `HEAD` `6655c50` e publicar o [relatório 0574](04_audit/0574_repository_audit_2026-09-26.md), com nota 0-100 em 16 itens agrupados em 4 áreas (engenharia 70, verificação 68, segurança/infra 70, documentação 52; global **65**).
+- progress: gates locais PASS sob Node `22.23.2` (typecheck, lint, Prettier, `git diff --check`, `docs:check`, build, `npm audit` 0 vulns e suíte completa **2.659 testes pass / 0 falha / 192 skip**); gates declarados pela governança **falham**: `promotion:check` `eligible:false` por `current_certification_invalid` + 8 gates externos `NOT_VALIDATED`, e `aud19-critical-coverage` `FAIL` em `kernel 89,37%` e `approval 77,64%` (piso 95). CI remoto vermelho desde 2026-09-17 e `main` com **66 commits não pushados**.
+- next_action: obter os insumos do item B (owners/credenciais dos gates 1–4, ambiente/janela de 5/7, autorização/participantes de 6) e re-certificar o novo candidato pós-owner/SLO antes do sign-off (8); manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.
+- evidence: [relatório 0574](04_audit/0574_repository_audit_2026-09-26.md), [baseline 0573](04_audit/0573_repository_audit_2026-09-25.md).
+- verification: somente leitura sobre `apps/`, `packages/`, `scripts/`, `tests/` e `certification/`; nenhum dado real, nenhum arquivo de produto alterado, nenhum commit, push ou deploy. O `next_action` é preservado idêntico ao canônico porque esta rodada é `REPORT_ONLY` e não altera a ação do pipeline.
