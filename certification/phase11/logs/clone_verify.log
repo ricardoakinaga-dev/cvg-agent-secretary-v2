@@ -1,13 +1,13 @@
 $ node scripts/phase11-2-redteam.mjs --suite=clone
-# certificationId=phase11-7d5ff88370707e5a-mujgv2ca
-# candidateId=7d5ff88370707e5aba144f94ad9f8346dcecbfd40f1e3334fc1921fee9e4f4dd
-# commit=cf5a79a98e8e527d91d120de62656f590507534c
-# treeHash=8eb7575ce5dfe06000ea781f9c377dc9a6c281a9f1ca71eae4aa33d84aeb856c
+# certificationId=phase11-5c663a5f921ab490-mukeqq99
+# candidateId=5c663a5f921ab490d2cc148f80c7f9d753002530231f9e64fccd683ec9e1e866
+# commit=65759190ee1d2d92459fc7c4d3294db32b8ec901
+# treeHash=00f78535b1e66d5ffd54cf62cde413a93da1a51a8fff33c3640419f403aa863d
 # gate=clone_verify
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=92
+# exitCode=0 durationMs=87
 
 {
   "schemaVersion": 1,
