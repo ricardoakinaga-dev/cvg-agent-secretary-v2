@@ -1,6 +1,7 @@
 import {
   CorrelationIdSchema,
   createDomainId,
+  DomainError,
   DomainIdSchema,
   sanitizeAuditEvidencePayload
 } from '@cvg/shared'
@@ -89,7 +90,7 @@ export class PostgresCapabilityApprovalRepository implements CapabilityApprovalA
       return mapApproval(row)
     } catch (error) {
       if (isUniqueViolation(error)) {
-        throw new Error('Approval nonce already exists')
+        throw new DomainError('conflict', 'Approval nonce already exists')
       }
       throw error
     }
@@ -197,7 +198,7 @@ export class PostgresCapabilityApprovalRepository implements CapabilityApprovalA
       await this.client.query('COMMIT')
       return mapApproval(row)
     } catch (error) {
-      await this.client.query('ROLLBACK')
+      await this.client.query('ROLLBACK').catch(() => undefined)
       throw error
     }
   }
@@ -276,13 +277,22 @@ function normalizeIssueInput(
       ? rawInput.nonce.trim() || createDomainId('nonce')
       : createDomainId('nonce')
   if (!toolName || !actorId || !issuer || !nonce) {
-    throw new Error('Approval binding fields are required')
+    throw new DomainError(
+      'validation_failed',
+      'Approval binding fields are required'
+    )
   }
   if (actorId === issuer) {
-    throw new Error('Approval issuer and executor must be different')
+    throw new DomainError(
+      'validation_failed',
+      'Approval issuer and executor must be different'
+    )
   }
   if (expiresAt.getTime() <= issuedAt.getTime()) {
-    throw new Error('Approval expiry must be in the future')
+    throw new DomainError(
+      'validation_failed',
+      'Approval expiry must be in the future'
+    )
   }
   return {
     ...rawInput,
@@ -377,7 +387,7 @@ function mapApproval(row: CapabilityApprovalRow): CapabilityApprovalRecord {
 
 function copyDate(value: Date, label: string): Date {
   if (!(value instanceof Date) || !Number.isFinite(value.getTime())) {
-    throw new Error(`${label} must be a valid date`)
+    throw new DomainError('validation_failed', `${label} must be a valid date`)
   }
   return new Date(value.getTime())
 }

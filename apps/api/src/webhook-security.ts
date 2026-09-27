@@ -269,9 +269,20 @@ export class HmacWebhookVerifier {
       if (!reserved) return null
       return {
         verified: true,
+        // Best effort: the inbound message was already accepted (and is
+        // deduplicated by its idempotency key) before this runs, so a failed
+        // replay commit must not turn a completed delivery into a 500 that
+        // makes the sender retry. On failure the reservation is released so
+        // the provider retry is recognized as a duplicate instead of waiting
+        // for `expiresAtMs` to expire.
         commit: async () => {
-          const committed = await this.replayStore.commit!(prepared.key)
-          if (!committed) throw new Error('Webhook replay commit failed')
+          try {
+            await this.replayStore.commit!(prepared.key)
+          } catch {
+            await Promise.resolve(
+              this.replayStore.release!(prepared.key)
+            ).catch(() => undefined)
+          }
         },
         release: async () => {
           await this.replayStore.release!(prepared.key)

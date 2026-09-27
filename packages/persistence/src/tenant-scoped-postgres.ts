@@ -537,11 +537,12 @@ export class TenantScopedPostgresRuntimeRepository {
   updateTaskStatus(
     id: string,
     status: TaskStatus,
-    tenantId?: TenantId
+    tenantId?: TenantId,
+    expectedStatus?: TaskStatus
   ): Promise<TaskRecord | null> {
     const scope = requireTenantId(tenantId)
     return this.run(scope, (repository) =>
-      repository.updateTaskStatus(id, status, scope)
+      repository.updateTaskStatus(id, status, scope, expectedStatus)
     )
   }
 

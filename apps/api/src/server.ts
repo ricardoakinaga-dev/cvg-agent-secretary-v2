@@ -78,6 +78,7 @@ import {
   AuditEvidenceCheckpointTransitionInputSchema,
   type DurableOutboxAdapter,
   JourneyRepository,
+  MAX_UNPAGINATED_LIST_ROWS as MAX_LIST_ROWS,
   type JourneyRepositoryPort,
   PostgresControlPlaneRepository,
   TenantScopedPostgresControlPlaneRepository,
@@ -145,7 +146,7 @@ import {
   type WebhookVerificationLease
 } from './webhook-security.ts'
 import {
-  toOrchestrationGoalDetailView,
+  loadOrchestrationGoalDetail,
   toOrchestrationGoalView
 } from './orchestration-observability.ts'
 
@@ -1167,7 +1168,9 @@ export function buildServer(options: BuildServerOptions = {}) {
     try {
       const identity = requireIdentity(request.headers, 'task:view')
       const tenantId = resolveDataPlaneTenant(request.headers, identity)
-      return ok(await tasks.list(tenantId), correlationId)
+      const items = await tasks.list(tenantId)
+      headerIfTruncated(reply, items.length)
+      return ok(items, correlationId)
     } catch (error) {
       const safeError = toSafeError(error)
       reply.code(statusCodeForError(safeError.code))
@@ -1187,17 +1190,16 @@ export function buildServer(options: BuildServerOptions = {}) {
         throw new DomainError('validation_failed', 'Task status is required')
       }
       const existing = await tasks.findById(params.taskId, tenantId)
-      if (!existing) {
-        throw new DomainError('invalid_action', 'Task not found')
-      }
+      if (!existing) throw new DomainError('invalid_action', 'Task not found')
       assertTaskTransition(existing.status, status.data)
       const updated = await tasks.updateStatus(
         params.taskId,
         status.data,
-        tenantId
+        tenantId,
+        existing.status
       )
       if (!updated) {
-        throw new DomainError('invalid_action', 'Task not found')
+        throw new DomainError('conflict', 'Task status changed concurrently')
       }
       await audit.append(
         {
@@ -1351,7 +1353,9 @@ export function buildServer(options: BuildServerOptions = {}) {
     try {
       const identity = requireIdentity(request.headers, 'approval:view')
       const tenantId = resolveDataPlaneTenant(request.headers, identity)
-      return ok(await approvals.list(tenantId), correlationId)
+      const items = await approvals.list(tenantId)
+      headerIfTruncated(reply, items.length)
+      return ok(items, correlationId)
     } catch (error) {
       const safeError = toSafeError(error)
       reply.code(statusCodeForError(safeError.code))
@@ -1432,44 +1436,11 @@ export function buildServer(options: BuildServerOptions = {}) {
         params.goalId
       )
       if (!goal) throw new DomainError('not_found', 'Goal not found')
-      const plans = await persistence.orchestration.listPlans(tenantId, goal.id)
-      const stepsByPlan = new Map(
-        await Promise.all(
-          plans.map(
-            async (plan) =>
-              [
-                plan.id,
-                await persistence.orchestration!.listSteps(tenantId, plan.id)
-              ] as const
-          )
-        )
+      const detail = await loadOrchestrationGoalDetail(
+        persistence.orchestration,
+        tenantId,
+        goal
       )
-      const steps = [...stepsByPlan.values()].flat()
-      const attemptsByStep = new Map(
-        await Promise.all(
-          steps.map(
-            async (step) =>
-              [
-                step.id,
-                await persistence.orchestration!.listAttempts(tenantId, step.id)
-              ] as const
-          )
-        )
-      )
-      const detail = toOrchestrationGoalDetailView({
-        goal,
-        plans,
-        stepsByPlan,
-        observations: await persistence.orchestration.listObservations(
-          tenantId,
-          goal.id
-        ),
-        evaluations: await persistence.orchestration.listEvaluations(
-          tenantId,
-          goal.id
-        ),
-        attemptsByStep
-      })
       return ok(detail, correlationId)
     } catch (error) {
       const safeError = toSafeError(error)
@@ -1984,6 +1955,7 @@ export function buildServer(options: BuildServerOptions = {}) {
       if (events.length === 0) {
         throw new DomainError('invalid_action', 'Audit session not found')
       }
+      headerIfTruncated(reply, events.length)
       emitRuntimeLog({
         event: 'audit.session_read',
         correlationId,
@@ -3997,6 +3969,20 @@ async function appendPlatformAudit(
     },
     tenantId
   )
+}
+
+/**
+ * Makes silent truncation observable: list reads without pagination are
+ * bounded by `MAX_LIST_ROWS`, and a full page means the caller should page
+ * or narrow the query.
+ */
+function headerIfTruncated(
+  reply: { header(name: string, value: string): unknown },
+  rowCount: number
+): void {
+  if (rowCount >= MAX_LIST_ROWS) {
+    reply.header('x-result-truncated', 'true')
+  }
 }
 
 function statusCodeForError(code: string): number {

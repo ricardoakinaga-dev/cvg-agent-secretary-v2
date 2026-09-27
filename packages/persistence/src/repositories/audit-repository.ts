@@ -4,6 +4,7 @@ import {
   sanitizeAuditEvidencePayload
 } from '@cvg/shared'
 import { TenantIdSchema, type TenantId } from '@cvg/platform'
+import { MAX_UNPAGINATED_LIST_ROWS } from '../list-limits.ts'
 import {
   AuditEvidenceCheckpointActorIdSchema,
   AuditEvidenceCheckpointCreateInputSchema,
@@ -59,12 +60,14 @@ export class AuditRepository {
 
   listBySession(sessionId: string, rawTenantId?: TenantId): AuditEventRecord[] {
     const tenantId = rawTenantId ? TenantIdSchema.parse(rawTenantId) : undefined
-    return this.db.state.auditEvents.filter((event) => {
-      if (!payloadHasSession(event.payload, sessionId)) {
-        return false
-      }
-      return !tenantId || this.eventBelongsToTenant(event, tenantId)
-    })
+    return this.db.state.auditEvents
+      .filter((event) => {
+        if (!payloadHasSession(event.payload, sessionId)) {
+          return false
+        }
+        return !tenantId || this.eventBelongsToTenant(event, tenantId)
+      })
+      .slice(0, MAX_UNPAGINATED_LIST_ROWS)
   }
 
   listEvidence(

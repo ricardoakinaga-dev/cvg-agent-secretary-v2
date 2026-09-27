@@ -1034,6 +1034,20 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
     })
   }
 
+  async listStepsByPlan(
+    tenant: OrchestrationTenantId,
+    planIds: string[]
+  ): Promise<PlanStep[]> {
+    const scope = tenantId(tenant)
+    return withTenantContext(this.pool, scope, async (client) => {
+      const result = await client.query<StepRow>(
+        'SELECT * FROM orchestrator_steps WHERE tenant_id = $1 AND plan_id = ANY($2::text[]) ORDER BY plan_id, id',
+        [scope, planIds]
+      )
+      return result.rows.map(toStep)
+    })
+  }
+
   async getStep(
     tenant: OrchestrationTenantId,
     stepId: string
@@ -1773,6 +1787,20 @@ export class PostgresGoalPlanStore implements GoalPlanStore {
       const result = await client.query<AttemptRow>(
         'SELECT * FROM orchestrator_attempts WHERE tenant_id = $1 AND step_id = $2 ORDER BY started_at, id',
         [scope, stepId]
+      )
+      return result.rows.map(toAttempt)
+    })
+  }
+
+  async listAttemptsByStep(
+    tenant: OrchestrationTenantId,
+    stepIds: string[]
+  ): Promise<AttemptRecord[]> {
+    const scope = tenantId(tenant)
+    return withTenantContext(this.pool, scope, async (client) => {
+      const result = await client.query<AttemptRow>(
+        'SELECT * FROM orchestrator_attempts WHERE tenant_id = $1 AND step_id = ANY($2::text[]) ORDER BY step_id, started_at, id',
+        [scope, stepIds]
       )
       return result.rows.map(toAttempt)
     })

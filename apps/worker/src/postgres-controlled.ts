@@ -53,6 +53,33 @@ import { createControlledOutboxRevalidator } from './outbox-revalidation.ts'
 
 export const POSTGRES_CONTROLLED_QUEUE_ADAPTER = 'postgres-controlled' as const
 
+export const WORKER_POOL_DEFAULT_CONCURRENCY = 2
+export const WORKER_POOL_CONNECTION_TIMEOUT_MS = 5_000
+export const WORKER_POOL_MAX_CAP = 32
+
+/**
+ * Sizes the worker pool for the worst case: every concurrent claim holds one
+ * connection for its ack transaction while the handler opens its own
+ * tenant-scoped connections. The pool must also serve the heartbeat, sweeps,
+ * backlog probe and role preflight. Under-sizing the pool deadlocks the pump
+ * (the heartbeat never renews and the lease expires), so the default is
+ * `2 * concurrency + 4` with an explicit acquisition timeout that fails fast
+ * instead of queueing forever.
+ */
+export function resolveWorkerPoolMax(
+  env: NodeJS.ProcessEnv,
+  concurrencyOverride?: number
+): number {
+  const raw = env.CVG_WORKER_CONCURRENCY?.trim()
+  const parsed = raw === undefined || raw === '' ? Number.NaN : Number(raw)
+  const candidate = concurrencyOverride ?? parsed
+  const concurrency =
+    Number.isSafeInteger(candidate) && candidate >= 1 && candidate <= 10
+      ? candidate
+      : WORKER_POOL_DEFAULT_CONCURRENCY
+  return Math.min(WORKER_POOL_MAX_CAP, concurrency * 2 + 4)
+}
+
 export interface PostgresControlledWorkerRuntime {
   pool: Pool
   adapter: TenantScopedPostgresRuntimeRepository
@@ -99,6 +126,8 @@ export interface PostgresControlledHandlerOptions {
 
 export interface OpenPostgresControlledConnectionOptions {
   telemetry?: WorkerTelemetry
+  /** Explicit worker concurrency; sizes the pool when it exceeds the env. */
+  concurrency?: number
 }
 
 function createTenantScopedPostgresEffectJournal(
@@ -181,6 +210,8 @@ export function openPostgresControlledConnection(
   assertSafeSchemaName(schemaName)
   const pool = new Pool({
     connectionString: databaseUrl,
+    max: resolveWorkerPoolMax(env, options.concurrency),
+    connectionTimeoutMillis: WORKER_POOL_CONNECTION_TIMEOUT_MS,
     ...(schemaName ? { options: `-c search_path=${schemaName}` } : {})
   })
   const adapter = new TenantScopedPostgresRuntimeRepository(
@@ -237,11 +268,12 @@ export function createPostgresContinuousWorker(
   env: NodeJS.ProcessEnv,
   options: PostgresContinuousWorkerOptions = {}
 ): PostgresContinuousWorkerRuntime {
-  const connection = openPostgresControlledConnection(
-    env,
-    options.handlers,
-    options.telemetry ? { telemetry: options.telemetry } : {}
-  )
+  const connection = openPostgresControlledConnection(env, options.handlers, {
+    ...(options.telemetry ? { telemetry: options.telemetry } : {}),
+    ...(options.tuning?.concurrency !== undefined
+      ? { concurrency: options.tuning.concurrency }
+      : {})
+  })
   const sweeps =
     options.sweeps ??
     (resolveWorkerRuntimeKind(env) === KERNEL_WORKER_RUNTIME

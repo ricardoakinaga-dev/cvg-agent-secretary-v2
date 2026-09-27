@@ -519,7 +519,7 @@ describe('postgres migration smoke', () => {
     expect(migrationRuns).toBe(1)
   })
 
-  it('commits the PostgreSQL outbox ownership check before invoking the effect', async () => {
+  it('commits the outbox ownership check before the effect and journals it before the final CAS', async () => {
     let activeTransaction = false
     let commits = 0
     let journaled = false
@@ -576,18 +576,9 @@ describe('postgres migration smoke', () => {
           text.includes('FROM outbox_events') &&
           text.includes('FOR UPDATE')
         ) {
-          return result([
-            journaled
-              ? {
-                  ...row,
-                  status: 'processed',
-                  lease_owner: null,
-                  lease_token: null,
-                  lease_until: null,
-                  processed_at: createdAt
-                }
-              : row
-          ] as unknown as T[])
+          // The row stays `processing` until the CAS UPDATE runs, so the CAS
+          // branch is reachable and can prove the journal was committed first.
+          return result([row] as unknown as T[])
         }
         if (
           text.includes('FROM outbox_effects') &&
@@ -599,11 +590,20 @@ describe('postgres migration smoke', () => {
               : []) as unknown as T[]
           )
         }
+        if (
+          text.includes('SELECT event_id') &&
+          text.includes('FROM outbox_effects')
+        ) {
+          return result(
+            (journaled ? [{ event_id: row.id }] : []) as unknown as T[]
+          )
+        }
         if (text.includes('INSERT INTO outbox_effects')) {
           journaled = true
           return result([] as T[])
         }
         if (text.includes("SET status = 'processed'")) {
+          expect(journaled).toBe(true)
           return result([
             {
               ...row,
@@ -636,7 +636,8 @@ describe('postgres migration smoke', () => {
 
     expect(processed.status).toBe('processed')
     expect(activeTransaction).toBe(false)
-    expect(commits).toBe(2)
+    // prepare (ownership) + journal (effect already ran) + final CAS
+    expect(commits).toBe(3)
   })
 
   it('reconciles a concurrent task idempotency conflict by reading the winner', async () => {
@@ -791,6 +792,32 @@ describe('postgres migration smoke', () => {
           ]),
           sessions: [expect.objectContaining({ takeoverState: 'BOT_ACTIVE' })]
         })
+        const casTask = await repository.createTask(
+          {
+            sessionId: created.session.id,
+            title: 'Tarefa CAS',
+            description: 'Transição com compare-and-swap',
+            priority: 'medium',
+            source: 'postgres-cas',
+            idempotencyKey: 'postgres-cas-task'
+          },
+          tenantId
+        )
+        await expect(
+          repository.updateTaskStatus(
+            casTask.id,
+            'in_progress',
+            tenantId,
+            'open'
+          )
+        ).resolves.toMatchObject({ id: casTask.id, status: 'in_progress' })
+        await expect(
+          repository.updateTaskStatus(casTask.id, 'done', tenantId, 'open')
+        ).resolves.toBeNull()
+        await expect(
+          repository.findTaskById(casTask.id, tenantId)
+        ).resolves.toMatchObject({ status: 'in_progress' })
+
         const audit = await repository.appendAudit({
           tenantId,
           type: 'integration_event',

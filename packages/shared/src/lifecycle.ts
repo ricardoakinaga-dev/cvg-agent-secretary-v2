@@ -1,7 +1,7 @@
 export type ShutdownSignal = 'SIGTERM' | 'SIGINT'
 
 export interface SignalSource {
-  once(event: string, listener: () => void): unknown
+  on(event: string, listener: () => void): unknown
 }
 
 export interface ShutdownEvent {
@@ -88,7 +88,7 @@ export function createShutdownController(
 
   const install = (source: SignalSource): void => {
     for (const signal of signals) {
-      source.once(signal, () => {
+      source.on(signal, () => {
         void shutdown(signal)
       })
     }

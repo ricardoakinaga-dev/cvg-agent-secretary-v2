@@ -2,7 +2,9 @@ import type {
   AttemptRecord,
   EvaluationRecord,
   Goal,
+  GoalPlanStore,
   ObservationRecord,
+  OrchestrationTenantId,
   Plan,
   PlanStep
 } from '@cvg/agent-runtime'
@@ -274,4 +276,55 @@ export function toOrchestrationGoalDetailView(input: {
     observations: input.observations.map(toObservationView),
     evaluations: input.evaluations.map(toEvaluationView)
   }
+}
+
+/**
+ * Loads the full Goal detail for the operator view. Bulk store reads are used
+ * when the store implements them; otherwise it falls back to one read per
+ * plan and per step. Either way the projection is identical.
+ */
+export async function loadOrchestrationGoalDetail(
+  store: GoalPlanStore,
+  tenantId: OrchestrationTenantId,
+  goal: Goal
+) {
+  const plans = await store.listPlans(tenantId, goal.id)
+  const steps = store.listStepsByPlan
+    ? await store.listStepsByPlan(
+        tenantId,
+        plans.map((plan) => plan.id)
+      )
+    : (
+        await Promise.all(
+          plans.map((plan) => store.listSteps(tenantId, plan.id))
+        )
+      ).flat()
+  const stepsByPlan = new Map<string, PlanStep[]>(
+    plans.map((plan) => [plan.id, []])
+  )
+  for (const step of steps) stepsByPlan.get(step.planId)?.push(step)
+  const attemptsByStep = new Map<string, AttemptRecord[]>(
+    steps.map((step) => [step.id, []])
+  )
+  const attempts = store.listAttemptsByStep
+    ? await store.listAttemptsByStep(
+        tenantId,
+        steps.map((step) => step.id)
+      )
+    : (
+        await Promise.all(
+          steps.map((step) => store.listAttempts(tenantId, step.id))
+        )
+      ).flat()
+  for (const attempt of attempts) {
+    attemptsByStep.get(attempt.stepId)?.push(attempt)
+  }
+  return toOrchestrationGoalDetailView({
+    goal,
+    plans,
+    stepsByPlan,
+    observations: await store.listObservations(tenantId, goal.id),
+    evaluations: await store.listEvaluations(tenantId, goal.id),
+    attemptsByStep
+  })
 }

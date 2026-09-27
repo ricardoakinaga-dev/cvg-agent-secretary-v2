@@ -41,9 +41,52 @@ export class DomainError extends Error {
   }
 }
 
+/**
+ * Maps the approval engine's domain codes onto public error codes. The
+ * approval engine depends on `@cvg/shared`, so the class cannot be imported
+ * here without a cycle; detection is structural on the stable
+ * `ApprovalError` name + `code` pair. Without this mapping a missing or
+ * out-of-state approval would surface as a 500 instead of 404/403/409.
+ */
+const APPROVAL_ERROR_CODE_MAP: Record<string, ErrorCode> = Object.freeze({
+  not_found: 'not_found',
+  invalid_state: 'conflict',
+  tenant_mismatch: 'forbidden',
+  action_mismatch: 'conflict',
+  payload_mismatch: 'conflict',
+  proposal_mismatch: 'conflict',
+  expired: 'conflict',
+  already_executed: 'conflict',
+  already_reserved: 'conflict',
+  reservation_expired: 'conflict',
+  reservation_mismatch: 'conflict',
+  reservation_reused: 'conflict',
+  uncertain: 'conflict',
+  invalid_proof: 'forbidden',
+  self_approval_denied: 'forbidden',
+  not_authorized: 'forbidden',
+  invalid_request: 'validation_failed'
+})
+
+function asApprovalError(
+  error: unknown
+): { code: string; message: string } | null {
+  if (!(error instanceof Error) || error.name !== 'ApprovalError') return null
+  const code = (error as { code?: unknown }).code
+  if (typeof code !== 'string') return null
+  return { code, message: error.message }
+}
+
 export function toSafeError(error: unknown): { code: string; message: string } {
   if (error instanceof DomainError) {
     return { code: error.code, message: error.message }
+  }
+  const approvalError = asApprovalError(error)
+  if (approvalError) {
+    return {
+      code: APPROVAL_ERROR_CODE_MAP[approvalError.code] ?? 'conflict',
+      message: approvalError.message
+    }
   }
   if (error instanceof ZodError) {
     return { code: 'validation_failed', message: 'Input validation failed' }

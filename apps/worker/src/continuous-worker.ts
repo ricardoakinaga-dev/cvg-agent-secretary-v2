@@ -21,6 +21,9 @@ import {
 
 export const CONTINUOUS_WORKER_RUN_MODE = 'continuous' as const
 
+/** Consecutive thrown heartbeats tolerated before a lease is declared lost. */
+export const WORKER_HEARTBEAT_MAX_FAILURES = 3
+
 export type ContinuousWorkerHandlers = ControlledWorkerHandlers
 
 const SHUTDOWN_UNSTARTED_CLAIM_ERROR = Object.assign(
@@ -158,6 +161,7 @@ export function createContinuousWorker(
   }
 
   let running = false
+  let releaseFailedCount = 0
   let stopPromise: Promise<ContinuousWorkerStopResult> | undefined
   let pumpPromise: Promise<void> | undefined
   let summaryTimer: ReturnType<typeof setInterval> | undefined
@@ -308,6 +312,7 @@ export function createContinuousWorker(
   } {
     let stopped = false
     let leaseLost = false
+    let consecutiveFailures = 0
     const timer = setInterval(() => {
       void beat()
     }, heartbeatIntervalMs)
@@ -336,6 +341,7 @@ export function createContinuousWorker(
       if (stopped || leaseLost) return
       try {
         if (await renewLease(event)) {
+          consecutiveFailures = 0
           counters.heartbeats += 1
           telemetry.metric('worker_outbox_heartbeats_total', 1, {
             outcome: 'renewed'
@@ -344,17 +350,24 @@ export function createContinuousWorker(
         }
         markLost()
       } catch (error) {
+        // A thrown renewal is an infrastructure failure (pool starvation,
+        // network) and not proof the lease was denied: tolerate a bounded
+        // streak before declaring the lease lost, otherwise one transient
+        // error aborts the attempt and burns a retry. `renewLease` returning
+        // false remains an immediate, authoritative lease loss.
+        consecutiveFailures += 1
         telemetry.log(
           'worker.lease_heartbeat_failed',
           {
             eventId: event.id,
             workerId,
             error: sanitizeOutboxError(error),
+            consecutiveFailures,
             operation: 'outbox'
           },
           'warn'
         )
-        markLost()
+        if (consecutiveFailures >= WORKER_HEARTBEAT_MAX_FAILURES) markLost()
       }
     }
 
@@ -537,6 +550,7 @@ export function createContinuousWorker(
             outcome: 'discarded'
           })
         } catch (error) {
+          releaseFailedCount += 1
           telemetry.log(
             'worker.shutdown_discard_claim_failed',
             {
@@ -625,8 +639,6 @@ export function createContinuousWorker(
           Promise.allSettled([...inFlight.keys()]).then(() => true),
           plainDelay(drainMs).then(() => false)
         ]))
-      const released = 0
-      const releaseFailed = 0
       if (!settled || inFlight.size > 0) {
         for (const { event, stopHeartbeat } of [...inFlight.values()]) {
           stopHeartbeat()
@@ -648,8 +660,8 @@ export function createContinuousWorker(
       logSummary('stop')
       const result: ContinuousWorkerStopResult = {
         drained: inFlight.size === 0,
-        released,
-        releaseFailed,
+        released: counters.released,
+        releaseFailed: releaseFailedCount,
         metrics: metrics()
       }
       telemetry.log('worker.stopped', {

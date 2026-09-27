@@ -5,6 +5,7 @@ import {
   redactSensitiveText
 } from '@cvg/shared'
 import { TenantIdSchema, type TenantId } from '@cvg/platform'
+import { MAX_UNPAGINATED_LIST_ROWS } from './list-limits.ts'
 import type { InMemoryDatabase } from './db.ts'
 import { AuditRepository } from './repositories/audit-repository.ts'
 import { TaskRepository } from './repositories/task-repository.ts'
@@ -257,6 +258,7 @@ export class JourneyRepository implements JourneyRepositoryPort {
       .filter((draft) => draft.tenantId === tenantId)
       .map((draft) => this.expireOwnerDraft(draft))
       .map(cloneOwnerDraft)
+      .slice(0, MAX_UNPAGINATED_LIST_ROWS)
   }
 
   findOwnerDraft(rawTenantId: TenantId, id: string): OwnerDraftRecord | null {
@@ -301,6 +303,7 @@ export class JourneyRepository implements JourneyRepositoryPort {
       .filter((draft) => draft.tenantId === tenantId)
       .map((draft) => this.expirePatientDraft(draft))
       .map(clonePatientDraft)
+      .slice(0, MAX_UNPAGINATED_LIST_ROWS)
   }
 
   findPatientDraft(
@@ -503,6 +506,7 @@ export class JourneyRepository implements JourneyRepositoryPort {
       .filter((draft) => draft.tenantId === tenantId)
       .map((draft) => this.expireAppointmentDraft(draft))
       .map(cloneAppointmentDraft)
+      .slice(0, MAX_UNPAGINATED_LIST_ROWS)
   }
 
   createJourneyTask(input: CreateJourneyTaskInput): TaskRecord {

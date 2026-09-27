@@ -165,7 +165,7 @@ export async function runInitialPostgresMigration(
     await client.query(migration)
     await client.query('COMMIT')
   } catch (error) {
-    await client.query('ROLLBACK')
+    await client.query('ROLLBACK').catch(() => undefined)
     throw error
   }
 }
@@ -237,7 +237,7 @@ export async function runPostgresMigrations(
       }
       await client.query('COMMIT')
     } catch (error) {
-      await client.query('ROLLBACK')
+      await client.query('ROLLBACK').catch(() => undefined)
       throw error
     }
   }
@@ -537,7 +537,7 @@ export async function baselineLegacyPostgresMigration(
     )
     await client.query('COMMIT')
   } catch (error) {
-    await client.query('ROLLBACK')
+    await client.query('ROLLBACK').catch(() => undefined)
     throw error
   }
 }

@@ -80,10 +80,14 @@ export async function runSweepTick(
   }
 }
 
+export const DEFAULT_SWEEP_STOP_TIMEOUT_MS = 5_000
+
 export interface PeriodicSweepRunnerOptions extends SweepTickPorts {
   intervalMs?: number
   runImmediately?: boolean
   telemetry?: WorkerTelemetry
+  /** Bound for waiting on an in-flight tick during `stop()`. */
+  stopTimeoutMs?: number
 }
 
 export interface PeriodicSweepRunner {
@@ -106,6 +110,10 @@ export function createPeriodicSweepRunner(
     throw new Error('Sweep intervalMs must be a positive integer')
   }
   const telemetry = options.telemetry ?? createJsonWorkerTelemetry()
+  const stopTimeoutMs = options.stopTimeoutMs ?? DEFAULT_SWEEP_STOP_TIMEOUT_MS
+  if (!Number.isInteger(stopTimeoutMs) || stopTimeoutMs <= 0) {
+    throw new Error('Sweep stopTimeoutMs must be a positive integer')
+  }
   let running = false
   let currentTick: Promise<void> | undefined
   let timer: ReturnType<typeof setInterval> | undefined
@@ -195,7 +203,28 @@ export function createPeriodicSweepRunner(
         clearInterval(timer)
         timer = undefined
       }
-      await currentTick
+      const pending = currentTick
+      if (pending) {
+        let timeout: ReturnType<typeof setTimeout> | undefined
+        const settled = await Promise.race([
+          pending.then(
+            () => true,
+            () => true
+          ),
+          new Promise<boolean>((resolve) => {
+            timeout = setTimeout(() => resolve(false), stopTimeoutMs)
+            timeout.unref?.()
+          })
+        ])
+        if (timeout) clearTimeout(timeout)
+        if (!settled) {
+          telemetry.log(
+            'worker.sweep_stop_timeout',
+            { timeoutMs: stopTimeoutMs, operation: 'sweep' },
+            'warn'
+          )
+        }
+      }
       telemetry.log('worker.sweep_stopped', { operation: 'sweep' })
     },
     runOnce,

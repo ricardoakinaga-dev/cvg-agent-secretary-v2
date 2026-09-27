@@ -1157,6 +1157,138 @@ describe('AAA-19 continuous worker shutdown and lease safety', () => {
     await worker.stop()
   })
 
+  it('tolerates transient heartbeat failures instead of losing the lease', async () => {
+    const db = new InMemoryDatabase()
+    const inner = new OutboxRepository(db, {
+      retryBaseMs: 5,
+      retryMaxMs: 5
+    })
+    let failHeartbeats = false
+    let heartbeatThrows = 0
+    const adapter: DurableOutboxAdapter = {
+      enqueue: (input, tx) => inner.enqueue(input, tx),
+      claimNext: (input) => inner.claimNext(input),
+      heartbeatClaim: (input) => {
+        if (failHeartbeats && heartbeatThrows < 2) {
+          heartbeatThrows += 1
+          throw new Error('synthetic heartbeat infrastructure failure')
+        }
+        return inner.heartbeatClaim(input)
+      },
+      ack: (input) => inner.ack(input),
+      fail: (input) => inner.fail(input),
+      requeueDeadLetter: (input) => inner.requeueDeadLetter(input)
+    }
+    const event = enqueueInbound(inner, 'continuous-heartbeat-transient-190')
+    const gate = deferred()
+    const started = deferred()
+    const telemetry = createRecordingTelemetry()
+    const worker = createContinuousWorker({
+      tenantId,
+      workerId: 'worker-heartbeat-190',
+      adapter,
+      handlers: createHandlers({
+        inboundProcess: async () => {
+          failHeartbeats = true
+          started.resolve()
+          await gate.promise
+          return { status: 'controlled_noop' }
+        }
+      }),
+      pollIntervalMs: 5,
+      leaseMs: 5_000,
+      heartbeatIntervalMs: 5,
+      telemetry: telemetry.telemetry
+    })
+
+    worker.start()
+    await started.promise
+    await vi.waitFor(
+      () => {
+        expect(
+          telemetry.logs.filter(
+            (log) => log.event === 'worker.lease_heartbeat_failed'
+          )
+        ).toHaveLength(2)
+      },
+      { timeout: 5_000, interval: 5 }
+    )
+    expect(worker.metrics().leaseLost).toBe(0)
+    failHeartbeats = false
+    gate.resolve()
+    await vi.waitFor(
+      () => {
+        expect(statusOf(inner, event.id)).toBe('processed')
+      },
+      { timeout: 5_000, interval: 5 }
+    )
+    expect(worker.metrics().leaseLost).toBe(0)
+    expect(telemetry.logs.map((log) => log.event)).not.toContain(
+      'worker.lease_lost'
+    )
+    await worker.stop()
+  })
+
+  it('declares the lease lost on the third consecutive heartbeat failure', async () => {
+    const db = new InMemoryDatabase()
+    const inner = new OutboxRepository(db, {
+      retryBaseMs: 5,
+      retryMaxMs: 5
+    })
+    let failHeartbeats = false
+    let heartbeatThrows = 0
+    const adapter: DurableOutboxAdapter = {
+      enqueue: (input, tx) => inner.enqueue(input, tx),
+      claimNext: (input) => inner.claimNext(input),
+      heartbeatClaim: (input) => {
+        if (failHeartbeats) {
+          heartbeatThrows += 1
+          throw new Error('synthetic persistent heartbeat failure')
+        }
+        return inner.heartbeatClaim(input)
+      },
+      ack: (input) => inner.ack(input),
+      fail: (input) => inner.fail(input),
+      requeueDeadLetter: (input) => inner.requeueDeadLetter(input)
+    }
+    enqueueInbound(inner, 'continuous-heartbeat-declared-190')
+    const gate = deferred()
+    const started = deferred()
+    const telemetry = createRecordingTelemetry()
+    const worker = createContinuousWorker({
+      tenantId,
+      workerId: 'worker-heartbeat-lost-190',
+      adapter,
+      handlers: createHandlers({
+        inboundProcess: async () => {
+          failHeartbeats = true
+          started.resolve()
+          await gate.promise
+          return { status: 'controlled_noop' }
+        }
+      }),
+      pollIntervalMs: 5,
+      leaseMs: 5_000,
+      heartbeatIntervalMs: 5,
+      telemetry: telemetry.telemetry
+    })
+
+    worker.start()
+    await started.promise
+    await vi.waitFor(
+      () => {
+        expect(worker.metrics().leaseLost).toBeGreaterThanOrEqual(1)
+      },
+      { timeout: 5_000, interval: 5 }
+    )
+    expect(heartbeatThrows).toBeGreaterThanOrEqual(3)
+    expect(telemetry.logs.map((log) => log.event)).toContain(
+      'worker.lease_lost'
+    )
+    gate.resolve()
+    await worker.stop()
+  })
+
   it('is idempotent on stop and refuses to restart after stopping', async () => {
     const adapter = new OutboxRepository(new InMemoryDatabase())
     const worker = createContinuousWorker({

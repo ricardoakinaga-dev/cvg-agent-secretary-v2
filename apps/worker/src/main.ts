@@ -143,10 +143,16 @@ async function runPostgresControlledWorker(env: NodeJS.ProcessEnv) {
         console.error(JSON.stringify({ event, ...(fields ?? {}) }))
     }
   )
+  let poolClosed = false
+  const closePool = async (): Promise<void> => {
+    if (poolClosed) return
+    poolClosed = true
+    await runtime.pool.end()
+  }
   const shutdown = createShutdownController({
     close: async () => {
       await health.markDraining()
-      await runtime.pool.end()
+      await closePool()
       await health.markStopped()
     },
     exit: (code) => process.exit(code),
@@ -190,7 +196,7 @@ async function runPostgresControlledWorker(env: NodeJS.ProcessEnv) {
     )
   } finally {
     await health.markStopped()
-    await runtime.pool.end()
+    await closePool()
   }
 }
 
@@ -250,11 +256,17 @@ async function runPostgresContinuousWorker(env: NodeJS.ProcessEnv) {
   })
   shutdown.install(process)
   runtime.worker.start()
-  await health.markReady({
-    adapter: POSTGRES_CONTROLLED_QUEUE_ADAPTER,
-    durable: true,
-    externalEffects: false
-  })
+  try {
+    await health.markReady({
+      adapter: POSTGRES_CONTROLLED_QUEUE_ADAPTER,
+      durable: true,
+      externalEffects: false
+    })
+  } catch (error) {
+    await runtime.worker.stop().catch(() => undefined)
+    await runtime.pool.end().catch(() => undefined)
+    throw error
+  }
   telemetry.log('worker.continuous_ready', {
     adapter: POSTGRES_CONTROLLED_QUEUE_ADAPTER,
     concurrency: runtime.tuning.concurrency,

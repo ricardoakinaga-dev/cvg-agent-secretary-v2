@@ -2,6 +2,7 @@ import { createHash, randomUUID } from 'node:crypto'
 import {
   CorrelationIdSchema,
   createDomainId,
+  DomainError,
   type CorrelationId
 } from '@cvg/shared'
 import {
@@ -122,23 +123,32 @@ export class InMemoryCapabilityApprovalAuthority implements CapabilityApprovalAu
     const expiresAt = copyDate(input.expiresAt, 'Approval expiry')
     const issuedAt = copyDate(this.now(), 'Approval issue time')
     if (expiresAt.getTime() <= issuedAt.getTime()) {
-      throw new Error('Approval expiry must be in the future')
+      throw new DomainError(
+        'validation_failed',
+        'Approval expiry must be in the future'
+      )
     }
     if (
       !input.toolName.trim() ||
       !input.actorId.trim() ||
       !input.issuer.trim()
     ) {
-      throw new Error('Approval binding fields are required')
+      throw new DomainError(
+        'validation_failed',
+        'Approval binding fields are required'
+      )
     }
     if (input.actorId.trim() === input.issuer.trim()) {
-      throw new Error('Approval issuer and executor must be different')
+      throw new DomainError(
+        'validation_failed',
+        'Approval issuer and executor must be different'
+      )
     }
     const nonce = input.nonce?.trim() || `nonce_${randomUUID()}`
     if (
       Array.from(this.records.values()).some((record) => record.nonce === nonce)
     ) {
-      throw new Error('Approval nonce already exists')
+      throw new DomainError('conflict', 'Approval nonce already exists')
     }
     const record: CapabilityApprovalRecord = {
       id: createDomainId('approval'),
@@ -258,13 +268,24 @@ function canonicalize(value: unknown, seen: Set<object>): string {
   if (typeof value === 'boolean') return value ? 'true' : 'false'
   if (typeof value === 'number') {
     if (!Number.isFinite(value))
-      throw new Error('Capability input is not finite')
+      throw new DomainError(
+        'validation_failed',
+        'Capability input is not finite'
+      )
     return JSON.stringify(value)
   }
   if (typeof value !== 'object' || value === undefined) {
-    throw new Error('Capability input is not JSON serializable')
+    throw new DomainError(
+      'validation_failed',
+      'Capability input is not JSON serializable'
+    )
   }
-  if (seen.has(value)) throw new Error('Capability input contains a cycle')
+  if (seen.has(value)) {
+    throw new DomainError(
+      'validation_failed',
+      'Capability input contains a cycle'
+    )
+  }
   seen.add(value)
   try {
     if (Array.isArray(value)) {
@@ -285,7 +306,7 @@ function canonicalize(value: unknown, seen: Set<object>): string {
 
 function copyDate(value: Date, label: string): Date {
   if (!(value instanceof Date) || !Number.isFinite(value.getTime())) {
-    throw new Error(`${label} must be a valid date`)
+    throw new DomainError('validation_failed', `${label} must be a valid date`)
   }
   return new Date(value.getTime())
 }

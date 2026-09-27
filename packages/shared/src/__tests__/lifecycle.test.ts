@@ -8,7 +8,7 @@ import {
 function fakeSignalSource() {
   const listeners = new Map<string, () => void>()
   const source: SignalSource = {
-    once(event, listener) {
+    on(event, listener) {
       listeners.set(event, listener)
       return source
     }
@@ -59,6 +59,33 @@ describe('graceful shutdown controller', () => {
     expect(
       events.filter((event) => event.type === 'shutdown.ignored')
     ).toHaveLength(1)
+  })
+
+  it('keeps signal listeners installed so a repeated signal is ignored, not fatal', async () => {
+    const events: ShutdownEvent[] = []
+    const exit = vi.fn()
+    let releaseClose: (() => void) | undefined
+    const controller = createShutdownController({
+      close: () =>
+        new Promise<void>((resolve) => {
+          releaseClose = resolve
+        }),
+      exit,
+      log: (event) => events.push(event)
+    })
+    const signals = fakeSignalSource()
+    controller.install(signals.source)
+    signals.fire('SIGTERM')
+    signals.fire('SIGTERM')
+    signals.fire('SIGINT')
+    releaseClose?.()
+    await vi.waitFor(() => expect(exit).toHaveBeenCalledTimes(1))
+    expect(
+      events.filter((event) => event.type === 'shutdown.started')
+    ).toHaveLength(1)
+    expect(
+      events.filter((event) => event.type === 'shutdown.ignored')
+    ).toHaveLength(2)
   })
 
   it('exits non-zero when close fails', async () => {

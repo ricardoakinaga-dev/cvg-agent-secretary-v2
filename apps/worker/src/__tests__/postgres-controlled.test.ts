@@ -4,7 +4,8 @@ import {
   createPostgresControlledHandlers,
   createPostgresControlledWorker,
   parseControlledDrainLimit,
-  POSTGRES_CONTROLLED_QUEUE_ADAPTER
+  POSTGRES_CONTROLLED_QUEUE_ADAPTER,
+  resolveWorkerPoolMax
 } from '../postgres-controlled.ts'
 import { PUBLISHED_AGENT_WORKER_RUNTIME } from '../kernel-composition.ts'
 import {
@@ -14,6 +15,17 @@ import {
 } from '@cvg/platform'
 
 const tenantId = 'tenant_00000000-0000-4000-8000-000000000172'
+
+describe('worker pool sizing', () => {
+  it('sizes the pool for the worst case and honors explicit overrides', () => {
+    expect(resolveWorkerPoolMax({})).toBe(8)
+    expect(resolveWorkerPoolMax({ CVG_WORKER_CONCURRENCY: '5' })).toBe(14)
+    expect(resolveWorkerPoolMax({ CVG_WORKER_CONCURRENCY: '99' })).toBe(8)
+    expect(resolveWorkerPoolMax({}, 10)).toBe(24)
+    expect(resolveWorkerPoolMax({ CVG_WORKER_CONCURRENCY: '2' }, 6)).toBe(16)
+    expect(resolveWorkerPoolMax({}, 0)).toBe(8)
+  })
+})
 
 describe('controlled PostgreSQL worker boundary', () => {
   it('constructs a tenant-scoped worker without opening an external effect path', async () => {

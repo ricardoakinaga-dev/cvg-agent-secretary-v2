@@ -107,6 +107,7 @@ import type {
   DurableOutboxStatus,
   PostgresQueryable
 } from './postgres/types.ts'
+import { MAX_UNPAGINATED_LIST_ROWS } from './list-limits.ts'
 export {
   baselineLegacyPostgresMigration,
   legacyRequiredColumns,
@@ -624,6 +625,43 @@ export class PostgresRuntimeRepository {
           'A local effect or result is required before ack'
         )
       }
+      // Commit the journal before the final CAS: the effect already ran, so a
+      // retry after a lost lease must skip it (the old insert rolled back).
+      await withOutboxTransaction(this.client, async () => {
+        await this.client.query(
+          `INSERT INTO outbox_effects
+             (tenant_id, idempotency_key, event_id, result,
+              result_protection_version, applied_at)
+           VALUES ($1, $2, $3, $4::jsonb, 'outbox-r6', $5)
+           ON CONFLICT (tenant_id, idempotency_key) DO NOTHING`,
+          [
+            tenantId,
+            prepared.event.idempotency_key,
+            eventId,
+            serializeOutboxJson(assertOutboxResult(result), 'Outbox result'),
+            this.repositoryNow()
+          ]
+        )
+        const committed = await this.client.query<{ event_id: string }>(
+          `SELECT event_id
+           FROM outbox_effects
+           WHERE tenant_id = $1 AND idempotency_key = $2`,
+          [tenantId, prepared.event.idempotency_key]
+        )
+        const committedRow = committed.rows[0]
+        if (!committedRow) {
+          throw new DomainError(
+            'invalid_action',
+            'Outbox effect journal could not be persisted'
+          )
+        }
+        if (committedRow.event_id !== eventId) {
+          throw new DomainError(
+            'invalid_action',
+            'Outbox effect journal points to another event'
+          )
+        }
+      })
     }
 
     return withOutboxTransaction(this.client, async () => {
@@ -651,11 +689,8 @@ export class PostgresRuntimeRepository {
         throw new DomainError('conflict', 'Outbox lease is not owned by worker')
       }
 
-      const journal = await this.client.query<{
-        result: unknown
-        event_id: string
-      }>(
-        `SELECT result, event_id
+      const journal = await this.client.query<{ event_id: string }>(
+        `SELECT event_id
          FROM outbox_effects
          WHERE tenant_id = $1 AND idempotency_key = $2
          FOR UPDATE`,
@@ -685,50 +720,6 @@ export class PostgresRuntimeRepository {
       ) {
         return this.suppressOutboxForTakeover(event, tenantId, workerId, ackNow)
       }
-
-      if (!journal.rows[0]) {
-        const safeResult = assertOutboxResult(result)
-        await this.client.query(
-          `INSERT INTO outbox_effects
-             (tenant_id, idempotency_key, event_id, result,
-              result_protection_version, applied_at)
-           VALUES ($1, $2, $3, $4::jsonb, 'outbox-r6', $5)
-           ON CONFLICT (tenant_id, idempotency_key) DO NOTHING`,
-          [
-            tenantId,
-            event.idempotency_key,
-            event.id,
-            serializeOutboxJson(safeResult, 'Outbox result'),
-            ackNow
-          ]
-        )
-      }
-
-      const persisted = await this.client.query<{ result: unknown }>(
-        `SELECT result
-         FROM outbox_effects
-         WHERE tenant_id = $1 AND idempotency_key = $2
-         FOR UPDATE`,
-        [tenantId, event.idempotency_key]
-      )
-      if (!persisted.rows[0]) {
-        throw new DomainError(
-          'invalid_action',
-          'Outbox effect journal could not be persisted'
-        )
-      }
-      const safePersistedResult = assertOutboxResult(persisted.rows[0].result)
-      await this.client.query(
-        `UPDATE outbox_effects
-         SET result = $3::jsonb,
-             result_protection_version = 'outbox-r6'
-         WHERE tenant_id = $1 AND idempotency_key = $2`,
-        [
-          tenantId,
-          event.idempotency_key,
-          serializeOutboxJson(safePersistedResult, 'Outbox result')
-        ]
-      )
 
       // Re-read the repository clock immediately before the final CAS. The
       // handler runs outside the transaction, so the lease may expire after
@@ -1302,7 +1293,7 @@ export class PostgresRuntimeRepository {
       await this.client.query('COMMIT')
       if (outbox) return { conversation, session, message, outbox }
     } catch (error) {
-      await this.client.query('ROLLBACK')
+      await this.client.query('ROLLBACK').catch(() => undefined)
       throw error
     }
 
@@ -1423,7 +1414,7 @@ export class PostgresRuntimeRepository {
         updatedAt
       }
     } catch (error) {
-      await this.client.query('ROLLBACK')
+      await this.client.query('ROLLBACK').catch(() => undefined)
       throw error
     }
   }
@@ -1677,7 +1668,7 @@ export class PostgresRuntimeRepository {
       await this.client.query('COMMIT')
       return updated
     } catch (error) {
-      await this.client.query('ROLLBACK')
+      await this.client.query('ROLLBACK').catch(() => undefined)
       throw error
     }
   }
@@ -1895,7 +1886,7 @@ export class PostgresRuntimeRepository {
       await this.client.query('COMMIT')
       return { status: 'completed' }
     } catch (error) {
-      await this.client.query('ROLLBACK')
+      await this.client.query('ROLLBACK').catch(() => undefined)
       throw error
     }
   }
@@ -2082,7 +2073,7 @@ export class PostgresRuntimeRepository {
       await this.client.query('COMMIT')
       return appended
     } catch (error) {
-      await this.client.query('ROLLBACK')
+      await this.client.query('ROLLBACK').catch(() => undefined)
       throw error
     }
   }
@@ -2224,7 +2215,8 @@ export class PostgresRuntimeRepository {
        FROM audit_events
        WHERE payload->>'sessionId' = $1
        ${scopeFilter}
-       ORDER BY created_at ASC`,
+       ORDER BY created_at ASC
+       LIMIT ${MAX_UNPAGINATED_LIST_ROWS}`,
       [sessionId, ...(tenantId ? [tenantId] : [])]
     )
 
@@ -2380,7 +2372,7 @@ export class PostgresRuntimeRepository {
       await this.client.query('COMMIT')
       return cloneAuditEvidenceCheckpoint(checkpoint)
     } catch (error) {
-      await this.client.query('ROLLBACK')
+      await this.client.query('ROLLBACK').catch(() => undefined)
       throw error
     }
   }
@@ -2477,7 +2469,7 @@ export class PostgresRuntimeRepository {
       await this.client.query('COMMIT')
       return mapAuditEvidenceCheckpoint(result)
     } catch (error) {
-      await this.client.query('ROLLBACK')
+      await this.client.query('ROLLBACK').catch(() => undefined)
       throw error
     }
   }
@@ -2767,7 +2759,8 @@ export class PostgresRuntimeRepository {
        FROM tasks
        ${scopeJoin}
        ${scopeFilter}
-       ORDER BY tasks.created_at ASC`,
+       ORDER BY tasks.created_at ASC
+       LIMIT ${MAX_UNPAGINATED_LIST_ROWS}`,
       tenantId ? [tenantId] : undefined
     )
     return result.rows.map((row) => this.mapTask(row))
@@ -2806,10 +2799,18 @@ export class PostgresRuntimeRepository {
     return row ? this.mapTask(row) : null
   }
 
+  /**
+   * Applies a status transition. When `expectedStatus` is provided the UPDATE
+   * is compare-and-swap: a concurrent writer that already moved the task makes
+   * the guard fail (zero rows) instead of overwriting it. `null` therefore
+   * means "missing or no longer in the expected state"; callers that read the
+   * task first must treat it as a conflict.
+   */
   async updateTaskStatus(
     id: string,
     status: TaskStatus,
-    rawTenantId?: TenantId
+    rawTenantId?: TenantId,
+    expectedStatus?: TaskStatus
   ): Promise<TaskRecord | null> {
     const tenantId = rawTenantId ? TenantIdSchema.parse(rawTenantId) : undefined
     const scopeFilter = tenantId
@@ -2818,7 +2819,7 @@ export class PostgresRuntimeRepository {
            FROM sessions
            INNER JOIN conversations ON conversations.id = sessions.conversation_id
            WHERE sessions.id = tasks.session_id
-             AND conversations.tenant_id = $3
+             AND conversations.tenant_id = $4
          )`
       : ''
     const result = await this.client.query<{
@@ -2835,9 +2836,10 @@ export class PostgresRuntimeRepository {
       `UPDATE tasks
        SET status = $2
        WHERE tasks.id = $1
+         AND tasks.status = COALESCE($3::text, tasks.status)
        ${scopeFilter}
        RETURNING tasks.id, tasks.session_id, tasks.title, tasks.description, tasks.priority, tasks.source, tasks.status, tasks.idempotency_key, tasks.created_at`,
-      [id, status, ...(tenantId ? [tenantId] : [])]
+      [id, status, expectedStatus ?? null, ...(tenantId ? [tenantId] : [])]
     )
     const row = result.rows[0]
     return row ? this.mapTask(row) : null
@@ -2959,7 +2961,7 @@ export class PostgresRuntimeRepository {
       await this.client.query('COMMIT')
       return decided
     } catch (error) {
-      await this.client.query('ROLLBACK')
+      await this.client.query('ROLLBACK').catch(() => undefined)
       throw error
     }
   }
@@ -3021,7 +3023,8 @@ export class PostgresRuntimeRepository {
        FROM approval_requests
        ${scopeJoin}
        ${scopeFilter}
-       ORDER BY approval_requests.created_at ASC`,
+       ORDER BY approval_requests.created_at ASC
+       LIMIT ${MAX_UNPAGINATED_LIST_ROWS}`,
       tenantId ? [tenantId] : undefined
     )
     return result.rows.map((row) => this.mapApproval(row))

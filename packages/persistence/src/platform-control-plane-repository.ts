@@ -204,7 +204,7 @@ export class PostgresControlPlaneRepository implements ControlPlaneStore {
       await this.client.query('COMMIT')
       return cloneVersion(version)
     } catch (error) {
-      await this.client.query('ROLLBACK')
+      await this.client.query('ROLLBACK').catch(() => undefined)
       throw error
     }
   }
@@ -294,7 +294,7 @@ export class PostgresControlPlaneRepository implements ControlPlaneStore {
       await this.client.query('COMMIT')
       return mapVersion(row)
     } catch (error) {
-      await this.client.query('ROLLBACK')
+      await this.client.query('ROLLBACK').catch(() => undefined)
       throw error
     }
   }
@@ -387,7 +387,7 @@ export class PostgresControlPlaneRepository implements ControlPlaneStore {
         config: structuredClone(current.config)
       }
     } catch (error) {
-      await this.client.query('ROLLBACK')
+      await this.client.query('ROLLBACK').catch(() => undefined)
       throw error
     }
   }
@@ -545,7 +545,7 @@ export class PostgresControlPlaneRepository implements ControlPlaneStore {
         config: structuredClone(approved.config)
       }
     } catch (error) {
-      await this.client.query('ROLLBACK')
+      await this.client.query('ROLLBACK').catch(() => undefined)
       throw error
     }
   }
@@ -751,7 +751,7 @@ export class PostgresControlPlaneRepository implements ControlPlaneStore {
       await this.client.query('COMMIT')
       return mapKnowledgeSource(updatedRow)
     } catch (error) {
-      await this.client.query('ROLLBACK')
+      await this.client.query('ROLLBACK').catch(() => undefined)
       throw error
     }
   }
@@ -952,7 +952,7 @@ export class PostgresControlPlaneRepository implements ControlPlaneStore {
       await this.client.query('COMMIT')
       return mapReleaseCandidate(updatedRow)
     } catch (error) {
-      await this.client.query('ROLLBACK')
+      await this.client.query('ROLLBACK').catch(() => undefined)
       throw error
     }
   }
@@ -1119,7 +1119,7 @@ export class PostgresControlPlaneRepository implements ControlPlaneStore {
       await this.client.query('COMMIT')
       return mapPluginCatalog(updatedRow)
     } catch (error) {
-      await this.client.query('ROLLBACK')
+      await this.client.query('ROLLBACK').catch(() => undefined)
       throw error
     }
   }

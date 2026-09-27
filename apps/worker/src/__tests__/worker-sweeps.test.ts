@@ -293,4 +293,39 @@ describe('AAA-19 periodic sweeps', () => {
     await new Promise((resolve) => setTimeout(resolve, 30))
     expect(approvals.releaseExpired.mock.calls.length).toBe(callsAfterStop)
   })
+
+  it('bounds stop when an in-flight tick never settles', async () => {
+    const telemetry = createRecordingTelemetry()
+    const releaseExpired = vi.fn(() => new Promise<number>(() => undefined))
+    const hangingJournal = {
+      releaseExpired,
+      get: vi.fn(),
+      reserve: vi.fn(),
+      markEffectStarted: vi.fn(),
+      confirmEffect: vi.fn(),
+      failEffect: vi.fn(),
+      markUncertain: vi.fn(),
+      reconcile: vi.fn()
+    } as unknown as EffectJournalPort
+    const approvals = createFakeApprovals()
+    const runner = createPeriodicSweepRunner({
+      approvals: approvals.engine,
+      effectJournal: hangingJournal,
+      tenantId,
+      runImmediately: true,
+      intervalMs: 10,
+      stopTimeoutMs: 20,
+      telemetry: telemetry.telemetry
+    })
+
+    runner.start()
+    await vi.waitFor(() => expect(releaseExpired).toHaveBeenCalled())
+    await runner.stop()
+    expect(telemetry.logs.map((log) => log.event)).toEqual(
+      expect.arrayContaining([
+        'worker.sweep_stop_timeout',
+        'worker.sweep_stopped'
+      ])
+    )
+  })
 })

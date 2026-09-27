@@ -5,6 +5,7 @@ import {
 } from '@cvg/shared'
 import { TenantIdSchema, type TenantId } from '@cvg/platform'
 import type { QueryResultRow } from 'pg'
+import { MAX_UNPAGINATED_LIST_ROWS } from './list-limits.ts'
 import {
   DEFAULT_DRAFT_TTL_MS,
   boundedKey,
@@ -221,7 +222,8 @@ export class PostgresJourneyRepository implements JourneyRepositoryPort {
         `SELECT ${ownerDraftColumns}
          FROM journey_owner_drafts
          WHERE tenant_id = $1
-         ORDER BY created_at ASC, id ASC`,
+         ORDER BY created_at ASC, id ASC
+         LIMIT ${MAX_UNPAGINATED_LIST_ROWS}`,
         [tenantId]
       )
       return result.rows.map((row) => cloneOwnerDraft(mapOwnerDraftRow(row)))
@@ -262,7 +264,8 @@ export class PostgresJourneyRepository implements JourneyRepositoryPort {
         `SELECT ${patientDraftColumns}
          FROM journey_patient_drafts
          WHERE tenant_id = $1
-         ORDER BY created_at ASC, id ASC`,
+         ORDER BY created_at ASC, id ASC
+         LIMIT ${MAX_UNPAGINATED_LIST_ROWS}`,
         [tenantId]
       )
       return result.rows.map((row) =>
@@ -367,7 +370,8 @@ export class PostgresJourneyRepository implements JourneyRepositoryPort {
         `SELECT ${appointmentDraftColumns}
          FROM journey_appointment_drafts
          WHERE tenant_id = $1
-         ORDER BY created_at ASC, id ASC`,
+         ORDER BY created_at ASC, id ASC
+         LIMIT ${MAX_UNPAGINATED_LIST_ROWS}`,
         [tenantId]
       )
       return result.rows.map((row) =>

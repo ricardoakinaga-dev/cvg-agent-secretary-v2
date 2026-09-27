@@ -337,7 +337,7 @@ describe('HmacWebhookVerifier', () => {
     }
   )
 
-  it('supports legacy replay stores and fails closed when a lease commit cannot complete', async () => {
+  it('supports legacy replay stores and never surfaces a failed post-accept commit', async () => {
     const now = Math.floor(Date.now() / 1000) * 1000
     const input = signingInput({ timestampSeconds: now / 1000 })
     const claim = vi.fn(async () => true)
@@ -390,8 +390,32 @@ describe('HmacWebhookVerifier', () => {
       body: input.body,
       channel
     })
-    await expect(lease?.commit()).rejects.toThrow('replay commit failed')
+    await expect(lease?.commit()).resolves.toBeUndefined()
     await lease?.release()
+
+    const releaseSpy = vi.fn(async () => true)
+    const throwingVerifier = new HmacWebhookVerifier({
+      secret,
+      now: () => now,
+      replayStore: {
+        claim: vi.fn(async () => false),
+        reserve: vi.fn(async () => true),
+        commit: vi.fn(async () => {
+          throw new Error('synthetic replay commit failure')
+        }),
+        release: releaseSpy
+      }
+    })
+    const throwingLease = await throwingVerifier.verifyWithLease({
+      headers: signedHeaders({
+        ...input,
+        eventId: 'lease-commit-throw'
+      }),
+      body: input.body,
+      channel
+    })
+    await expect(throwingLease?.commit()).resolves.toBeUndefined()
+    expect(releaseSpy).toHaveBeenCalledTimes(1)
   })
 
   it('keeps replay state immutable across expiry and committed-release attempts', () => {

@@ -615,6 +615,14 @@ export interface GoalPlanStore {
     tenantId: OrchestrationTenantId,
     planId: string
   ): Promise<PlanStep[]>
+  /**
+   * Bulk variant of {@link listSteps}. Stores that implement it let a Goal
+   * detail read avoid one query per plan; per-plan id order is preserved.
+   */
+  listStepsByPlan?(
+    tenantId: OrchestrationTenantId,
+    planIds: string[]
+  ): Promise<PlanStep[]>
   getStep(
     tenantId: OrchestrationTenantId,
     stepId: string
@@ -651,6 +659,11 @@ export interface GoalPlanStore {
   listAttempts(
     tenantId: OrchestrationTenantId,
     stepId: string
+  ): Promise<AttemptRecord[]>
+  /** Bulk variant of {@link listAttempts}; see {@link listStepsByPlan}. */
+  listAttemptsByStep?(
+    tenantId: OrchestrationTenantId,
+    stepIds: string[]
   ): Promise<AttemptRecord[]>
 }
 
@@ -1878,6 +1891,18 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
       .map((step) => clone(step))
   }
 
+  async listStepsByPlan(
+    tenantId: OrchestrationTenantId,
+    planIds: string[]
+  ): Promise<PlanStep[]> {
+    const scope = validateTenant(tenantId)
+    const wanted = new Set(planIds)
+    return [...this.steps.values()]
+      .filter((step) => step.tenantId === scope && wanted.has(step.planId))
+      .sort((left, right) => left.id.localeCompare(right.id))
+      .map((step) => clone(step))
+  }
+
   async getStep(
     tenantId: OrchestrationTenantId,
     stepId: string
@@ -2396,6 +2421,22 @@ export class InMemoryGoalPlanStore implements GoalPlanStore {
     const scope = validateTenant(tenantId)
     return [...this.attempts.values()]
       .filter((record) => record.tenantId === scope && record.stepId === stepId)
+      .sort(
+        (left, right) => left.startedAt.getTime() - right.startedAt.getTime()
+      )
+      .map((record) => clone(record))
+  }
+
+  async listAttemptsByStep(
+    tenantId: OrchestrationTenantId,
+    stepIds: string[]
+  ): Promise<AttemptRecord[]> {
+    const scope = validateTenant(tenantId)
+    const wanted = new Set(stepIds)
+    return [...this.attempts.values()]
+      .filter(
+        (record) => record.tenantId === scope && wanted.has(record.stepId)
+      )
       .sort(
         (left, right) => left.startedAt.getTime() - right.startedAt.getTime()
       )

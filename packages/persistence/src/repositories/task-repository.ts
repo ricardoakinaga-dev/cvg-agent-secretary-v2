@@ -6,6 +6,7 @@ import {
 } from '@cvg/shared'
 import { TenantIdSchema, type TenantId } from '@cvg/platform'
 import type { InMemoryDatabase } from '../db.ts'
+import { MAX_UNPAGINATED_LIST_ROWS } from '../list-limits.ts'
 import type { TaskRecord } from '../schema.ts'
 
 export class TaskRepository {
@@ -51,9 +52,9 @@ export class TaskRepository {
 
   list(rawTenantId?: TenantId): TaskRecord[] {
     const tenantId = rawTenantId ? TenantIdSchema.parse(rawTenantId) : undefined
-    return this.db.state.tasks.filter(
-      (task) => !tenantId || this.taskBelongsToTenant(task, tenantId)
-    )
+    return this.db.state.tasks
+      .filter((task) => !tenantId || this.taskBelongsToTenant(task, tenantId))
+      .slice(0, MAX_UNPAGINATED_LIST_ROWS)
   }
 
   findById(id: string, rawTenantId?: TenantId): TaskRecord | null {
@@ -70,10 +71,14 @@ export class TaskRepository {
   updateStatus(
     id: string,
     status: TaskStatus,
-    rawTenantId?: TenantId
+    rawTenantId?: TenantId,
+    expectedStatus?: TaskStatus
   ): TaskRecord | null {
     const existing = this.findById(id, rawTenantId)
     if (!existing) return null
+    if (expectedStatus !== undefined && existing.status !== expectedStatus) {
+      return null
+    }
     const updated: TaskRecord = { ...existing, status }
     this.db.state.tasks = this.db.state.tasks.map((task) =>
       task.id === id ? updated : task

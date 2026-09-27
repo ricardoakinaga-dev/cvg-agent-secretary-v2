@@ -178,8 +178,8 @@ export function createPersistence(
         ) => postgres.createTask(input, tenantId),
         list: (tenantId) => postgres.listTasks(tenantId),
         findById: (id, tenantId) => postgres.findTaskById(id, tenantId),
-        updateStatus: (id, status, tenantId) =>
-          postgres.updateTaskStatus(id, status, tenantId)
+        updateStatus: (id, status, tenantId, expectedStatus) =>
+          postgres.updateTaskStatus(id, status, tenantId, expectedStatus)
       },
       approvals: {
         decideWithAudit: (input, tenantId) =>

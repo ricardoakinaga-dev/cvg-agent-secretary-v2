@@ -134,11 +134,37 @@ describe('repository error and scope paths', () => {
     ).toMatchObject({ status: 'in_progress' })
     expect(tasks.updateStatus('task_missing', 'done', tenantA)).toBeNull()
     expect(tasks.updateStatus(created.id, 'done', tenantB)).toBeNull()
+    expect(
+      tasks.updateStatus(created.id, 'done', tenantA, 'in_progress')
+    ).toMatchObject({ status: 'done' })
+    expect(
+      tasks.updateStatus(created.id, 'canceled', tenantA, 'open')
+    ).toBeNull()
+    expect(tasks.findById(created.id, tenantA)?.status).toBe('done')
 
     const otherTasks = new TaskRepository(seededDatabase(tenantB))
     expect(() => otherTasks.create(input, tenantA)).toThrowError(
       /Session not found/
     )
+  })
+
+  it('bounds unpaginated list reads at the documented cap', () => {
+    const db = seededDatabase()
+    const tasks = new TaskRepository(db)
+    for (let index = 0; index < 600; index += 1) {
+      db.state.tasks.push({
+        id: `task_cap_${index}`,
+        sessionId,
+        title: `cap ${index}`,
+        description: 'cap',
+        priority: 'medium',
+        source: 'cap',
+        status: 'open',
+        idempotencyKey: `cap-${index}`,
+        createdAt: new Date('2026-09-13T10:00:00.000Z')
+      })
+    }
+    expect(tasks.list(tenantA)).toHaveLength(500)
   })
 
   it('filters audit evidence by correlation, session, type and actor', () => {

@@ -326,6 +326,65 @@ describeWithPostgres('durable orchestrator PostgreSQL store', () => {
     ).rejects.toMatchObject({ code: 'conflict' })
   })
 
+  it('loads plan steps and step attempts in bulk with tenant scoping', async () => {
+    const goal = await store.createGoal(createGoalInput())
+    const steps = [draft('bulk-1'), draft('bulk-2')]
+    const graph = validatePlanGraph(
+      { id: 'plan_draft', goalId: goal.id, tenantId: TENANT, version: 1 },
+      steps
+    )
+    const activated = await store.activatePlan({
+      tenantId: TENANT,
+      goalId: goal.id,
+      expectedGoalVersion: goal.version,
+      planVersion: 1,
+      parentPlanId: null,
+      reason: 'bulk plan',
+      steps,
+      consumeReplan: false,
+      fingerprint: graph.fingerprint
+    })
+
+    const bulkSteps = await store.listStepsByPlan(TENANT, [activated.plan.id])
+    expect(bulkSteps.map((step) => step.id)).toEqual(['bulk-1', 'bulk-2'])
+    expect(await store.listStepsByPlan(TENANT, [])).toEqual([])
+    expect(
+      await store.listStepsByPlan(OTHER_TENANT, [activated.plan.id])
+    ).toEqual([])
+    expect(await store.listAttemptsByStep(TENANT, [])).toEqual([])
+
+    for (const [index, step] of bulkSteps.entries()) {
+      await withTenantContext(pool, TENANT, (client) =>
+        client.query(
+          `INSERT INTO orchestrator_attempts
+             (tenant_id, id, goal_id, plan_id, step_id, worker_id,
+              lease_token, started_at, correlation_id)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+          [
+            TENANT,
+            `attempt_bulk_${index}`,
+            goal.id,
+            activated.plan.id,
+            step.id,
+            'worker-bulk',
+            `lease_bulk_${index}`,
+            new Date(new Date('2026-09-15T12:00:00.000Z').getTime() + index),
+            CORRELATION
+          ]
+        )
+      )
+    }
+    const bulkAttempts = await store.listAttemptsByStep(
+      TENANT,
+      bulkSteps.map((step) => step.id)
+    )
+    expect(bulkAttempts.map((attempt) => attempt.stepId)).toEqual([
+      'bulk-1',
+      'bulk-2'
+    ])
+    expect(await store.listAttemptsByStep(OTHER_TENANT, ['bulk-1'])).toEqual([])
+  })
+
   it('persists the iteration guard and observation in PostgreSQL', async () => {
     const goal = await store.createGoal({
       ...createGoalInput(),

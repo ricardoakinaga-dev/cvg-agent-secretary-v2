@@ -206,7 +206,103 @@ describe('durable PostgreSQL outbox', () => {
   )
 
   it.skipIf(!databaseUrl)(
-    'keeps the lease race at-least-once and relies on idempotent effects',
+    'keeps the effect journal when the ack loses its lease after the effect ran',
+    async () => {
+      const schema = `cvg_outbox_journal_${Date.now()}_${randomBytes(3).toString('hex')}`
+      const client = new Client({ connectionString: databaseUrl })
+      let clockNow = new Date('2026-01-02T00:00:00.000Z')
+      await client.connect()
+      try {
+        await runPostgresMigrations(client, { schemaName: schema })
+        await client.query(`SET search_path TO ${schema}`)
+        await client.query("SELECT set_config('cvg.tenant_id', $1, false)", [
+          tenantA
+        ])
+        const repository = new PostgresRuntimeRepository(client, {
+          tenantIsolation: true,
+          clock: () => clockNow
+        })
+        const idempotencyKey = `journal-lost-lease-${Date.now()}`
+        const created = await repository.enqueue({
+          tenantId: tenantA,
+          type: 'inbound.process',
+          payload: { fixture: 'journal-lost-lease' },
+          correlationId: 'corr_00000000-0000-4000-8000-000000000179',
+          idempotencyKey,
+          createdAt: clockNow,
+          availableAt: clockNow
+        })
+        const claimed = await repository.claimNext({
+          tenantId: tenantA,
+          workerId: 'worker-journal-lease',
+          leaseMs: 1_000
+        })
+        if (!claimed) throw new Error('expected initial claim')
+
+        let effects = 0
+        await expect(
+          repository.ack({
+            tenantId: tenantA,
+            eventId: created.id,
+            workerId: 'worker-journal-lease',
+            leaseToken: claimed.leaseToken ?? undefined,
+            effect: () => {
+              effects += 1
+              // The lease expires while the effect runs: the final ack
+              // transaction must lose its lease after the effect committed.
+              clockNow = new Date(claimed.leaseUntil!.getTime() + 1)
+              return { journaled: true, preserved: true }
+            }
+          })
+        ).rejects.toMatchObject({ code: 'conflict' })
+        expect(effects).toBe(1)
+
+        const journal = await client.query<{ result: unknown }>(
+          `SELECT result FROM outbox_effects
+           WHERE tenant_id = $1 AND idempotency_key = $2`,
+          [tenantA, idempotencyKey]
+        )
+        expect(journal.rows[0]?.result).toMatchObject({
+          journaled: true,
+          preserved: true
+        })
+
+        const reclaimed = await repository.claimNext({
+          tenantId: tenantA,
+          workerId: 'worker-journal-lease',
+          leaseMs: 30_000
+        })
+        if (!reclaimed) throw new Error('expected reclaim after lease loss')
+        const processed = await repository.ack({
+          tenantId: tenantA,
+          eventId: created.id,
+          workerId: 'worker-journal-lease',
+          leaseToken: reclaimed.leaseToken ?? undefined,
+          result: { journaled: false, preserved: false }
+        })
+        expect(processed.status).toBe('processed')
+        expect(effects).toBe(1)
+        const preserved = await client.query<{ result: unknown }>(
+          `SELECT result FROM outbox_effects
+           WHERE tenant_id = $1 AND idempotency_key = $2`,
+          [tenantA, idempotencyKey]
+        )
+        expect(preserved.rows[0]?.result).toMatchObject({
+          journaled: true,
+          preserved: true
+        })
+      } finally {
+        await client
+          .query(`DROP SCHEMA IF EXISTS ${schema} CASCADE`)
+          .catch(() => undefined)
+        await client.end()
+      }
+    },
+    30_000
+  )
+
+  it.skipIf(!databaseUrl)(
+    'keeps the committed effect journal across a lease takeover race',
     async () => {
       const schema = `cvg_outbox_race_${Date.now()}_${randomBytes(3).toString('hex')}`
       const firstClient = new Client({ connectionString: databaseUrl })
@@ -295,7 +391,10 @@ describe('durable PostgreSQL outbox', () => {
           }
         })
         expect(current.status).toBe('processed')
-        expect(handlerCalls).toBe(2)
+        // The stale worker's effect committed its journal before the takeover
+        // was observed, so the fresh ack skips the handler instead of running
+        // the effect a second time.
+        expect(handlerCalls).toBe(1)
         expect(effectiveEffects).toBe(1)
         expect(await second.listDeadLetters(tenantA)).toHaveLength(0)
       } finally {
@@ -378,7 +477,9 @@ describe('durable PostgreSQL outbox', () => {
             WHERE tenant_id = $1 AND idempotency_key = $2`,
           [tenantA, created.idempotencyKey]
         )
-        expect(journal.rows[0]?.count).toBe('0')
+        // The effect already ran, so its journal is committed before the
+        // final CAS and survives the lease fence; a retry must not re-run it.
+        expect(journal.rows[0]?.count).toBe('1')
       } finally {
         await client.query(`DROP SCHEMA IF EXISTS ${schema} CASCADE`)
         await client.end()
@@ -644,11 +745,13 @@ describe('durable PostgreSQL outbox', () => {
           attempts: 1,
           processedAt: null
         })
-        const effectsAfterRollback = await first.query(
+        const effectsAfterFailedCas = await first.query(
           `SELECT count(*)::int AS count FROM outbox_effects WHERE tenant_id = $1`,
           [tenantA]
         )
-        expect(effectsAfterRollback.rows[0]?.count).toBe(0)
+        // The effect ran before the failing audit insert: its journal was
+        // committed in its own transaction and is retained for the retry.
+        expect(effectsAfterFailedCas.rows[0]?.count).toBe(1)
 
         let current = claimed
         for (let attempt = 1; attempt <= OUTBOX_MAX_ATTEMPTS; attempt += 1) {
@@ -699,7 +802,7 @@ describe('durable PostgreSQL outbox', () => {
           `SELECT count(*)::int AS count FROM outbox_effects WHERE tenant_id = $1 AND idempotency_key = $2`,
           [tenantA, created.idempotencyKey]
         )
-        expect(journal.rows[0]?.count).toBe(0)
+        expect(journal.rows[0]?.count).toBe(1)
       } finally {
         await first.query(`DROP SCHEMA IF EXISTS ${schema} CASCADE`)
         await Promise.all([first.end(), second.end()])

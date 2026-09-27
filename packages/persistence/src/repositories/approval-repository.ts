@@ -1,6 +1,7 @@
 import { DomainError } from '@cvg/shared'
 import { TenantIdSchema, type TenantId } from '@cvg/platform'
 import { InMemoryDatabase } from '../db.ts'
+import { MAX_UNPAGINATED_LIST_ROWS } from '../list-limits.ts'
 import type { ApprovalRequestRecord } from '../schema.ts'
 
 import { AuditRepository } from './audit-repository.ts'
@@ -84,6 +85,7 @@ export class ApprovalRepository {
         (approval) =>
           !tenantId || this.sessionBelongsToTenant(approval.sessionId, tenantId)
       )
+      .slice(0, MAX_UNPAGINATED_LIST_ROWS)
       .map(cloneAttendanceApproval)
   }
 

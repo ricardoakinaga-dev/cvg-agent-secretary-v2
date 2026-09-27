@@ -37,6 +37,34 @@ describe('safe error mapping', () => {
       message: 'Unexpected internal error'
     })
   })
+
+  it('maps approval-engine failures onto the public contract', () => {
+    const approvalError = (code: string, message: string) => {
+      const error = new Error(message)
+      error.name = 'ApprovalError'
+      Object.assign(error, { code })
+      return error
+    }
+    expect(
+      toSafeError(approvalError('not_found', 'Approval not found'))
+    ).toEqual({ code: 'not_found', message: 'Approval not found' })
+    expect(
+      toSafeError(approvalError('self_approval_denied', 'Self approval'))
+    ).toEqual({ code: 'forbidden', message: 'Self approval' })
+    expect(
+      toSafeError(approvalError('invalid_state', 'Approval is not APPROVED'))
+    ).toEqual({ code: 'conflict', message: 'Approval is not APPROVED' })
+    expect(toSafeError(approvalError('unknown_code', 'Unmapped'))).toEqual({
+      code: 'conflict',
+      message: 'Unmapped'
+    })
+    const named = new Error('no code')
+    named.name = 'ApprovalError'
+    expect(toSafeError(named)).toEqual({
+      code: 'internal_error',
+      message: 'Unexpected internal error'
+    })
+  })
 })
 
 describe('role permissions and operator identity', () => {
@@ -176,14 +204,14 @@ describe('SSRF remaining range branches', () => {
 })
 
 type FakeSignalSource = {
-  once(event: string, listener: () => void): unknown
+  on(event: string, listener: () => void): unknown
   fire(event: 'SIGTERM' | 'SIGINT'): void
 }
 
 function fakeSignalSource(): FakeSignalSource {
   const listeners = new Map<string, () => void>()
   return {
-    once(event, listener) {
+    on(event, listener) {
       listeners.set(event, listener)
       return this
     },

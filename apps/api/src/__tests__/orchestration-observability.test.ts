@@ -1,7 +1,15 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { buildServer } from '../server.ts'
-import { toOrchestrationGoalDetailView } from '../orchestration-observability.ts'
-import type { GoalPlanStore } from '@cvg/agent-runtime'
+import {
+  loadOrchestrationGoalDetail,
+  toOrchestrationGoalDetailView
+} from '../orchestration-observability.ts'
+import {
+  InMemoryGoalPlanStore,
+  validatePlanGraph,
+  type GoalPlanStore,
+  type PlanStepDraft
+} from '@cvg/agent-runtime'
 
 const TENANT = 'tenant_00000000-0000-4000-8000-000000000731'
 const OTHER_TENANT = 'tenant_00000000-0000-4000-8000-000000000732'
@@ -65,6 +73,87 @@ describe('durable orchestration observability API', () => {
     })
     expect(JSON.stringify(detail.json().data)).not.toContain('leaseToken')
     expect(JSON.stringify(detail.json().data)).not.toContain('expected')
+  })
+
+  it('falls back to singular reads without changing the detail view', async () => {
+    const inner = new InMemoryGoalPlanStore()
+    const goal = await inner.createGoal({
+      tenantId: TENANT,
+      objective: 'Bulk fallback fixture',
+      successCriteria: [
+        {
+          kind: 'STATE',
+          resourceType: 'synthetic_resource',
+          field: 'status',
+          expected: 'ready',
+          source: 'operational_state'
+        }
+      ],
+      correlationId: 'corr_00000000-0000-4000-8000-000000000734'
+    })
+    const draft: PlanStepDraft = {
+      id: 'fallback-step',
+      type: 'synthetic',
+      description: 'fallback step',
+      requiredCapabilities: ['appointment.create'],
+      riskLevel: 'MEDIUM_RISK_WRITE',
+      approvalRequirement: 'none',
+      input: { fixture: true },
+      expectedOutcome: { verified: true },
+      timeoutMs: 1_000,
+      intent: {
+        capability: 'appointment.create',
+        action: 'synthetic.read',
+        resource: {
+          type: 'synthetic_resource',
+          id: 'resource_1',
+          tenantId: TENANT
+        },
+        dataClassification: 'INTERNAL',
+        modelMessages: null,
+        structuredOutput: null,
+        idempotencyKey: 'synthetic:fallback-step'
+      },
+      toolId: 'synthetic',
+      toolVersion: '1.0.0'
+    }
+    const steps = [draft]
+    const graph = validatePlanGraph(
+      { id: 'plan_draft', goalId: goal.id, tenantId: TENANT, version: 1 },
+      steps
+    )
+    await inner.activatePlan({
+      tenantId: TENANT,
+      goalId: goal.id,
+      expectedGoalVersion: goal.version,
+      planVersion: 1,
+      parentPlanId: null,
+      reason: 'fallback plan',
+      steps,
+      consumeReplan: false,
+      fingerprint: graph.fingerprint
+    })
+    const singularOnly = new Proxy(inner, {
+      get(target, property, receiver) {
+        if (
+          property === 'listStepsByPlan' ||
+          property === 'listAttemptsByStep'
+        ) {
+          return undefined
+        }
+        const value = Reflect.get(target, property, receiver)
+        return typeof value === 'function' ? value.bind(target) : value
+      }
+    }) as GoalPlanStore
+
+    const bulk = await loadOrchestrationGoalDetail(inner, TENANT, goal)
+    const fallback = await loadOrchestrationGoalDetail(
+      singularOnly,
+      TENANT,
+      goal
+    )
+    expect(fallback).toEqual(bulk)
+    expect(JSON.stringify(fallback)).toContain('fallback-step')
   })
 
   it('requires supervisor or admin identity and keeps tenant scope', async () => {
