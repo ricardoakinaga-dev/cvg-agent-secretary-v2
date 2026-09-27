@@ -1,13 +1,13 @@
 $ npm test -- --run apps/api/src/__tests__/tenant-inbound-isolation.test.ts packages/persistence/src/__tests__/tenant-isolation.test.ts
-# certificationId=phase11-8f4ff254c0f50996-mujd4y5g
-# candidateId=8f4ff254c0f509965131e42e425854adbc1c60a3956009a3c0b1e3e1d2bb35bd
-# commit=61ebc190c3f5bbd1c7691f8d8dca2bb99846d58c
-# treeHash=3ef88550402de16a1834d5d5e5e22d22387bf75e5e85d9abb451d5c233d3c7ac
+# certificationId=phase11-7dd707a9f1093efa-mujew0jp
+# candidateId=7dd707a9f1093efad88d1da8e054def826805ce18feee99adac800f403c217b1
+# commit=d87d40873b77bd8b3624b1f99bb2f4ad58d74fb7
+# treeHash=ae4d2245976997c6ae0a9ea0882c8bcd7bee5ec55ab34f70829032ceec2792f5
 # gate=tenant_redteam
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=3533
+# exitCode=0 durationMs=3134
 
 
 > cvg-agent-secretary-v2@1.0.0 test
@@ -19,8 +19,8 @@ $ npm test -- --run apps/api/src/__tests__/tenant-inbound-isolation.test.ts pack
 
  Test Files  2 passed (2)
       Tests  16 passed | 2 skipped (18)
-   Start at  02:48:29
-   Duration  3.08s (transform 921ms, setup 0ms, import 1.41s, tests 201ms, environment 1.23s)
+   Start at  03:34:20
+   Duration  2.70s (transform 773ms, setup 0ms, import 1.18s, tests 190ms, environment 1.11s)
 
 
 
