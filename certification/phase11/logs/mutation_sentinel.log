@@ -1,13 +1,13 @@
 $ node scripts/mutation-sentinel.mjs --fail-on-gaps --out=certification/phase11/mutation-raw-report.json
-# certificationId=phase11-7dd707a9f1093efa-mujew0jp
-# candidateId=7dd707a9f1093efad88d1da8e054def826805ce18feee99adac800f403c217b1
-# commit=d87d40873b77bd8b3624b1f99bb2f4ad58d74fb7
-# treeHash=ae4d2245976997c6ae0a9ea0882c8bcd7bee5ec55ab34f70829032ceec2792f5
+# certificationId=phase11-7d5ff88370707e5a-mujgv2ca
+# candidateId=7d5ff88370707e5aba144f94ad9f8346dcecbfd40f1e3334fc1921fee9e4f4dd
+# commit=cf5a79a98e8e527d91d120de62656f590507534c
+# treeHash=8eb7575ce5dfe06000ea781f9c377dc9a6c281a9f1ca71eae4aa33d84aeb856c
 # gate=mutation_sentinel
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=45342
+# exitCode=0 durationMs=55223
 
 [mutation] detected       MUT-AUTH-01 packages/policy-engine/src/engine.ts
 [mutation] detected       MUT-AUTH-02 packages/policy-engine/src/engine.ts
@@ -36,6 +36,6 @@ $ node scripts/mutation-sentinel.mjs --fail-on-gaps --out=certification/phase11/
 [mutation] detected       MUT-A10-DELIVERY-01 packages/observability/src/alert-delivery-ledger.ts
 [mutation] detected       MUT-A10-ENGINE-01 packages/approval-engine/src/engine.ts
 [mutation] status=PASS detected=26/26 notDetected=0 notApplicable=0
-[mutation] reportSha256=c46c857d06c7e67037375b198a420fea1c183564f7d1cb20e8e93da2bc2742b8
+[mutation] reportSha256=a6aef65242535f9a52a6fba751c02488bbff290a7b5ed3e029cc890d18c065a4
 
 

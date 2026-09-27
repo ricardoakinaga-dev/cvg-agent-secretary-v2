@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "kind": "phase11-chaos-report",
-  "certificationId": "phase11-7dd707a9f1093efa-mujew0jp",
-  "candidateCommit": "d87d40873b77bd8b3624b1f99bb2f4ad58d74fb7",
-  "generatedAt": "2026-09-27T06:34:28.644Z",
+  "certificationId": "phase11-7d5ff88370707e5a-mujgv2ca",
+  "candidateCommit": "cf5a79a98e8e527d91d120de62656f590507534c",
+  "generatedAt": "2026-09-27T07:29:09.328Z",
   "gateId": "chaos",
   "status": "PASS",
   "command": "npm run test:chaos -- --reporter=json --outputFile=certification/chaos-report.json",
@@ -36,7 +36,7 @@
       "updated": 0,
       "didUpdate": false
     },
-    "startTime": 1790490791319,
+    "startTime": 1790494049200,
     "success": true,
     "testResults": [
       {
@@ -64,8 +64,8 @@
             "tags": []
           }
         ],
-        "startTime": 1790490791319,
-        "endTime": 1790490791319,
+        "startTime": 1790494049200,
+        "endTime": 1790494049200,
         "status": "passed",
         "message": "",
         "name": "/home/ricardo/cvg-agent-secretary-v2/packages/chaos/src/__tests__/chaos-postgres.test.ts"
@@ -79,7 +79,7 @@
             "fullName": "chaos: outbox and side effects CHAOS-01 worker crash before side effect: lease expires and another worker claims",
             "status": "passed",
             "title": "CHAOS-01 worker crash before side effect: lease expires and another worker claims",
-            "duration": 5.094200000000001,
+            "duration": 7.138786999999866,
             "failureMessages": [],
             "meta": {},
             "tags": []
@@ -91,7 +91,7 @@
             "fullName": "chaos: outbox and side effects CHAOS-02 worker crash after provider response: retry does not duplicate the effect",
             "status": "passed",
             "title": "CHAOS-02 worker crash after provider response: retry does not duplicate the effect",
-            "duration": 1.3490560000000187,
+            "duration": 2.115984000000026,
             "failureMessages": [],
             "meta": {},
             "tags": []
@@ -103,7 +103,7 @@
             "fullName": "chaos: outbox and side effects CHAOS-03 worker crash after external effect before ack: exactly one external effect",
             "status": "passed",
             "title": "CHAOS-03 worker crash after external effect before ack: exactly one external effect",
-            "duration": 1.9549959999999373,
+            "duration": 3.4019499999999425,
             "failureMessages": [],
             "meta": {},
             "tags": []
@@ -115,7 +115,7 @@
             "fullName": "chaos: outbox and side effects CHAOS-14 duplicate worker claim: only one owner at a time",
             "status": "passed",
             "title": "CHAOS-14 duplicate worker claim: only one owner at a time",
-            "duration": 0.3552629999999226,
+            "duration": 0.6213179999999738,
             "failureMessages": [],
             "meta": {},
             "tags": []
@@ -127,7 +127,7 @@
             "fullName": "chaos: providers and latency CHAOS-06 provider timeout is bounded by the deadline",
             "status": "passed",
             "title": "CHAOS-06 provider timeout is bounded by the deadline",
-            "duration": 105.56005199999981,
+            "duration": 108.16915299999982,
             "failureMessages": [],
             "meta": {},
             "tags": []
@@ -139,7 +139,7 @@
             "fullName": "chaos: providers and latency CHAOS-07 provider 429 is retried with bounded backoff",
             "status": "passed",
             "title": "CHAOS-07 provider 429 is retried with bounded backoff",
-            "duration": 1.3111850000000231,
+            "duration": 2.229576000000179,
             "failureMessages": [],
             "meta": {},
             "tags": []
@@ -151,7 +151,7 @@
             "fullName": "chaos: providers and latency CHAOS-08 provider 503 fails closed with provider_unavailable",
             "status": "passed",
             "title": "CHAOS-08 provider 503 fails closed with provider_unavailable",
-            "duration": 0.6066520000001674,
+            "duration": 2.5326209999998355,
             "failureMessages": [],
             "meta": {},
             "tags": []
@@ -163,7 +163,7 @@
             "fullName": "chaos: providers and latency CHAOS-15 network latency: slow success still completes inside the deadline",
             "status": "passed",
             "title": "CHAOS-15 network latency: slow success still completes inside the deadline",
-            "duration": 49.89128900000014,
+            "duration": 51.86503400000038,
             "failureMessages": [],
             "meta": {},
             "tags": []
@@ -175,7 +175,7 @@
             "fullName": "chaos: channels and idempotency CHAOS-09 duplicate webhook produces a single inbound event",
             "status": "passed",
             "title": "CHAOS-09 duplicate webhook produces a single inbound event",
-            "duration": 2.5280239999999594,
+            "duration": 3.568250999999691,
             "failureMessages": [],
             "meta": {},
             "tags": []
@@ -187,7 +187,7 @@
             "fullName": "chaos: channels and idempotency CHAOS-10 out-of-order webhooks are all accepted without loss",
             "status": "passed",
             "title": "CHAOS-10 out-of-order webhooks are all accepted without loss",
-            "duration": 0.7355519999998705,
+            "duration": 1.3690329999999449,
             "failureMessages": [],
             "meta": {},
             "tags": []
@@ -199,7 +199,7 @@
             "fullName": "chaos: channels and idempotency CHAOS-13 replayed token is rejected by the replay store",
             "status": "passed",
             "title": "CHAOS-13 replayed token is rejected by the replay store",
-            "duration": 0.24711099999990438,
+            "duration": 0.3953470000001289,
             "failureMessages": [],
             "meta": {},
             "tags": []
@@ -211,7 +211,7 @@
             "fullName": "chaos: channels and idempotency CHAOS-16 channel provider outage: retry sends exactly once",
             "status": "passed",
             "title": "CHAOS-16 channel provider outage: retry sends exactly once",
-            "duration": 2.027421000000004,
+            "duration": 3.1143550000001596,
             "failureMessages": [],
             "meta": {},
             "tags": []
@@ -223,7 +223,7 @@
             "fullName": "chaos: approvals and tenants CHAOS-11 expired approval fails closed during execution",
             "status": "passed",
             "title": "CHAOS-11 expired approval fails closed during execution",
-            "duration": 1.8558210000001054,
+            "duration": 2.867714999999862,
             "failureMessages": [],
             "meta": {},
             "tags": []
@@ -235,7 +235,7 @@
             "fullName": "chaos: approvals and tenants CHAOS-12 tenant mismatch is denied across approval and policy boundaries",
             "status": "passed",
             "title": "CHAOS-12 tenant mismatch is denied across approval and policy boundaries",
-            "duration": 1.0535350000000108,
+            "duration": 1.7263769999999568,
             "failureMessages": [],
             "meta": {},
             "tags": []
@@ -247,14 +247,14 @@
             "fullName": "chaos ledger records every scenario with an explicit status",
             "status": "passed",
             "title": "records every scenario with an explicit status",
-            "duration": 0.22157300000003488,
+            "duration": 0.39193100000011327,
             "failureMessages": [],
             "meta": {},
             "tags": []
           }
         ],
-        "startTime": 1790490792862,
-        "endTime": 1790490793038.2217,
+        "startTime": 1790494051554,
+        "endTime": 1790494051747.3918,
         "status": "passed",
         "message": "",
         "name": "/home/ricardo/cvg-agent-secretary-v2/packages/chaos/src/__tests__/chaos.test.ts"
@@ -268,7 +268,7 @@
             "fullName": "chaos fault primitives scripts fetch responses and exhausts deterministically",
             "status": "passed",
             "title": "scripts fetch responses and exhausts deterministically",
-            "duration": 3.844690000000014,
+            "duration": 3.794473000000039,
             "failureMessages": [],
             "meta": {},
             "tags": []
@@ -280,7 +280,7 @@
             "fullName": "chaos fault primitives delays and aborts",
             "status": "passed",
             "title": "delays and aborts",
-            "duration": 2.4642049999999927,
+            "duration": 1.3664159999999583,
             "failureMessages": [],
             "meta": {},
             "tags": []
@@ -292,14 +292,14 @@
             "fullName": "chaos fault primitives records pass, fail and not-executed scenarios",
             "status": "passed",
             "title": "records pass, fail and not-executed scenarios",
-            "duration": 1.022397000000069,
+            "duration": 1.0808050000000549,
             "failureMessages": [],
             "meta": {},
             "tags": []
           }
         ],
-        "startTime": 1790490794393,
-        "endTime": 1790490794400.0225,
+        "startTime": 1790494053663,
+        "endTime": 1790494053669.0808,
         "status": "passed",
         "message": "",
         "name": "/home/ricardo/cvg-agent-secretary-v2/packages/chaos/src/__tests__/faults-coverage.test.ts"

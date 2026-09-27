@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "kind": "phase11-production_preflight-report",
-  "certificationId": "phase11-7dd707a9f1093efa-mujew0jp",
-  "candidateCommit": "d87d40873b77bd8b3624b1f99bb2f4ad58d74fb7",
-  "generatedAt": "2026-09-27T06:34:28.645Z",
+  "certificationId": "phase11-7d5ff88370707e5a-mujgv2ca",
+  "candidateCommit": "cf5a79a98e8e527d91d120de62656f590507534c",
+  "generatedAt": "2026-09-27T07:29:09.328Z",
   "gateId": "production_preflight",
   "status": "PASS",
   "command": "node scripts/production-preflight.mjs --profile=PRODUCTION --expect=REJECT",
