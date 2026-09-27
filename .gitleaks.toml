@@ -1,0 +1,29 @@
+# CVG — configuração do gitleaks (validada com 8.24.3, a mesma versão do CI).
+#
+# Regra: só falsos positivos documentados entram na lista. Nenhuma credencial
+# viva é coberta. Cada caminho abaixo existe por design e é gerado por
+# ferramenta do repositório:
+#
+#   - docs/04_audit/evidence/**: fingerprints sha256, commit SHAs e digests de
+#     artefatos gravados como prova de auditoria (o backlog P0 exige esta
+#     allowlist).
+#   - certification/**: pacote de certificação derivado (commits, digests de
+#     build, SBOM, invariantes).
+#   - docs/99_runtime_state.md: hashes de candidato/árvore citados no estado.
+#   - **/__tests__/** e fixtures: literais sintéticos de idempotencyKey/secret/key.
+#
+# Verificação: `gitleaks git --config=.gitleaks.toml` reporta 0 leaks no
+# histórico completo, e um segredo plantado fora destes caminhos continua
+# sendo detectado (evidência: docs/04_audit/evidence/AUD20/).
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Artefatos gerados (evidência, certificação, estado) e fixtures sintéticas de teste"
+paths = [
+  '''^docs/04_audit/evidence/''',
+  '''^certification/''',
+  '''^docs/99_runtime_state\.md$''',
+  '''/(?:__tests__|__mocks__|fixtures)/''',
+]

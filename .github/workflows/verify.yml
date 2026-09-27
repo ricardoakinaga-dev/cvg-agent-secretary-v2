@@ -17,7 +17,7 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     services:
       postgres:
         image: postgres:16-alpine
@@ -51,7 +51,21 @@ jobs:
         run: npm run readiness
 
       - name: Verify
+        env:
+          # Coverage must be PostgreSQL-backed: the critical-branch floors of
+          # kernel-composition (90%) and runtime-approval-store (85%) are only
+          # reachable when the integration tests run.
+          TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/cvg_test
         run: npm run verify
+
+      - name: Critical branch coverage
+        run: node scripts/aud19-critical-coverage.mjs
+
+      - name: Phase 11 certification integrity
+        run: npm run certification:verify:phase11
+
+      - name: Promotion gate
+        run: npm run promotion:check -- --expect=EXTERNAL_ONLY
 
       - name: Diff check
         run: git diff --check
