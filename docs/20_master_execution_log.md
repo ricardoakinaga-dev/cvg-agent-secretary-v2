@@ -1,3 +1,18 @@
+# AUD20-22 — validação conjunta com crítica independente e remediação — 2026-09-27
+
+- Validação guiada completa: 7 gates estáticos PASS; suíte `2.681 PASS`/`0` falhas; gate PostgreSQL descartável `30/30` arquivos e `356/356` testes; coverage `93,01/90,18/91,23/93,49%`; E2E `75/75` (3 browsers).
+- Crítica independente fresh-context do diff: `PASS_WITH_FINDINGS` (nenhum P0/P1). Remediação: `x-result-truncated` nas listas com teto, liberação da reserva no commit de replay que lança, prova de ordem journal→CAS, pool honrando override de concorrência e 4 testes de fronteira; 2 achados verificados como falsos positivos. Relatório: [AUD20-22](04_audit/evidence/AUD20/AUD20-22-production-hardening-2026-09-27.md). Staging/produção `NO_GO`.
+
+# AUD20-22 — hardening de produção com 5 correções P1/P2 — 2026-09-27
+
+- Continuação autorizada da AUD20-21: journal de efeito commitado antes do CAS final (fim da reexecução do efeito na perda de lease), heartbeat tolerante a 3 falhas transitórias, `ROLLBACK` sem mascarar o erro original em 19 pontos, leituras bulk `listStepsByPlan`/`listAttemptsByStep` (fim do fan-out N+1 do detalhe de Goal) e teto `MAX_UNPAGINATED_LIST_ROWS = 500` nas listas sem paginação.
+- Gates: typecheck/lint/Prettier/docs/build/`npm audit`/arquitetura PASS; suíte `2.677 PASS`/`0` falhas; gate PostgreSQL descartável `30/30` arquivos e `356/356` testes com `0` skips; coverage `92,86/90,07/90,85/93,37%`; E2E `75/75` (3 browsers). Relatório: [AUD20-22](04_audit/evidence/AUD20/AUD20-22-production-hardening-2026-09-27.md). Staging/produção `NO_GO`.
+
+# AUD20-21 — auditoria completa de produção com 10 correções P1 — 2026-09-27
+
+- Rodada autorizada pelo usuário: auditoria de rotas (cliente web × 72 rotas do servidor sem ausências), worker/outbox, persistence/Postgres, frontend e shutdown; 10 defeitos P1 corrigidos com testes de regressão (shutdown com sinal repetido, `pool.end()` duplo, pool do worker com `max`/`connectionTimeoutMillis`, `markReady` após `start`, contadores de release, timeout do `sweeps.stop()`, mapeamento de `ApprovalError`, `DomainError` em capability approval, commit de replay de webhook não fatal e CAS em `PATCH /v1/tasks/:taskId/status`).
+- Gates: typecheck/lint/Prettier/build/`npm audit` (0 vulnerabilidades) PASS; suíte integral PASS; gate PostgreSQL descartável `30/30` arquivos, `354/354` testes, `0` skips, exit `0`; nenhum dado real, commit, push ou deploy. Relatório: [AUD20-21](04_audit/evidence/AUD20/AUD20-21-production-audit-2026-09-27.md). Staging/produção `NO_GO`.
+
 # Re-certificação Phase 11 pós-owner/SLO com PostgreSQL descartável — 2026-09-26
 
 - Candidato `fa05bd7e` / `20089fd5` (worktree limpo) re-certificado com contêiner `postgres:16-alpine` descartável em loopback `127.0.0.1:55441` e `PHASE11_ALLOW_DISPOSABLE_POSTGRES=1`: `certificationId phase11-fa05bd7ebd77b19e-muj6fvqf`, `decision=CONDITIONAL_GO`, `certification=AAA_CANDIDATE`, **35/35 gates PASS**, **16/16 invariantes PASS**, coverage `318` arquivos / **`2.851` testes PASS / 0 skip** com banco e cobertura crítica sem bloqueio. Relatório do crítico fresh-context regenerado e validado (`P0=0`/`P1=0`/`P2=5`, `PASS`). Pós-run: `certification:verify:phase11` PASS (`failures: []`) e `promotion:check` apenas com os 8 `external_gate_pending` (`production_assurance_incomplete`, `noProductionEffect:true`). Recibo: [AUD20-recert-pg-20260926](04_audit/evidence/AUD20/AUD20-recert-pg-20260926.md). Staging/produção `NO_GO`.

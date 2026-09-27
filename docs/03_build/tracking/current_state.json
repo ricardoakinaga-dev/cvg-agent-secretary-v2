@@ -4,7 +4,7 @@
   "program": "AUD20-REM-v2",
   "currentTask": "AUD20-10",
   "currentStatus": "READY_FOR_NEXT_STEP",
-  "nextAction": "observar os resultados de `Verify`/`Security` após o push desta rodada e, se as baselines visuais do E2E divergirem do runner, decidir a regeneração; depois obter os insumos do item B (owners/credenciais dos gates 1–4, ambiente/janela de 5/7, autorização/participantes de 6) e conduzir o sign-off (8) sobre o candidato certificado vigente em `certification/current.json`; manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.",
+  "nextAction": "observar os resultados de `Verify`/`Security` após o próximo push e tratar divergência de baseline visual do E2E; executar os itens P2 remanescentes da [AUD20-22](04_audit/evidence/AUD20/AUD20-22-production-hardening-2026-09-27.md) (release de claim no shutdown, paginação real e observabilidade de produção) em tasks próprias com SPEC; depois obter os insumos do item B (owners/credenciais dos gates 1–4, ambiente/janela de 5/7, autorização/participantes de 6) e conduzir o sign-off (8) sobre o candidato certificado vigente em `certification/current.json`; manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.",
   "releaseBoundary": {
     "staging": "NO_GO",
     "production": "NO_GO"

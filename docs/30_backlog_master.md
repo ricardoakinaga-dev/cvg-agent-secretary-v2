@@ -1,3 +1,23 @@
+# AUD20-22 — Validação conjunta e remediação pós-crítica — 2026-09-27
+
+- [x] Validação guiada: estáticos + suíte `2.681` + PostgreSQL `356/356` + coverage `93,01/90,18/91,23/93,49%` + E2E `75/75`.
+- [x] Crítica independente fresh-context `PASS_WITH_FINDINGS`: `x-result-truncated` nas listas com teto, reserva de replay liberada no commit que lança, prova de ordem journal→CAS no teste de fronteira, pool honrando override de concorrência, 4 testes de fronteira; 2 falsos positivos verificados em runtime.
+- [ ] Hardening de backlog: rollback manual sem destruir/liberar a conexão em falha (P3-6) e determinismo do teste de lease do channel-effect sob contenção. Staging/produção `NO_GO`.
+
+# AUD20-22 — Hardening de produção (P1/P2 remanescentes) — 2026-09-27
+
+- [x] Journal de efeito commitado antes do CAS final (fim da reexecução do efeito na perda de lease); heartbeat com tolerância a falhas transitórias; `ROLLBACK` sem mascarar o erro original (19 pontos); bulk `listStepsByPlan`/`listAttemptsByStep` (fim do fan-out N+1); teto de listas sem paginação — ver [relatório](04_audit/evidence/AUD20/AUD20-22-production-hardening-2026-09-27.md).
+- [ ] P2 remanescente: release de claim no shutdown (exige `releaseClaim`/flag no port do outbox) — task própria com SPEC e recertificação.
+- [ ] P2 remanescente: paginação real das listas de tasks/approvals/drafts (contrato de API + cliente web).
+- [ ] P2 remanescente: observabilidade de produção da API (o coletor é harness-only por contrato) — SPEC própria.
+- [ ] Determinismo do teste `channel-effect-journal-postgres` sob contenção (flakiness temporal observada uma vez). Staging/produção `NO_GO`.
+
+# AUD20-21 — Auditoria completa de produção e correção de bugs — 2026-09-27
+
+- [x] Rodada autorizada pelo usuário: auditar rotas/worker/persistence, corrigir defeitos verificados e reexecutar todos os gates locais sob Node `22.23.2`; relatório em [AUD20-21](04_audit/evidence/AUD20/AUD20-21-production-audit-2026-09-27.md).
+- [x] Correções P1 admitidas: sinal repetido no shutdown (`lifecycle.ts`), `pool.end()` duplo e ordem start/ready do worker, pool do worker sem teto/timeout, contadores reais de release no `stop()`, timeout do `sweeps.stop()`, mapeamento HTTP de `ApprovalError`, `DomainError` nas validações de capability approval e commit de replay de webhook não fatal.
+- [x] P1/P2 remanescentes documentados no relatório (rotas sem CAS, listas sem LIMIT, handler de erro global) permanecem sem BUILD próprio; staging/produção `NO_GO`.
+
 # P0s de CI (gitleaks + gates de verificação) e push — 2026-09-27
 
 - [x] `.gitleaks.toml` com allowlist por caminho criada e validada (gitleaks 8.24.3: 0 leaks no histórico; detecção ativa fora da allowlist) — ver [recibo](04_audit/evidence/AUD20/AUD20-ci-gates-p0-20260927.md).
