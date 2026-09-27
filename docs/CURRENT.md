@@ -497,7 +497,9 @@ da próxima ação primária AUD20-17.
 
 ## Próxima ação
 
-- Próxima ação: obter os insumos do item B (owners/credenciais dos gates 1–4, ambiente/janela de 5/7, autorização/participantes de 6) e re-certificar o novo candidato pós-owner/SLO antes do sign-off (8); manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.
+- Próxima ação: obter os insumos do item B (owners/credenciais dos gates 1–4, ambiente/janela de 5/7, autorização/participantes de 6) e conduzir o sign-off (8) sobre o candidato certificado vigente em `certification/current.json`; manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.
+
+- Re-certificação executada em 2026-09-26 com PostgreSQL descartável: `certificationId phase11-fa05bd7ebd77b19e-muj6fvqf`, `CONDITIONAL_GO`/`AAA_CANDIDATE`, 35/35 gates, 16/16 invariantes, `certification:verify:phase11` PASS; ver [recibo](04_audit/evidence/AUD20/AUD20-recert-pg-20260926.md).
 
 - Item C concluído: owner `operations` e os 8 objetivos SLO aprovados (validade 2026-12-31); `AUD20-10` C01–C07 completos no escopo local. A mudança de `alerts.ts` reabre a certificação — re-certificar antes do sign-off. Ver [recibo](04_audit/evidence/AUD20/AUD20-10-slo-human-approval-20260925.md).
 

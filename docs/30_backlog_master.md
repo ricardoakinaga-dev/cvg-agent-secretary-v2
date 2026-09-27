@@ -1,3 +1,9 @@
+# Re-certificação Phase 11 pós-owner/SLO — 2026-09-26
+
+- [x] Re-certificação executada com PostgreSQL descartável: `phase11-fa05bd7ebd77b19e-muj6fvqf`, `CONDITIONAL_GO`/`AAA_CANDIDATE`, 35/35 gates, 16/16 invariantes, verify PASS, promoção inelegível apenas pelos 8 externos — ver [recibo](04_audit/evidence/AUD20/AUD20-recert-pg-20260926.md).
+- [ ] Item B: insumos dos gates 1–7 (owners/credenciais dos gates 1–4, ambiente/janela de 5/7, autorização/participantes de 6) e sign-off (8) sobre o candidato vigente — `WAITING_HUMAN_APPROVAL`.
+- [ ] Manter `AUD20-19` sem sessão autorizada e 141 vínculos sem adjudicação. Staging/produção `NO_GO`.
+
 # 0574 — Auditoria com notas 0-100 — 2026-09-26
 
 - [x] Rodada `AUD-20260926-REPO` concluída e [relatório 0574](04_audit/0574_repository_audit_2026-09-26.md) publicado (16 itens; global **65**; gates locais PASS, suíte 2.659/0 falha/192 skip).
