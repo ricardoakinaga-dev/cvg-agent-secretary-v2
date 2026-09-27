@@ -1,13 +1,13 @@
 $ npm run test:e2e
-# certificationId=phase11-68bb9d0a531007c5-muhr3lor
-# candidateId=68bb9d0a531007c57572a44929480d138c2c55791ed0e522ceeadf9f5dc0aae0
-# commit=e09c5f34d49b4d660755e4ba573af4dfd847f49e
-# treeHash=7d216305e39e1615cf7900b44357e2686ec12ab4d4cf21630ef9d1c3e0e9b8df
+# certificationId=phase11-fa05bd7ebd77b19e-muj6fvqf
+# candidateId=fa05bd7ebd77b19e49b13b4510df36ba07fac9350945c8f4a810b5cefd6385b7
+# commit=8a8c5a6c17f6883913e090a0d902b3148006835d
+# treeHash=20089fd5a8da8aea40038d2d3a25209a08d4748c2340f29eb0f5806d61077030
 # gate=e2e
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=233663
+# exitCode=0 durationMs=240390
 
 
 > cvg-agent-secretary-v2@1.0.0 test:e2e
@@ -91,6 +91,6 @@ Running 75 tests using 1 worker
 [1A[2K[73/75] [webkit] › tests/e2e/visual-shell.spec.ts:100:5 › dead-letter diagnostics wrap long errors and remain tenant scoped
 [1A[2K[74/75] [webkit] › tests/e2e/visual-shell.spec.ts:163:5 › tenantless privileged sessions do not render or request the dead-letter queue
 [1A[2K[75/75] [webkit] › tests/e2e/visual-shell.spec.ts:181:5 › orchestration console exposes the synthetic state matrix read-only
-[1A[2K  75 passed (3.9m)
+[1A[2K  75 passed (4.0m)
 
 

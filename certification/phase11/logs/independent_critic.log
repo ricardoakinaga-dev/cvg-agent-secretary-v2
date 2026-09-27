@@ -1,13 +1,13 @@
 $ node scripts/phase11-2-evidence-check.mjs --critic
-# certificationId=phase11-68bb9d0a531007c5-muhr3lor
-# candidateId=68bb9d0a531007c57572a44929480d138c2c55791ed0e522ceeadf9f5dc0aae0
-# commit=e09c5f34d49b4d660755e4ba573af4dfd847f49e
-# treeHash=7d216305e39e1615cf7900b44357e2686ec12ab4d4cf21630ef9d1c3e0e9b8df
+# certificationId=phase11-fa05bd7ebd77b19e-muj6fvqf
+# candidateId=fa05bd7ebd77b19e49b13b4510df36ba07fac9350945c8f4a810b5cefd6385b7
+# commit=8a8c5a6c17f6883913e090a0d902b3148006835d
+# treeHash=20089fd5a8da8aea40038d2d3a25209a08d4748c2340f29eb0f5806d61077030
 # gate=independent_critic
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=304
+# exitCode=0 durationMs=366
 
 {
   "schemaVersion": 1,
@@ -20,7 +20,7 @@ $ node scripts/phase11-2-evidence-check.mjs --critic
     {
       "id": "CRITIC:environment",
       "status": "PASS",
-      "detail": "live candidate 68bb9d0a5310@e09c5f34d49b"
+      "detail": "live candidate fa05bd7ebd77@8a8c5a6c17f6"
     },
     {
       "id": "CRITIC:schema",
@@ -30,17 +30,17 @@ $ node scripts/phase11-2-evidence-check.mjs --critic
     {
       "id": "CRITIC:binding",
       "status": "PASS",
-      "detail": "68bb9d0a5310 (commit drift 5b93ff3->e09c5f3 tolerated; evidence-only commits)"
+      "detail": "fa05bd7ebd77 (commit drift 9570aef->8a8c5a6 tolerated; evidence-only commits)"
     },
     {
       "id": "CRITIC:fingerprint",
       "status": "PASS",
-      "detail": "6b07e00aecb8"
+      "detail": "ab5e92c3d316"
     },
     {
       "id": "CRITIC:identity",
       "status": "PASS",
-      "detail": "opencode-independent-critic-phase11-r2-20260925"
+      "detail": "opencode-independent-critic-phase11-r3-20260926"
     },
     {
       "id": "CRITIC:independence",
@@ -60,7 +60,7 @@ $ node scripts/phase11-2-evidence-check.mjs --critic
     {
       "id": "CRITIC:check_evidence",
       "status": "PASS",
-      "detail": "8 check(s) cite declared artifacts"
+      "detail": "7 check(s) cite declared artifacts"
     },
     {
       "id": "CRITIC:verdict",

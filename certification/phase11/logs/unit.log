@@ -1,13 +1,13 @@
 $ npm test -- --reporter=default --reporter=json --outputFile=certification/phase11/logs/unit-report.json
-# certificationId=phase11-68bb9d0a531007c5-muhr3lor
-# candidateId=68bb9d0a531007c57572a44929480d138c2c55791ed0e522ceeadf9f5dc0aae0
-# commit=e09c5f34d49b4d660755e4ba573af4dfd847f49e
-# treeHash=7d216305e39e1615cf7900b44357e2686ec12ab4d4cf21630ef9d1c3e0e9b8df
+# certificationId=phase11-fa05bd7ebd77b19e-muj6fvqf
+# candidateId=fa05bd7ebd77b19e49b13b4510df36ba07fac9350945c8f4a810b5cefd6385b7
+# commit=8a8c5a6c17f6883913e090a0d902b3148006835d
+# treeHash=20089fd5a8da8aea40038d2d3a25209a08d4748c2340f29eb0f5806d61077030
 # gate=unit
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=300187
+# exitCode=0 durationMs=303663
 
 
 > cvg-agent-secretary-v2@1.0.0 test
@@ -16,506 +16,506 @@ $ npm test -- --reporter=default --reporter=json --outputFile=certification/phas
 
  RUN  v4.1.11 /home/ricardo/cvg-agent-secretary-v2
 
- ✓ tests/mutation-sentinel.test.js (5 tests) 3294ms
-     ✓ detects the frozen eval-threshold mutant without touching the worktree  1829ms
-     ✓ reports a drifted target as a gap instead of inventing detection  423ms
-     ✓ returns a non-zero process exit when --fail-on-gaps finds a surviving gap  774ms
- ✓ apps/api/src/__tests__/readiness.test.ts (11 tests) 2880ms
+ ✓ tests/mutation-sentinel.test.js (5 tests) 3268ms
+     ✓ detects the frozen eval-threshold mutant without touching the worktree  1785ms
+     ✓ reports a drifted target as a gap instead of inventing detection  434ms
+     ✓ returns a non-zero process exit when --fail-on-gaps finds a surviving gap  781ms
+ ✓ apps/api/src/__tests__/readiness.test.ts (11 tests) 2878ms
      ✓ returns 503 when destruction rejects the timed out query  917ms
-     ✓ bounds pending pool admission and destroys a late client exactly once  911ms
+     ✓ bounds pending pool admission and destroys a late client exactly once  913ms
      ✓ ignores late query success and recovers after the outstanding operation settles  910ms
- ✓ apps/web/src/__tests__/app.test.tsx (17 tests) 1626ms
- ✓ apps/web/src/features/platform/multi-agent-creation.test.tsx (6 tests) 1267ms
-     ✓ creates Agent A and Agent B in one tenant-scoped session with isolated drafts  574ms
- ✓ apps/web/src/__tests__/journeys-identity-race.test.tsx (13 tests) 830ms
- ✓ packages/agent-runtime/src/__tests__/orchestration-branch-hardening.test.ts (88 tests) 1481ms
-     ✓ renews the lease during a long execution and settles with the renewed lease  422ms
-     ✓ aborts execution and reports lease loss when heartbeat renewal fails quickly  601ms
-     ✓ awaits an in-flight heartbeat before reporting lease loss  351ms
- ✓ tests/production-preflight.test.js (16 tests) 1347ms
-     ✓ runs the shared gate before API and worker bootstrap  992ms
- ✓ apps/web/src/__tests__/platform-panel.test.tsx (6 tests) 886ms
-     ✓ lists and transitions metadata-only plugin catalog entries with tenant scope  348ms
- ✓ packages/agent-runtime/src/__tests__/branches-b-20260925.test.ts (13 tests) 1171ms
-     ✓ renews the step lease while a slow executor runs  753ms
+ ✓ apps/web/src/__tests__/app.test.tsx (17 tests) 1519ms
+ ✓ apps/web/src/features/platform/multi-agent-creation.test.tsx (6 tests) 1245ms
+     ✓ creates Agent A and Agent B in one tenant-scoped session with isolated drafts  554ms
+ ✓ packages/agent-runtime/src/__tests__/orchestration-branch-hardening.test.ts (88 tests) 1488ms
+     ✓ renews the lease during a long execution and settles with the renewed lease  423ms
+     ✓ aborts execution and reports lease loss when heartbeat renewal fails quickly  602ms
+     ✓ awaits an in-flight heartbeat before reporting lease loss  352ms
+ ✓ tests/production-preflight.test.js (16 tests) 1355ms
+     ✓ runs the shared gate before API and worker bootstrap  1020ms
+ ✓ apps/web/src/__tests__/journeys-identity-race.test.tsx (13 tests) 842ms
+ ✓ apps/web/src/__tests__/platform-panel.test.tsx (6 tests) 966ms
+     ✓ lists and transitions metadata-only plugin catalog entries with tenant scope  390ms
+ ✓ packages/agent-runtime/src/__tests__/branches-b-20260925.test.ts (13 tests) 1178ms
+     ✓ renews the step lease while a slow executor runs  754ms
      ✓ abandons the step when the lease heartbeat fails  402ms
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:22:47.703Z","workerId":"worker-restart-190-a","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.704Z","workerId":"worker-restart-190-a","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:22:47.705Z"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:22:47.705Z","workerId":"worker-restart-190-a","backoffMs":5,"lag":0}
-{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-26T02:22:47.705Z"}
-{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-26T02:22:47.705Z","eventId":"outbox_7b979c57-34ba-4632-af65-00e0e69964d3","workerId":"worker-restart-190-a","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.710Z","workerId":"worker-restart-190-a","reason":"stop","claimed":1,"processed":1,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:22:47.711Z","workerId":"worker-restart-190-a","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":0,"deadLettered":0,"lag":0}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:22:47.711Z","workerId":"worker-restart-190-b","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.711Z","workerId":"worker-restart-190-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:22:47.711Z"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:22:47.712Z","workerId":"worker-restart-190-b","backoffMs":5,"lag":0}
-{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-26T02:22:47.712Z"}
-{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-26T02:22:47.712Z","eventId":"outbox_6eeecfb1-fde5-4210-a707-451b49a83b7c","workerId":"worker-restart-190-b","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.716Z","workerId":"worker-restart-190-b","reason":"stop","claimed":1,"processed":1,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:22:47.716Z","workerId":"worker-restart-190-b","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":0,"deadLettered":0,"lag":0}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:22:47.734Z","workerId":"worker-retry-190","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.734Z","workerId":"worker-retry-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:22:47.735Z"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:22:47.735Z","workerId":"worker-retry-190","backoffMs":5,"lag":0}
-{"event":"worker.metric","name":"worker_outbox_failed_total","value":1,"attributes":{"status":"failed"},"timestamp":"2026-09-26T02:22:47.735Z"}
-{"event":"worker.outbox.failed","level":"info","timestamp":"2026-09-26T02:22:47.735Z","eventId":"outbox_7a3b41bf-0336-45ea-9ec5-9e0cd98d95a3","workerId":"worker-retry-190","status":"failed","attempt":1,"leaseLost":false,"error":"[redacted-outbox-error]","operation":"outbox"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:22:47.741Z","workerId":"worker-retry-190","backoffMs":5,"lag":0}
-{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-26T02:22:47.741Z"}
-{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-26T02:22:47.741Z","eventId":"outbox_7a3b41bf-0336-45ea-9ec5-9e0cd98d95a3","workerId":"worker-retry-190","status":"processed","attempt":2,"leaseLost":false,"operation":"outbox"}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.746Z","workerId":"worker-retry-190","reason":"stop","claimed":2,"processed":1,"failed":1,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":2,"released":0,"lag":0,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:22:47.746Z","workerId":"worker-retry-190","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":1,"deadLettered":0,"lag":0}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:22:47.747Z","workerId":"worker-poison-190","concurrency":1,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.747Z","workerId":"worker-poison-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":1,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:22:47.747Z"}
-{"event":"worker.metric","name":"worker_outbox_dead_lettered_total","value":1,"attributes":{"status":"dead_letter"},"timestamp":"2026-09-26T02:22:47.748Z"}
-{"event":"worker.outbox.dead_letter","level":"info","timestamp":"2026-09-26T02:22:47.748Z","eventId":"outbox_0b287f04-4361-412c-8a10-c9ca2e32f671","workerId":"worker-poison-190","status":"dead_letter","attempt":1,"leaseLost":false,"error":"[redacted-outbox-error]","operation":"outbox"}
-{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-26T02:22:47.753Z"}
-{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-26T02:22:47.754Z","eventId":"outbox_2e716a01-9a42-4707-9d93-2c9f08654bbc","workerId":"worker-poison-190","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.758Z","workerId":"worker-poison-190","reason":"stop","claimed":2,"processed":1,"failed":0,"deadLettered":1,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":1,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:22:47.758Z","workerId":"worker-poison-190","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":0,"deadLettered":1,"lag":1}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:22:47.759Z","workerId":"worker-requeue-190-a","concurrency":1,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.759Z","workerId":"worker-requeue-190-a","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:22:47.759Z"}
-{"event":"worker.metric","name":"worker_outbox_dead_lettered_total","value":1,"attributes":{"status":"dead_letter"},"timestamp":"2026-09-26T02:22:47.759Z"}
-{"event":"worker.outbox.dead_letter","level":"info","timestamp":"2026-09-26T02:22:47.759Z","eventId":"outbox_b944d182-4371-4d96-918a-47f419b184c6","workerId":"worker-requeue-190-a","status":"dead_letter","attempt":1,"leaseLost":false,"error":"[redacted-outbox-error]","operation":"outbox"}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.764Z","workerId":"worker-requeue-190-a","reason":"stop","claimed":1,"processed":0,"failed":0,"deadLettered":1,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":0,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:22:47.765Z","workerId":"worker-requeue-190-a","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":1,"lag":0}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:22:47.765Z","workerId":"worker-requeue-190-b","concurrency":1,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.765Z","workerId":"worker-requeue-190-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:22:47.766Z"}
-{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-26T02:22:47.766Z"}
-{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-26T02:22:47.766Z","eventId":"outbox_b944d182-4371-4d96-918a-47f419b184c6","workerId":"worker-requeue-190-b","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.771Z","workerId":"worker-requeue-190-b","reason":"stop","claimed":1,"processed":1,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":0,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:22:47.771Z","workerId":"worker-requeue-190-b","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":0,"deadLettered":0,"lag":0}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:22:47.794Z","workerId":"worker-sigterm-190","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.794Z","workerId":"worker-sigterm-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:22:47.795Z"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:22:47.795Z","workerId":"worker-sigterm-190","backoffMs":5,"lag":0}
-{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-26T02:22:47.820Z"}
-{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-26T02:22:47.820Z","eventId":"outbox_c1a404be-6edc-43e5-ac68-ea7230c0fab6","workerId":"worker-sigterm-190","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.821Z","workerId":"worker-sigterm-190","reason":"stop","claimed":1,"processed":1,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:22:47.821Z","workerId":"worker-sigterm-190","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":0,"deadLettered":0,"lag":0}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:22:47.821Z","workerId":"worker-release-190-a","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.821Z","workerId":"worker-release-190-a","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:22:47.821Z"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:22:47.822Z","workerId":"worker-release-190-a","backoffMs":5,"lag":0}
-{"event":"worker.shutdown_deferred_release","level":"warn","timestamp":"2026-09-26T02:22:47.857Z","eventId":"outbox_6da63c5c-42f1-42e5-a6bd-4ed51ec54302","workerId":"worker-release-190-a","leaseAction":"expire_for_retry","operation":"outbox"}
-{"event":"worker.metric","name":"worker_outbox_shutdown_releases_total","value":1,"attributes":{"outcome":"deferred"},"timestamp":"2026-09-26T02:22:47.857Z"}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.857Z","workerId":"worker-release-190-a","reason":"stop","claimed":1,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":1}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:22:47.857Z","workerId":"worker-release-190-a","drained":false,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
-{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-26T02:22:47.857Z"}
-{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-26T02:22:47.857Z","eventId":"outbox_6da63c5c-42f1-42e5-a6bd-4ed51ec54302","workerId":"worker-release-190-a","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:22:47.884Z","workerId":"worker-heartbeat-renew-190","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":10,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.884Z","workerId":"worker-heartbeat-renew-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:22:47.884Z"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:22:47.884Z","workerId":"worker-heartbeat-renew-190","backoffMs":5,"lag":0}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:22:47.889Z","workerId":"worker-heartbeat-renew-190","backoffMs":10,"lag":0}
-{"event":"worker.metric","name":"worker_outbox_heartbeats_total","value":1,"attributes":{"outcome":"renewed"},"timestamp":"2026-09-26T02:22:47.894Z"}
-{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-26T02:22:47.895Z"}
-{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-26T02:22:47.895Z","eventId":"outbox_20f2bbac-69fb-4948-9af3-0a171ff701f1","workerId":"worker-heartbeat-renew-190","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:22:47.900Z","workerId":"worker-heartbeat-renew-190","backoffMs":20,"lag":0}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.900Z","workerId":"worker-heartbeat-renew-190","reason":"stop","claimed":1,"processed":1,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":1,"idlePolls":3,"released":0,"lag":0,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:22:47.900Z","workerId":"worker-heartbeat-renew-190","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":0,"deadLettered":0,"lag":0}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:22:47.901Z","workerId":"worker-heartbeat-failure-190","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":5,"drainMs":10000,"backlogProbe":false,"sweeps":false,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.901Z","workerId":"worker-heartbeat-failure-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.event_error","level":"error","timestamp":"2026-09-26T02:22:47.901Z","eventId":"outbox_d46d2fae-357c-4cfa-afbf-09dfc3530096","workerId":"worker-heartbeat-failure-190","attempt":1,"error":"[redacted-outbox-error]","operation":"outbox"}
-{"event":"worker.metric","name":"worker_outbox_errors_total","value":1,"attributes":{"outcome":"error"},"timestamp":"2026-09-26T02:22:47.901Z"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:22:47.901Z","workerId":"worker-heartbeat-failure-190","backoffMs":5,"lag":null}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.906Z","workerId":"worker-heartbeat-failure-190","reason":"stop","claimed":1,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":1,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:22:47.907Z","workerId":"worker-heartbeat-failure-190","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":null}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:22:47.930Z","workerId":"worker-handoff-190","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.930Z","workerId":"worker-handoff-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:22:47.930Z"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:22:47.930Z","workerId":"worker-handoff-190","backoffMs":5,"lag":0}
-{"event":"worker.outbox.handoff","level":"warn","timestamp":"2026-09-26T02:22:47.930Z","eventId":"outbox_8980de5a-fd1f-4d97-ab42-e2c9ade87806","workerId":"worker-handoff-190","status":"handoff","operation":"outbox"}
-{"event":"worker.metric","name":"worker_outbox_handoffs_total","value":1,"attributes":{"outcome":"handoff"},"timestamp":"2026-09-26T02:22:47.930Z"}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.934Z","workerId":"worker-handoff-190","reason":"stop","claimed":1,"processed":0,"failed":0,"deadLettered":0,"handoffs":1,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:22:47.935Z","workerId":"worker-handoff-190","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:22:47.963Z","workerId":"worker-stop-190","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.963Z","workerId":"worker-stop-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:22:47.963Z"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:22:47.963Z","workerId":"worker-stop-190","backoffMs":5,"lag":0}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:22:47.963Z","workerId":"worker-stop-190","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:22:47.963Z","workerId":"worker-stop-190","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
- ✓ apps/worker/src/__tests__/continuous-worker.test.ts (26 tests) 809ms
-     ✓ exits non-zero when the real entrypoint starts without required config  471ms
- ✓ apps/web/src/features/platform/release-candidate-ledger.test.tsx (1 test) 469ms
-     ✓ records and validates controlled evidence without mutating the version  468ms
- ✓ apps/web/src/features/platform/platform.test.tsx (3 tests) 471ms
- ✓ apps/api/src/__tests__/identity-composition-wiring.test.ts (8 tests) 621ms
-     ✓ fails the real entrypoint closed before resolver composition without runtime proof  501ms
- ✓ tests/worker-startup-smoke.test.js (1 test) 657ms
-     ✓ proves the real entrypoint fails closed without a queue adapter  655ms
- ✓ tests/worker-controlled-smoke.test.js (1 test) 625ms
-     ✓ proves the configured local composition claims and acknowledges one event  623ms
- ✓ apps/web/src/features/journeys/journeys.test.tsx (2 tests) 439ms
-     ✓ walks identify, draft, link and approval-blocked scheduling steps  384ms
- ✓ apps/web/src/features/platform/knowledge-source-catalog.test.tsx (1 test) 393ms
-     ✓ loads, creates and approves metadata without editing an agent snapshot  392ms
- ✓ apps/web/src/features/platform/handoff-policy-control-center.test.tsx (2 tests) 422ms
-     ✓ edits thresholds, destinations and priority through a new version  311ms
- ✓ packages/model-gateway/src/__tests__/gateway.test.ts (16 tests) 623ms
-     ✓ enforces a real deadline and retries only bounded times  602ms
- ✓ apps/api/src/__tests__/branches-b-20260925.test.ts (54 tests) 432ms
- ✓ apps/web/src/__tests__/attendance-approval-conflict.test.tsx (2 tests) 362ms
- ✓ apps/web/src/__tests__/audit-checkpoint-app.test.tsx (1 test) 336ms
-     ✓ seals the loaded evidence page and archives it with CAS  334ms
- ✓ tests/docs-integrity.test.js (12 tests) 445ms
- ✓ apps/api/src/__tests__/platform-control-plane.test.ts (9 tests) 357ms
- ✓ apps/web/src/features/orchestration/orchestration.test.tsx (6 tests) 318ms
- ✓ apps/web/src/features/platform/prompt-profile-control-center.test.tsx (1 test) 265ms
- ✓ tests/phase11-formal-certification.test.js (14 tests) 367ms
- ✓ tests/aud19-external-evidence.test.js (4 tests) 288ms
- ✓ apps/api/src/__tests__/server-boundary-envelope.test.ts (12 tests) 238ms
- ✓ apps/api/src/__tests__/platform-admin-routes-coverage.test.ts (7 tests) 266ms
- ✓ tests/critic-evidence.test.js (12 tests) 273ms
- ✓ apps/web/src/features/dead-letters/dead-letters.test.tsx (4 tests) 219ms
- ✓ apps/api/src/__tests__/published-runtime-integration.test.ts (6 tests) 235ms
- ✓ apps/api/src/__tests__/inbound-runtime-edges.test.ts (5 tests) 231ms
- ✓ packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts (76 tests) 168ms
- ✓ apps/api/src/__tests__/webhook-security.test.ts (17 tests | 1 skipped) 208ms
- ✓ apps/api/src/__tests__/publish-evidence-authority.test.ts (3 tests) 240ms
- ✓ apps/api/src/__tests__/build-server-from-env-boundary.test.ts (8 tests) 205ms
- ✓ apps/api/src/__tests__/identity-trusted-resolver.test.ts (7 tests) 185ms
- ✓ apps/api/src/http-target-boundary.test.ts (8 tests) 181ms
- ✓ apps/api/src/__tests__/production-boundary.test.ts (9 tests) 200ms
- ✓ apps/api/src/__tests__/capability-approval-api.test.ts (4 tests) 212ms
- ✓ apps/api/src/__tests__/operator-identity-rbac.test.ts (6 tests) 185ms
- ✓ apps/api/src/__tests__/attendance-approval-atomic.test.ts (6 tests) 180ms
- ✓ apps/api/src/http-security.test.ts (10 tests) 186ms
- ✓ apps/api/src/__tests__/journey-routes-coverage.test.ts (4 tests) 175ms
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:18:58.449Z","workerId":"worker-restart-190-a","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.450Z","workerId":"worker-restart-190-a","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:18:58.451Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:18:58.451Z","workerId":"worker-restart-190-a","backoffMs":5,"lag":0}
+{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-27T02:18:58.451Z"}
+{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-27T02:18:58.451Z","eventId":"outbox_812dc5a9-9222-4243-8965-09cb9a3fe4c3","workerId":"worker-restart-190-a","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.456Z","workerId":"worker-restart-190-a","reason":"stop","claimed":1,"processed":1,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:18:58.457Z","workerId":"worker-restart-190-a","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:18:58.457Z","workerId":"worker-restart-190-b","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.457Z","workerId":"worker-restart-190-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:18:58.458Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:18:58.458Z","workerId":"worker-restart-190-b","backoffMs":5,"lag":0}
+{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-27T02:18:58.458Z"}
+{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-27T02:18:58.458Z","eventId":"outbox_64d078f7-5a91-425c-b432-997f5e5a70dd","workerId":"worker-restart-190-b","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.463Z","workerId":"worker-restart-190-b","reason":"stop","claimed":1,"processed":1,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:18:58.463Z","workerId":"worker-restart-190-b","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:18:58.485Z","workerId":"worker-retry-190","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.485Z","workerId":"worker-retry-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:18:58.486Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:18:58.486Z","workerId":"worker-retry-190","backoffMs":5,"lag":0}
+{"event":"worker.metric","name":"worker_outbox_failed_total","value":1,"attributes":{"status":"failed"},"timestamp":"2026-09-27T02:18:58.486Z"}
+{"event":"worker.outbox.failed","level":"info","timestamp":"2026-09-27T02:18:58.486Z","eventId":"outbox_4180a294-3591-4274-a194-97216d14d1c2","workerId":"worker-retry-190","status":"failed","attempt":1,"leaseLost":false,"error":"[redacted-outbox-error]","operation":"outbox"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:18:58.491Z","workerId":"worker-retry-190","backoffMs":5,"lag":0}
+{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-27T02:18:58.491Z"}
+{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-27T02:18:58.491Z","eventId":"outbox_4180a294-3591-4274-a194-97216d14d1c2","workerId":"worker-retry-190","status":"processed","attempt":2,"leaseLost":false,"operation":"outbox"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.496Z","workerId":"worker-retry-190","reason":"stop","claimed":2,"processed":1,"failed":1,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":2,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:18:58.496Z","workerId":"worker-retry-190","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":1,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:18:58.497Z","workerId":"worker-poison-190","concurrency":1,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.497Z","workerId":"worker-poison-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":1,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:18:58.497Z"}
+{"event":"worker.metric","name":"worker_outbox_dead_lettered_total","value":1,"attributes":{"status":"dead_letter"},"timestamp":"2026-09-27T02:18:58.497Z"}
+{"event":"worker.outbox.dead_letter","level":"info","timestamp":"2026-09-27T02:18:58.498Z","eventId":"outbox_50a83a73-d5f3-4ff9-b953-a110d7a84977","workerId":"worker-poison-190","status":"dead_letter","attempt":1,"leaseLost":false,"error":"[redacted-outbox-error]","operation":"outbox"}
+{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-27T02:18:58.503Z"}
+{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-27T02:18:58.503Z","eventId":"outbox_a83056e7-7997-43b3-98fb-131817c25f82","workerId":"worker-poison-190","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.507Z","workerId":"worker-poison-190","reason":"stop","claimed":2,"processed":1,"failed":0,"deadLettered":1,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":1,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:18:58.507Z","workerId":"worker-poison-190","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":0,"deadLettered":1,"lag":1}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:18:58.508Z","workerId":"worker-requeue-190-a","concurrency":1,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.508Z","workerId":"worker-requeue-190-a","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:18:58.508Z"}
+{"event":"worker.metric","name":"worker_outbox_dead_lettered_total","value":1,"attributes":{"status":"dead_letter"},"timestamp":"2026-09-27T02:18:58.509Z"}
+{"event":"worker.outbox.dead_letter","level":"info","timestamp":"2026-09-27T02:18:58.509Z","eventId":"outbox_1f5177c6-3726-4a28-ac12-64d949d6a0dd","workerId":"worker-requeue-190-a","status":"dead_letter","attempt":1,"leaseLost":false,"error":"[redacted-outbox-error]","operation":"outbox"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.513Z","workerId":"worker-requeue-190-a","reason":"stop","claimed":1,"processed":0,"failed":0,"deadLettered":1,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:18:58.513Z","workerId":"worker-requeue-190-a","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":1,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:18:58.514Z","workerId":"worker-requeue-190-b","concurrency":1,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.514Z","workerId":"worker-requeue-190-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:18:58.514Z"}
+{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-27T02:18:58.515Z"}
+{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-27T02:18:58.515Z","eventId":"outbox_1f5177c6-3726-4a28-ac12-64d949d6a0dd","workerId":"worker-requeue-190-b","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.520Z","workerId":"worker-requeue-190-b","reason":"stop","claimed":1,"processed":1,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:18:58.520Z","workerId":"worker-requeue-190-b","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:18:58.545Z","workerId":"worker-sigterm-190","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.545Z","workerId":"worker-sigterm-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:18:58.546Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:18:58.546Z","workerId":"worker-sigterm-190","backoffMs":5,"lag":0}
+{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-27T02:18:58.572Z"}
+{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-27T02:18:58.572Z","eventId":"outbox_7931283b-1dbd-456f-bb80-91487c0c7b5c","workerId":"worker-sigterm-190","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.572Z","workerId":"worker-sigterm-190","reason":"stop","claimed":1,"processed":1,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:18:58.572Z","workerId":"worker-sigterm-190","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:18:58.573Z","workerId":"worker-release-190-a","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.573Z","workerId":"worker-release-190-a","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:18:58.573Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:18:58.573Z","workerId":"worker-release-190-a","backoffMs":5,"lag":0}
+{"event":"worker.shutdown_deferred_release","level":"warn","timestamp":"2026-09-27T02:18:58.609Z","eventId":"outbox_ef3fd00e-34c2-40c8-a23f-3dfb096b6818","workerId":"worker-release-190-a","leaseAction":"expire_for_retry","operation":"outbox"}
+{"event":"worker.metric","name":"worker_outbox_shutdown_releases_total","value":1,"attributes":{"outcome":"deferred"},"timestamp":"2026-09-27T02:18:58.610Z"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.610Z","workerId":"worker-release-190-a","reason":"stop","claimed":1,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":1}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:18:58.610Z","workerId":"worker-release-190-a","drained":false,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-27T02:18:58.610Z"}
+{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-27T02:18:58.610Z","eventId":"outbox_ef3fd00e-34c2-40c8-a23f-3dfb096b6818","workerId":"worker-release-190-a","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:18:58.637Z","workerId":"worker-heartbeat-renew-190","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":10,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.637Z","workerId":"worker-heartbeat-renew-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:18:58.637Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:18:58.637Z","workerId":"worker-heartbeat-renew-190","backoffMs":5,"lag":0}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:18:58.643Z","workerId":"worker-heartbeat-renew-190","backoffMs":10,"lag":0}
+{"event":"worker.metric","name":"worker_outbox_heartbeats_total","value":1,"attributes":{"outcome":"renewed"},"timestamp":"2026-09-27T02:18:58.647Z"}
+{"event":"worker.metric","name":"worker_outbox_processed_total","value":1,"attributes":{"status":"processed"},"timestamp":"2026-09-27T02:18:58.649Z"}
+{"event":"worker.outbox.processed","level":"info","timestamp":"2026-09-27T02:18:58.649Z","eventId":"outbox_f1e250fb-2a6e-407c-a776-617eeaab7398","workerId":"worker-heartbeat-renew-190","status":"processed","attempt":1,"leaseLost":false,"operation":"outbox"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:18:58.653Z","workerId":"worker-heartbeat-renew-190","backoffMs":20,"lag":0}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.654Z","workerId":"worker-heartbeat-renew-190","reason":"stop","claimed":1,"processed":1,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":1,"idlePolls":3,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:18:58.654Z","workerId":"worker-heartbeat-renew-190","drained":true,"released":0,"releaseFailed":0,"processed":1,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:18:58.656Z","workerId":"worker-heartbeat-failure-190","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":5,"drainMs":10000,"backlogProbe":false,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.656Z","workerId":"worker-heartbeat-failure-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.event_error","level":"error","timestamp":"2026-09-27T02:18:58.656Z","eventId":"outbox_6bde5348-8eca-4674-97af-05a0b25967ea","workerId":"worker-heartbeat-failure-190","attempt":1,"error":"[redacted-outbox-error]","operation":"outbox"}
+{"event":"worker.metric","name":"worker_outbox_errors_total","value":1,"attributes":{"outcome":"error"},"timestamp":"2026-09-27T02:18:58.656Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:18:58.656Z","workerId":"worker-heartbeat-failure-190","backoffMs":5,"lag":null}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.662Z","workerId":"worker-heartbeat-failure-190","reason":"stop","claimed":1,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":1,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:18:58.662Z","workerId":"worker-heartbeat-failure-190","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":null}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:18:58.685Z","workerId":"worker-handoff-190","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.686Z","workerId":"worker-handoff-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:18:58.686Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:18:58.686Z","workerId":"worker-handoff-190","backoffMs":5,"lag":0}
+{"event":"worker.outbox.handoff","level":"warn","timestamp":"2026-09-27T02:18:58.686Z","eventId":"outbox_d1fc0eb8-f771-4009-9586-a603e49d777f","workerId":"worker-handoff-190","status":"handoff","operation":"outbox"}
+{"event":"worker.metric","name":"worker_outbox_handoffs_total","value":1,"attributes":{"outcome":"handoff"},"timestamp":"2026-09-27T02:18:58.686Z"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.691Z","workerId":"worker-handoff-190","reason":"stop","claimed":1,"processed":0,"failed":0,"deadLettered":0,"handoffs":1,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:18:58.691Z","workerId":"worker-handoff-190","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:18:58.720Z","workerId":"worker-stop-190","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.720Z","workerId":"worker-stop-190","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:18:58.721Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:18:58.721Z","workerId":"worker-stop-190","backoffMs":5,"lag":0}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:18:58.721Z","workerId":"worker-stop-190","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:18:58.721Z","workerId":"worker-stop-190","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
+ ✓ apps/worker/src/__tests__/continuous-worker.test.ts (26 tests) 898ms
+     ✓ exits non-zero when the real entrypoint starts without required config  545ms
+ ✓ apps/web/src/features/platform/release-candidate-ledger.test.tsx (1 test) 576ms
+     ✓ records and validates controlled evidence without mutating the version  574ms
+ ✓ apps/api/src/__tests__/identity-composition-wiring.test.ts (8 tests) 648ms
+     ✓ fails the real entrypoint closed before resolver composition without runtime proof  523ms
+ ✓ tests/worker-startup-smoke.test.js (1 test) 658ms
+     ✓ proves the real entrypoint fails closed without a queue adapter  657ms
+ ✓ apps/web/src/features/platform/platform.test.tsx (3 tests) 521ms
+     ✓ creates a declarative draft without exposing provider secrets  302ms
+ ✓ tests/worker-controlled-smoke.test.js (1 test) 619ms
+     ✓ proves the configured local composition claims and acknowledges one event  617ms
+ ✓ packages/model-gateway/src/__tests__/gateway.test.ts (16 tests) 624ms
+     ✓ enforces a real deadline and retries only bounded times  603ms
+ ✓ apps/web/src/features/journeys/journeys.test.tsx (2 tests) 412ms
+     ✓ walks identify, draft, link and approval-blocked scheduling steps  364ms
+ ✓ apps/api/src/__tests__/branches-b-20260925.test.ts (54 tests) 426ms
+ ✓ apps/web/src/features/platform/knowledge-source-catalog.test.tsx (1 test) 421ms
+     ✓ loads, creates and approves metadata without editing an agent snapshot  420ms
+ ✓ apps/web/src/features/platform/handoff-policy-control-center.test.tsx (2 tests) 406ms
+ ✓ tests/docs-integrity.test.js (12 tests) 427ms
+ ✓ apps/web/src/__tests__/attendance-approval-conflict.test.tsx (2 tests) 336ms
+ ✓ apps/web/src/__tests__/audit-checkpoint-app.test.tsx (1 test) 348ms
+     ✓ seals the loaded evidence page and archives it with CAS  347ms
+ ✓ packages/channel-gateway/src/__tests__/channel-effect-malformed-version.test.ts (6 tests) 160ms
+ ✓ apps/web/src/features/platform/prompt-profile-control-center.test.tsx (1 test) 293ms
+ ✓ apps/api/src/__tests__/platform-control-plane.test.ts (9 tests) 338ms
+ ✓ apps/web/src/features/orchestration/orchestration.test.tsx (6 tests) 307ms
+ ✓ tests/critic-evidence.test.js (12 tests) 263ms
+ ✓ tests/phase11-formal-certification.test.js (14 tests) 331ms
+ ✓ apps/api/src/__tests__/platform-admin-routes-coverage.test.ts (7 tests) 264ms
+ ✓ tests/aud19-external-evidence.test.js (4 tests) 283ms
+ ✓ packages/platform/src/__tests__/critical-safety-preflight.test.ts (9 tests) 119ms
+ ✓ apps/api/src/__tests__/published-runtime-integration.test.ts (6 tests) 228ms
+ ✓ apps/api/src/__tests__/server-boundary-envelope.test.ts (12 tests) 244ms
+ ✓ apps/api/src/metrics-exposure.test.ts (2 tests) 150ms
+ ✓ apps/web/src/features/dead-letters/dead-letters.test.tsx (4 tests) 214ms
+ ✓ apps/api/src/__tests__/inbound-runtime-edges.test.ts (5 tests) 226ms
+ ✓ apps/api/src/__tests__/publish-evidence-authority.test.ts (3 tests) 234ms
+ ✓ apps/api/src/http-request-boundary.test.ts (8 tests) 186ms
+ ✓ apps/api/src/__tests__/health.test.ts (2 tests) 156ms
+ ✓ apps/api/src/__tests__/audit-evidence-checkpoint-boundary.test.ts (2 tests) 166ms
+ ✓ apps/api/src/__tests__/durable-inbound.test.ts (3 tests) 149ms
+ ✓ apps/api/src/__tests__/audit-evidence-checkpoint.test.ts (2 tests) 142ms
+ ✓ apps/api/src/pagination-boundary.test.ts (5 tests) 154ms
+ ✓ apps/api/src/__tests__/outbox-routes.test.ts (3 tests) 140ms
+ ✓ apps/api/src/__tests__/webhook-security.test.ts (17 tests | 1 skipped) 220ms
+ ✓ apps/api/src/__tests__/release-candidate-ledger.test.ts (2 tests) 147ms
+ ✓ apps/api/src/__tests__/postgres-persistence-mode.test.ts (25 tests | 7 skipped) 156ms
+ ✓ apps/api/src/__tests__/production-boundary.test.ts (9 tests) 206ms
+ ✓ packages/agent-runtime/src/__tests__/orchestration.test.ts (18 tests) 223ms
+ ✓ apps/api/src/response-correlation.test.ts (6 tests) 177ms
+ ✓ apps/api/src/__tests__/identity-trusted-resolver.test.ts (7 tests) 204ms
+ ✓ apps/api/src/http-target-boundary.test.ts (8 tests) 195ms
+ ✓ apps/api/src/__tests__/build-server-from-env-boundary.test.ts (8 tests) 208ms
+ ✓ apps/api/src/__tests__/operator-identity-rbac.test.ts (6 tests) 196ms
+ ✓ apps/api/src/internal-task-field-boundary.test.ts (7 tests) 193ms
+ ✓ apps/api/src/__tests__/conversation-list.test.ts (2 tests) 140ms
+ ✓ apps/api/src/http-security.test.ts (10 tests) 217ms
+ ✓ apps/api/src/__tests__/runtime-approval-routes.test.ts (4 tests) 175ms
+ ✓ apps/api/src/__tests__/attendance-approval-atomic.test.ts (6 tests) 196ms
+ ✓ apps/api/src/__tests__/journey-routes-coverage.test.ts (4 tests) 203ms
+ ✓ apps/api/src/__tests__/capability-approval-api.test.ts (4 tests) 200ms
+ ✓ apps/web/src/features/tasks/tasks.test.tsx (2 tests) 179ms
+ ✓ apps/web/src/features/conversations/conversations.test.tsx (1 test) 128ms
+ ✓ apps/api/src/__tests__/test-suite-catalog.test.ts (1 test) 166ms
  ✓ apps/web/src/features/approvals/approvals.test.tsx (3 tests) 172ms
- ✓ apps/web/src/features/conversations/timeline.test.tsx (2 tests) 159ms
- ✓ packages/agent-runtime/src/__tests__/orchestration.test.ts (18 tests) 216ms
- ✓ apps/api/src/response-correlation.test.ts (6 tests) 160ms
- ✓ apps/api/src/internal-task-field-boundary.test.ts (7 tests) 177ms
- ✓ apps/web/src/features/tasks/tasks.test.tsx (2 tests) 169ms
- ✓ tests/phase11-2-certification.test.js (5 tests) 199ms
- ✓ apps/api/src/__tests__/rate-limit.test.ts (5 tests) 159ms
- ✓ apps/api/src/__tests__/operator-replay-guard.test.ts (5 tests | 1 skipped) 176ms
- ✓ apps/api/src/__tests__/orchestration-observability.test.ts (4 tests) 153ms
- ✓ apps/api/src/__tests__/audit-evidence.test.ts (4 tests) 168ms
- ✓ apps/api/src/__tests__/http-security-edge-branches.test.ts (4 tests) 165ms
- ✓ apps/api/src/__tests__/secretary-bootstrap.test.ts (2 tests) 160ms
- ✓ apps/api/src/audit-filter-duplicate-boundary.test.ts (6 tests) 159ms
- ✓ tests/aud20-10-composition.test.ts (13 tests) 152ms
- ✓ tests/architecture.test.js (7 tests) 167ms
- ✓ apps/api/src/__tests__/tenant-inbound-isolation.test.ts (4 tests) 165ms
- ✓ apps/api/src/__tests__/runtime-approval-routes.test.ts (4 tests) 158ms
- ✓ apps/api/src/request-metrics.test.ts (3 tests) 118ms
- ✓ apps/api/src/rem-risk-boundary.test.ts (2 tests) 153ms
- ✓ apps/api/src/__tests__/test-suite-catalog.test.ts (1 test) 148ms
- ✓ apps/api/src/__tests__/knowledge-input-boundary.test.ts (2 tests) 157ms
- ✓ packages/platform/src/__tests__/critical-safety-preflight.test.ts (9 tests) 142ms
- ✓ apps/api/src/http-request-boundary.test.ts (8 tests) 145ms
- ✓ apps/api/src/approval-request-field-boundary.test.ts (5 tests) 156ms
- ✓ apps/api/src/pagination-boundary.test.ts (5 tests) 149ms
- ✓ packages/channel-gateway/src/__tests__/channel-effect-malformed-version.test.ts (6 tests) 149ms
- ✓ apps/web/src/features/audit/audit-checkpoint.test.tsx (1 test) 129ms
- ✓ packages/chaos/src/__tests__/chaos.test.ts (15 tests) 177ms
- ✓ apps/api/src/metrics-exposure.test.ts (2 tests) 143ms
- ✓ apps/api/src/__tests__/postgres-persistence-mode.test.ts (25 tests | 7 skipped) 136ms
- ✓ apps/api/src/__tests__/task-lifecycle.test.ts (3 tests) 145ms
- ✓ packages/model-gateway/src/__tests__/local-http-providers.test.ts (12 tests) 174ms
- ✓ apps/web/src/features/conversations/conversations.test.tsx (1 test) 136ms
- ✓ apps/api/src/__tests__/release-candidate-ledger.test.ts (2 tests) 158ms
- ✓ apps/api/src/__tests__/durable-inbound.test.ts (3 tests) 155ms
- ✓ apps/api/src/__tests__/plugin-catalog.test.ts (1 test) 128ms
- ✓ apps/api/src/__tests__/outbox-routes.test.ts (3 tests) 142ms
- ✓ apps/api/src/__tests__/audit-evidence-checkpoint-boundary.test.ts (2 tests) 143ms
- ✓ tests/aud20-05-resource-attestation-check.test.js (8 tests) 157ms
- ✓ apps/api/src/__tests__/audit-evidence-checkpoint.test.ts (2 tests) 153ms
- ✓ packages/platform/src/__tests__/platform-foundation.test.ts (20 tests) 109ms
+ ✓ apps/api/src/__tests__/http-security-edge-branches.test.ts (4 tests) 151ms
+ ✓ packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts (76 tests) 192ms
+ ✓ apps/api/src/__tests__/small-module-boundaries.test.ts (8 tests) 130ms
+ ✓ apps/api/src/__tests__/observability.test.ts (1 test) 118ms
+ ✓ apps/api/src/approval-request-field-boundary.test.ts (5 tests) 151ms
  ✓ apps/api/src/approval-decision-note-field-boundary.test.ts (3 tests) 130ms
- ✓ apps/api/src/__tests__/health.test.ts (2 tests) 124ms
- ✓ apps/api/src/__tests__/conversation-list.test.ts (2 tests) 138ms
- ✓ apps/api/src/prompt-profile-error-boundary.test.ts (4 tests) 135ms
- ✓ apps/api/src/__tests__/aud17-connected-redteam.test.ts (1 test) 118ms
+ ✓ apps/api/src/__tests__/audit-evidence.test.ts (4 tests) 176ms
+ ✓ apps/api/src/__tests__/tenant-inbound-isolation.test.ts (4 tests) 169ms
+ ✓ apps/api/src/__tests__/operator-replay-guard.test.ts (5 tests | 1 skipped) 171ms
+ ✓ apps/api/src/__tests__/secretary-bootstrap.test.ts (2 tests) 180ms
+ ✓ apps/api/src/__tests__/rate-limit.test.ts (5 tests) 168ms
+ ✓ packages/chaos/src/__tests__/chaos.test.ts (15 tests) 184ms
+ ✓ tests/phase11-2-certification.test.js (5 tests) 207ms
+ ✓ tests/aud20-10-composition.test.ts (13 tests) 171ms
+ ✓ apps/web/src/features/conversations/timeline.test.tsx (2 tests) 156ms
+ ✓ apps/api/src/__tests__/orchestration-observability.test.ts (4 tests) 170ms
+ ✓ apps/api/src/audit-filter-duplicate-boundary.test.ts (6 tests) 159ms
+ ✓ apps/api/src/__tests__/journeys-api.test.ts (1 test) 119ms
+ ✓ apps/api/src/rem-risk-boundary.test.ts (2 tests) 165ms
+ ✓ packages/model-gateway/src/__tests__/local-http-providers.test.ts (12 tests) 175ms
+ ✓ apps/api/src/__tests__/knowledge-input-boundary.test.ts (2 tests) 159ms
+ ✓ tests/architecture.test.js (7 tests) 180ms
+ ✓ apps/api/src/__tests__/task-lifecycle.test.ts (3 tests) 150ms
+ ✓ tests/aud20-05-resource-attestation-check.test.js (8 tests) 185ms
+ ✓ apps/web/src/features/audit/audit-checkpoint.test.tsx (1 test) 140ms
+ ✓ apps/api/src/__tests__/audit-route.integration.test.ts (1 test) 123ms
  ✓ apps/api/src/__tests__/knowledge-source-catalog.test.ts (1 test) 120ms
- ✓ tests/e2e/critical-flows.test.ts (1 test) 115ms
- ✓ apps/api/src/__tests__/approval-actions.test.ts (1 test) 114ms
- ✓ apps/api/src/__tests__/correlation.test.ts (1 test) 110ms
- ✓ apps/api/src/__tests__/observability.test.ts (1 test) 120ms
- ✓ apps/api/src/__tests__/small-module-boundaries.test.ts (8 tests) 126ms
- ✓ apps/api/src/__tests__/audit-route.integration.test.ts (1 test) 117ms
- ✓ apps/api/src/__tests__/journeys-api.test.ts (1 test) 116ms
-{"event":"worker.sweep_tick","level":"info","timestamp":"2026-09-26T02:24:29.427Z","now":"2026-09-13T00:00:00.000Z","journalReleased":1,"approvalsReleased":2,"approvalsUncertain":1,"goalsInspected":0,"goalsResumed":0,"goalsSkipped":0,"goalsCompleted":0,"goalRecoveryFailures":0,"durationMs":1,"operation":"sweep"}
-{"event":"worker.metric","name":"worker_sweep_journal_released_total","value":1,"attributes":{"operation":"sweep"},"timestamp":"2026-09-26T02:24:29.429Z"}
-{"event":"worker.metric","name":"worker_sweep_approvals_released_total","value":2,"attributes":{"status":"released"},"timestamp":"2026-09-26T02:24:29.429Z"}
-{"event":"worker.metric","name":"worker_sweep_approvals_uncertain_total","value":1,"attributes":{"status":"uncertain"},"timestamp":"2026-09-26T02:24:29.429Z"}
-{"event":"worker.metric","name":"worker_sweep_goals_inspected_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-26T02:24:29.429Z"}
-{"event":"worker.metric","name":"worker_sweep_goals_resumed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-26T02:24:29.429Z"}
-{"event":"worker.metric","name":"worker_sweep_goals_completed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-26T02:24:29.429Z"}
-{"event":"worker.metric","name":"worker_sweep_goal_recovery_failures_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-26T02:24:29.430Z"}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:24:29.432Z","workerId":"worker-sweeps-191","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":true,"externalEffects":false,"durable":true}
-{"event":"worker.sweep_started","level":"info","timestamp":"2026-09-26T02:24:29.432Z","intervalMs":10,"operation":"sweep"}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:24:29.432Z","workerId":"worker-sweeps-191","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:24:29.433Z"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:24:29.433Z","workerId":"worker-sweeps-191","backoffMs":5,"lag":0}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:24:29.438Z","workerId":"worker-sweeps-191","backoffMs":10,"lag":0}
-{"event":"worker.sweep_tick","level":"info","timestamp":"2026-09-26T02:24:29.442Z","now":"2026-09-26T02:24:29.442Z","journalReleased":0,"approvalsReleased":0,"approvalsUncertain":0,"goalsInspected":0,"goalsResumed":0,"goalsSkipped":0,"goalsCompleted":0,"goalRecoveryFailures":0,"durationMs":0,"operation":"sweep"}
-{"event":"worker.metric","name":"worker_sweep_journal_released_total","value":0,"attributes":{"operation":"sweep"},"timestamp":"2026-09-26T02:24:29.442Z"}
-{"event":"worker.metric","name":"worker_sweep_approvals_released_total","value":0,"attributes":{"status":"released"},"timestamp":"2026-09-26T02:24:29.442Z"}
-{"event":"worker.metric","name":"worker_sweep_approvals_uncertain_total","value":0,"attributes":{"status":"uncertain"},"timestamp":"2026-09-26T02:24:29.442Z"}
-{"event":"worker.metric","name":"worker_sweep_goals_inspected_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-26T02:24:29.442Z"}
-{"event":"worker.metric","name":"worker_sweep_goals_resumed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-26T02:24:29.442Z"}
-{"event":"worker.metric","name":"worker_sweep_goals_completed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-26T02:24:29.442Z"}
-{"event":"worker.metric","name":"worker_sweep_goal_recovery_failures_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-26T02:24:29.442Z"}
-{"event":"worker.sweep_stopped","level":"info","timestamp":"2026-09-26T02:24:29.443Z","operation":"sweep"}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:24:29.444Z","workerId":"worker-sweeps-191","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":2,"released":0,"lag":0,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:24:29.444Z","workerId":"worker-sweeps-191","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
- ✓ apps/worker/src/__tests__/worker-sweeps.test.ts (6 tests) 123ms
+ ✓ tests/e2e/critical-flows.test.ts (1 test) 121ms
+ ✓ apps/api/src/prompt-profile-error-boundary.test.ts (4 tests) 124ms
+ ✓ apps/api/src/__tests__/approval-actions.test.ts (1 test) 125ms
+ ✓ apps/api/src/__tests__/aud17-connected-redteam.test.ts (1 test) 133ms
+ ✓ apps/api/src/__tests__/plugin-catalog.test.ts (1 test) 123ms
+ ✓ apps/api/src/request-metrics.test.ts (3 tests) 125ms
+{"event":"worker.sweep_tick","level":"info","timestamp":"2026-09-27T02:20:42.325Z","now":"2026-09-13T00:00:00.000Z","journalReleased":1,"approvalsReleased":2,"approvalsUncertain":1,"goalsInspected":0,"goalsResumed":0,"goalsSkipped":0,"goalsCompleted":0,"goalRecoveryFailures":0,"durationMs":0,"operation":"sweep"}
+{"event":"worker.metric","name":"worker_sweep_journal_released_total","value":1,"attributes":{"operation":"sweep"},"timestamp":"2026-09-27T02:20:42.327Z"}
+{"event":"worker.metric","name":"worker_sweep_approvals_released_total","value":2,"attributes":{"status":"released"},"timestamp":"2026-09-27T02:20:42.327Z"}
+{"event":"worker.metric","name":"worker_sweep_approvals_uncertain_total","value":1,"attributes":{"status":"uncertain"},"timestamp":"2026-09-27T02:20:42.327Z"}
+{"event":"worker.metric","name":"worker_sweep_goals_inspected_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T02:20:42.327Z"}
+{"event":"worker.metric","name":"worker_sweep_goals_resumed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T02:20:42.327Z"}
+{"event":"worker.metric","name":"worker_sweep_goals_completed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T02:20:42.327Z"}
+{"event":"worker.metric","name":"worker_sweep_goal_recovery_failures_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T02:20:42.327Z"}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:20:42.329Z","workerId":"worker-sweeps-191","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":true,"externalEffects":false,"durable":true}
+{"event":"worker.sweep_started","level":"info","timestamp":"2026-09-27T02:20:42.329Z","intervalMs":10,"operation":"sweep"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:20:42.329Z","workerId":"worker-sweeps-191","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:20:42.330Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:20:42.330Z","workerId":"worker-sweeps-191","backoffMs":5,"lag":0}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:20:42.335Z","workerId":"worker-sweeps-191","backoffMs":10,"lag":0}
+{"event":"worker.sweep_tick","level":"info","timestamp":"2026-09-27T02:20:42.339Z","now":"2026-09-27T02:20:42.339Z","journalReleased":0,"approvalsReleased":0,"approvalsUncertain":0,"goalsInspected":0,"goalsResumed":0,"goalsSkipped":0,"goalsCompleted":0,"goalRecoveryFailures":0,"durationMs":0,"operation":"sweep"}
+{"event":"worker.metric","name":"worker_sweep_journal_released_total","value":0,"attributes":{"operation":"sweep"},"timestamp":"2026-09-27T02:20:42.339Z"}
+{"event":"worker.metric","name":"worker_sweep_approvals_released_total","value":0,"attributes":{"status":"released"},"timestamp":"2026-09-27T02:20:42.339Z"}
+{"event":"worker.metric","name":"worker_sweep_approvals_uncertain_total","value":0,"attributes":{"status":"uncertain"},"timestamp":"2026-09-27T02:20:42.339Z"}
+{"event":"worker.metric","name":"worker_sweep_goals_inspected_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T02:20:42.339Z"}
+{"event":"worker.metric","name":"worker_sweep_goals_resumed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T02:20:42.339Z"}
+{"event":"worker.metric","name":"worker_sweep_goals_completed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T02:20:42.339Z"}
+{"event":"worker.metric","name":"worker_sweep_goal_recovery_failures_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T02:20:42.339Z"}
+{"event":"worker.sweep_stopped","level":"info","timestamp":"2026-09-27T02:20:42.340Z","operation":"sweep"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:20:42.340Z","workerId":"worker-sweeps-191","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":2,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:20:42.341Z","workerId":"worker-sweeps-191","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
+ ✓ apps/worker/src/__tests__/worker-sweeps.test.ts (6 tests) 121ms
+ ✓ apps/api/src/__tests__/correlation.test.ts (1 test) 109ms
+ ✓ packages/platform/src/__tests__/platform-foundation.test.ts (20 tests) 121ms
+ ✓ packages/agent-runtime/src/__tests__/runtime-journal.test.ts (19 tests) 91ms
  ✓ tests/aud20-05-replay-grants-probe.test.js (6 tests) 117ms
- ✓ packages/platform/src/__tests__/branches-b-20260925.test.ts (25 tests) 92ms
- ✓ packages/platform/src/__tests__/safety-assessment.test.ts (29 tests) 92ms
- ✓ packages/channel-gateway/src/__tests__/channel-effect-journal-edges.test.ts (9 tests) 105ms
- ✓ packages/agent-runtime/src/__tests__/runtime-journal.test.ts (19 tests) 90ms
- ✓ packages/agent-runtime/src/__tests__/runtime-branch-hardening.test.ts (35 tests) 87ms
- ✓ packages/agent-runtime/src/__tests__/runtime-kernel-coverage.test.ts (40 tests) 77ms
- ✓ apps/worker/src/__tests__/postgres-controlled-hardening.test.ts (8 tests) 87ms
  ✓ apps/worker/src/__tests__/postgres-role-preflight-fake-20260925.test.ts (22 tests) 71ms
- ✓ packages/channel-gateway/src/__tests__/channel-coverage-journal-hardening.test.ts (12 tests) 76ms
- ✓ packages/shared/src/__tests__/shared-branches-hardening.test.ts (15 tests) 75ms
- ✓ packages/agent-runtime/src/__tests__/effect-journal.test.ts (41 tests) 63ms
- ✓ packages/channel-gateway/src/__tests__/channel-coverage-gateway-journal-paths.test.ts (16 tests) 74ms
- ✓ apps/worker/src/__tests__/postgres-controlled.test.ts (5 tests) 62ms
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:20:48.180Z","workerId":"worker-branches-b","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:20:48.182Z","workerId":"worker-branches-b","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":null}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:20:48.183Z","workerId":"worker-branches-b","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":50,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:20:48.183Z","workerId":"worker-branches-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:20:48.183Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:20:48.183Z","workerId":"worker-branches-b","backoffMs":5,"lag":0}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:20:48.184Z","workerId":"worker-branches-b","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:20:48.184Z","workerId":"worker-branches-b","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:20:48.184Z","workerId":"worker-branches-b","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":50,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:20:48.184Z","workerId":"worker-branches-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:20:48.184Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:20:48.184Z","workerId":"worker-branches-b","backoffMs":5,"lag":0}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:20:48.184Z","workerId":"worker-branches-b","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:20:48.184Z","workerId":"worker-branches-b","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:20:48.185Z","workerId":"worker-branches-b","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":50,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:20:48.185Z","workerId":"worker-branches-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:20:48.185Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:20:48.185Z","workerId":"worker-branches-b","backoffMs":5,"lag":0}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:20:48.185Z","workerId":"worker-branches-b","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:20:48.185Z","workerId":"worker-branches-b","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:20:48.185Z","workerId":"worker-branches-b","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":50,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:20:48.185Z","workerId":"worker-branches-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:20:48.185Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:20:48.185Z","workerId":"worker-branches-b","backoffMs":5,"lag":0}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:20:48.185Z","workerId":"worker-branches-b","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:20:48.185Z","workerId":"worker-branches-b","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:20:48.186Z","workerId":"worker-branches-b","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":50,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:20:48.186Z","workerId":"worker-branches-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:20:48.186Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:20:48.186Z","workerId":"worker-branches-b","backoffMs":5,"lag":0}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:20:48.186Z","workerId":"worker-branches-b","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:20:48.186Z","workerId":"worker-branches-b","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:20:48.187Z","workerId":"worker-branches-b","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":50,"backlogProbe":true,"sweeps":true,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:20:48.187Z","workerId":"worker-branches-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:20:48.187Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:20:48.187Z","workerId":"worker-branches-b","backoffMs":5,"lag":0}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:20:48.187Z","workerId":"worker-branches-b","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:20:48.187Z","workerId":"worker-branches-b","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T02:20:48.187Z","workerId":"worker-branches-b","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":50,"backlogProbe":true,"sweeps":true,"externalEffects":false,"durable":true}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:20:48.187Z","workerId":"worker-branches-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.sweep_stop_failed","level":"error","timestamp":"2026-09-27T02:20:48.187Z","workerId":"worker-branches-b","error":"[redacted-outbox-error]"}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T02:20:48.187Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T02:20:48.187Z","workerId":"worker-branches-b","backoffMs":5,"lag":0}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T02:20:48.187Z","workerId":"worker-branches-b","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T02:20:48.188Z","workerId":"worker-branches-b","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
+ ✓ apps/worker/src/__tests__/branches-b-20260925.test.ts (80 tests) 57ms
+ ✓ packages/channel-gateway/src/__tests__/channel-effect-journal-edges.test.ts (9 tests) 119ms
+ ✓ packages/platform/src/__tests__/branches-b-20260925.test.ts (25 tests) 102ms
+ ✓ packages/channel-gateway/src/__tests__/channel-coverage-gateway-journal-paths.test.ts (16 tests) 85ms
+ ✓ packages/platform/src/__tests__/safety-assessment.test.ts (29 tests) 117ms
+ ✓ apps/worker/src/__tests__/postgres-controlled-hardening.test.ts (8 tests) 95ms
+ ✓ packages/agent-runtime/src/__tests__/runtime-branch-hardening.test.ts (35 tests) 100ms
+ ✓ packages/agent-runtime/src/__tests__/runtime-kernel-coverage.test.ts (40 tests) 91ms
+ ✓ apps/worker/src/__tests__/postgres-controlled.test.ts (5 tests) 58ms
  ✓ packages/agent-runtime/src/__tests__/runtime-limits.test.ts (16 tests) 60ms
- ✓ packages/policy-engine/src/__tests__/execution-contract-matrix.test.ts (10 tests) 50ms
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:24:44.842Z","workerId":"worker-branches-b","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:24:44.844Z","workerId":"worker-branches-b","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":null}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:24:44.845Z","workerId":"worker-branches-b","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":50,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:24:44.845Z","workerId":"worker-branches-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:24:44.845Z"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:24:44.846Z","workerId":"worker-branches-b","backoffMs":5,"lag":0}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:24:44.846Z","workerId":"worker-branches-b","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:24:44.846Z","workerId":"worker-branches-b","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:24:44.846Z","workerId":"worker-branches-b","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":50,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:24:44.846Z","workerId":"worker-branches-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:24:44.846Z"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:24:44.846Z","workerId":"worker-branches-b","backoffMs":5,"lag":0}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:24:44.846Z","workerId":"worker-branches-b","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:24:44.846Z","workerId":"worker-branches-b","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:24:44.847Z","workerId":"worker-branches-b","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":50,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:24:44.847Z","workerId":"worker-branches-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:24:44.847Z"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:24:44.847Z","workerId":"worker-branches-b","backoffMs":5,"lag":0}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:24:44.847Z","workerId":"worker-branches-b","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:24:44.847Z","workerId":"worker-branches-b","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:24:44.847Z","workerId":"worker-branches-b","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":50,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:24:44.847Z","workerId":"worker-branches-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:24:44.847Z"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:24:44.847Z","workerId":"worker-branches-b","backoffMs":5,"lag":0}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:24:44.848Z","workerId":"worker-branches-b","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:24:44.848Z","workerId":"worker-branches-b","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:24:44.848Z","workerId":"worker-branches-b","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":50,"backlogProbe":true,"sweeps":false,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:24:44.848Z","workerId":"worker-branches-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:24:44.848Z"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:24:44.848Z","workerId":"worker-branches-b","backoffMs":5,"lag":0}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:24:44.848Z","workerId":"worker-branches-b","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:24:44.848Z","workerId":"worker-branches-b","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:24:44.849Z","workerId":"worker-branches-b","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":50,"backlogProbe":true,"sweeps":true,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:24:44.849Z","workerId":"worker-branches-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:24:44.849Z"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:24:44.849Z","workerId":"worker-branches-b","backoffMs":5,"lag":0}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:24:44.849Z","workerId":"worker-branches-b","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:24:44.849Z","workerId":"worker-branches-b","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
-{"event":"worker.started","level":"info","timestamp":"2026-09-26T02:24:44.849Z","workerId":"worker-branches-b","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":50,"backlogProbe":true,"sweeps":true,"externalEffects":false,"durable":true}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:24:44.849Z","workerId":"worker-branches-b","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.sweep_stop_failed","level":"error","timestamp":"2026-09-26T02:24:44.849Z","workerId":"worker-branches-b","error":"[redacted-outbox-error]"}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-26T02:24:44.850Z"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-26T02:24:44.850Z","workerId":"worker-branches-b","backoffMs":5,"lag":0}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-26T02:24:44.850Z","workerId":"worker-branches-b","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":1,"released":0,"lag":0,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-26T02:24:44.850Z","workerId":"worker-branches-b","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
- ✓ apps/worker/src/__tests__/branches-b-20260925.test.ts (80 tests) 51ms
- ✓ tests/phase11-certification.test.js (3 tests) 57ms
- ✓ packages/platform/src/__tests__/secretary-preset.test.ts (2 tests) 55ms
- ✓ apps/worker/src/__tests__/worker.test.ts (1 test) 55ms
- ✓ packages/shared/src/__tests__/lifecycle.test.ts (4 tests) 61ms
- ✓ packages/platform/src/__tests__/prompt-profile.test.ts (8 tests) 54ms
- ✓ apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts (79 tests | 29 skipped) 48ms
- ✓ packages/channel-gateway/src/__tests__/channel-effect-journal.test.ts (11 tests) 55ms
- ✓ packages/agent-runtime/src/__tests__/runtime-binding.test.ts (17 tests) 63ms
- ✓ apps/worker/src/__tests__/published-worker-runtime.test.ts (9 tests) 55ms
- ✓ packages/platform/src/__tests__/plugin-gateway-hardening.test.ts (12 tests) 54ms
- ✓ packages/agent-core/src/__tests__/published-agent-runtime.test.ts (9 tests) 62ms
+ ✓ packages/agent-core/src/__tests__/published-agent-runtime.test.ts (9 tests) 48ms
+ ✓ packages/agent-runtime/src/__tests__/effect-journal.test.ts (41 tests) 70ms
+ ✓ packages/channel-gateway/src/__tests__/channel-coverage-journal-hardening.test.ts (12 tests) 74ms
+ ✓ packages/platform/src/__tests__/secretary-preset.test.ts (2 tests) 51ms
+ ✓ apps/worker/src/__tests__/worker.test.ts (1 test) 48ms
+ ✓ packages/agent-runtime/src/__tests__/runtime-binding.test.ts (17 tests) 59ms
+ ✓ packages/shared/src/__tests__/shared-branches-hardening.test.ts (15 tests) 71ms
+ ✓ packages/agent-runtime/src/__tests__/runtime-legacy-rearm.test.ts (8 tests) 50ms
+ ✓ packages/policy-engine/src/__tests__/execution-contract-matrix.test.ts (10 tests) 45ms
+ ✓ packages/channel-gateway/src/__tests__/channel-effect-journal.test.ts (11 tests) 54ms
  ✓ packages/platform/src/__tests__/controlled-tool-registry.test.ts (5 tests) 40ms
- ✓ packages/platform/src/__tests__/output-policy.test.ts (35 tests) 44ms
- ✓ packages/channel-gateway/src/__tests__/channel-coverage-gateway-hardening.test.ts (10 tests) 55ms
- ✓ apps/worker/src/__tests__/worker-health.test.ts (9 tests) 52ms
- ✓ packages/persistence/src/__tests__/platform-control-plane-repository.test.ts (9 tests) 49ms
- ✓ packages/platform/src/__tests__/test-lab-events.test.ts (5 tests) 42ms
- ✓ packages/agent-runtime/src/__tests__/runtime-sweep-operation-key.test.ts (7 tests) 46ms
- ✓ packages/agent-runtime/src/__tests__/agent-runtime.test.ts (9 tests) 43ms
- ✓ packages/persistence/src/__tests__/restore-integrity.test.ts (12 tests) 42ms
- ✓ packages/agent-runtime/src/__tests__/runtime-legacy-rearm.test.ts (8 tests) 48ms
- ✓ packages/platform/src/__tests__/handoff-policy.test.ts (3 tests) 41ms
+ ✓ packages/shared/src/__tests__/lifecycle.test.ts (4 tests) 60ms
+ ✓ packages/platform/src/__tests__/plugin-gateway-hardening.test.ts (12 tests) 45ms
+ ✓ tests/phase11-certification.test.js (3 tests) 57ms
+ ✓ packages/platform/src/__tests__/tool-invocation-boundary.test.ts (14 tests) 33ms
+ ✓ apps/worker/src/__tests__/kernel-composition-branch-hardening.test.ts (79 tests | 29 skipped) 48ms
+ ✓ apps/worker/src/__tests__/worker-health.test.ts (9 tests) 43ms
+ ✓ apps/worker/src/__tests__/published-worker-runtime.test.ts (9 tests) 49ms
+ ✓ packages/channel-gateway/src/__tests__/channel-coverage-gateway-hardening.test.ts (10 tests) 59ms
+ ✓ packages/platform/src/__tests__/prompt-profile.test.ts (8 tests) 55ms
+ ✓ packages/platform/src/__tests__/test-lab-events.test.ts (5 tests) 38ms
+ ✓ packages/persistence/src/__tests__/platform-control-plane-repository.test.ts (9 tests) 43ms
+ ✓ packages/platform/src/__tests__/output-policy.test.ts (35 tests) 45ms
+ ✓ packages/agent-runtime/src/__tests__/agent-runtime.test.ts (9 tests) 39ms
+ ✓ packages/platform/src/__tests__/handoff-policy.test.ts (3 tests) 42ms
+ ✓ packages/agent-runtime/src/__tests__/runtime-sweep-operation-key.test.ts (7 tests) 42ms
+ ✓ packages/platform/src/__tests__/test-suite-catalog.test.ts (2 tests) 37ms
  ✓ apps/web/src/features/audit/audit-view.test.tsx (1 test) 37ms
- ✓ apps/worker/src/__tests__/published-worker-knowledge-boundary.test.ts (5 tests) 43ms
- ✓ packages/persistence/src/__tests__/tenant-isolation.test.ts (14 tests | 2 skipped) 27ms
- ✓ packages/channel-gateway/src/__tests__/channel-effect-hash-version.test.ts (9 tests) 34ms
- ✓ packages/agent-runtime/src/__tests__/effect-journal-edges.test.ts (19 tests) 28ms
- ✓ packages/platform/src/__tests__/test-suite-catalog.test.ts (2 tests) 42ms
- ✓ packages/persistence/src/__tests__/coverage-20260925.test.ts (45 tests) 34ms
- ✓ packages/model-gateway/src/__tests__/gateway-hardening.test.ts (36 tests) 33ms
- ✓ packages/platform/src/__tests__/tool-invocation-boundary.test.ts (14 tests) 41ms
- ✓ apps/api/src/__tests__/tenant-isolation-branch-hardening.test.ts (12 tests) 32ms
- ✓ packages/agent-evals/src/__tests__/eval-contract.test.ts (16 tests) 24ms
- ✓ packages/platform/src/__tests__/knowledge-resolver.test.ts (1 test) 27ms
- ✓ packages/approval-engine/src/__tests__/approval-critical-coverage.test.ts (36 tests) 25ms
- ✓ apps/worker/src/__tests__/kernel-coverage-20260925.test.ts (27 tests) 22ms
- ✓ packages/observability/src/__tests__/observability.test.ts (12 tests) 26ms
- ✓ packages/platform/src/__tests__/plugin-registry-versioning.test.ts (3 tests) 23ms
- ✓ packages/platform/src/__tests__/knowledge-input-boundary.test.ts (3 tests) 28ms
- ✓ packages/platform/src/__tests__/trace-governance.test.ts (14 tests) 25ms
- ✓ packages/channel-gateway/src/__tests__/channel-gateway.test.ts (14 tests) 29ms
- ✓ packages/agent-runtime/src/__tests__/capability-action-binding.test.ts (3 tests) 22ms
- ✓ packages/persistence/src/__tests__/outbox-edge.test.ts (22 tests) 26ms
- ✓ packages/model-gateway/src/__tests__/providers.test.ts (14 tests) 20ms
- ✓ apps/worker/src/__tests__/kernel-composition-state.test.ts (12 tests) 20ms
- ✓ packages/platform/src/__tests__/capability-approval-gateway.test.ts (4 tests) 24ms
- ✓ packages/approval-engine/src/__tests__/approval-coverage-closure.test.ts (14 tests) 24ms
+ ✓ packages/persistence/src/__tests__/restore-integrity.test.ts (12 tests) 39ms
+ ✓ apps/worker/src/__tests__/published-worker-knowledge-boundary.test.ts (5 tests) 38ms
+ ✓ packages/persistence/src/__tests__/tenant-isolation.test.ts (14 tests | 2 skipped) 26ms
+ ✓ packages/persistence/src/__tests__/coverage-20260925.test.ts (45 tests) 29ms
+ ✓ packages/platform/src/__tests__/capability-approval-gateway.test.ts (4 tests) 22ms
+ ✓ packages/model-gateway/src/__tests__/gateway-hardening.test.ts (36 tests) 30ms
+ ✓ packages/channel-gateway/src/__tests__/channel-effect-hash-version.test.ts (9 tests) 29ms
+ ✓ apps/api/src/__tests__/tenant-isolation-branch-hardening.test.ts (12 tests) 29ms
+ ✓ packages/observability/src/__tests__/observability.test.ts (12 tests) 22ms
+ ✓ packages/platform/src/__tests__/knowledge-resolver.test.ts (1 test) 25ms
+ ✓ packages/agent-evals/src/__tests__/eval-contract.test.ts (16 tests) 25ms
+ ✓ packages/platform/src/__tests__/knowledge-input-boundary.test.ts (3 tests) 30ms
  ✓ packages/agent-evals/src/__tests__/agent-evals.test.ts (8 tests) 21ms
- ✓ packages/persistence/src/__tests__/retention.test.ts (27 tests) 19ms
- ✓ packages/platform/src/__tests__/event-bus-hardening.test.ts (7 tests) 24ms
- ✓ packages/platform/src/__tests__/publish-evidence-authority.test.ts (4 tests) 20ms
- ✓ packages/persistence/src/__tests__/outbox-branch-hardening.test.ts (11 tests) 25ms
- ✓ packages/persistence/src/__tests__/repository-error-paths.test.ts (6 tests) 24ms
- ✓ packages/persistence/src/__tests__/journeys-postgres.test.ts (24 tests | 15 skipped) 19ms
+ ✓ packages/persistence/src/__tests__/outbox-edge.test.ts (22 tests) 26ms
+ ✓ packages/approval-engine/src/__tests__/approval-critical-coverage.test.ts (36 tests) 24ms
+ ✓ packages/persistence/src/__tests__/runtime-trace-correlation.test.ts (2 tests) 13ms
+ ✓ packages/approval-engine/src/__tests__/approval-lifecycle.test.ts (19 tests) 20ms
+ ✓ packages/persistence/src/__tests__/outbox-branch-hardening.test.ts (11 tests) 29ms
+ ✓ packages/persistence/src/__tests__/repository-error-paths.test.ts (6 tests) 21ms
+ ✓ packages/platform/src/__tests__/plugin-registry-versioning.test.ts (3 tests) 24ms
+ ✓ packages/platform/src/__tests__/event-bus-hardening.test.ts (7 tests) 20ms
+ ✓ packages/channel-gateway/src/__tests__/channel-gateway.test.ts (14 tests) 23ms
+ ✓ packages/approval-engine/src/__tests__/approval-coverage-closure.test.ts (14 tests) 22ms
+ ✓ packages/platform/src/__tests__/malformed-model-output.test.ts (1 test) 18ms
+ ✓ packages/agent-runtime/src/__tests__/effect-journal-edges.test.ts (19 tests) 23ms
+ ✓ packages/persistence/src/__tests__/branches-b-20260925.test.ts (30 tests) 19ms
  ✓ packages/agent-evals/src/__tests__/branches-b-20260925.test.ts (10 tests) 21ms
- ✓ packages/platform/src/__tests__/release-candidate-ledger.test.ts (5 tests) 20ms
- ✓ apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts (14 tests | 5 skipped) 17ms
- ✓ packages/persistence/src/__tests__/branches-b-20260925.test.ts (30 tests) 18ms
+ ✓ packages/persistence/src/__tests__/audit-evidence-checkpoint.test.ts (3 tests) 22ms
+ ✓ packages/agent-runtime/src/__tests__/capability-action-binding.test.ts (3 tests) 28ms
+ ✓ apps/worker/src/__tests__/kernel-coverage-20260925.test.ts (27 tests) 23ms
+ ✓ packages/platform/src/__tests__/release-candidate-ledger.test.ts (5 tests) 19ms
+ ✓ packages/platform/src/__tests__/trace-governance.test.ts (14 tests) 27ms
  ✓ packages/persistence/src/__tests__/postgres-migration-smoke.test.ts (9 tests | 1 skipped) 19ms
- ✓ packages/persistence/src/__tests__/audit-evidence-checkpoint.test.ts (3 tests) 20ms
- ✓ packages/approval-engine/src/__tests__/approval-lifecycle.test.ts (19 tests) 21ms
- ✓ packages/agent-core/src/__tests__/receive-inbound-message.test.ts (9 tests) 14ms
- ✓ packages/observability/src/__tests__/branches-b-20260925.test.ts (19 tests) 19ms
- ✓ packages/persistence/src/__tests__/conversation-repository.test.ts (15 tests) 16ms
- ✓ packages/persistence/src/__tests__/audit-evidence-checkpoint-postgres.test.ts (2 tests) 17ms
- ✓ packages/observability/src/__tests__/observability-coverage.test.ts (5 tests) 18ms
- ✓ packages/persistence/src/__tests__/runtime-trace-correlation.test.ts (2 tests) 14ms
- ✓ packages/platform/src/__tests__/secretary-preset-hardening.test.ts (3 tests) 18ms
- ✓ packages/agent-evals/src/__tests__/integrated-holdout.test.ts (6 tests) 20ms
- ✓ packages/persistence/src/__tests__/platform-approval-repository.test.ts (3 tests) 19ms
- ✓ packages/channel-gateway/src/__tests__/channel-effect-reconciliation-actor.test.ts (6 tests) 20ms
- ✓ packages/platform/src/__tests__/malformed-model-output.test.ts (1 test) 19ms
- ✓ packages/platform/src/__tests__/platform-misc-hardening.test.ts (6 tests) 16ms
- ✓ packages/approval-engine/src/__tests__/approval-lifecycle-edges.test.ts (10 tests) 16ms
- ✓ packages/platform/src/__tests__/approval-authority.test.ts (6 tests) 21ms
- ✓ apps/worker/src/__tests__/controlled-worker-hardening.test.ts (7 tests) 14ms
- ✓ packages/observability/src/__tests__/observability-exercise.test.ts (4 tests) 17ms
- ✓ packages/platform/src/__tests__/event-bus.test.ts (8 tests) 19ms
- ✓ packages/platform/src/__tests__/plugin-catalog.test.ts (1 test) 15ms
- ✓ packages/channel-gateway/src/__tests__/channel-coverage-inbound-adapters.test.ts (11 tests) 15ms
- ✓ packages/agent-evals/src/__tests__/datasets-coverage-20260925.test.ts (6 tests) 15ms
- ✓ packages/shared/src/__tests__/shared-contracts.test.ts (11 tests) 14ms
- ✓ packages/rag/src/__tests__/institutional-rag-hardening.test.ts (8 tests) 19ms
- ✓ packages/persistence/src/__tests__/outbox.test.ts (6 tests) 15ms
- ✓ tests/docs-readiness.test.js (7 tests) 14ms
- ✓ apps/api/src/__tests__/bootstrap-coverage-20260925.test.ts (21 tests) 14ms
- ✓ apps/worker/src/__tests__/outbox-recovery.test.ts (5 tests) 11ms
+ ✓ packages/agent-evals/src/__tests__/integrated-holdout.test.ts (6 tests) 21ms
+ ✓ packages/platform/src/__tests__/secretary-preset-hardening.test.ts (3 tests) 20ms
+ ✓ apps/worker/src/__tests__/kernel-composition-state.test.ts (12 tests) 23ms
  ✓ packages/observability/src/__tests__/sli-slo-catalog.test.ts (4 tests) 15ms
+ ✓ packages/persistence/src/__tests__/journeys-postgres.test.ts (24 tests | 15 skipped) 21ms
+ ✓ packages/model-gateway/src/__tests__/providers.test.ts (14 tests) 17ms
+ ✓ packages/channel-gateway/src/__tests__/channel-effect-reconciliation-actor.test.ts (6 tests) 22ms
+ ✓ packages/platform/src/__tests__/model-provider-boundary.test.ts (4 tests) 12ms
+ ✓ packages/persistence/src/__tests__/platform-approval-repository.test.ts (3 tests) 17ms
+ ✓ apps/web/src/features/platform/prompt-profile.test.ts (5 tests) 11ms
+ ✓ apps/worker/src/__tests__/kernel-composition-postgres.integration.test.ts (14 tests | 5 skipped) 17ms
+ ✓ packages/observability/src/__tests__/observability-coverage.test.ts (5 tests) 18ms
+ ✓ packages/observability/src/__tests__/branches-b-20260925.test.ts (19 tests) 17ms
+ ✓ packages/platform/src/__tests__/platform-misc-hardening.test.ts (6 tests) 15ms
+ ✓ packages/platform/src/__tests__/approval-authority.test.ts (6 tests) 17ms
+ ✓ packages/persistence/src/__tests__/retention.test.ts (27 tests) 17ms
+ ✓ packages/persistence/src/__tests__/conversation-repository.test.ts (15 tests) 19ms
+ ✓ packages/platform/src/__tests__/event-bus.test.ts (8 tests) 17ms
+ ✓ packages/persistence/src/__tests__/outbox.test.ts (6 tests) 15ms
+ ✓ packages/observability/src/__tests__/observability-exercise.test.ts (4 tests) 17ms
+ ✓ packages/channel-gateway/src/__tests__/channel-coverage.test.ts (6 tests) 14ms
+ ✓ apps/api/src/__tests__/trusted-operator-identity.test.ts (10 tests) 13ms
+ ✓ packages/persistence/src/__tests__/journey-task-atomicity.test.ts (8 tests | 2 skipped) 17ms
+ ✓ packages/platform/src/__tests__/publish-evidence-authority.test.ts (4 tests) 22ms
+ ✓ tests/aud20-10-alerts-ledger.test.ts (10 tests) 16ms
+ ✓ packages/channel-gateway/src/__tests__/channel-coverage-inbound-adapters.test.ts (11 tests) 16ms
+ ✓ packages/platform/src/__tests__/plugin-catalog.test.ts (1 test) 15ms
+ ✓ packages/persistence/src/__tests__/audit-evidence-checkpoint-postgres.test.ts (2 tests) 16ms
+ ✓ apps/api/src/__tests__/request-context.test.ts (12 tests) 18ms
+ ✓ packages/agent-core/src/__tests__/receive-inbound-message.test.ts (9 tests) 15ms
+ ✓ packages/persistence/src/__tests__/persistence-schema.test.ts (7 tests) 13ms
+ ✓ packages/agent-evals/src/__tests__/datasets-coverage-20260925.test.ts (6 tests) 13ms
+ ✓ apps/api/src/__tests__/bootstrap-coverage-20260925.test.ts (21 tests) 14ms
+ ✓ apps/worker/src/__tests__/controlled-worker-hardening.test.ts (7 tests) 15ms
+ ✓ apps/api/src/__tests__/request-query.test.ts (7 tests) 11ms
+ ✓ packages/shared/src/__tests__/shared-contracts.test.ts (11 tests) 16ms
+ ✓ packages/channel-gateway/src/__tests__/channel-adapters-branch-hardening.test.ts (5 tests) 14ms
+ ✓ tests/docs-readiness.test.js (7 tests) 13ms
+ ✓ packages/observability/src/__tests__/collector.test.ts (8 tests) 12ms
+ ✓ packages/approval-engine/src/__tests__/approval-lifecycle-edges.test.ts (10 tests) 19ms
+ ✓ packages/approval-engine/src/__tests__/approval-engine.test.ts (10 tests) 14ms
  ✓ packages/persistence/src/__tests__/outbox-memory.test.ts (6 tests) 13ms
  ✓ packages/approval-engine/src/__tests__/approval-lifecycle-fencing.test.ts (6 tests) 14ms
- ✓ packages/persistence/src/__tests__/journey-task-atomicity.test.ts (8 tests | 2 skipped) 16ms
- ✓ tests/aud20-10-alerts-ledger.test.ts (10 tests) 15ms
- ✓ packages/policy-engine/src/__tests__/policy-engine.test.ts (14 tests) 15ms
- ✓ packages/observability/src/__tests__/collector.test.ts (8 tests) 13ms
- ✓ apps/api/src/__tests__/request-context.test.ts (12 tests) 13ms
+ ✓ packages/rag/src/__tests__/institutional-rag-hardening.test.ts (8 tests) 16ms
  ✓ packages/channel-gateway/src/__tests__/channel-effect-race.test.ts (2 tests) 14ms
- ✓ packages/persistence/src/__tests__/restore.test.ts (5 tests) 12ms
- ✓ packages/approval-engine/src/__tests__/approval-operation-key.test.ts (7 tests) 13ms
- ✓ packages/channel-gateway/src/__tests__/channel-coverage.test.ts (6 tests) 14ms
- ✓ packages/channel-gateway/src/__tests__/channel-adapters-branch-hardening.test.ts (5 tests) 14ms
- ✓ packages/platform/src/__tests__/model-provider-boundary.test.ts (4 tests) 14ms
- ✓ packages/persistence/src/__tests__/persistence-schema.test.ts (7 tests) 13ms
- ✓ packages/approval-engine/src/__tests__/approval-engine.test.ts (10 tests) 13ms
- ✓ apps/api/src/__tests__/trusted-operator-identity.test.ts (10 tests) 15ms
- ✓ packages/persistence/src/__tests__/attendance-approval-atomic.test.ts (6 tests) 17ms
- ✓ packages/persistence/src/__tests__/release-candidate-repository.test.ts (3 tests) 16ms
- ✓ apps/api/src/__tests__/request-query.test.ts (7 tests) 12ms
- ✓ apps/api/src/startup-failure.test.ts (8 tests) 13ms
- ✓ packages/platform/src/__tests__/knowledge-source-catalog.test.ts (2 tests) 10ms
- ✓ packages/policy-engine/src/__tests__/policy-coverage.test.ts (6 tests) 12ms
- ✓ packages/agent-runtime/src/__tests__/composition-branch-hardening.test.ts (7 tests) 7ms
- ✓ packages/tools/src/__tests__/platform-adapter.test.ts (1 test) 12ms
- ✓ packages/model-gateway/src/__tests__/edge-coverage.test.ts (15 tests) 11ms
- ✓ packages/persistence/src/__tests__/journeys.test.ts (2 tests) 11ms
  ✓ packages/persistence/src/__tests__/plugin-catalog-repository.test.ts (1 test) 12ms
- ✓ packages/shared/src/__tests__/audit-governance-hardening.test.ts (10 tests) 11ms
- ✓ apps/api/src/__tests__/orchestration-observability-coverage-20260925.test.ts (13 tests) 13ms
  ✓ tests/phase11-score-rubric.test.js (6 tests) 12ms
- ✓ apps/web/src/features/platform/prompt-profile.test.ts (5 tests) 12ms
- ✓ packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts (9 tests) 11ms
- ✓ packages/persistence/src/__tests__/runtime-audit-chain.test.ts (2 tests) 10ms
- ✓ packages/workflows/src/__tests__/persistent-journey.flow.test.ts (5 tests) 9ms
- ✓ packages/policy-engine/src/__tests__/capability-scope.test.ts (15 tests) 11ms
+ ✓ packages/persistence/src/__tests__/attendance-approval-atomic.test.ts (6 tests) 15ms
+ ✓ packages/persistence/src/__tests__/release-candidate-repository.test.ts (3 tests) 11ms
+ ✓ packages/tools/src/__tests__/platform-adapter.test.ts (1 test) 11ms
+ ✓ packages/approval-engine/src/__tests__/approval-operation-key.test.ts (7 tests) 13ms
+ ✓ packages/policy-engine/src/__tests__/policy-coverage.test.ts (6 tests) 12ms
+ ✓ packages/policy-engine/src/__tests__/policy-engine.test.ts (14 tests) 14ms
+ ✓ apps/api/src/startup-failure.test.ts (8 tests) 11ms
+ ✓ packages/persistence/src/__tests__/restore.test.ts (5 tests) 12ms
+ ✓ apps/worker/src/__tests__/outbox-recovery.test.ts (5 tests) 11ms
+ ✓ packages/model-gateway/src/__tests__/edge-coverage.test.ts (15 tests) 11ms
+ ✓ apps/api/src/__tests__/orchestration-observability-coverage-20260925.test.ts (13 tests) 11ms
  ✓ apps/web/src/api/audit-evidence-checkpoint-client.test.ts (3 tests) 10ms
- ✓ packages/platform/src/__tests__/tool-invocation-boundary-hardening.test.ts (9 tests) 9ms
- ✓ packages/agent-runtime/src/__tests__/proposal-errors.test.ts (10 tests) 9ms
- ✓ tests/aud20-16-capacity-model.test.js (5 tests) 8ms
- ✓ packages/chaos/src/__tests__/faults-coverage.test.ts (3 tests) 9ms
- ✓ apps/worker/src/__tests__/controlled-worker.test.ts (2 tests) 9ms
- ✓ packages/approval-engine/src/__tests__/approval-coverage.test.ts (3 tests) 8ms
- ✓ apps/api/src/__tests__/identity-key-ring-rotation.test.ts (8 tests) 10ms
- ✓ tests/repository-structure.test.js (2 tests) 7ms
- ✓ packages/observability/src/__tests__/alerts.test.ts (9 tests) 9ms
- ✓ packages/rag/src/__tests__/institutional-rag.test.ts (3 tests) 6ms
+ ✓ packages/persistence/src/__tests__/journeys.test.ts (2 tests) 11ms
  ✓ apps/api/src/__tests__/operator-replay-store.test.ts (20 tests | 3 skipped) 9ms
+ ✓ packages/persistence/src/__tests__/runtime-audit-chain.test.ts (2 tests) 10ms
+ ✓ tests/repository-structure.test.js (2 tests) 8ms
  ✓ tests/phase11-eval-contract.test.js (24 tests) 9ms
- ✓ packages/persistence/src/__tests__/audit-repository.test.ts (2 tests) 6ms
- ✓ tests/aud19-certification-guards.test.js (9 tests) 11ms
- ✓ packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts (19 tests | 15 skipped) 7ms
- ✓ apps/web/src/api/release-candidate-client.test.ts (3 tests) 10ms
- ✓ packages/tools/src/__tests__/journey-tools.test.ts (2 tests) 9ms
- ✓ apps/api/src/__tests__/request-context-branches-20260925.test.ts (8 tests) 8ms
- ✓ tests/aud20-19-qualification.test.js (5 tests) 6ms
- ✓ packages/platform/src/__tests__/retention-ledger.test.ts (2 tests) 7ms
- ✓ apps/worker/src/__tests__/worker-observability.test.ts (4 tests) 8ms
- ✓ packages/tools/src/__tests__/local-handlers-hardening.test.ts (5 tests) 8ms
- ✓ packages/shared/src/__tests__/ssrf.test.ts (34 tests) 8ms
- ✓ packages/platform/src/__tests__/model-provider.test.ts (3 tests) 6ms
- ✓ packages/persistence/src/__tests__/session-version-pinning.test.ts (2 tests) 9ms
- ✓ tests/aud19-critical-coverage.test.js (5 tests) 6ms
- ✓ apps/worker/src/__tests__/production-worker-guard.test.ts (11 tests) 8ms
- ✓ packages/agent-core/src/__tests__/conversation-session.integration.test.ts (1 test) 7ms
- ✓ packages/shared/src/__tests__/auth-identity-mode.test.ts (3 tests) 5ms
- ✓ apps/web/src/api/client.test.ts (1 test) 5ms
- ✓ packages/adapters/src/__tests__/controlled-delivery.test.ts (2 tests) 6ms
+ ✓ packages/policy-engine/src/__tests__/capability-scope.test.ts (15 tests) 11ms
+ ✓ packages/workflows/src/__tests__/persistent-journey.flow.test.ts (5 tests) 10ms
+ ✓ packages/shared/src/__tests__/audit-governance-hardening.test.ts (10 tests) 9ms
+ ✓ packages/platform/src/__tests__/knowledge-source-catalog.test.ts (2 tests) 10ms
+ ✓ apps/api/src/__tests__/identity-key-ring-rotation.test.ts (8 tests) 10ms
+ ✓ packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts (9 tests) 12ms
+ ✓ apps/web/src/api/release-candidate-client.test.ts (3 tests) 9ms
+ ✓ packages/platform/src/__tests__/tool-invocation-boundary-hardening.test.ts (9 tests) 8ms
+ ✓ tests/aud19-certification-guards.test.js (9 tests) 9ms
+ ✓ packages/tools/src/__tests__/journey-tools.test.ts (2 tests) 10ms
+ ✓ packages/approval-engine/src/__tests__/approval-coverage.test.ts (3 tests) 8ms
+ ✓ packages/agent-runtime/src/__tests__/proposal-errors.test.ts (10 tests) 9ms
+ ✓ packages/chaos/src/__tests__/faults-coverage.test.ts (3 tests) 8ms
+ ✓ packages/observability/src/__tests__/alerts.test.ts (9 tests) 9ms
+ ✓ apps/worker/src/__tests__/controlled-worker.test.ts (2 tests) 9ms
+ ✓ apps/worker/src/__tests__/worker-observability.test.ts (4 tests) 9ms
+ ✓ apps/api/src/__tests__/request-context-branches-20260925.test.ts (8 tests) 9ms
+ ✓ packages/platform/src/__tests__/model-provider.test.ts (3 tests) 8ms
+ ✓ apps/worker/src/__tests__/production-worker-guard.test.ts (11 tests) 9ms
+ ✓ packages/persistence/src/__tests__/session-version-pinning.test.ts (2 tests) 7ms
+ ✓ packages/persistence/src/__tests__/runtime-approval-store-branch-hardening.test.ts (19 tests | 15 skipped) 8ms
+ ✓ packages/adapters/src/__tests__/model-adapter.test.ts (3 tests) 8ms
+ ✓ packages/agent-runtime/src/__tests__/composition-branch-hardening.test.ts (7 tests) 7ms
  ✓ packages/agent-core/src/__tests__/coverage-20260925.test.ts (5 tests) 7ms
- ✓ packages/shared/src/__tests__/ids-hardening.test.ts (3 tests) 5ms
- ✓ packages/adapters/src/__tests__/model-adapter.test.ts (3 tests) 6ms
- ✓ packages/shared/src/__tests__/http-security-env.test.ts (4 tests) 7ms
- ✓ packages/tools/src/__tests__/tool-registry.test.ts (2 tests) 5ms
- ✓ packages/platform/src/__tests__/qualification.test.ts (3 tests) 5ms
- ✓ packages/agent-core/src/__tests__/internal-task.integration.test.ts (1 test) 4ms
+ ✓ packages/tools/src/__tests__/local-handlers-hardening.test.ts (5 tests) 9ms
+ ✓ packages/shared/src/__tests__/ssrf.test.ts (34 tests) 8ms
+ ✓ packages/adapters/src/__tests__/controlled-delivery.test.ts (2 tests) 5ms
+ ✓ packages/persistence/src/__tests__/audit-repository.test.ts (2 tests) 6ms
+ ✓ packages/platform/src/__tests__/retention-ledger.test.ts (2 tests) 8ms
+ ✓ tests/aud20-16-capacity-model.test.js (5 tests) 7ms
+ ✓ tests/aud20-19-qualification.test.js (5 tests) 6ms
+ ✓ packages/rag/src/__tests__/institutional-rag.test.ts (3 tests) 6ms
+ ✓ packages/shared/src/__tests__/http-security-env.test.ts (4 tests) 6ms
+ ✓ packages/agent-core/src/__tests__/conversation-session.integration.test.ts (1 test) 7ms
+ ✓ tests/aud19-critical-coverage.test.js (5 tests) 6ms
+ ✓ packages/shared/src/__tests__/ids-hardening.test.ts (3 tests) 9ms
  ✓ packages/workflows/src/__tests__/intent-workflow.flow.test.ts (5 tests) 5ms
- ✓ packages/adapters/src/__tests__/fake-whatsapp-adapter.test.ts (2 tests) 5ms
- ✓ packages/persistence/src/__tests__/outbox-durability.test.ts (9 tests | 7 skipped) 4ms
- ✓ apps/worker/src/__tests__/worker-docker-topology.test.ts (4 tests) 4ms
- ✓ packages/policy/src/__tests__/policy-engine.test.ts (3 tests) 5ms
- ✓ tests/release-candidate-boundary.test.js (5 tests) 5ms
- ✓ packages/tools/src/__tests__/owner-patient-tools.integration.test.ts (1 test) 3ms
- ✓ packages/persistence/src/__tests__/channel-effect-journal-postgres.test.ts (12 tests | 11 skipped) 3ms
- ✓ packages/shared/src/__tests__/data-classification.test.ts (7 tests) 5ms
- ✓ packages/shared/src/__tests__/canonical.test.ts (9 tests) 7ms
- ✓ tests/construction-readiness.test.js (4 tests) 5ms
- ✓ packages/platform/src/__tests__/handoff.test.ts (2 tests) 4ms
- ✓ packages/workflows/src/__tests__/scheduling-draft.flow.test.ts (1 test) 3ms
- ✓ packages/workflows/src/__tests__/handoff-summary.unit.test.ts (1 test) 3ms
- ✓ tests/ci-workflow-contract.test.js (2 tests) 4ms
- ✓ packages/persistence/src/__tests__/session-version-pinning-postgres.test.ts (2 tests | 1 skipped) 4ms
- ✓ packages/memory/src/__tests__/memory-facts.test.ts (1 test) 3ms
- ✓ packages/persistence/src/__tests__/effect-journal-postgres.test.ts (10 tests | 9 skipped) 4ms
- ✓ tests/vitest-hermetic.test.ts (1 test) 4ms
- ✓ packages/workflows/src/__tests__/triage-safety.flow.test.ts (1 test) 3ms
- ✓ apps/worker/src/__tests__/postgres-outbox-bridge.integration.test.ts (2 tests | 1 skipped) 4ms
- ✓ apps/worker/src/__tests__/postgres-role-preflight.test.ts (13 tests | 12 skipped) 3ms
- ✓ packages/policy/src/__tests__/approval-state.integration.test.ts (1 test) 4ms
+ ✓ packages/agent-core/src/__tests__/internal-task.integration.test.ts (1 test) 4ms
+ ✓ packages/platform/src/__tests__/qualification.test.ts (3 tests) 5ms
  ✓ packages/workflows/src/__tests__/institutional-rag-safe.flow.test.ts (1 test) 3ms
- ✓ tests/workspace-scripts.test.js (2 tests) 4ms
+ ✓ packages/adapters/src/__tests__/fake-whatsapp-adapter.test.ts (2 tests) 5ms
+ ✓ packages/shared/src/__tests__/canonical.test.ts (9 tests) 6ms
+ ✓ apps/web/src/api/client.test.ts (1 test) 5ms
+ ✓ tests/construction-readiness.test.js (4 tests) 5ms
+ ✓ packages/shared/src/__tests__/auth-identity-mode.test.ts (3 tests) 5ms
+ ✓ packages/policy/src/__tests__/policy-engine.test.ts (3 tests) 4ms
+ ✓ packages/tools/src/__tests__/tool-registry.test.ts (2 tests) 4ms
+ ✓ tests/release-candidate-boundary.test.js (5 tests) 5ms
+ ✓ packages/persistence/src/__tests__/effect-journal-postgres.test.ts (10 tests | 9 skipped) 4ms
+ ✓ packages/workflows/src/__tests__/handoff-summary.unit.test.ts (1 test) 3ms
+ ✓ packages/persistence/src/__tests__/outbox-durability.test.ts (9 tests | 7 skipped) 4ms
+ ✓ packages/shared/src/__tests__/data-classification.test.ts (7 tests) 5ms
+ ✓ tests/workspace-scripts.test.js (2 tests) 5ms
+ ✓ packages/workflows/src/__tests__/triage-safety.flow.test.ts (1 test) 4ms
+ ✓ packages/persistence/src/__tests__/session-version-pinning-postgres.test.ts (2 tests | 1 skipped) 4ms
+ ✓ packages/tools/src/__tests__/owner-patient-tools.integration.test.ts (1 test) 4ms
+ ✓ tests/vitest-hermetic.test.ts (1 test) 5ms
+ ✓ packages/platform/src/__tests__/handoff.test.ts (2 tests) 4ms
+ ✓ packages/persistence/src/__tests__/channel-effect-journal-postgres.test.ts (12 tests | 11 skipped) 4ms
+ ✓ packages/workflows/src/__tests__/scheduling-draft.flow.test.ts (1 test) 3ms
+ ✓ packages/policy/src/__tests__/approval-state.integration.test.ts (1 test) 4ms
+ ✓ apps/worker/src/__tests__/worker-docker-topology.test.ts (4 tests) 6ms
+ ✓ apps/worker/src/__tests__/postgres-outbox-bridge.integration.test.ts (2 tests | 1 skipped) 3ms
+ ✓ packages/memory/src/__tests__/memory-facts.test.ts (1 test) 4ms
+ ✓ apps/worker/src/__tests__/postgres-role-preflight.test.ts (13 tests | 12 skipped) 3ms
+ ✓ tests/ci-workflow-contract.test.js (2 tests) 3ms
  ↓ apps/api/src/__tests__/journeys-api-postgres.test.ts (10 tests | 10 skipped)
  ↓ apps/worker/src/__tests__/continuous-worker-entrypoint.integration.test.ts (2 tests | 2 skipped)
  ↓ apps/worker/src/__tests__/continuous-worker-postgres.integration.test.ts (3 tests | 3 skipped)
@@ -531,8 +531,8 @@ $ npm test -- --reporter=default --reporter=json --outputFile=certification/phas
 
  Test Files  306 passed | 12 skipped (318)
       Tests  2659 passed | 192 skipped (2851)
-   Start at  23:22:23
-   Duration  299.74s (transform 4.40s, setup 0ms, import 43.66s, tests 40.24s, environment 181.08s)
+   Start at  23:18:33
+   Duration  303.17s (transform 4.44s, setup 0ms, import 44.80s, tests 40.81s, environment 182.25s)
 
 JSON report written to /home/ricardo/cvg-agent-secretary-v2/certification/phase11/logs/unit-report.json
 

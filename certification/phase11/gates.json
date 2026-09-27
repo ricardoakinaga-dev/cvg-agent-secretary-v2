@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "kind": "phase11-gates",
-  "certificationId": "phase11-68bb9d0a531007c5-muhr3lor",
-  "candidateCommit": "e09c5f34d49b4d660755e4ba573af4dfd847f49e",
-  "generatedAt": "2026-09-26T02:40:16.708Z",
+  "certificationId": "phase11-fa05bd7ebd77b19e-muj6fvqf",
+  "candidateCommit": "8a8c5a6c17f6883913e090a0d902b3148006835d",
+  "generatedAt": "2026-09-27T02:37:31.827Z",
   "gates": [
     {
       "id": "prompt_integrity",
@@ -17,162 +17,162 @@
       "command": "npm run format:check",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 19367,
+      "durationMs": 18889,
       "log": "certification/phase11/logs/format.log",
-      "logSha256": "07736100bc1ca40aa95b9830e64ea0da43fc6f47d151a8f2d65b3aea65eba5f4"
+      "logSha256": "a6b283d501c24319e5906640dbaceff98fecab089acbe85bce0a8c84f2c66e6f"
     },
     {
       "id": "typecheck",
       "command": "npm run typecheck",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 12238,
+      "durationMs": 10958,
       "log": "certification/phase11/logs/typecheck.log",
-      "logSha256": "766c85bc627f73c6bff909e7e00e20189ad481b7977269d247b4e90b15ea289b"
+      "logSha256": "589677c8b55ac12ffb4a38a1a9be20fedb05bdb58094b93377a22efde8b7a64e"
     },
     {
       "id": "lint",
       "command": "npm run lint",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 9661,
+      "durationMs": 8742,
       "log": "certification/phase11/logs/lint.log",
-      "logSha256": "7d13abbd7bbabb1170e7d0b7727ca3e9adce6d20387c230f266eef672c9530ee"
+      "logSha256": "3235f22266f542b0f05dc34000195ced804417f782e6aecb732c912371d33861"
     },
     {
       "id": "build",
       "command": "npm run build",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 12247,
+      "durationMs": 11965,
       "log": "certification/phase11/logs/build.log",
-      "logSha256": "32fbe4594fedfca8bdcbf30205539f23211fb5a21c4b0098e8608f4d853202fa"
+      "logSha256": "ffe243dc7115eb5aaa8442e578696b34d4d91b854a6b2786bf3d64d01e52a809"
     },
     {
       "id": "unit",
       "command": "npm test -- --reporter=default --reporter=json --outputFile=certification/phase11/logs/unit-report.json",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 300187,
+      "durationMs": 303663,
       "log": "certification/phase11/logs/unit.log",
-      "logSha256": "c04735a257423ecbb736cae8a9b1d21d8b7eb92481de3a31db94a81c4a73a30c"
+      "logSha256": "b11a1c6411c47697831d41a15fda3a46ee99170ac5f58a4d340dac8196fc70ad"
     },
     {
       "id": "coverage",
       "command": "npm run test:coverage",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 375751,
+      "durationMs": 392806,
       "log": "certification/phase11/logs/coverage.log",
-      "logSha256": "a2cd915d8ffbea8a3cb4ec96da76f223272980f15c51236d3a1f27ba465feaff"
+      "logSha256": "5419548c3a287ba444e0e3ec7891ba7bfa602b43b270e5eca1bd0b93d3051808"
     },
     {
       "id": "security",
       "command": "npm run audit:security",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 740,
+      "durationMs": 620,
       "log": "certification/phase11/logs/security.log",
-      "logSha256": "7577fe0a37d20334e915c5c035946098d35089f1093897136a3332346eefff07"
+      "logSha256": "401f68974192d9e46c84bc9c656b4f2e98365b8b4df3fa65e98e1e7188b69e1e"
     },
     {
       "id": "supply_chain",
       "command": "npm run sbom && npm run licenses:check",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 278,
+      "durationMs": 258,
       "log": "certification/phase11/logs/supply_chain.log",
-      "logSha256": "81baeea6b54958f515d3424278a119938b5814d53e358b552d053a54984ad01f"
+      "logSha256": "03b9e4b1ac8ddca317b49b592f5ceae07f9a5ae14b33a7b43c1554c79f6aa9ec"
     },
     {
       "id": "worker_startup",
       "command": "npm run test:worker:startup",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 1370,
+      "durationMs": 1330,
       "log": "certification/phase11/logs/worker_startup.log",
-      "logSha256": "adc6454448661c88938d77e50c510fba13efe6529ca1bd82809f55642026869d"
+      "logSha256": "ca50a575444c55a3997d88698740284e2ca44645a3056029bb69a3ac7e0d7b97"
     },
     {
       "id": "postgres",
       "command": "npm run test:postgres -- --reporter=default --reporter=json --outputFile=certification/phase11/logs/postgres-report.json",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 65428,
+      "durationMs": 84145,
       "log": "certification/phase11/logs/postgres.log",
-      "logSha256": "87a4ed9f70e6e200c9cefd187d061381b7696b240bfd5f4c886105259792b77c"
+      "logSha256": "e865b0479a03521c43965f7102a85b3db52c6c65bd67497abe7d2bc48816d1b2"
     },
     {
       "id": "e2e",
       "command": "npm run test:e2e",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 233663,
+      "durationMs": 240390,
       "log": "certification/phase11/logs/e2e.log",
-      "logSha256": "c97f130736a11c24ebfc227c978959b450a73337291f6e3c2966b7ddbe4f0b01"
+      "logSha256": "8aa07e7033e1dcd8abdcf854fa8c16f14d21bb12d5fff18428501fae94749f8b"
     },
     {
       "id": "evals",
       "command": "npm run test:evals && npx tsx scripts/phase10-eval-report.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 5767,
+      "durationMs": 6033,
       "log": "certification/phase11/logs/evals.log",
-      "logSha256": "d3f656de0158a12032c148593c09d857650c9663c0d395b04a5e1c2149e0065c"
+      "logSha256": "8a3b8d641cbd90565c2744161b1ba8a9b14fb9709fb718ab12b7c799485dd884"
     },
     {
       "id": "chaos",
       "command": "npm run test:chaos -- --reporter=json --outputFile=certification/chaos-report.json",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 3527,
+      "durationMs": 3978,
       "log": "certification/phase11/logs/chaos.log",
-      "logSha256": "fd4796a342ab7d8f8241c7d545345a5ba3dc6dd4be127370595b60f022dd2fcd"
+      "logSha256": "e261b9a1445a45fdde5de7f4e4eb87e098a8b0fd6ef0c853bad304566a7d92fa"
     },
     {
       "id": "load",
       "command": "npx tsx scripts/phase10-load.ts --events=10000",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 11533,
+      "durationMs": 15744,
       "log": "certification/phase11/logs/load.log",
-      "logSha256": "3b22abddf75a1c640fda6b3a0a8478944b2102fe9ed8b00947d35edcc031bb95"
+      "logSha256": "2f1b852fd7710a7764fe87840f3f3d97f3b0c233762836e09ae8971f39953213"
     },
     {
       "id": "recovery",
       "command": "npm test -- --run packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts apps/worker/src/__tests__/outbox-recovery.test.ts apps/worker/src/__tests__/worker-sweeps.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 4237,
+      "durationMs": 4908,
       "log": "certification/phase11/logs/recovery.log",
-      "logSha256": "27aa386dfe322230531f80e14012497d9aa85c1e2bdcc6087303db860897d10f"
+      "logSha256": "6f1f2b55c894cbc6e2806273519268eb8bf21c189c17887861ba3cc4a15e5cd2"
     },
     {
       "id": "bypass_audit",
       "command": "node scripts/phase11-bypass-audit.mjs",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 46,
+      "durationMs": 53,
       "log": "certification/phase11/logs/bypass_audit.log",
-      "logSha256": "f6027d7143a16794629ec009c13f2449044a73f7e9d813851c37650c555a7712"
+      "logSha256": "c9cca04577ee45598a8a8901bedca47a3d44f89c44303376ee9d7d0fabed0957"
     },
     {
       "id": "certification_self_test",
       "command": "node scripts/phase11-self-test.mjs",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 89,
+      "durationMs": 111,
       "log": "certification/phase11/logs/certification_self_test.log",
-      "logSha256": "2ec776d3d05866af1938e45e795c63aa3b6f3aca8d66d2aca3d5e2a2bbdd1dca"
+      "logSha256": "cb11de533942b24d7ffe7b9a586c10d24bb1c106d03c54d98370430a865165a7"
     },
     {
       "id": "phase10_historical_verification",
       "command": "node scripts/phase10-verify.mjs --historical --base certification/logs/historical/2026-09-11-phase10",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 90,
+      "durationMs": 106,
       "log": "certification/phase11/logs/phase10_historical_verification.log",
-      "logSha256": "db888ef5352c9f4091808cd1f436915cbe0eda30248f5aa0908de97517957e40"
+      "logSha256": "4d4f3f1c8ceed8b60e05ab1c89a7a9971320a09c178dc32732489cf76fca601a"
     },
     {
       "id": "evidence_graph",
@@ -200,108 +200,108 @@
       "command": "npm run verify",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 766553,
+      "durationMs": 706809,
       "log": "certification/phase11/logs/verify.log",
-      "logSha256": "9f0a4df60a4d8367db6d4486de64050a655ccfc3404942c3530085bb55b35a99"
+      "logSha256": "71392edaa2d1aee565a77971dc0e8829e69b6ec694da69cb90dc24bf3756fef5"
     },
     {
       "id": "production_preflight",
       "command": "node scripts/production-preflight.mjs --profile=PRODUCTION --expect=REJECT",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 39,
+      "durationMs": 45,
       "log": "certification/phase11/logs/production_preflight.log",
-      "logSha256": "1520df27ce8bcb30ab0be25aa02987454eeb677bb7f11a518712234fdb47f079"
+      "logSha256": "7ada87df5f206d6704318977ef81ba819766ee53b9b96c34fd5557c2ab14826f"
     },
     {
       "id": "evidence_reports",
       "command": "node scripts/phase11-2-evidence-check.mjs --reports",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 99,
+      "durationMs": 118,
       "log": "certification/phase11/logs/evidence_reports.log",
-      "logSha256": "ce0a25cfaa977f6d1d785b4d8e1db30d882ff85c86c4457e7bd2e5e6f4b3a713"
+      "logSha256": "ee3e3dc364c3e6148674f56404abc8cfd53354b58fdbeffc5666b2a5ec1f5aa6"
     },
     {
       "id": "independent_critic",
       "command": "node scripts/phase11-2-evidence-check.mjs --critic",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 304,
+      "durationMs": 366,
       "log": "certification/phase11/logs/independent_critic.log",
-      "logSha256": "50b9063dcf86571d67ded3f9fb67245bf7f330081e9d4996898244c992715df4"
+      "logSha256": "d34b265ff4cb13e231ce43c7d512626c191f6e97d865e555f4d08cf5adf8464b"
     },
     {
       "id": "mutation_sentinel",
       "command": "node scripts/mutation-sentinel.mjs --fail-on-gaps --out=certification/phase11/mutation-raw-report.json",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 53880,
+      "durationMs": 64353,
       "log": "certification/phase11/logs/mutation_sentinel.log",
-      "logSha256": "c6628944b2e80f9ef114603d378a71c2c4842b278279010685c3e2cb1b1d89e4"
+      "logSha256": "1da0e02004af0ace4d1aec5345af6caa920b76de26648a65c6ca7fb50fd4c89f"
     },
     {
       "id": "trace_lineage",
       "command": "npm test -- --run apps/api/src/__tests__/orchestration-observability.test.ts packages/observability/src/__tests__/observability.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 3399,
+      "durationMs": 3972,
       "log": "certification/phase11/logs/trace_lineage.log",
-      "logSha256": "743e046ba9ad1d1ee3861ba2f5e0bebdf8399bb58278bfe3be5af942bbbd375f"
+      "logSha256": "04b07cc4c59798f017eb11b8af2b4f41aebbdc6452d94124025119082ec76605"
     },
     {
       "id": "governance_redteam",
       "command": "npm test -- --run packages/policy-engine/src/__tests__/policy-engine-branch-hardening.test.ts packages/platform/src/__tests__/tool-invocation-boundary-hardening.test.ts packages/platform/src/__tests__/critical-safety-preflight.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 3506,
+      "durationMs": 4318,
       "log": "certification/phase11/logs/governance_redteam.log",
-      "logSha256": "0659f77e7502b7bd7a8e9389fe85ef377c1507d01f37bc33e22ff9434d11dae6"
+      "logSha256": "dd7d3a52784a51c22280a1f6197857265434f219d0bcf49e8696e006c4a69a43"
     },
     {
       "id": "tenant_redteam",
       "command": "npm test -- --run apps/api/src/__tests__/tenant-inbound-isolation.test.ts packages/persistence/src/__tests__/tenant-isolation.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 3484,
+      "durationMs": 4184,
       "log": "certification/phase11/logs/tenant_redteam.log",
-      "logSha256": "6cccf9bcc1cbbe9d97a86a13f33619436e98577c3e5aaecb2ad91936230eb2c5"
+      "logSha256": "2ec9a670f31a2a064c4ec5ad8d33b2272a8a5385947073a3afb83705f62a3053"
     },
     {
       "id": "certification_redteam",
       "command": "node scripts/phase11-2-redteam.mjs --suite=certification && npm test -- --run apps/api/src/__tests__/aud17-connected-redteam.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 2758,
+      "durationMs": 2939,
       "log": "certification/phase11/logs/certification_redteam.log",
-      "logSha256": "7ba02908967851e1a68cd486e60cad988ca0132ca39ae7c20162b9af2573dca9"
+      "logSha256": "b22659d35aab3a2d8a6c274b2a40d44430f5f2305d6f840337ee1fc4d6e4abc7"
     },
     {
       "id": "adversarial_proof",
       "command": "node scripts/phase11-2-redteam.mjs --suite=all",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 124,
+      "durationMs": 110,
       "log": "certification/phase11/logs/adversarial_proof.log",
-      "logSha256": "f2ab201821de733dd9db186793037067dcb7bb89b070d170bcb2e651fc786c6f"
+      "logSha256": "c07eea69b3fe88cac529bc59a77fa0832ca05a371aa6d07ad40970ef3a1b3a71"
     },
     {
       "id": "outbox_replay",
       "command": "npm test -- --run packages/persistence/src/__tests__/outbox-durability.test.ts apps/worker/src/__tests__/outbox-recovery.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 3052,
+      "durationMs": 3255,
       "log": "certification/phase11/logs/outbox_replay.log",
-      "logSha256": "ac2b16097988070317021e50b038e8ca3eafe9b9718e36bfd8420b71accbc08f"
+      "logSha256": "754fc6a3709a0b1a4e1d92c7f8d112e73707e5cad614b1172604834307561886"
     },
     {
       "id": "clone_verify",
       "command": "node scripts/phase11-2-redteam.mjs --suite=clone",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 96,
+      "durationMs": 109,
       "log": "certification/phase11/logs/clone_verify.log",
-      "logSha256": "9fa2f590f206e256001dafa1d0099d209ece6571acf056fec51f1d2acb5ec006"
+      "logSha256": "c0eca57d21d0faa6b38e8c359f1b34811326f3bf2ca3c349d11e60497ad8ed28"
     },
     {
       "id": "PHASE11_FORMAL_CLOSURE",

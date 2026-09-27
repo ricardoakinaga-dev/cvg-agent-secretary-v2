@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "kind": "phase11-load-report",
-  "certificationId": "phase11-68bb9d0a531007c5-muhr3lor",
-  "candidateCommit": "e09c5f34d49b4d660755e4ba573af4dfd847f49e",
-  "generatedAt": "2026-09-26T02:40:16.571Z",
+  "certificationId": "phase11-fa05bd7ebd77b19e-muj6fvqf",
+  "candidateCommit": "8a8c5a6c17f6883913e090a0d902b3148006835d",
+  "generatedAt": "2026-09-27T02:37:31.663Z",
   "gateId": "load",
   "status": "PASS",
   "command": "npx tsx scripts/phase10-load.ts --events=10000",
@@ -13,22 +13,22 @@
   "raw": {
     "schemaVersion": 1,
     "kind": "phase10-load-report",
-    "generatedAt": "2026-09-26T02:39:01.215Z",
+    "generatedAt": "2026-09-27T02:36:02.546Z",
     "scope": "in-memory outbox contract; synthetic payloads; not a production benchmark",
     "events": 10000,
     "workers": 2,
-    "enqueueMs": 731.76,
-    "drainMs": 10140.82,
-    "totalMs": 10875.64,
-    "throughputPerSecond": 919.49,
+    "enqueueMs": 850.44,
+    "drainMs": 14127.5,
+    "totalMs": 14981.1,
+    "throughputPerSecond": 667.51,
     "processed": 10000,
     "loss": 0,
     "duplicates": 0,
     "latencyMs": {
-      "p50": 1.841,
-      "p95": 3.431,
-      "p99": 4.422,
-      "max": 8.012
+      "p50": 2.589,
+      "p95": 4.912,
+      "p99": 6.05,
+      "max": 9.438
     }
   }
 }
