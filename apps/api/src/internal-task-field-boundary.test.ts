@@ -122,3 +122,46 @@ describe('internal task field boundary', () => {
     })
   })
 })
+
+describe('unpaginated list truncation signal', () => {
+  const headers = {
+    'x-operator-id': 'operator.list-cap.test',
+    'x-operator-role': 'Supervisor',
+    'x-tenant-id': TENANT_ID
+  }
+
+  it('adds x-result-truncated only when the list reaches the cap', async () => {
+    const app = buildServer()
+    const sessionId = await createFixtureSession(app)
+    app.persistence.tasks.create(
+      { ...buildTaskPayload(sessionId), idempotencyKey: 'cap-under-1' },
+      TENANT_ID
+    )
+
+    const under = await app.inject({
+      method: 'GET',
+      url: '/v1/tasks',
+      headers
+    })
+    expect(under.statusCode).toBe(200)
+    expect(under.headers['x-result-truncated']).toBeUndefined()
+    expect(under.json().data).toHaveLength(1)
+
+    for (let index = 0; index < 500; index += 1) {
+      app.persistence.tasks.create(
+        { ...buildTaskPayload(sessionId), idempotencyKey: `cap-${index}` },
+        TENANT_ID
+      )
+    }
+    const capped = await app.inject({
+      method: 'GET',
+      url: '/v1/tasks',
+      headers
+    })
+    await app.close()
+
+    expect(capped.statusCode).toBe(200)
+    expect(capped.json().data).toHaveLength(500)
+    expect(capped.headers['x-result-truncated']).toBe('true')
+  })
+})
