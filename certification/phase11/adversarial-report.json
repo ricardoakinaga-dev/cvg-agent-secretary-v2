@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "kind": "phase11-adversarial_proof-report",
-  "certificationId": "phase11-71a259aced6dd1ee-muj7zllj",
-  "candidateCommit": "c3a381c1063d22d7dc26f02b924c73de3c353196",
-  "generatedAt": "2026-09-27T03:27:48.132Z",
+  "certificationId": "phase11-8f4ff254c0f50996-mujd4y5g",
+  "candidateCommit": "61ebc190c3f5bbd1c7691f8d8dca2bb99846d58c",
+  "generatedAt": "2026-09-27T05:48:38.714Z",
   "gateId": "adversarial_proof",
   "status": "PASS",
   "command": "node scripts/phase11-2-redteam.mjs --suite=all",

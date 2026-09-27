@@ -1,13 +1,13 @@
 $ node scripts/phase11-2-evidence-check.mjs --critic
-# certificationId=phase11-71a259aced6dd1ee-muj7zllj
-# candidateId=71a259aced6dd1eebdcebd55c1ff0bf71620b6443966856d3b5283514610f2c9
-# commit=c3a381c1063d22d7dc26f02b924c73de3c353196
-# treeHash=78419d2f2a535ffcece2d29e02c1c78b834fbda42aa25f872f10f4ad214cb7d9
+# certificationId=phase11-8f4ff254c0f50996-mujd4y5g
+# candidateId=8f4ff254c0f509965131e42e425854adbc1c60a3956009a3c0b1e3e1d2bb35bd
+# commit=61ebc190c3f5bbd1c7691f8d8dca2bb99846d58c
+# treeHash=3ef88550402de16a1834d5d5e5e22d22387bf75e5e85d9abb451d5c233d3c7ac
 # gate=independent_critic
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=344
+# exitCode=0 durationMs=302
 
 {
   "schemaVersion": 1,
@@ -20,7 +20,7 @@ $ node scripts/phase11-2-evidence-check.mjs --critic
     {
       "id": "CRITIC:environment",
       "status": "PASS",
-      "detail": "live candidate 71a259aced6d@c3a381c1063d"
+      "detail": "live candidate 8f4ff254c0f5@61ebc190c3f5"
     },
     {
       "id": "CRITIC:schema",
@@ -30,17 +30,17 @@ $ node scripts/phase11-2-evidence-check.mjs --critic
     {
       "id": "CRITIC:binding",
       "status": "PASS",
-      "detail": "71a259aced6d (commit drift 30712ed->c3a381c tolerated; evidence-only commits)"
+      "detail": "8f4ff254c0f5 (commit drift a6203bd->61ebc19 tolerated; evidence-only commits)"
     },
     {
       "id": "CRITIC:fingerprint",
       "status": "PASS",
-      "detail": "0546cb97e742"
+      "detail": "3552ef71b81f"
     },
     {
       "id": "CRITIC:identity",
       "status": "PASS",
-      "detail": "opencode-independent-critic-phase11-r3-20260926"
+      "detail": "opencode-independent-critic-phase11-r4-20260927"
     },
     {
       "id": "CRITIC:independence",

@@ -1,13 +1,13 @@
 $ npm test -- --run packages/agent-runtime/src/__tests__/runtime-execution-recovery.test.ts apps/worker/src/__tests__/outbox-recovery.test.ts apps/worker/src/__tests__/worker-sweeps.test.ts
-# certificationId=phase11-71a259aced6dd1ee-muj7zllj
-# candidateId=71a259aced6dd1eebdcebd55c1ff0bf71620b6443966856d3b5283514610f2c9
-# commit=c3a381c1063d22d7dc26f02b924c73de3c353196
-# treeHash=78419d2f2a535ffcece2d29e02c1c78b834fbda42aa25f872f10f4ad214cb7d9
+# certificationId=phase11-8f4ff254c0f50996-mujd4y5g
+# candidateId=8f4ff254c0f509965131e42e425854adbc1c60a3956009a3c0b1e3e1d2bb35bd
+# commit=61ebc190c3f5bbd1c7691f8d8dca2bb99846d58c
+# treeHash=3ef88550402de16a1834d5d5e5e22d22387bf75e5e85d9abb451d5c233d3c7ac
 # gate=recovery
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=4862
+# exitCode=0 durationMs=4426
 
 
 > cvg-agent-secretary-v2@1.0.0 test
@@ -16,36 +16,36 @@ $ npm test -- --run packages/agent-runtime/src/__tests__/runtime-execution-recov
 
  RUN  v4.1.11 /home/ricardo/cvg-agent-secretary-v2
 
-{"event":"worker.sweep_tick","level":"info","timestamp":"2026-09-27T03:26:37.192Z","now":"2026-09-13T00:00:00.000Z","journalReleased":1,"approvalsReleased":2,"approvalsUncertain":1,"goalsInspected":0,"goalsResumed":0,"goalsSkipped":0,"goalsCompleted":0,"goalRecoveryFailures":0,"durationMs":0,"operation":"sweep"}
-{"event":"worker.metric","name":"worker_sweep_journal_released_total","value":1,"attributes":{"operation":"sweep"},"timestamp":"2026-09-27T03:26:37.194Z"}
-{"event":"worker.metric","name":"worker_sweep_approvals_released_total","value":2,"attributes":{"status":"released"},"timestamp":"2026-09-27T03:26:37.194Z"}
-{"event":"worker.metric","name":"worker_sweep_approvals_uncertain_total","value":1,"attributes":{"status":"uncertain"},"timestamp":"2026-09-27T03:26:37.194Z"}
-{"event":"worker.metric","name":"worker_sweep_goals_inspected_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T03:26:37.194Z"}
-{"event":"worker.metric","name":"worker_sweep_goals_resumed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T03:26:37.194Z"}
-{"event":"worker.metric","name":"worker_sweep_goals_completed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T03:26:37.194Z"}
-{"event":"worker.metric","name":"worker_sweep_goal_recovery_failures_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T03:26:37.194Z"}
-{"event":"worker.started","level":"info","timestamp":"2026-09-27T03:26:37.196Z","workerId":"worker-sweeps-191","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":true,"externalEffects":false,"durable":true}
-{"event":"worker.sweep_started","level":"info","timestamp":"2026-09-27T03:26:37.196Z","intervalMs":10,"operation":"sweep"}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T03:26:37.196Z","workerId":"worker-sweeps-191","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
-{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T03:26:37.197Z"}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T03:26:37.197Z","workerId":"worker-sweeps-191","backoffMs":5,"lag":0}
-{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T03:26:37.202Z","workerId":"worker-sweeps-191","backoffMs":10,"lag":0}
-{"event":"worker.sweep_tick","level":"info","timestamp":"2026-09-27T03:26:37.206Z","now":"2026-09-27T03:26:37.206Z","journalReleased":0,"approvalsReleased":0,"approvalsUncertain":0,"goalsInspected":0,"goalsResumed":0,"goalsSkipped":0,"goalsCompleted":0,"goalRecoveryFailures":0,"durationMs":0,"operation":"sweep"}
-{"event":"worker.metric","name":"worker_sweep_journal_released_total","value":0,"attributes":{"operation":"sweep"},"timestamp":"2026-09-27T03:26:37.206Z"}
-{"event":"worker.metric","name":"worker_sweep_approvals_released_total","value":0,"attributes":{"status":"released"},"timestamp":"2026-09-27T03:26:37.206Z"}
-{"event":"worker.metric","name":"worker_sweep_approvals_uncertain_total","value":0,"attributes":{"status":"uncertain"},"timestamp":"2026-09-27T03:26:37.206Z"}
-{"event":"worker.metric","name":"worker_sweep_goals_inspected_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T03:26:37.206Z"}
-{"event":"worker.metric","name":"worker_sweep_goals_resumed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T03:26:37.206Z"}
-{"event":"worker.metric","name":"worker_sweep_goals_completed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T03:26:37.206Z"}
-{"event":"worker.metric","name":"worker_sweep_goal_recovery_failures_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T03:26:37.206Z"}
-{"event":"worker.sweep_stopped","level":"info","timestamp":"2026-09-27T03:26:37.207Z","operation":"sweep"}
-{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T03:26:37.207Z","workerId":"worker-sweeps-191","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":2,"released":0,"lag":0,"inFlight":0}
-{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T03:26:37.207Z","workerId":"worker-sweeps-191","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
+{"event":"worker.sweep_tick","level":"info","timestamp":"2026-09-27T05:47:25.977Z","now":"2026-09-13T00:00:00.000Z","journalReleased":1,"approvalsReleased":2,"approvalsUncertain":1,"goalsInspected":0,"goalsResumed":0,"goalsSkipped":0,"goalsCompleted":0,"goalRecoveryFailures":0,"durationMs":0,"operation":"sweep"}
+{"event":"worker.metric","name":"worker_sweep_journal_released_total","value":1,"attributes":{"operation":"sweep"},"timestamp":"2026-09-27T05:47:25.979Z"}
+{"event":"worker.metric","name":"worker_sweep_approvals_released_total","value":2,"attributes":{"status":"released"},"timestamp":"2026-09-27T05:47:25.979Z"}
+{"event":"worker.metric","name":"worker_sweep_approvals_uncertain_total","value":1,"attributes":{"status":"uncertain"},"timestamp":"2026-09-27T05:47:25.979Z"}
+{"event":"worker.metric","name":"worker_sweep_goals_inspected_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T05:47:25.979Z"}
+{"event":"worker.metric","name":"worker_sweep_goals_resumed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T05:47:25.979Z"}
+{"event":"worker.metric","name":"worker_sweep_goals_completed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T05:47:25.979Z"}
+{"event":"worker.metric","name":"worker_sweep_goal_recovery_failures_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T05:47:25.979Z"}
+{"event":"worker.started","level":"info","timestamp":"2026-09-27T05:47:25.980Z","workerId":"worker-sweeps-191","concurrency":2,"pollIntervalMs":5,"idleMaxBackoffMs":5000,"errorBackoffMs":500,"errorMaxBackoffMs":30000,"leaseMs":1000,"heartbeatIntervalMs":333,"drainMs":10000,"backlogProbe":true,"sweeps":true,"externalEffects":false,"durable":true}
+{"event":"worker.sweep_started","level":"info","timestamp":"2026-09-27T05:47:25.980Z","intervalMs":10,"operation":"sweep"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T05:47:25.981Z","workerId":"worker-sweeps-191","reason":"start","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":0,"released":0,"lag":null,"inFlight":0}
+{"event":"worker.metric","name":"worker_outbox_lag","value":0,"attributes":{"operation":"outbox"},"timestamp":"2026-09-27T05:47:25.981Z"}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T05:47:25.981Z","workerId":"worker-sweeps-191","backoffMs":5,"lag":0}
+{"event":"worker.idle_backoff","level":"debug","timestamp":"2026-09-27T05:47:25.987Z","workerId":"worker-sweeps-191","backoffMs":10,"lag":0}
+{"event":"worker.sweep_tick","level":"info","timestamp":"2026-09-27T05:47:25.992Z","now":"2026-09-27T05:47:25.991Z","journalReleased":0,"approvalsReleased":0,"approvalsUncertain":0,"goalsInspected":0,"goalsResumed":0,"goalsSkipped":0,"goalsCompleted":0,"goalRecoveryFailures":0,"durationMs":1,"operation":"sweep"}
+{"event":"worker.metric","name":"worker_sweep_journal_released_total","value":0,"attributes":{"operation":"sweep"},"timestamp":"2026-09-27T05:47:25.992Z"}
+{"event":"worker.metric","name":"worker_sweep_approvals_released_total","value":0,"attributes":{"status":"released"},"timestamp":"2026-09-27T05:47:25.992Z"}
+{"event":"worker.metric","name":"worker_sweep_approvals_uncertain_total","value":0,"attributes":{"status":"uncertain"},"timestamp":"2026-09-27T05:47:25.992Z"}
+{"event":"worker.metric","name":"worker_sweep_goals_inspected_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T05:47:25.992Z"}
+{"event":"worker.metric","name":"worker_sweep_goals_resumed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T05:47:25.992Z"}
+{"event":"worker.metric","name":"worker_sweep_goals_completed_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T05:47:25.992Z"}
+{"event":"worker.metric","name":"worker_sweep_goal_recovery_failures_total","value":0,"attributes":{"operation":"goal_recovery"},"timestamp":"2026-09-27T05:47:25.992Z"}
+{"event":"worker.sweep_stopped","level":"info","timestamp":"2026-09-27T05:47:25.992Z","operation":"sweep"}
+{"event":"worker.outbox.summary","level":"info","timestamp":"2026-09-27T05:47:25.992Z","workerId":"worker-sweeps-191","reason":"stop","claimed":0,"processed":0,"failed":0,"deadLettered":0,"handoffs":0,"errors":0,"claimFailures":0,"leaseLost":0,"heartbeats":0,"idlePolls":2,"released":0,"lag":0,"inFlight":0}
+{"event":"worker.stopped","level":"info","timestamp":"2026-09-27T05:47:25.992Z","workerId":"worker-sweeps-191","drained":true,"released":0,"releaseFailed":0,"processed":0,"failed":0,"deadLettered":0,"lag":0}
 
  Test Files  3 passed (3)
       Tests  87 passed (87)
-   Start at  00:26:33
-   Duration  4.33s (transform 892ms, setup 0ms, import 1.53s, tests 374ms, environment 2.04s)
+   Start at  02:47:23
+   Duration  3.96s (transform 800ms, setup 0ms, import 1.38s, tests 390ms, environment 1.84s)
 
 
 
