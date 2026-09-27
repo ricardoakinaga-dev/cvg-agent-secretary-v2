@@ -8081,3 +8081,39 @@ HEAD...origin/main` retornou `0 0` antes do commit. `git diff --check`
 - A admissão não cobre sessão humana, participante, consentimento, mídia,
   UI/API/schema, staging ou produção. IMP50-18 segue `WAITING_HUMAN_APPROVAL`;
   staging/produção `NO_GO`.
+
+# AUD20-10 — P0s de CI (gitleaks + gates de verificação) e push — 2026-09-27T05:30Z
+
+- Decisão humana na rodada: "Autorizar push + P0s de CI" (pergunta registrada
+  nesta sessão). Escopo autorizado: push para `origin/main`, `.gitleaks.toml`
+  com allowlist de hashes e os três gates de certificação no `verify.yml`.
+- `.gitleaks.toml` criada e validada com gitleaks 8.24.3 (mesma versão do
+  action): 257 findings pré-existentes, 100% `generic-api-key` (229 em
+  `docs/04_audit/evidence/**`, 26 em `**/__tests__/**`, 1 em
+  `certification/phase11/release-manifest.json`, 1 em `docs/99_runtime_state.md`);
+  após a allowlist por caminho, **0 leaks** no histórico completo, e uma chave
+  sintética plantada em `apps/api/fake.ts` continua sendo detectada.
+  Ver [recibo](04_audit/evidence/AUD20/AUD20-ci-gates-p0-20260927.md).
+- `verify.yml`: `Verify` passou a rodar com `TEST_DATABASE_URL` do serviço
+  `postgres` do job (a cobertura sem banco não alcança os pisos de
+  `kernel-composition` e `runtime-approval-store` por causa dos 192 skips);
+  novos passos bloqueantes `Critical branch coverage`,
+  `Phase 11 certification integrity` e `Promotion gate`
+  (`--expect=EXTERNAL_ONLY`: exit 0 só com blockers exclusivamente externos,
+  fail-closed para qualquer blocker interno, certificação inválida ou
+  `--expect` desconhecido, com 14 testes novos) e `timeout-minutes` 25→40.
+- Rehearsal local sob Node `22.23.2` com PostgreSQL descartável
+  (`127.0.0.1:55442`): `npm run verify` `exit 0` em 1133 s;
+  `aud19-critical-coverage` `blockers: []`; `npm run test:e2e` 75 pass / 0 fail;
+  suíte sem banco 319 arquivos (307 pass / 12 skipped) e 2.673 testes pass /
+  192 skipped / 0 fail; tsc, eslint, prettier, `docs:check`, build e `npm audit`
+  todos `exit 0`.
+- Crítico fresh-context regenerado para o candidato
+  `753eb78241326183` (`P0=0`, `P1=0`, `P2=5`, `verdict PASS`) e validado por
+  `phase11-2-evidence-check.mjs --critic`.
+- Risco residual declarado: as baselines visuais do E2E passam localmente, mas
+  o runner do GitHub renderiza com outras fontes/build (diferenças de
+  `ratio 0.07–0.14` medidas em 2026-09-17 contra o limiar 0.02); se divergirem,
+  a regeneração das baselines no ambiente do CI é decisão humana.
+- `next_action` avançado nos três arquivos canônicos. Nenhum dado real, nenhuma
+  credencial, nenhum egress; staging/produção `NO_GO`.

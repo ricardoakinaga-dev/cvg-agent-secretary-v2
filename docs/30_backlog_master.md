@@ -1,3 +1,11 @@
+# P0s de CI (gitleaks + gates de verificação) e push — 2026-09-27
+
+- [x] `.gitleaks.toml` com allowlist por caminho criada e validada (gitleaks 8.24.3: 0 leaks no histórico; detecção ativa fora da allowlist) — ver [recibo](04_audit/evidence/AUD20/AUD20-ci-gates-p0-20260927.md).
+- [x] `certification:verify`, `promotion:check --expect=EXTERNAL_ONLY` e `aud19-critical-coverage.mjs` no `verify.yml` como passos bloqueantes, com cobertura medida com o PostgreSQL do job.
+- [x] Push dos commits locais autorizado e executado nesta rodada.
+- [ ] Observar `Verify`/`Security` após o push; se as baselines visuais do E2E divergirem do runner, decidir a regeneração.
+- [ ] Item B: insumos dos gates 1–7 e sign-off (8) — `WAITING_HUMAN_APPROVAL`. Staging/produção `NO_GO`.
+
 # Re-certificação Phase 11 pós-owner/SLO — 2026-09-26
 
 - [x] Re-certificação executada com PostgreSQL descartável: `phase11-fa05bd7ebd77b19e-muj6fvqf`, `CONDITIONAL_GO`/`AAA_CANDIDATE`, 35/35 gates, 16/16 invariantes, verify PASS, promoção inelegível apenas pelos 8 externos — ver [recibo](04_audit/evidence/AUD20/AUD20-recert-pg-20260926.md).
@@ -7,8 +15,8 @@
 # 0574 — Auditoria com notas 0-100 — 2026-09-26
 
 - [x] Rodada `AUD-20260926-REPO` concluída e [relatório 0574](04_audit/0574_repository_audit_2026-09-26.md) publicado (16 itens; global **65**; gates locais PASS, suíte 2.659/0 falha/192 skip).
-- [ ] **P0**: push dos 66 commits e `.gitleaks.toml` com allowlist de hashes em `docs/**/evidence/**` para restaurar `Verify`/`Security`.
-- [ ] **P0**: adicionar `certification:verify`, `promotion:check` e `aud19-critical-coverage.mjs` ao `verify.yml` (CI está verde com certificação inválida).
+- [x] **P0**: push dos commits e `.gitleaks.toml` com allowlist de hashes em `docs/**/evidence/**` — executado em 2026-09-27.
+- [x] **P0**: `certification:verify`, `promotion:check` e `aud19-critical-coverage.mjs` adicionados ao `verify.yml` como passos bloqueantes (2026-09-27).
 - [ ] **P1**: corrigir branches de `kernel-composition.ts` (66,14%) e `runtime-approval-store.ts` (33,80%) e tornar o gate de cobertura determinístico.
 - [ ] **P1**: alinhar `vitest.config.mts` aos pisos 90/85/90/90 e tirar `apps/web` da exclusão de coverage.
 - [ ] **P1**: ligar observabilidade da API (`logger`, `onResponse`, `runtimeCollector`) e avaliar regras de alerta em processo.
