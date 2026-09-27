@@ -9,8 +9,8 @@
   },
   "partition": "core",
   "seed": "core-v1",
-  "startedAt": "2026-09-27T02:35:42.823Z",
-  "finishedAt": "2026-09-27T02:35:42.830Z",
+  "startedAt": "2026-09-27T03:26:11.253Z",
+  "finishedAt": "2026-09-27T03:26:11.263Z",
   "corpus": {
     "id": "core-v1",
     "scenarios": 56,

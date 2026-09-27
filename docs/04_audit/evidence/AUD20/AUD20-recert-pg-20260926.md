@@ -48,4 +48,18 @@ Os arquivos `docs/99_runtime_state.md`, `docs/20_master_execution_log.md`, `docs
 
 ## Segunda passagem — selo final
 
-(preenchida ao final da rodada)
+Após os commits `794354e` (pacote da passagem 1) e `30712ed` (persistência documental: `99`, `20`, `30`, `CURRENT.md`, `current_state.json`), o candidato mudou para `candidateId 71a259aced6dd1ee…`, `treeHash 78419d2f2a535ffc…`. O relatório do crítico foi regenerado e revalidado para esse candidato (`PASS`, 10/10 checagens) antes da segunda passagem.
+
+| Item | Valor |
+|---|---|
+| `certificationId` (selo vigente) | **`phase11-71a259aced6dd1ee-muj7zllj`** |
+| Candidato selado | `71a259aced6dd1ee` / `78419d2f2a535ffc` / `commit c3a381c` (mesmos bytes do `HEAD` pós-persistência) |
+| `decision` / `certification` | `CONDITIONAL_GO` / `AAA_CANDIDATE` |
+| Gates / invariantes | **35/35 PASS** / **16/16 PASS** |
+| `coverage` | 318 arquivos / **2851 testes PASS / 0 skip**, `critical_branch_coverage` 0 ocorrências |
+| `certification:verify:phase11` | **PASS**, `failures: []` |
+| `promotion:check --requested PRODUCTION` | `eligible:false`, `reason: production_assurance_incomplete`, `blockingInvariants: []`, **apenas os 8 `external_gate_pending`**, `noProductionEffect:true` |
+
+Log da segunda passagem: [`AUD20-recert-seal-20260926.log`](AUD20-recert-seal-20260926.log).
+
+Estado final: selo `CONDITIONAL_GO`/`AAA_CANDIDATE` **corrente ao candidato do `HEAD`**, `certification:verify:phase11` PASS e promoção inelegível exclusivamente pelos 8 gates externos/humanos. Nenhum gate foi inferido ou afrouxado; staging/produção `NO_GO`.
