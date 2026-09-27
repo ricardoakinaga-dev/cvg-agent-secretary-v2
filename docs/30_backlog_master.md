@@ -1,3 +1,10 @@
+# Reseal Phase 11 (AUD20-22) — 2026-09-27
+
+- [x] Crítica independente do diff remediada (5 correções com teste + 2 falsos positivos verificados) e commit/push dos 4 commits da rodada.
+- [x] Reseal em duas passadas com PostgreSQL descartável: `phase11-5c663a5f921ab490-mukeqq99`, `CONDITIONAL_GO`/`AAA_CANDIDATE`, 35/35 gates, 16/16 invariantes, verify PASS; promoção inelegível só pelos 8 externos — ver [recibo](04_audit/evidence/AUD20/AUD20-reseal-5c663a5f-20260927.md).
+- [ ] Item B: insumos dos gates 1–7 e sign-off (8) sobre o candidato `5c663a5f` — `WAITING_HUMAN_APPROVAL`.
+- [ ] Observar `Verify`/`Security` do push e os P2 estruturais (release de claim no shutdown, paginação real, observabilidade de produção). Staging/produção `NO_GO`.
+
 # AUD20-22 — Validação conjunta e remediação pós-crítica — 2026-09-27
 
 - [x] Validação guiada: estáticos + suíte `2.681` + PostgreSQL `356/356` + coverage `93,01/90,18/91,23/93,49%` + E2E `75/75`.

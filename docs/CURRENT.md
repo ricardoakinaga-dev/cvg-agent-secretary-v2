@@ -497,7 +497,7 @@ da próxima ação primária AUD20-17.
 
 ## Próxima ação
 
-- Próxima ação: observar os resultados de `Verify`/`Security` após o próximo push e tratar divergência de baseline visual do E2E; executar os itens P2 remanescentes da [AUD20-22](04_audit/evidence/AUD20/AUD20-22-production-hardening-2026-09-27.md) (release de claim no shutdown, paginação real e observabilidade de produção) em tasks próprias com SPEC; depois obter os insumos do item B (owners/credenciais dos gates 1–4, ambiente/janela de 5/7, autorização/participantes de 6) e conduzir o sign-off (8) sobre o candidato certificado vigente em `certification/current.json`; manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.
+- Próxima ação: observar os resultados de `Verify`/`Security` do push desta rodada e tratar divergência de baseline visual do E2E; obter os insumos do item B (owners/credenciais dos gates 1–4, ambiente/janela de 5/7, autorização/participantes de 6) e conduzir o sign-off (8) sobre o candidato certificado vigente em `certification/current.json`; executar os P2 estruturais da [AUD20-22](04_audit/evidence/AUD20/AUD20-22-production-hardening-2026-09-27.md) (release de claim no shutdown, paginação real e observabilidade de produção) em tasks próprias com SPEC; manter `AUD20-19` sem sessão autorizada, 141 vínculos sem adjudicação e staging/produção `NO_GO`.
 
 - Re-certificação executada em 2026-09-26 com PostgreSQL descartável: `certificationId phase11-fa05bd7ebd77b19e-muj6fvqf`, `CONDITIONAL_GO`/`AAA_CANDIDATE`, 35/35 gates, 16/16 invariantes, `certification:verify:phase11` PASS; ver [recibo](04_audit/evidence/AUD20/AUD20-recert-pg-20260926.md).
 
