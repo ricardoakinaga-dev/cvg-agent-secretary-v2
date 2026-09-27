@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "kind": "phase11-critic-report",
   "critic": {
-    "identity": "opencode-independent-critic-phase11-r3-20260926",
+    "identity": "opencode-independent-critic-phase11-r4-20260927",
     "freshContext": true,
     "builderIdentity": "cvg-lead-agent",
     "independence": {
@@ -19,18 +19,18 @@
     }
   },
   "binding": {
-    "candidateId": "71a259aced6dd1eebdcebd55c1ff0bf71620b6443966856d3b5283514610f2c9",
-    "commit": "30712edd65468091d695beeda53ded674b2135c7",
-    "treeHash": "78419d2f2a535ffcece2d29e02c1c78b834fbda42aa25f872f10f4ad214cb7d9"
+    "candidateId": "753eb78241326183233da88c55e6bf108fe4968375a33d97261c8fb2da3d67c8",
+    "commit": "e9016ce4fbe64d0cb07452ab1d6abfe7794d9b0e",
+    "treeHash": "8fe624c45389176d06bb0772eca89f3b0023cf16e780ce4f92b80e40d794639b"
   },
   "fingerprint": {
     "algorithm": "sha256-candidate-v1",
-    "before": "0546cb97e7429dcfe3c5ea86f3ec6a15efdc92151527526651b51fffd316ba27",
-    "after": "0546cb97e7429dcfe3c5ea86f3ec6a15efdc92151527526651b51fffd316ba27"
+    "before": "847a6709119f2848f7a33dc2de87fdc9ae5e051e79bb72b6f24db6b4c146312e",
+    "after": "847a6709119f2848f7a33dc2de87fdc9ae5e051e79bb72b6f24db6b4c146312e"
   },
   "verdict": {
     "status": "PASS",
-    "summary": "Veredito independente fresh-context do candidato congelado 71a259aced6dd1ee@30712edd6546 (treeHash 78419d2f2a53, branch main, dirty=false, 1208 arquivos, fingerprint sha256-candidate-v1=0546cb97e742). Escopo sintetico/controlado local; nenhuma producao, deploy, egress ou efeito externo. Recalculei o candidato com buildPhase11Candidate e o binding declarado confere byte a byte. Superficie local de gates executada sob Node 22.23.2: tsc --noEmit, eslint, prettier --check, git diff --check, docs-check.mjs (state/node/links/JSON validos), npm run build, suite completa 306 arquivos / 2.659 pass / 0 fail / 192 skip, npm audit --audit-level=high com 0 vulnerabilidades: todos PASS. Cobertura critica: a medicao sem banco ainda reporta kernel 89.37 e approval 77.64 contra o piso >=95% congelado no contrato, por 192 skips condicionais; a re-certificacao desta rodada, com PostgreSQL descartavel autorizado, mediu 318 arquivos / 2.851 testes PASS / 0 skip e zero bloqueios de critical_branch_coverage, com certificationId phase11-fa05bd7ebd77b19e-muj6fvqf, 35 gates PASS, 16/16 invariantes PASS, decision CONDITIONAL_GO / AAA_CANDIDATE. E condicao explicita deste PASS que o selo seja re-executado a cada persistencia documental, porque docs/99, docs/20, docs/30, docs/CURRENT.md e current_state.json pertencem ao candidato - e exatamente o que a segunda passagem desta rodada faz. Promocao continua inelegivel: com selo corrente apenas production_assurance_incomplete com os 8 gates externos; staging/producao NO_GO. Redacao/PII: varredura dos 7 artefatos citados por e-mail, CPF, telefone, bearer, chave privada e credencial em URL: zero ocorrencias. Independencia: identidade separada do builder, input somente artefatos, zero escrita no worktree pelo proprio critic, sem justificativa nem conclusao de builder reutilizada. Sem P0/P1. P2 (5), todos remediaveis ou bloqueados por autorizacao humana: (1) o selo precisa ser re-executado apos qualquer persistencia documental, ja que os docs de estado sao candidato - mecanismo ja existente e aplicado nesta rodada; (2) coverage/coverage-summary.json deixado em disco por medicao sem banco ainda mostra kernel 89.37 e approval 77.64 abaixo do piso - so a medicao com banco e autoritativa e foi a executada no certify; (3) origin/main esta 67 commits atrasado e o CI nao executa certification:verify nem promotion:check - exige push autorizado por humano; (4) .gitleaks.toml ausente, de modo que o gitleaks hospedado roda sem allowlist para docs/**/evidence/** - exige decisao humana sobre a allowlist; (5) ramos por arquivo de kernel-composition.ts (66.14%) e runtime-approval-store.ts (33.80%) abaixo do piso lido por arquivo, embora os modulos sejam medidos no agregado pelo gate critico - item de melhoria do gate de coverage. Nenhum gate, threshold ou skip foi afrouxado."
+    "summary": "Veredito independente fresh-context do candidato congelado 753eb78241326183@e9016ce4fbe6 (treeHash 8fe624c45389, branch main, dirty=false, 1211 arquivos, fingerprint sha256-candidate-v1=847a6709119f), executado apos a correcao de CI autorizada por humano nesta rodada (.gitleaks.toml, tres passos de certificacao no verify.yml, promotion:check --expect=EXTERNAL_ONLY). Escopo sintetico/controlado local; nenhuma producao, deploy, egress ou efeito externo. Recalculei o candidato com buildPhase11Candidate e o binding declarado confere byte a byte. Superficie de gates re-executada neste candidato sob Node 22.23.2, todos PASS: tsc --noEmit, eslint ., prettier --check ., git diff --check, docs-check.mjs, npm run build, npm audit --audit-level=high (0 vulnerabilidades), suite completa 319 arquivos / 2.673 pass / 192 skip / 0 fail (12 skipped files) e npm run test:e2e local 75 pass / 0 fail. Cobertura critica medida COM banco (rehearsal do passo de CI): npm run verify com TEST_DATABASE_URL de contêiner descartavel terminou exit 0 em 1133 s e scripts/aud19-critical-coverage.mjs respondeu blockers [] - kernel e approval acima do piso quando a medicao inclui os testes de integracao; a medicao SEM banco ainda falharia de forma honesta pelos 192 skips condicionais, e por isso o verify.yml passou a rodar a cobertura com o servico postgres do job. Certificacao: o selo anterior (phase11-71a259aced6dd1ee-muj7zllj) nao cobre este candidato - certification:verify respondeu status FAIL antes do reseal, prova de que o novo passo do CI detecta deriva; esta rodada re-executa critic + certify com PostgreSQL descartavel autorizado e re-ancora o selo antes do push. Promocao continua ineligivel por construcao: com selo corrente apenas production_assurance_incomplete com os 8 gates externos (modelProvider, channel, externalIdentity, institutionalRag, rpoRto, pilot, rollback, humanSignoff) NOT_VALIDATED/PENDING, noProductionEffect=true, staging/producao NO_GO; o modo CI --expect=EXTERNAL_ONLY passa apenas nesse estado e falha fechada para qualquer blocker interno. Gaps de CI restantes: origin/main esta ~72 commits atras e o push - autorizado por humano nesta rodada - e a ultima etapa, registrado no recibo AUD20-ci-gates-p0-20260927; a baseline visual do E2E passa localmente mas pode divergir do runner do GitHub (ratio 0.07-0.14 medida em 2026-09-17 contra o limiar 0.02). Redacao/PII: varredura dos 7 artefatos citados por e-mail, CPF, telefone, bearer, chave privada e credencial em URL: zero ocorrencias. Independencia: identidade separada do builder, input somente artefatos, zero escrita no worktree pelo proprio critic, sem justificativa nem conclusao de builder reutilizada. Sem P0/P1. P2 (5): (1) baseline visual do E2E gerada localmente pode divergir do runner do CI; (2) os docs de estado pertencem ao candidato, entao o selo precisa ser re-executado a cada persistencia documental; (3) a cobertura SEM banco ainda reporta kernel 89.37 e approval 77.64 abaixo do piso - so a medicao com banco e autoritativa; (4) ramos por arquivo de kernel-composition.ts (66.14%) e runtime-approval-store.ts (33.80%) continuam abaixo do piso lido por arquivo, embora o gate critico meca o modulo agregado; (5) a allowlist do gitleaks e por caminho e cega docs/**/evidence/** e **/__tests__/** por design - trade-off documentado e verificado com prova de deteccao em caminho de codigo. Nenhum gate, threshold ou skip foi afrouxado."
   },
   "findings": {
     "P0": 0,
@@ -41,7 +41,7 @@
     {
       "id": "CHECK-A-binding-candidato",
       "status": "PASS",
-      "method": "Recompute read-only com buildPhase11Candidate(root): candidateId=71a259aced6dd1ee..., commit=30712edd65468091d695beeda53ded674b2135c7..., treeHash=78419d2f2a535ffc..., dirty=false, untracked=0, fileCount=1208, branch=main. Fingerprint candidateFingerprint(root, excludePaths=[caminho do proprio report])=0546cb97e7429dcf... Os tres campos de binding e os dois campos de fingerprint conferem com o report; o report nao cita a si proprio.",
+      "method": "Recompute read-only com buildPhase11Candidate(root): candidateId=753eb78241326183..., commit=e9016ce4fbe64d0cb07452ab1d6abfe7794d9b0e, treeHash=8fe624c45389176d..., dirty=false, untracked=0, fileCount=1211, branch=main. Fingerprint candidateFingerprint(root, excludePaths=[caminho do proprio report])=847a6709119f2848... Os tres campos de binding e os dois campos de fingerprint conferem com o report; o report nao cita a si proprio.",
       "evidence": [
         "docs/04_audit/0574_repository_audit_2026-09-26.md"
       ]
@@ -49,37 +49,38 @@
     {
       "id": "CHECK-B-superficie-de-gates-local",
       "status": "PASS",
-      "method": "Executei a superficie de gates local neste candidato sob Node 22.23.2: tsc --noEmit PASS; eslint . PASS; prettier --check . PASS; git diff --check PASS; node scripts/docs-check.mjs PASS; npm run build PASS; npx vitest run --no-file-parallelism 306 arquivos / 2.659 passed / 0 failed / 192 skipped; npm audit --audit-level=high 0 vulnerabilidades. Registro cruzado no relatorio de auditoria 0574, que mediu os mesmos gates.",
+      "method": "Re-executei a superficie de gates local neste candidato sob Node 22.23.2 apos a correcao de CI: tsc --noEmit exit 0; eslint . exit 0; prettier --check . exit 0; git diff --check exit 0; node scripts/docs-check.mjs exit 0 (state/node/links/JSON validos); npm run build exit 0; npm audit --audit-level=high exit 0 com 0 vulnerabilidades; npm test exit 0 com 319 arquivos (307 pass / 12 skipped) e 2.673 testes pass / 192 skipped / 0 fail; npm run test:e2e exit 0 com 75 pass / 0 fail. Todos os passos sao os mesmos que o verify.yml executa.",
       "evidence": [
         "docs/04_audit/0574_repository_audit_2026-09-26.md",
+        "docs/04_audit/evidence/AUD20/AUD20-ci-gates-p0-20260927.md",
         "docs/02_spec/aaa_quality_contract.md"
       ]
     },
     {
       "id": "CHECK-C-cobertura-critica-postgres",
       "status": "PASS",
-      "method": "Contrato (§ cobertura) exige branches >=95% nos modulos criticos kernel, approval, policy, journal, canal e RLS. Re-execucao de scripts/aud19-critical-coverage.mjs sobre o coverage medido SEM banco ainda reporta critical_branch_coverage:kernel:89.37 e approval:77.64 (policy 97.87, journal 98.15, canal 97.41, rls 100 PASS): 192 skips condicionais a TEST_DATABASE_URL derrubam ramos desses modulos. A re-certificacao desta rodada foi executada com TEST_DATABASE_URL de contêiner descartavel + PHASE11_ALLOW_DISPOSABLE_POSTGRES=1 e produziu coverage com 318 arquivos / 2851 testes PASS / 0 skip e zero ocorrencias de critical_branch_coverage no log, ou seja, todos os modulos criticos acima do piso com o banco autorizado. PASS porque o piso foi medido e atingido no ambiente admitido; a seguranca e que a medicao sem banco continua a falhar de forma honesta.",
+      "method": "Contrato (§ cobertura) exige branches >=95% nos modulos criticos kernel, approval, policy, journal, canal e RLS. Re-execucao de npm run verify COM TEST_DATABASE_URL de contêiner descartavel (127.0.0.1:55442) terminou exit 0 em 1133 s e scripts/aud19-critical-coverage.mjs sobre esse coverage respondeu blockers [] (exit 0), incluindo rls 66/66 branches 100%. A medicao SEM banco continua a falhar de forma honesta (kernel 89.37, approval 77.64) por causa dos 192 skips condicionais a TEST_DATABASE_URL - por isso o verify.yml passou a medir cobertura com o servico postgres do job. PASS porque o piso foi medido e atingido no ambiente admitido.",
       "evidence": [
-        "docs/04_audit/evidence/AUD20/AUD20-reseal-execution-report-20260925.md",
+        "docs/04_audit/evidence/AUD20/AUD20-ci-gates-p0-20260927.md",
         "docs/02_spec/aaa_quality_contract.md"
       ]
     },
     {
       "id": "CHECK-D-promotion-e-gates-externos",
       "status": "PASS",
-      "method": "Promocao sempre ineligivel neste candidato e por duas causas distintas e fail-closed: (a) quando o selo nao corresponde ao candidato corrente, promotion:check responde reason=current_certification_invalid; (b) com o selo corrente na passagem 1 desta rodada, responde eligible=false, reason=production_assurance_incomplete, noProductionEffect=true, unicamente com os 8 external_gate_pending (modelProvider, channel, externalIdentity, institutionalRag, rpoRto, pilot, rollback, humanSignoff) NOT_VALIDATED/PENDING. Em nenhuma das situacoes ha efeito real, inferencia de gate externo ou liberacao de staging/producao. A segunda passagem da rodada volta a ancorar o selo no candidato final sem alterar os 8 externos.",
+      "method": "Promocao sempre ineligivel neste candidato e fail-closed: antes do reseal promotion:check responde reason=current_certification_invalid (selo ancorado no candidato anterior); com o selo corrente responde eligible=false, reason=production_assurance_incomplete, noProductionEffect=true, unicamente com os 8 external_gate_pending NOT_VALIDATED/PENDING. O novo modo --expect=EXTERNAL_ONLY usado no verify.yml so devolve exit 0 nesse estado exato e devolve 1 para blocker interno, certificacao invalida, verifier falho ou --expect desconhecido (14 testes novos em tests/promotion-expectation.test.js). Nenhuma situacao produz efeito real, inferencia de gate externo ou liberacao de staging/producao.",
       "evidence": [
-        "docs/04_audit/evidence/AUD20/AUD20-head-anchored-fix-promotion-post-20260925.log",
+        "docs/04_audit/evidence/AUD20/AUD20-ci-gates-p0-20260927.md",
         "docs/04_audit/0574_repository_audit_2026-09-26.md"
       ]
     },
     {
       "id": "CHECK-E-aceites-humanos",
       "status": "PASS",
-      "method": "Verifiquei nos recibo de decisao humana que owner operations + 8 objetivos SLO estao aprovados com validade 2026-12-31 (C01-C07 completos no escopo local) e que o aceite limitado de request-context (ACCEPT_LIMITED, piso 95% vinculante, 4/4 pisos, mutation 16/16, PostgreSQL 30/354 zero-skip) esta registrado com condicoes. Confirmou-se tambem que nenhum desses aceites autoriza producao, dados reais ou a sessao humana AUD20-19, que segue adiada e sem sessao autorizada.",
+      "method": "Verifiquei nos recibos de decisao humana que owner operations + 8 objetivos SLO estao aprovados com validade 2026-12-31 (C01-C07 completos no escopo local) e que o aceite limitado de request-context (ACCEPT_LIMITED, piso 95% vinculante) esta registrado com condicoes. Confirmou-se tambem que nenhum desses aceites autoriza producao, dados reais ou a sessao humana AUD20-19, que segue adiada e sem sessao autorizada, nem que a autorizacao de push e de P0s de CI desta rodada abra qualquer gate externo.",
       "evidence": [
         "docs/04_audit/evidence/AUD20/AUD20-10-slo-human-approval-20260925.md",
-        "docs/04_audit/evidence/AUD20/AUD20-17-request-context-limited-acceptance-20260925.md"
+        "docs/04_audit/evidence/AUD20/AUD20-external-gates-execution-plan-20260925.md"
       ]
     },
     {
@@ -88,50 +89,50 @@
       "method": "Varredura regex dos 7 artefatos citados por e-mail RFC, CPF, telefone, 'bearer <token>', BEGIN PRIVATE KEY e password= em URL: 0 ocorrencias em todos. Caminhos citados sao locais do repositorio; nenhuma credencial, endpoint externo ou dado real aparece nos artefatos de evidencia usados como input desta revisao.",
       "evidence": [
         "docs/04_audit/0574_repository_audit_2026-09-26.md",
-        "docs/04_audit/evidence/AUD20/AUD20-10-slo-human-approval-20260925.md"
+        "docs/04_audit/evidence/AUD20/AUD20-ci-gates-p0-20260927.md"
       ]
     },
     {
       "id": "CHECK-G-perimetro-de-certificacao",
       "status": "PASS",
-      "method": "Confirmei que o perímetro da certificacao corrente e CONTROLLED_LOCAL e que os checks hospedados (CodeQL, gitleaks) sao registrados por design como NOT_EXECUTED/localmente indisponiveis, e que a sessao de exercicio operacional declarada no outcome da Phase 11 nao e qualificacao de producao. Os gaps de CI (origin/main 67 commits atras, .gitleaks.toml ausente, verify.yml sem certification:verify/promotion:check) sao itens de processo de release exigindo push e decisao humana, portanto fora do perímetro deste veredito e registrados como P2; nenhum deles habilita dados reais, staging ou producao.",
+      "method": "Perimetro continua CONTROLLED_LOCAL: production:preflight segue --expect=REJECT no CI, nenhuma credencial real foi usada e nenhum deploy/staging foi disparado. Os gaps de processo registrados na auditoria 0574 foram tratados nesta rodada sob autorizacao humana (.gitleaks.toml com allowlist por caminho validada com 0 leaks no historico e deteccao ativa em caminho de codigo; certification:verify, promotion:check e critical-coverage no verify.yml). Restam o push para origin/main - autorizado e executado como ultima etapa da mesma rodada, estado no recibo AUD20-ci-gates-p0-20260927 - e as baselines de E2E, que dependem do ambiente do runner. Nenhum desses itens habilita dados reais, staging ou producao.",
       "evidence": [
+        "docs/04_audit/evidence/AUD20/AUD20-ci-gates-p0-20260927.md",
         "docs/04_audit/evidence/AUD19/AUD19-12-certification-outcome.md",
-        "docs/04_audit/evidence/AUD20/AUD20-head-anchored-fix-promotion-post-20260925.log",
         "docs/04_audit/0574_repository_audit_2026-09-26.md"
       ]
     }
   ],
   "artifacts": [
     {
-      "path": "docs/02_spec/aaa_quality_contract.md",
-      "sha256": "aec324018513c43a3e949663e41769f2d59180c6812d7430bd5980fb4a357097",
-      "size": 31985
-    },
-    {
       "path": "docs/04_audit/0574_repository_audit_2026-09-26.md",
       "sha256": "afed564f5f04f9ac853b32f0b52fc20ff505f8b8a2ad25869829e8bc730c4fd5",
       "size": 21043
     },
     {
-      "path": "docs/04_audit/evidence/AUD20/AUD20-reseal-execution-report-20260925.md",
-      "sha256": "dd552ce79b17af6d0e989423f9b09a67508ea10e424c863488e4c23cf91babdb",
-      "size": 6104
+      "path": "docs/02_spec/aaa_quality_contract.md",
+      "sha256": "aec324018513c43a3e949663e41769f2d59180c6812d7430bd5980fb4a357097",
+      "size": 31985
     },
     {
-      "path": "docs/04_audit/evidence/AUD20/AUD20-head-anchored-fix-promotion-post-20260925.log",
-      "sha256": "f0cb3a11e73786fb021037edad11abdd52a2e09944a4d4732fac6fc3fb2e51c5",
-      "size": 1121
+      "path": "docs/04_audit/evidence/AUD20/AUD20-ci-gates-p0-20260927.md",
+      "sha256": "86c4d474f24881e59fde7e78a6088bb9f06364e092bebed14b3c414cabc05330",
+      "size": 4492
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-recert-pg-20260926.md",
+      "sha256": "7110b0aa80bd0cdc254de5ad462946fa51ac263642d5296c9a128d7432b58fd4",
+      "size": 4785
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-external-gates-execution-plan-20260925.md",
+      "sha256": "624057dda21ff86b81c6942fc0f19307765a347e84d70d34489f2878e2eb5943",
+      "size": 3120
     },
     {
       "path": "docs/04_audit/evidence/AUD20/AUD20-10-slo-human-approval-20260925.md",
       "sha256": "4852b711a8756a87fb7ce83329346c2a8130bdccf72598eb79cf8ed7942e86cb",
       "size": 1407
-    },
-    {
-      "path": "docs/04_audit/evidence/AUD20/AUD20-17-request-context-limited-acceptance-20260925.md",
-      "sha256": "16a39ef2450346202699695584859a609e8313b86b3af2d9b22cedbba66150b4",
-      "size": 2486
     },
     {
       "path": "docs/04_audit/evidence/AUD19/AUD19-12-certification-outcome.md",
