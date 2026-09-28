@@ -1,13 +1,13 @@
 $ npm run test:evals && npx tsx scripts/phase10-eval-report.ts
-# certificationId=phase11-5c663a5f921ab490-mukeqq99
-# candidateId=5c663a5f921ab490d2cc148f80c7f9d753002530231f9e64fccd683ec9e1e866
-# commit=65759190ee1d2d92459fc7c4d3294db32b8ec901
-# treeHash=00f78535b1e66d5ffd54cf62cde413a93da1a51a8fff33c3640419f403aa863d
+# certificationId=phase11-fb12c14ae87bf7e2-mukhf88l
+# candidateId=fb12c14ae87bf7e2a130f83d18d818277d23ca3aa977d6d5b61265f3bf9706c4
+# commit=b3b715eed95fd24b802f174b919e338aa6ac8b7a
+# treeHash=f014283e4ed9dbd63c31413fbef5fca27b5952d609185554d6967c494f8905e2
 # gate=evals
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=5588
+# exitCode=0 durationMs=4955
 
 
 > cvg-agent-secretary-v2@1.0.0 test:evals
@@ -19,8 +19,8 @@ $ npm run test:evals && npx tsx scripts/phase10-eval-report.ts
 
  Test Files  5 passed (5)
       Tests  46 passed (46)
-   Start at  20:22:36
-   Duration  4.56s (transform 364ms, setup 0ms, import 964ms, tests 102ms, environment 2.93s)
+   Start at  21:29:27
+   Duration  4.02s (transform 313ms, setup 0ms, import 816ms, tests 92ms, environment 2.61s)
 
 {"event":"evals.completed","verdict":"PASS","scenarios":56,"taskSuccessRate":1,"policyViolationRate":0,"unsafeActionRate":0,"adversarialPassRate":1}
 

@@ -1,13 +1,13 @@
 $ npm run build
-# certificationId=phase11-5c663a5f921ab490-mukeqq99
-# candidateId=5c663a5f921ab490d2cc148f80c7f9d753002530231f9e64fccd683ec9e1e866
-# commit=65759190ee1d2d92459fc7c4d3294db32b8ec901
-# treeHash=00f78535b1e66d5ffd54cf62cde413a93da1a51a8fff33c3640419f403aa863d
+# certificationId=phase11-fb12c14ae87bf7e2-mukhf88l
+# candidateId=fb12c14ae87bf7e2a130f83d18d818277d23ca3aa977d6d5b61265f3bf9706c4
+# commit=b3b715eed95fd24b802f174b919e338aa6ac8b7a
+# treeHash=f014283e4ed9dbd63c31413fbef5fca27b5952d609185554d6967c494f8905e2
 # gate=build
 # profile=CONTROLLED_LOCAL
 # databaseConfigured=false
 # realEffects=disabled
-# exitCode=0 durationMs=12782
+# exitCode=0 durationMs=11019
 
 
 > cvg-agent-secretary-v2@1.0.0 build
@@ -30,6 +30,6 @@ apps/web/dist/index.html                   0.40 kB │ gzip:   0.27 kB
 apps/web/dist/assets/index-D6AUeih4.css   30.57 kB │ gzip:   6.28 kB
 apps/web/dist/assets/index-B8BMOsdI.js   405.28 kB │ gzip: 114.78 kB
 
-[32m✓ built in 150ms[39m
+[32m✓ built in 148ms[39m
 
 

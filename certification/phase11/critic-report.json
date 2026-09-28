@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "kind": "phase11-critic-report",
   "critic": {
-    "identity": "opencode-independent-critic-phase11-r5-20260927",
+    "identity": "opencode-independent-critic-phase11-r7-20260927",
     "freshContext": true,
     "builderIdentity": "cvg-lead-agent",
     "independence": {
@@ -19,18 +19,18 @@
     }
   },
   "binding": {
-    "candidateId": "5c663a5f921ab490d2cc148f80c7f9d753002530231f9e64fccd683ec9e1e866",
-    "commit": "04a657b43f5e5fceb36854c2c4148d4c2286a995",
-    "treeHash": "00f78535b1e66d5ffd54cf62cde413a93da1a51a8fff33c3640419f403aa863d"
+    "candidateId": "fb12c14ae87bf7e2a130f83d18d818277d23ca3aa977d6d5b61265f3bf9706c4",
+    "commit": "b4478f7da2c89da01409f697f9f4a07aed3d6756",
+    "treeHash": "f014283e4ed9dbd63c31413fbef5fca27b5952d609185554d6967c494f8905e2"
   },
   "fingerprint": {
     "algorithm": "sha256-candidate-v1",
-    "before": "ad9891cedfddc37f7e31d384fbeb3906bdc6ccd7147d322fd8f6de49bbb193d5",
-    "after": "ad9891cedfddc37f7e31d384fbeb3906bdc6ccd7147d322fd8f6de49bbb193d5"
+    "before": "53a489840a5f7c2ad0438e316387bc3033f968fbba2aeaccaed34d44be7f91a4",
+    "after": "53a489840a5f7c2ad0438e316387bc3033f968fbba2aeaccaed34d44be7f91a4"
   },
   "verdict": {
     "status": "PASS",
-    "summary": "Parecer independente fresh-context do reseal phase11-5c663a5f921ab490-mukcpq7h, executado somente sobre artefatos (sem shell, sem escrita). O pacote recém-gerado está vinculado a este candidato: certificationId, commit 04a657b43f5e, treeHash 00f78535b1e6 e candidateId 5c663a5f921ab490 aparecem em manifest/result/gates/current.json e nos headers dos logs; o fingerprint sha256-candidate-v1=ad9891cedfddc37f confere com o binding. Dos 35 gates, 33 estão PASS com evidência não vazia e coerente (unit 2.682 pass/0 fail; verify exit 0; cobertura global 93,02/90,19 e crítica 319 arquivos/2.876 testes com zero skip e pisos 97,19/94,43/96,81/97,79; PostgreSQL 30/356 com zero skip, incluindo journal na perda de lease; e2e 75/75; mutation 26/26; invariantes 16/16; sem P0/P1 aberto). Os dois FAIL são o estado pré-fechamento honesto: independent_critic falha porque o report em docs/04_audit/evidence/AUD19/AUD19-08-critic-report.json ainda referencia o candidato anterior 7d5ff883@491c19d4 (este parecer o substitui) e PHASE11_FORMAL_CLOSURE depende dele. As correções de produto das rodadas AUD20-21/22 foram verificadas no código e nos testes que rodaram neste candidato; nenhum defeito material P0/P1 sobreviveu. Três achados P2 são de empacotamento/metadado e não afetam produto nem escopo controlado. Veredito PASS autoriza selar como AAA_CANDIDATE local; staging/produção permanecem NO_GO pelos 8 gates externos NOT_VALIDATED/PENDING."
+    "summary": "Parecer independente fresh-context do candidato final congelado fb12c14ae87bf7e2@b4478f7d, emitido apenas sobre artefatos e sem escrita. O HEAD e a cadeia de commits confirmam o estado congelado; o binding oficial (candidateId/treeHash) e o fingerprint 53a489840a5f7c2a conferem. O delta desde o candidato selado anterior (5c663a5f@6575919) é exclusivamente documental/governança: report do crítico (evidência, excluída), certification/** (excluído) e seis docs em escopo, sem nenhum path de produto, teste, script, migration ou configuração — amostra de categorias distintas conferida byte a byte no worktree contra o commit. A evidência comportamental do pacote anterior (35/35 gates, 16/16 invariantes, unit/coverage/PostgreSQL/e2e/mutation) transfere porque os bytes de produto são idênticos e o re-selo regenera os artefatos candidate-bound. Nenhum defeito material P0/P1 sobrevive; ressalvas P2 de empacotamento/metadado registradas. Veredito PASS autoriza o selo final como AAA_CANDIDATE local; staging/produção permanecem NO_GO pelos 8 gates externos NOT_VALIDATED/PENDING e o sign-off humano segue pendente."
   },
   "findings": {
     "P0": 0,
@@ -39,107 +39,95 @@
   },
   "checks": [
     {
-      "id": "CHECK-1-binding-e-evidencia-fresca",
+      "id": "CHECK-1-head-e-binding-final",
       "status": "PASS",
-      "method": "Leitura cruzada (sem shell) de certification/phase11/manifest.json, phase11-result.json, gates.json, current.json e dos headers dos logs do pacote: o trio canônico candidateId=5c663a5f921ab490d2cc148f80c7f9d753002530231f9e64fccd683ec9e1e866 / commit=04a657b43f5e5fceb36854c2c4148d4c2286a995 / treeHash=00f78535b1e66d5ffd54cf62cde413a93da1a51a8fff33c3640419f403aa863d aparece em todos eles, e o fingerprint corrente declarado no log do crítico (ad9891cedfddc37f...) coincide com o binding oficial. Este report é o input que fecha os dois gates ainda FAIL (independent_critic stale e a closure dependente).",
+      "method": "Leitura do HEAD b4478f7da2c89da01409f697f9f4a07aed3d6756 e sua cadeia; worktree contém exatamente o estado do commit congelado. Binding oficial conferido: candidateId fb12c14ae87bf7e2a130f83d18d818277d23ca3aa977d6d5b61265f3bf9706c4, treeHash f014283e4ed9dbd63c31413fbef5fca27b5952d609185554d6967c494f8905e2, fingerprint sha256-candidate-v1=53a489840a5f7c2ad0438e316387bc3033f968fbba2aeaccaed34d44be7f91a4, dirty=false, 1212 arquivos.",
       "evidence": [
-        "docs/04_audit/evidence/AUD20/AUD20-22-production-hardening-2026-09-27.md",
+        "docs/03_build/tracking/current_state.json",
+        "docs/99_runtime_state.md"
+      ]
+    },
+    {
+      "id": "CHECK-2-delta-selado-ate-o-congelado",
+      "status": "PASS",
+      "method": "Enumeração integral do delta desde o candidato selado 5c663a5f@6575919: report do crítico (evidência, excluída), certification/** (excluído) e seis docs de governança em escopo (CURRENT.md, runtime state, execution log, backlog, current_state.json e o recibo novo). Nenhum path de apps/**, packages/**, tests/**, scripts/**, migration ou configuração mudou; amostra de categorias distintas conferida byte a byte.",
+      "evidence": [
+        "docs/99_runtime_state.md",
+        "docs/20_master_execution_log.md",
+        "docs/30_backlog_master.md",
+        "docs/04_audit/evidence/AUD20/AUD20-reseal-5c663a5f-20260927.md",
         "docs/03_build/tracking/current_state.json"
       ]
     },
     {
-      "id": "CHECK-2-gates-pass-sem-skip-disfarcado",
+      "id": "CHECK-3-evidencia-de-produto-transfere",
       "status": "PASS",
-      "method": "Conferência dos sumários dos 33 gates PASS do pacote fresco: unit 2.682 pass/0 fail, verify exit 0 com cobertura global 93,02/90,19, cobertura crítica 319 arquivos/2.876 testes com zero skip e pisos 97,19/94,43/96,81/97,79, PostgreSQL 30 arquivos/356 testes/zero skip (incluindo journal na perda de lease, bulk e CAS), e2e 75/75, mutation 26/26 detectados. Os skips restantes são condicionais explícitos do harness, não PASS disfarçado.",
+      "method": "O pacote anterior (phase11-5c663a5f921ab490-mukeqq99) tem 35/35 gates PASS e 16/16 invariantes PASS sobre os mesmos bytes de produto; a transferência é sustentável e o re-selo regenera os artefatos candidate-bound (manifest, logs, mutation, ponteiro, report).",
       "evidence": [
-        "docs/04_audit/evidence/AUD20/AUD20-21-production-audit-2026-09-27.md",
+        "docs/04_audit/evidence/AUD20/AUD20-reseal-5c663a5f-20260927.md",
         "docs/04_audit/evidence/AUD20/AUD20-22-production-hardening-2026-09-27.md",
-        "docs/02_spec/aaa_quality_contract.md"
+        "docs/04_audit/evidence/AAA/AAA-21/quality-bar-phase11-2-v1.json"
       ]
     },
     {
-      "id": "CHECK-3-invariantes-e-findings",
+      "id": "CHECK-4-escopo-e-exclusoes",
       "status": "PASS",
-      "method": "invariants.json 16/16 PASS (incluindo os críticos) e findings.json sem P0/P1 aberto (AUD-11-01 CLOSED; P2 CLOSED; apenas o finding externo AUD-11-08 permanece PARTIAL por construção, restringindo perfis externos). Sem bloqueio local residual.",
+      "method": "docs/04_audit/evidence/** e certification/phase11/** são excluídos do candidato; docs/99_runtime_state.md é in-scope (explica a evolução 3d98a220->fb12c14a). Nenhuma persistência em docs in-scope deve ocorrer após certificar sem novo selo.",
       "evidence": [
-        "docs/04_audit/evidence/AUD20/AUD20-22-production-hardening-2026-09-27.md",
-        "docs/04_audit/evidence/AUD20/AUD20-recert-pg-20260926.md"
+        "docs/99_runtime_state.md",
+        "docs/03_build/tracking/current_state.json"
       ]
     },
     {
-      "id": "CHECK-4-correcoes-produto-com-teste",
+      "id": "CHECK-5-barra-externa-permanece-bloqueada",
       "status": "PASS",
-      "method": "Leitura do código e dos testes das correções AUD20-21/22: journal commitado em transação própria antes do CAS do ack, heartbeat com tolerância delimitada e fence no CAS final, ROLLBACK que preserva o erro original, bulk listStepsByPlan/listAttemptsByStep tenant-scoped, teto de listas com header x-result-truncated testado, CAS de task status e mapeamento público de ApprovalError. Nenhum defeito material P0/P1 sobrevivente.",
-      "evidence": [
-        "docs/04_audit/evidence/AUD20/AUD20-21-production-audit-2026-09-27.md",
-        "docs/04_audit/evidence/AUD20/AUD20-22-production-hardening-2026-09-27.md"
-      ]
-    },
-    {
-      "id": "CHECK-5-critic-e-closure-esperados",
-      "status": "PASS",
-      "method": "O FAIL de independent_critic no pacote é exclusivamente o report anterior ainda vinculado a 7d5ff883@491c19d4; PHASE11_FORMAL_CLOSURE depende desse gate por construção. Nenhuma outra referência stale foi encontrada no pacote; este parecer substitui o report e fecha os dois gates no reseal.",
-      "evidence": [
-        "docs/04_audit/evidence/AUD20/AUD20-22-production-hardening-2026-09-27.md",
-        "docs/04_audit/evidence/AUD20/AUD20-external-gates-execution-plan-20260925.md"
-      ]
-    },
-    {
-      "id": "CHECK-6-bar-externa-permanece-bloqueada",
-      "status": "PASS",
-      "method": "certification/external-gates.json registra modelProvider/channel/externalIdentity NOT_VALIDATED e humanSignoff PENDING; integration-report é CONTROLLED_LOCAL sem efeito real e o release-manifest nega autoridade de produção. O selo local AAA_CANDIDATE não altera o boundary staging/produção NO_GO.",
+      "method": "certification/external-gates.json registra modelProvider/channel/externalIdentity NOT_VALIDATED e humanSignoff PENDING; nothing nesta transferência altera o boundary staging/produção NO_GO.",
       "evidence": [
         "certification/external-gates.json",
-        "docs/04_audit/evidence/AUD20/AUD20-external-gates-decision-request-20260925.md",
         "docs/04_audit/evidence/AAA/AAA-21/quality-bar-phase11-2-v1.json"
       ]
     }
   ],
   "artifacts": [
     {
+      "path": "docs/03_build/tracking/current_state.json",
+      "sha256": "a13a5915daff164218894ec99b07ddbaa77f0970357da41beb6454509d2f44a5",
+      "size": 1552
+    },
+    {
+      "path": "docs/99_runtime_state.md",
+      "sha256": "ef60b88e4a83d7922e854f9c805aafe1ab1e5aaec551614909a4f2e071253f45",
+      "size": 432512
+    },
+    {
+      "path": "docs/20_master_execution_log.md",
+      "sha256": "8009af92828d8271009f78c170e0214896caf9ed7ce65ecfa4b765fd9e6e8865",
+      "size": 461943
+    },
+    {
+      "path": "docs/30_backlog_master.md",
+      "sha256": "2c0ba9411a4b0b0372cb36383d8b285d36b503b55646c02b1a601d22d762d867",
+      "size": 221900
+    },
+    {
+      "path": "docs/04_audit/evidence/AUD20/AUD20-reseal-5c663a5f-20260927.md",
+      "sha256": "978eee3bc83d0770f33dc1d8f2e4b85e5eb542add0ff5eabc7473af9ae0a5dd3",
+      "size": 2527
+    },
+    {
       "path": "docs/04_audit/evidence/AUD20/AUD20-22-production-hardening-2026-09-27.md",
       "sha256": "71b95285a7d17996a12c5bac7b4d6a84d86db1e034c7e15927d452d78513f8ad",
       "size": 13039
     },
     {
-      "path": "docs/03_build/tracking/current_state.json",
-      "sha256": "98c300fcbab6865e5d43b43ec0a30a0fb88ab7759fe088467527e8e91646244b",
-      "size": 1568
-    },
-    {
-      "path": "docs/04_audit/evidence/AUD20/AUD20-21-production-audit-2026-09-27.md",
-      "sha256": "73ea49a9ce1e191c5a58375b933ab2304f787355464f438498b466b9f61a251d",
-      "size": 13686
-    },
-    {
-      "path": "docs/02_spec/aaa_quality_contract.md",
-      "sha256": "aec324018513c43a3e949663e41769f2d59180c6812d7430bd5980fb4a357097",
-      "size": 31985
-    },
-    {
-      "path": "docs/04_audit/evidence/AUD20/AUD20-recert-pg-20260926.md",
-      "sha256": "7110b0aa80bd0cdc254de5ad462946fa51ac263642d5296c9a128d7432b58fd4",
-      "size": 4785
-    },
-    {
-      "path": "docs/04_audit/evidence/AUD20/AUD20-external-gates-execution-plan-20260925.md",
-      "sha256": "624057dda21ff86b81c6942fc0f19307765a347e84d70d34489f2878e2eb5943",
-      "size": 3120
+      "path": "docs/04_audit/evidence/AAA/AAA-21/quality-bar-phase11-2-v1.json",
+      "sha256": "1d477beef8340674c009032168fa7d0c4b99b9af8697af0472903ebb2b9735a6",
+      "size": 4436
     },
     {
       "path": "certification/external-gates.json",
       "sha256": "ccaecccf62b52cb02ce278ec84dd15cf3a0f13ca2d691f7ca20f9b86fed60ca9",
       "size": 361
-    },
-    {
-      "path": "docs/04_audit/evidence/AUD20/AUD20-external-gates-decision-request-20260925.md",
-      "sha256": "f232ced25a73bf4503f2186141ca159325201e49ec8bc99632f625f9561787c0",
-      "size": 2429
-    },
-    {
-      "path": "docs/04_audit/evidence/AAA/AAA-21/quality-bar-phase11-2-v1.json",
-      "sha256": "1d477beef8340674c009032168fa7d0c4b99b9af8697af0472903ebb2b9735a6",
-      "size": 4436
     }
   ],
   "disclaimers": {

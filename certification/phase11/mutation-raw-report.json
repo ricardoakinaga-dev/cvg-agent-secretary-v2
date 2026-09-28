@@ -3,7 +3,7 @@
   "kind": "aud19-mutation-sentinel",
   "program": "AUD19-REM",
   "task": "AUD19-08",
-  "generatedAt": "2026-09-27T23:23:49.050Z",
+  "generatedAt": "2026-09-28T00:30:35.285Z",
   "node": "22.23.2",
   "manifest": "docs/04_audit/evidence/AUD19/AUD19-08-mutants.json",
   "status": "PASS",
@@ -32,7 +32,7 @@
         "failed": 14,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-AUTH-02",
@@ -51,7 +51,7 @@
         "failed": 8,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-TENANT-01",
@@ -70,7 +70,7 @@
         "failed": 1,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-FENCE-01",
@@ -89,7 +89,7 @@
         "failed": 1,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-APPROVAL-01",
@@ -108,7 +108,7 @@
         "failed": 8,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-JOURNAL-01",
@@ -127,7 +127,7 @@
         "failed": 24,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-EVAL-01",
@@ -146,7 +146,7 @@
         "failed": 4,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-EVAL-02",
@@ -165,7 +165,7 @@
         "failed": 2,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-EVAL-03",
@@ -184,7 +184,7 @@
         "failed": 1,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-EVAL-04",
@@ -203,7 +203,7 @@
         "failed": 2,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-EVAL-05",
@@ -222,7 +222,7 @@
         "failed": 2,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-EVAL-06",
@@ -241,7 +241,7 @@
         "failed": 1,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-EVAL-07",
@@ -260,7 +260,7 @@
         "failed": 2,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-EVAL-08",
@@ -279,7 +279,7 @@
         "failed": 1,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-CERT-01",
@@ -298,7 +298,7 @@
         "failed": 1,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-CERT-02",
@@ -317,7 +317,7 @@
         "failed": 1,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-A10-FACTORY-01",
@@ -336,7 +336,7 @@
         "failed": 1,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-A10-FACTORY-02",
@@ -355,7 +355,7 @@
         "failed": 1,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-A10-FACTORY-03",
@@ -374,7 +374,7 @@
         "failed": 2,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-A10-FACTORY-04",
@@ -393,7 +393,7 @@
         "failed": 2,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-A10-API-01",
@@ -412,7 +412,7 @@
         "failed": 2,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-A10-WORKER-01",
@@ -431,7 +431,7 @@
         "failed": 4,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-A10-LEDGER-01",
@@ -450,7 +450,7 @@
         "failed": 1,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-A10-LEDGER-02",
@@ -469,7 +469,7 @@
         "failed": 2,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-A10-DELIVERY-01",
@@ -488,7 +488,7 @@
         "failed": 1,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     },
     {
       "id": "MUT-A10-ENGINE-01",
@@ -507,13 +507,13 @@
         "failed": 1,
         "pending": 0
       },
-      "outputTail": "JSON report written to /tmp/aud19-mutants-BKZUU2/.mutation-report.json\n\n"
+      "outputTail": "JSON report written to /tmp/aud19-mutants-SQzar6/.mutation-report.json\n\n"
     }
   ],
   "candidate": {
-    "candidateId": "5c663a5f921ab490d2cc148f80c7f9d753002530231f9e64fccd683ec9e1e866",
-    "commit": "65759190ee1d2d92459fc7c4d3294db32b8ec901",
-    "treeHash": "00f78535b1e66d5ffd54cf62cde413a93da1a51a8fff33c3640419f403aa863d"
+    "candidateId": "fb12c14ae87bf7e2a130f83d18d818277d23ca3aa977d6d5b61265f3bf9706c4",
+    "commit": "b3b715eed95fd24b802f174b919e338aa6ac8b7a",
+    "treeHash": "f014283e4ed9dbd63c31413fbef5fca27b5952d609185554d6967c494f8905e2"
   },
   "manifestSha256": "f6a2b7e9e144ac51ca31ee6e53910e9b7505251c9b42d16ab0c98c5c500ce039"
 }

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "kind": "phase11-evals-report",
-  "certificationId": "phase11-5c663a5f921ab490-mukeqq99",
-  "candidateCommit": "65759190ee1d2d92459fc7c4d3294db32b8ec901",
-  "generatedAt": "2026-09-27T23:24:03.475Z",
+  "certificationId": "phase11-fb12c14ae87bf7e2-mukhf88l",
+  "candidateCommit": "b3b715eed95fd24b802f174b919e338aa6ac8b7a",
+  "generatedAt": "2026-09-28T00:30:49.397Z",
   "gateId": "evals",
   "status": "PASS",
   "command": "npm run test:evals && npx tsx scripts/phase10-eval-report.ts",
@@ -21,8 +21,8 @@
     },
     "partition": "core",
     "seed": "core-v1",
-    "startedAt": "2026-09-27T23:22:41.843Z",
-    "finishedAt": "2026-09-27T23:22:41.849Z",
+    "startedAt": "2026-09-28T00:29:32.441Z",
+    "finishedAt": "2026-09-28T00:29:32.447Z",
     "corpus": {
       "id": "core-v1",
       "scenarios": 56,
