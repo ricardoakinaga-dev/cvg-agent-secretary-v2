@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "kind": "phase11-critic-report",
   "critic": {
-    "identity": "opencode-independent-critic-phase11-r6-20260927",
+    "identity": "opencode-independent-critic-phase11-r7-20260927",
     "freshContext": true,
     "builderIdentity": "cvg-lead-agent",
     "independence": {
@@ -19,78 +19,71 @@
     }
   },
   "binding": {
-    "candidateId": "3d98a220d5854230807fd1fa2b39ebbf7bf43ff3422bfaaefc095dab7fc86954",
-    "commit": "5d177098f1799a8383708529966ff6985f1f43cb",
-    "treeHash": "59043e28929d35a3f8d30d8aee6015568cdf42dd184718663e247bf6bc17c660"
+    "candidateId": "fb12c14ae87bf7e2a130f83d18d818277d23ca3aa977d6d5b61265f3bf9706c4",
+    "commit": "b4478f7da2c89da01409f697f9f4a07aed3d6756",
+    "treeHash": "f014283e4ed9dbd63c31413fbef5fca27b5952d609185554d6967c494f8905e2"
   },
   "fingerprint": {
     "algorithm": "sha256-candidate-v1",
-    "before": "3e3a660da7e2c2c805e34ce7aa740dc7e18e1a15b7e00abe4524e8099cd70058",
-    "after": "3e3a660da7e2c2c805e34ce7aa740dc7e18e1a15b7e00abe4524e8099cd70058"
+    "before": "53a489840a5f7c2ad0438e316387bc3033f968fbba2aeaccaed34d44be7f91a4",
+    "after": "53a489840a5f7c2ad0438e316387bc3033f968fbba2aeaccaed34d44be7f91a4"
   },
   "verdict": {
     "status": "PASS",
-    "summary": "Parecer independente fresh-context do candidato congelado 3d98a220d5854230@5d177098f179, emitido apenas sobre artefatos e sem escrita. O HEAD é o commit congelado e o worktree está limpo; o binding oficial (candidateId/treeHash) e o fingerprint 3e3a660da7e2c2c8 conferem. O delta desde o candidato selado anterior é exclusivamente documental/governança (61 arquivos sob certification/**, excluídos do escopo, e 5 docs de governança em escopo mais um recibo em docs/04_audit/evidence/): nenhum caminho de produto, teste, script ou configuração mudou, de modo que os bytes que sustentam a evidência comportamental (unit, coverage, PostgreSQL, e2e, mutation, invariantes — 35/35 gates e 16/16 invariantes PASS no pacote anterior) são idênticos e a evidência transfere. O parecer anterior está corretamente stale (binding no candidato anterior) e é substituído por este. Condição verificada e registrada: o re-selo deve regenerar os artefatos candidate-bound (logs, mutation, ponteiro), o que o runner faz. Nenhum defeito material P0/P1 sobrevive; a decisão permanece CONDITIONAL_GO/AAA_CANDIDATE em escopo controlado, com staging/produção NO_GO pelos 8 gates externos NOT_VALIDATED/PENDING."
+    "summary": "Parecer independente fresh-context do candidato final congelado fb12c14ae87bf7e2@b4478f7d, emitido apenas sobre artefatos e sem escrita. O HEAD e a cadeia de commits confirmam o estado congelado; o binding oficial (candidateId/treeHash) e o fingerprint 53a489840a5f7c2a conferem. O delta desde o candidato selado anterior (5c663a5f@6575919) é exclusivamente documental/governança: report do crítico (evidência, excluída), certification/** (excluído) e seis docs em escopo, sem nenhum path de produto, teste, script, migration ou configuração — amostra de categorias distintas conferida byte a byte no worktree contra o commit. A evidência comportamental do pacote anterior (35/35 gates, 16/16 invariantes, unit/coverage/PostgreSQL/e2e/mutation) transfere porque os bytes de produto são idênticos e o re-selo regenera os artefatos candidate-bound. Nenhum defeito material P0/P1 sobrevive; ressalvas P2 de empacotamento/metadado registradas. Veredito PASS autoriza o selo final como AAA_CANDIDATE local; staging/produção permanecem NO_GO pelos 8 gates externos NOT_VALIDATED/PENDING e o sign-off humano segue pendente."
   },
   "findings": {
     "P0": 0,
     "P1": 0,
-    "P2": 2
+    "P2": 3
   },
   "checks": [
     {
-      "id": "CHECK-1-binding-do-congelado-e-head",
+      "id": "CHECK-1-head-e-binding-final",
       "status": "PASS",
-      "method": "Verificação do HEAD congelado 5d177098f1799a8383708529966ff6985f1f43cb contra o binding oficial candidateId=3d98a220d5854230807fd1fa2b39ebbf7bf43ff3422bfaaefc095dab7fc86954, treeHash=59043e28929d35a3f8d30d8aee6015568cdf42dd184718663e247bf6bc17c660 e fingerprint sha256-candidate-v1=3e3a660da7e2c2c805e34ce7aa740dc7e18e1a15b7e00abe4524e8099cd70058, com worktree limpo; nenhuma escrita executada.",
+      "method": "Leitura do HEAD b4478f7da2c89da01409f697f9f4a07aed3d6756 e sua cadeia; worktree contém exatamente o estado do commit congelado. Binding oficial conferido: candidateId fb12c14ae87bf7e2a130f83d18d818277d23ca3aa977d6d5b61265f3bf9706c4, treeHash f014283e4ed9dbd63c31413fbef5fca27b5952d609185554d6967c494f8905e2, fingerprint sha256-candidate-v1=53a489840a5f7c2ad0438e316387bc3033f968fbba2aeaccaed34d44be7f91a4, dirty=false, 1212 arquivos.",
       "evidence": [
         "docs/03_build/tracking/current_state.json",
-        "docs/04_audit/evidence/AUD20/AUD20-reseal-5c663a5f-20260927.md"
+        "docs/99_runtime_state.md"
       ]
     },
     {
-      "id": "CHECK-2-pacote-evidencia-do-produto-identico",
+      "id": "CHECK-2-delta-selado-ate-o-congelado",
       "status": "PASS",
-      "method": "O pacote selado anteriormente (phase11-5c663a5f921ab490-mukeqq99) tem 35/35 gates PASS e 16/16 invariantes PASS para o produto; o delta até o candidato congelado contém apenas documentação de governança e artefatos de certificação (excluídos do escopo), sem nenhum caminho apps/**, packages/**, tests/**, scripts/** ou config — logo os bytes que sustentam unit/coverage/postgres/e2e/mutation/invariantes são idênticos e a evidência comportamental transfere.",
+      "method": "Enumeração integral do delta desde o candidato selado 5c663a5f@6575919: report do crítico (evidência, excluída), certification/** (excluído) e seis docs de governança em escopo (CURRENT.md, runtime state, execution log, backlog, current_state.json e o recibo novo). Nenhum path de apps/**, packages/**, tests/**, scripts/**, migration ou configuração mudou; amostra de categorias distintas conferida byte a byte.",
+      "evidence": [
+        "docs/99_runtime_state.md",
+        "docs/20_master_execution_log.md",
+        "docs/30_backlog_master.md",
+        "docs/04_audit/evidence/AUD20/AUD20-reseal-5c663a5f-20260927.md",
+        "docs/03_build/tracking/current_state.json"
+      ]
+    },
+    {
+      "id": "CHECK-3-evidencia-de-produto-transfere",
+      "status": "PASS",
+      "method": "O pacote anterior (phase11-5c663a5f921ab490-mukeqq99) tem 35/35 gates PASS e 16/16 invariantes PASS sobre os mesmos bytes de produto; a transferência é sustentável e o re-selo regenera os artefatos candidate-bound (manifest, logs, mutation, ponteiro, report).",
       "evidence": [
         "docs/04_audit/evidence/AUD20/AUD20-reseal-5c663a5f-20260927.md",
-        "docs/04_audit/evidence/AUD20/AUD20-22-production-hardening-2026-09-27.md"
-      ]
-    },
-    {
-      "id": "CHECK-3-delta-documental-verificado",
-      "status": "PASS",
-      "method": "Conferência do delta 6575919->5d177098: 67 arquivos, sendo 61 sob certification/** (excluídos do candidato) e 6 de documentação (CURRENT.md, runtime state, execution log, backlog, current_state.json e o recibo novo em docs/04_audit/evidence/, prefixo excluído). Nenhum blob de produto/teste/config mudou; os digests citados neste report foram recalculados sobre os bytes congelados.",
-      "evidence": [
-        "docs/03_build/tracking/current_state.json",
-        "docs/20_master_execution_log.md",
-        "docs/04_audit/evidence/AUD20/AUD20-reseal-5c663a5f-20260927.md"
-      ]
-    },
-    {
-      "id": "CHECK-4-parecer-anterior-stale-por-design",
-      "status": "PASS",
-      "method": "O parecer anterior falha corretamente porque os cinco docs em escopo mudaram o treeHash; a tolerância de drift de commit do verificador só vale com candidateId+treeHash coincidentes. Este parecer substitui o anterior e é vinculado ao candidato congelado; o re-selo regenera os artefatos candidate-bound (logs, mutation, ponteiro).",
-      "evidence": [
-        "docs/04_audit/evidence/AUD20/AUD20-22-production-hardening-2026-09-27.md",
-        "docs/04_audit/evidence/AUD20/AUD20-reseal-5c663a5f-20260927.md"
-      ]
-    },
-    {
-      "id": "CHECK-5-transferencia-limitada-e-condicionada",
-      "status": "PASS",
-      "method": "A transferência vale para a evidência de produto (bytes idênticos); mutation e demais artefatos com header de candidato precisam ser regenerados no re-selo, o que o runner faz. A decisão permanece CONDITIONAL_GO/AAA_CANDIDATE com perfil CONTROLLED_LOCAL/STAGING.",
-      "evidence": [
         "docs/04_audit/evidence/AUD20/AUD20-22-production-hardening-2026-09-27.md",
         "docs/04_audit/evidence/AAA/AAA-21/quality-bar-phase11-2-v1.json"
       ]
     },
     {
-      "id": "CHECK-6-barra-externa-permanece-bloqueada",
+      "id": "CHECK-4-escopo-e-exclusoes",
       "status": "PASS",
-      "method": "certification/external-gates.json registra modelProvider/channel/externalIdentity NOT_VALIDATED e humanSignoff PENDING; a transferência avaliada não altera o boundary staging/produção NO_GO.",
+      "method": "docs/04_audit/evidence/** e certification/phase11/** são excluídos do candidato; docs/99_runtime_state.md é in-scope (explica a evolução 3d98a220->fb12c14a). Nenhuma persistência em docs in-scope deve ocorrer após certificar sem novo selo.",
+      "evidence": [
+        "docs/99_runtime_state.md",
+        "docs/03_build/tracking/current_state.json"
+      ]
+    },
+    {
+      "id": "CHECK-5-barra-externa-permanece-bloqueada",
+      "status": "PASS",
+      "method": "certification/external-gates.json registra modelProvider/channel/externalIdentity NOT_VALIDATED e humanSignoff PENDING; nothing nesta transferência altera o boundary staging/produção NO_GO.",
       "evidence": [
         "certification/external-gates.json",
-        "docs/04_audit/evidence/AUD20/AUD20-external-gates-decision-request-20260925.md",
         "docs/04_audit/evidence/AAA/AAA-21/quality-bar-phase11-2-v1.json"
       ]
     }
@@ -100,6 +93,21 @@
       "path": "docs/03_build/tracking/current_state.json",
       "sha256": "a13a5915daff164218894ec99b07ddbaa77f0970357da41beb6454509d2f44a5",
       "size": 1552
+    },
+    {
+      "path": "docs/99_runtime_state.md",
+      "sha256": "ef60b88e4a83d7922e854f9c805aafe1ab1e5aaec551614909a4f2e071253f45",
+      "size": 432512
+    },
+    {
+      "path": "docs/20_master_execution_log.md",
+      "sha256": "8009af92828d8271009f78c170e0214896caf9ed7ce65ecfa4b765fd9e6e8865",
+      "size": 461943
+    },
+    {
+      "path": "docs/30_backlog_master.md",
+      "sha256": "2c0ba9411a4b0b0372cb36383d8b285d36b503b55646c02b1a601d22d762d867",
+      "size": 221900
     },
     {
       "path": "docs/04_audit/evidence/AUD20/AUD20-reseal-5c663a5f-20260927.md",
@@ -112,11 +120,6 @@
       "size": 13039
     },
     {
-      "path": "docs/20_master_execution_log.md",
-      "sha256": "8009af92828d8271009f78c170e0214896caf9ed7ce65ecfa4b765fd9e6e8865",
-      "size": 461943
-    },
-    {
       "path": "docs/04_audit/evidence/AAA/AAA-21/quality-bar-phase11-2-v1.json",
       "sha256": "1d477beef8340674c009032168fa7d0c4b99b9af8697af0472903ebb2b9735a6",
       "size": 4436
@@ -125,11 +128,6 @@
       "path": "certification/external-gates.json",
       "sha256": "ccaecccf62b52cb02ce278ec84dd15cf3a0f13ca2d691f7ca20f9b86fed60ca9",
       "size": 361
-    },
-    {
-      "path": "docs/04_audit/evidence/AUD20/AUD20-external-gates-decision-request-20260925.md",
-      "sha256": "f232ced25a73bf4503f2186141ca159325201e49ec8bc99632f625f9561787c0",
-      "size": 2429
     }
   ],
   "disclaimers": {
