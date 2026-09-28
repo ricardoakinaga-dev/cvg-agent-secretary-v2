@@ -1,3 +1,9 @@
+# Baselines visuais (E2E do CI) — 2026-09-28
+
+- [x] Investigado o vermelho do CI: 9 falhas, todas `toHaveScreenshot` em `visual-shell` × 3 browsers; reproducibilidade confirmada na imagem oficial do runner; 28 baselines regeneradas, E2E verde no CI.
+- [x] Selo final do candidato `b2a77032` com PostgreSQL descartável; recibo em `docs/04_audit/evidence/AUD20/`.
+- [ ] Observar o `Verify`/`Security` final. Staging/produção `NO_GO`.
+
 # Reseal Phase 11 (AUD20-22) — 2026-09-27
 
 - [x] Crítica independente do diff remediada (5 correções com teste + 2 falsos positivos verificados) e commit/push dos 4 commits da rodada.

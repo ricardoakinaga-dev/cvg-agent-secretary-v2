@@ -1,3 +1,7 @@
+# Regeneração de baselines visuais e selo final do candidato b2a77032 — 2026-09-28
+
+- CI vermelho apenas em 9 testes de screenshot (`visual-shell` × 3 browsers); todo o resto verde. Causa: rendering do runner vs baselines (produto inalterado). Regeneração com `--update-snapshots` no container oficial `playwright:1.59.1-noble` contra os servidores locais; 15/15 passam na imagem de paridade; commit `7549bcb` empurrado com E2E verde no CI; selo final do candidato `b2a77032694b15305cd3e2f2853ec55591d3e244f29808d0ae3b0deb96ef57e3` com PostgreSQL descartável.
+
 # Reseal Phase 11 concluído: CONDITIONAL_GO/AAA_CANDIDATE (5c663a5f) — 2026-09-27
 
 - Validação conjunta com o usuário, commit/push de 4 commits e reseal Phase 11 em duas passadas com PostgreSQL descartável: `phase11-5c663a5f921ab490-mukeqq99`, **35/35 gates PASS**, **16/16 invariantes PASS**, `certification:verify:phase11` PASS e `promotion:check` inelegível apenas pelos 8 gates externos (`blockingGates: []`, `noProductionEffect:true`). Crítico fresh-context do pacote: `PASS` (P0=0/P1=0/P2=3). Recibo: [AUD20-reseal-5c663a5f](04_audit/evidence/AUD20/AUD20-reseal-5c663a5f-20260927.md). Staging/produção `NO_GO`.
